@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+W=1
+D=1
+H=4
+C=1
+LABEL=center
+SLIDE=true
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -w)
+      W=$2
+      shift; shift
+      ;;
+    -d)
+      D=$2
+      shift; shift
+      ;;
+    -h)
+      H=$2
+      shift; shift
+      ;;
+    -c)
+      C=$2
+      shift; shift
+      ;;
+    --no-label)
+      LABEL=disabled;
+      shift
+      ;;
+    --no-slide)
+      SLIDE=false;
+      shift
+      ;;
+  esac
+done
+
+FILENAME="W${W}_D${D}_C${C}_H${H}"
+if [[ $LABEL != true ]];  then FILENAME="${FILENAME}_Label"; fi
+if [[ $SLIDE == false ]]; then FILENAME="${FILENAME}_NoSlide"; fi
+FILENAME="${FILENAME}.stl"
+
+openscad gridfinity_basic_cup.scad \
+    --export-format binstl \
+    -o "$FILENAME" \
+    -D height=$H \
+    -D width=$W \
+    -D depth=$D \
+    -D chambers=$C \
+    -D fingerslide=$SLIDE \
+    -D withLabel=$LABEL \
+    -D half_pitch=true
