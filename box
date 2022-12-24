@@ -29,6 +29,22 @@ while [[ $# -gt 0 ]]; do
       C=$2
       shift 2
       ;;
+    -w*)
+      W=${1:2}
+      shift
+      ;;
+    -d*)
+      D=${1:2}
+      shift
+      ;;
+    -h*)
+      H=${1:2}
+      shift
+      ;;
+    -c*)
+      C=${1:2}
+      shift
+      ;;
     --no-label)
       LABEL=disabled;
       shift
