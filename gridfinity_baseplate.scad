@@ -18,7 +18,7 @@ else {
 
 
 module base_lid(num_x, num_y) {
-  magnet_od = 6.5;
+  magnet_od = 0;
   magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_od/2);
   magnet_thickness = 2.4;
   eps = 0.1;

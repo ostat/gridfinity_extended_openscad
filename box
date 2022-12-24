@@ -1,29 +1,33 @@
 #!/usr/bin/env bash
 
+set -x
+
 W=1
 D=1
 H=4
 C=1
 LABEL=center
 SLIDE=true
+HALF_PITCH=true
+EFFICIENT=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     -w)
       W=$2
-      shift; shift
+      shift 2
       ;;
     -d)
       D=$2
-      shift; shift
+      shift 2
       ;;
     -h)
       H=$2
-      shift; shift
+      shift 2
       ;;
     -c)
       C=$2
-      shift; shift
+      shift 2
       ;;
     --no-label)
       LABEL=disabled;
@@ -33,11 +37,20 @@ while [[ $# -gt 0 ]]; do
       SLIDE=false;
       shift
       ;;
+    --efficient)
+      SLIDE=false;
+      HALF_PITCH=false;
+      EFFICIENT=true;
+      shift
+      ;;
+    *)
+      echo "Unknow option: $1"
+      exit 1
   esac
 done
 
 FILENAME="W${W}_D${D}_C${C}_H${H}"
-if [[ $LABEL != true ]];  then FILENAME="${FILENAME}_Label"; fi
+if [[ $LABEL != disabled ]]; then FILENAME="${FILENAME}_Label"; fi
 if [[ $SLIDE == false ]]; then FILENAME="${FILENAME}_NoSlide"; fi
 FILENAME="${FILENAME}.stl"
 
@@ -49,5 +62,6 @@ openscad gridfinity_basic_cup.scad \
     -D depth=$D \
     -D chambers=$C \
     -D fingerslide=$SLIDE \
-    -D withLabel=$LABEL \
-    -D half_pitch=true
+    -D "withLabel=\"${LABEL}\"" \
+    -D half_pitch=$HALF_PITCH \
+    -D efficient_floor=$EFFICIENT
