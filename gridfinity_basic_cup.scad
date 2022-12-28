@@ -37,6 +37,8 @@ irregular_subdivisions = false;
 half_pitch = false;
 // Remove some or all of lip
 lip_style = "normal";  // [ "normal", "reduced", "none" ]
+// Remove floor to create a spacer
+spacer = false;
 
 module end_of_customizer_opts() {}
 
@@ -64,7 +66,8 @@ else if (irregular_subdivisions) {
     separator_positions=separator_positions,
     half_pitch=half_pitch,
     lip_style=lip_style,
-    box_corner_attachments_only=box_corner_attachments_only
+    box_corner_attachments_only=box_corner_attachments_only,
+    spacer=spacer
   );
 }
 else {
@@ -84,6 +87,7 @@ else {
     efficient_floor=efficient_floor,
     half_pitch=half_pitch,
     lip_style=lip_style,
-    box_corner_attachments_only=box_corner_attachments_only
+    box_corner_attachments_only=box_corner_attachments_only,
+    spacer=spacer
   );
 }

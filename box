@@ -10,6 +10,7 @@ LABEL=center
 SLIDE=true
 HALF_PITCH=true
 EFFICIENT=false
+SPACER=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -46,17 +47,23 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --no-label)
-      LABEL=disabled;
+      LABEL=disabled
       shift
       ;;
     --no-slide)
-      SLIDE=false;
+      SLIDE=false
       shift
       ;;
     --efficient)
-      SLIDE=false;
-      HALF_PITCH=false;
-      EFFICIENT=true;
+      SLIDE=false
+      HALF_PITCH=false
+      EFFICIENT=true
+      shift
+      ;;
+    --spacer)
+      SLIDE=false
+      LABEL=disabled
+      SPACER=true
       shift
       ;;
     *)
@@ -67,8 +74,9 @@ done
 
 FILENAME="W${W}_D${D}_C${C}_H${H}"
 if [[ $LABEL != disabled ]]; then FILENAME="${FILENAME}_Label"; fi
-if [[ $SLIDE == false ]]; then FILENAME="${FILENAME}_NoSlide"; fi
+if [[ $SPACER == true ]]; then FILENAME="${FILENAME}_Spacer"; fi
 if [[ $EFFICIENT == true ]]; then FILENAME="${FILENAME}_EfficientFloor"; fi
+if [[ $SLIDE == false ]] && [[ $SPACER == false ]] && [[ $EFFICIENT == false ]]; then FILENAME="${FILENAME}_NoSlide"; fi
 FILENAME="${FILENAME}.stl"
 
 openscad gridfinity_basic_cup.scad \
@@ -81,4 +89,5 @@ openscad gridfinity_basic_cup.scad \
     -D fingerslide=$SLIDE \
     -D "withLabel=\"${LABEL}\"" \
     -D half_pitch=$HALF_PITCH \
-    -D efficient_floor=$EFFICIENT
+    -D efficient_floor=$EFFICIENT \
+    -D spacer=$SPACER
