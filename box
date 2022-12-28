@@ -68,6 +68,7 @@ done
 FILENAME="W${W}_D${D}_C${C}_H${H}"
 if [[ $LABEL != disabled ]]; then FILENAME="${FILENAME}_Label"; fi
 if [[ $SLIDE == false ]]; then FILENAME="${FILENAME}_NoSlide"; fi
+if [[ $EFFICIENT == true ]]; then FILENAME="${FILENAME}_EfficientFloor"; fi
 FILENAME="${FILENAME}.stl"
 
 openscad gridfinity_basic_cup.scad \
