@@ -45,12 +45,14 @@ irregular_subdivisions = false;
 separator_positions = [ 0.25, 0.5, 1, 1.33, 1.66];
 
 
+// Removes the base grid from inside the shape
+flat_base = false;
 module end_of_customizer_opts() {}
 
 if (filled_in) {
   grid_block(width, depth, height, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, hole_overhang_remedy=hole_overhang_remedy,
-    half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only);
+    half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only,flat_base = flat_base);
 }
 else if (irregular_subdivisions) {
   irregular_cup(
@@ -68,7 +70,8 @@ else if (irregular_subdivisions) {
     separator_positions=separator_positions,
     half_pitch=half_pitch,
     lip_style=lip_style,
-    box_corner_attachments_only=box_corner_attachments_only
+    box_corner_attachments_only=box_corner_attachments_only,
+    flat_base = flat_base
   );
 }
 else {
@@ -88,6 +91,7 @@ else {
     efficient_floor=efficient_floor,
     half_pitch=half_pitch,
     lip_style=lip_style,
-    box_corner_attachments_only=box_corner_attachments_only
+    box_corner_attachments_only=box_corner_attachments_only,
+    flat_base = flat_base
   );
 }

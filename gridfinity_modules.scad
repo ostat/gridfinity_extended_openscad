@@ -9,7 +9,7 @@ sharp_corners = 0;
 
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
-module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, hole_overhang_remedy=false, half_pitch=false, box_corner_attachments_only = false) {
+module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, hole_overhang_remedy=false, half_pitch=false, box_corner_attachments_only = false, flat_base=false) {
   corner_radius = 3.75;
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
@@ -32,7 +32,7 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
     intersection() {
       union() {
         // logic for constructing odd-size grids of possibly half-pitch pads
-        pad_grid(num_x, num_y, half_pitch);
+        pad_grid(num_x, num_y, half_pitch, flat_base);
         // main body will be cut down afterward
         translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 5]) 
         cube([gridfinity_pitch*num_x, gridfinity_pitch*num_y, totalht-5]);
@@ -72,7 +72,7 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
 }
 
 
-module pad_grid(num_x, num_y, half_pitch=false) {
+module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
   // if num_x (or num_y) is less than 1 (or less than 0.5 if half_pitch is enabled) then round over the far side
   cut_far_x = (num_x < 1 && !half_pitch) || (num_x < 0.5);
   cut_far_y = (num_y < 1 && !half_pitch) || (num_y < 0.5);
@@ -91,6 +91,19 @@ module pad_grid(num_x, num_y, half_pitch=false) {
         translate([gridfinity_pitch*(-0.5+num_x), gridfinity_pitch*(-0.5+num_y), 0]) pad_halfsize();
       }
     }
+  }
+  else if (flat_base) {
+      pad_oversize(ceil(num_x), ceil(num_y));
+      if (cut_far_x) {
+        translate([gridfinity_pitch*(-1+num_x), 0, 0]) pad_oversize();
+      }
+      if (cut_far_y) {
+        translate([0, gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
+      }
+      if (cut_far_x && cut_far_y) {
+        // without this the far corner would be rectangular
+        translate([gridfinity_pitch*(-1+num_x), gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
+      }
   }
   else {
     gridcopy(ceil(num_x), ceil(num_y)) intersection() {
