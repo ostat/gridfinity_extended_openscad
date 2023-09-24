@@ -9,6 +9,8 @@ default_withLabel = "disabled"; //[disabled: no label, left: left aligned label,
 default_labelWidth = 0; // 0.01
 // Include larger corner fillet
 default_fingerslide = true;
+// radius of the corner fillet
+default_fingerslide_radius = 8;
 // Set magnet diameter and depth to 0 to print without magnet holes
 // (Zack's design uses magnet diameter of 6.5)
 default_magnet_diameter = 6.5;  // .1
@@ -62,6 +64,7 @@ module basic_cup(
   withLabel=default_withLabel,
   labelWidth=default_labelWidth,
   fingerslide=default_fingerslide,
+  fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
   floor_thickness=default_floor_thickness,
@@ -95,6 +98,7 @@ module irregular_cup(
   withLabel=default_withLabel,
   labelWidth=default_labelWidth,
   fingerslide=default_fingerslide,
+  fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
   floor_thickness=default_floor_thickness,
@@ -109,7 +113,7 @@ module irregular_cup(
   difference() {
     grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only, flat_base=flat_base);
     color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
-    labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
+    labelWidth=labelWidth, fingerslide=fingerslide, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
     efficient_floor=efficient_floor, separator_positions=separator_positions, lip_style=lip_style, flat_base=flat_base);
   }
@@ -117,7 +121,7 @@ module irregular_cup(
 
 
 module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel, 
-    labelWidth=default_labelWidth, fingerslide=default_fingerslide, 
+    labelWidth=default_labelWidth, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, separator_positions=[], lip_style=default_lip_style, flat_base=default_flat_base) {
@@ -137,7 +141,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
   cavity_xsize = gp*num_x-2*outer_wall_th;
 
   difference() {
-    basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, magnet_diameter=magnet_diameter,
+    !basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
     efficient_floor=efficient_floor, lip_style=lip_style, flat_base=flat_base);
     
@@ -180,7 +184,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
 }
 
 
-module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide, 
+module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, lip_style=default_lip_style, flat_base=default_flat_base) {
@@ -240,20 +244,23 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,
     
     // rounded inside bottom
     if(fingerslide){
-      for (ai=[0:facets-1])
-        // normal slide position is -seventeen-1.15 which is the edge of the inner lip
-        // reduced slide position is -seventeen-1.85 which is the edge of the upper lip
-        // no lip means we need -gridfinity_pitch/2+1.5+0.25+wall_thickness ?
-        translate([0, (
-          lip_style3 == "reduced" ? -0.7 
-          : (lip_style3=="none" ? seventeen+1.15-gridfinity_pitch/2+0.25+wall_thickness
-          : 0
-          ) ), 0])
-        translate([0, pivot_y, pivot_z])
-        rotate([90*ai/(facets-1), 0, 0])
-        translate([0, -pivot_y, -pivot_z])
-        translate([-gridfinity_pitch/2, -10-seventeen-1.15, 0]) 
-        cube([gridfinity_pitch*num_x, 10, gridfinity_zpitch*num_z+5]);
+      translate([0, (
+            lip_style3 == "reduced" ? -0.7 
+            : (lip_style3=="none" ? seventeen+1.15-gridfinity_pitch/2+0.25+wall_thickness
+            : 0
+            ) ), 0])
+        translate([-(gridfinity_pitch),-seventeen-1.15, floorht])
+        difference(){
+          union(){
+            translate([0,-fingerslide_radius, 0])
+              cube([gridfinity_pitch*(num_x+1), fingerslide_radius,  gridfinity_zpitch*num_z]);
+            translate([0,-1, -1])
+              cube([gridfinity_pitch*(num_x+1), fingerslide_radius+1,  fingerslide_radius+1]);
+          }
+          translate([0,+fingerslide_radius, fingerslide_radius])
+            rotate([90, 0, 90])
+            cylinder(h = gridfinity_pitch*(num_x+1), r=fingerslide_radius, $fn=64);
+      }      
     }
   }
   
