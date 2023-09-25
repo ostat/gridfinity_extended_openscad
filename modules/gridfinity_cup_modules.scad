@@ -82,7 +82,8 @@ module basic_cup(
   
   difference() {
     grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only, flat_base=flat_base);
-    color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
+    color("red") 
+    partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
     labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
     efficient_floor=efficient_floor, separator_positions=separator_positions, lip_style=lip_style, flat_base=flat_base);
@@ -141,7 +142,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
   cavity_xsize = gp*num_x-2*outer_wall_th;
 
   difference() {
-    !basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
+    basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
     efficient_floor=efficient_floor, lip_style=lip_style, flat_base=flat_base);
     

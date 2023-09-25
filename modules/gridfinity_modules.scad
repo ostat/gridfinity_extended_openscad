@@ -1,15 +1,13 @@
-gridfinity_pitch = 42;
-gridfinity_zpitch = 7;
-gridfinity_clearance = 0.5;  // each bin is undersize by this much
+include <modules_utility.scad>
+include <gridfinity_constants.scad>
 
 // set this to produce sharp corners on baseplates and bins
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
-
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
-module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, hole_overhang_remedy=false, half_pitch=false, box_corner_attachments_only = false, flat_base=false) {
+module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, zeroPosition=false, hole_overhang_remedy=false, half_pitch=false, box_corner_attachments_only = false, flat_base=false, stackable = true) {
   corner_radius = 3.75;
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
@@ -27,7 +25,7 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
   overhang_fix_depth = 0.3;  // assume this is enough
   
   totalht=gridfinity_zpitch*num_z+3.75;
-  translate( center ? [-(num_x-1)*gridfinity_pitch/2, -(num_y-1)*gridfinity_pitch/2, 0] : [0, 0, 0] )
+  translate( center ? [-(num_x-1)*gridfinity_pitch/2, -(num_y-1)*gridfinity_pitch/2, 0] : zeroPosition ? [gridfinity_pitch/2, gridfinity_pitch/2, 0] : [0, 0, 0])
   difference() {
     intersection() {
       union() {
@@ -45,29 +43,24 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
       cylinder(r=corner_radius, h=totalht+0.2, $fn=32);
     }
     
-    // remove top so XxY can fit on top
+    if(stackable)
+    {
+      // remove top so XxY can fit on top
       color("blue") 
       translate([0, 0, gridfinity_zpitch*num_z]) 
       pad_oversize(num_x, num_y, 1);
-    
-    if (esd > 0) {  // add pockets for screws if requested
-      gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
-      translate([0, 0, -0.1]) cylinder(d=screw_hole_diam, h=esd+0.1, $fn=28);
     }
     
-    if (emd > 0) {  // add pockets for magnets if requested
-      gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
-      translate([0, 0, -0.1]) cylinder(d=emd, h=magnet_thickness+0.1, $fn=41);
-    }
-    
-    if (overhang_fix) {  // people seem to really like this overhang fix
-      gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
-      translate([0, 0, magnet_thickness-0.1]) 
-      render() intersection() {  // for some reason OpenSCAD blows up if I don't render here
-        translate([-emd/2, -screw_hole_diam/2, 0]) cube([emd, screw_hole_diam, overhang_fix_depth+0.1]);
-        cylinder(d=emd, h=1, $fn=41);
-      }
-    }
+    translate([0,0,-0.1])
+    gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
+      SequentialBridgingDoubleHole(
+        outerHoleRadius = emd/2,
+        outerHoleDepth = magnet_thickness+0.1,
+        innerHoleRadius = screw_hole_diam/2,
+        innerHoleDepth = esd+0.1,
+        overhangBridgecount = overhang_fix ? 2 :0,
+        overhangBridgeDepth = overhang_fix_depth
+      );
   }
 }
 

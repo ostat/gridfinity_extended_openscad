@@ -1,5 +1,5 @@
 // include instead of use, so we get the pitch
-include <gridfinity_modules.scad>
+include <modules/gridfinity_constants.scad>
 
 xsize = 5;
 ysize = 3;

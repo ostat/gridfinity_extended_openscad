@@ -1,12 +1,12 @@
 // include <gridfinity_modules.scad>
-use <gridfinity_cup_modules.scad>
+use <modules/gridfinity_cup_modules.scad>
 
 // X dimension in grid units
 width = 2; // [ 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
 // Y dimension in grid units
 depth = 1; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
 // Z dimension (multiples of 7mm)
-height = 3;
+height = 3; //0.1
 // Fill in solid block (overrides all following options)
 filled_in = false;
 // Include overhang for labeling (and specify left/right/center justification)

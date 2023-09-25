@@ -1,5 +1,5 @@
 // include instead of use, so we get the pitch
-include <gridfinity_modules.scad>
+include <modules/gridfinity_constants.scad>
 use <gridfinity_baseplate.scad>   // for frame_plain
 
 translate([gridfinity_pitch/2, gridfinity_pitch/2, 0]) frame_plain(4, 1);

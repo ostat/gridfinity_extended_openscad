@@ -1,4 +1,4 @@
-include <gridfinity_modules.scad>
+include <modules/gridfinity_modules.scad>
 
 cup_height = 5;
 stick_diameter = 30;
