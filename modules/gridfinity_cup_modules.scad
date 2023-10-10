@@ -1,8 +1,12 @@
 include <gridfinity_modules.scad>
+include <modules_item_holder.scad>
+
+default_num_x=2;
+default_num_y=1;
+default_num_z=3;
 
 // X dimension subdivisions
 default_chambers = 1;
-
 // Include overhang for labeling
 default_withLabel = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
 // Width of the label in number of units, or zero for full width
@@ -27,16 +31,36 @@ default_efficient_floor = false;
 // Half-pitch base pads for offset stacking
 default_half_pitch = false;
 // Might want to remove inner lip of cup
-default_lip_style = "normal";
+default_lip_style = "normal"; //[normal, reduced, none]
 // Limit attachments (magnets and scres) to box corners for faster printing.
 default_box_corner_attachments_only = false;
 // Removes the base grid from inside the shape
 default_flat_base = false;
-
+default_tapered_corner = "none"; //[none, rounded, champhered]
+default_tapered_corner_size = 10;
+// Set back of the tapered corner, default is the gridfinity corner radius
+default_tapered_setback = -1;//gridfinity_corner_radius/2;
+default_wallcutout_enabled=false;
+// wall to enable on, front, back, left, right.
+default_wallcutout_walls=[1,0,0,0]; 
+//default will be binwidth/2
+default_wallcutout_width=0;
+default_wallcutout_angle=70;
+//default will be binHeight
+default_wallcutout_height=0;
+default_wallcutout_corner_radius=5;
+default_wallpattern_enabled=true; 
+default_wallpattern_hexgrid = false;
+default_wallpattern_fill = "none"; //["none", "space", "crop"]
+default_wallpattern_walls=[1,0,0,0]; 
+default_wallpattern_hole_sides = 4;
+default_wallpattern_hole_size = 5; //0.1
+default_wallpattern_hole_spacing = 2; //0.1
+ 
 basic_cup(
-  num_x=2,
-  num_y=1,
-  num_z=3,
+  num_x=default_num_x,
+  num_y=default_num_y,
+  num_z=default_num_z,
   chambers=default_chambers,
   withLabel=default_withLabel,
   labelWidth=default_labelWidth,
@@ -49,10 +73,31 @@ basic_cup(
   half_pitch=default_half_pitch,
   lip_style=default_lip_style,
   box_corner_attachments_only=default_box_corner_attachments_only,
-  flat_base = default_flat_base
+  flat_base=default_flat_base,
+  tapered_corner=default_tapered_corner,
+  tapered_corner_size=default_tapered_corner_size,
+  tapered_setback=default_tapered_setback,
+  wallpattern_enabled=default_wallpattern_enabled,
+  wallpattern_hexgrid=default_wallpattern_hexgrid,
+  wallpattern_fill=default_wallpattern_fill,
+  wallpattern_walls=default_wallpattern_walls, 
+  wallpattern_hole_sides=default_wallpattern_hole_sides,
+  wallpattern_hole_size=default_wallpattern_hole_size,
+  wallpattern_hole_spacing=default_wallpattern_hole_spacing,
+  wallcutout_enabled=default_wallcutout_enabled,
+  wallcutout_walls=default_wallcutout_walls,
+  wallcutout_width=default_wallcutout_width,
+  wallcutout_angle=default_wallcutout_angle,
+  wallcutout_height=default_wallcutout_height,
+  wallcutout_corner_radius=default_wallcutout_corner_radius,
+  help = true
 );
 
-
+// calculate the position of separators from the size
+function calcualteSeparators(num_separators, num_x) = num_separators < 1 
+      ? [] 
+      : [ for (i=[1:num_separators]) i*(num_x/(num_separators+1))];
+        
 // It's recommended that all parameters other than x, y, z size should be specified by keyword 
 // and not by position.  The number of parameters makes positional parameters error prone, and
 // additional parameters may be added over time and break things.
@@ -74,23 +119,67 @@ module basic_cup(
   half_pitch=default_half_pitch,
   lip_style=default_lip_style,
   box_corner_attachments_only=default_box_corner_attachments_only,
-  flat_base = default_flat_base
-  ) {
-  num_separators = chambers-1;
-  sep_pitch = num_x/(num_separators+1);
-  separator_positions = num_separators < 1 ? [] : [ for (i=[1:num_separators]) i*sep_pitch ];
-  
-  difference() {
-    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only, flat_base=flat_base);
-    color("red") 
-    partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
-    labelWidth=labelWidth, fingerslide=fingerslide, magnet_diameter=magnet_diameter, 
-    screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-    efficient_floor=efficient_floor, separator_positions=separator_positions, lip_style=lip_style, flat_base=flat_base);
-  }
+  flat_base = default_flat_base,
+  tapered_corner = default_tapered_corner,
+  tapered_corner_size = default_tapered_corner_size,
+  tapered_setback = default_tapered_setback,
+  wallpattern_enabled=default_wallpattern_enabled,
+  wallpattern_hexgrid=default_wallpattern_hexgrid,
+  wallpattern_fill=default_wallpattern_fill,
+  wallpattern_walls=default_wallpattern_walls, 
+  wallpattern_hole_sides=default_wallpattern_hole_sides,
+  wallpattern_hole_size=default_wallpattern_hole_size,
+  wallpattern_hole_spacing=default_wallpattern_hole_spacing,
+  wallcutout_enabled=default_wallcutout_enabled,
+  wallcutout_walls=default_wallcutout_walls,
+  wallcutout_width=default_wallcutout_width,
+  wallcutout_angle=default_wallcutout_angle,
+  wallcutout_height=default_wallcutout_height,
+  wallcutout_corner_radius=default_wallcutout_corner_radius,
+  help) {
+    
+  irregular_cup(
+    num_x = num_x,
+    num_y = num_y,
+    num_z = num_z,
+    withLabel=withLabel,
+    labelWidth=labelWidth,
+    fingerslide=fingerslide,
+    fingerslide_radius=fingerslide_radius,
+    magnet_diameter=magnet_diameter,
+    screw_depth=screw_depth,
+    floor_thickness=floor_thickness,
+    wall_thickness=wall_thickness,
+    hole_overhang_remedy=hole_overhang_remedy,
+    efficient_floor=efficient_floor,
+    half_pitch=half_pitch,
+    separator_positions=calcualteSeparators(chambers-1, num_x),
+    lip_style=lip_style, 
+    box_corner_attachments_only=default_box_corner_attachments_only,
+    flat_base=flat_base,
+    tapered_corner=tapered_corner,
+    tapered_corner_size=tapered_corner_size,
+    tapered_setback=tapered_setback,
+    wallpattern_enabled=wallpattern_enabled,
+    wallpattern_hexgrid=wallpattern_hexgrid,
+    wallpattern_fill=wallpattern_fill,
+    wallpattern_walls=wallpattern_walls, 
+    wallpattern_hole_sides=wallpattern_hole_sides,
+    wallpattern_hole_size=wallpattern_hole_size,
+    wallpattern_hole_spacing=wallpattern_hole_spacing,
+    wallcutout_enabled=wallcutout_enabled,
+    wallcutout_walls=wallcutout_walls,
+    wallcutout_width=wallcutout_width,
+    wallcutout_angle=wallcutout_angle,
+    wallcutout_height=wallcutout_height,
+    wallcutout_corner_radius=wallcutout_corner_radius,
+    help = help);
 }
 
-
+function LookupKnownShapes(name="round") = 
+  name == "square" ? 4 :
+  name == "hex" ? 6 : 64;
+  
 // separator positions are defined in units from the left side
 module irregular_cup(
   num_x,
@@ -109,17 +198,204 @@ module irregular_cup(
   half_pitch=default_half_pitch,
   separator_positions=[],
   lip_style=default_lip_style, 
-  flat_base=default_flat_base
-  ) {
+  box_corner_attachments_only=default_box_corner_attachments_only,
+  flat_base=default_flat_base,
+  tapered_corner = default_tapered_corner,
+  tapered_corner_size = default_tapered_corner_size,
+  tapered_setback = default_tapered_setback,
+  wallpattern_enabled=default_wallpattern_enabled,
+  wallpattern_hexgrid=default_wallpattern_hexgrid,
+  wallpattern_fill=default_wallpattern_fill,
+  wallpattern_walls=default_wallpattern_walls, 
+  wallpattern_hole_sides=default_wallpattern_hole_sides,
+  wallpattern_hole_size=default_wallpattern_hole_size,
+  wallpattern_hole_spacing=default_wallpattern_hole_spacing,
+  wallcutout_enabled=default_wallcutout_enabled,
+  wallcutout_walls=default_wallcutout_walls,
+  wallcutout_width=default_wallcutout_width,
+  wallcutout_angle=default_wallcutout_angle,
+  wallcutout_height=default_wallcutout_height,
+  wallcutout_corner_radius=default_wallcutout_corner_radius,
+  help) {
+    
   difference() {
-    grid_block(num_x, num_y, num_z, magnet_diameter, screw_depth, hole_overhang_remedy=hole_overhang_remedy, half_pitch=half_pitch, box_corner_attachments_only=box_corner_attachments_only, flat_base=flat_base);
-    color("red") partitioned_cavity(num_x, num_y, num_z, withLabel=withLabel,
-    labelWidth=labelWidth, fingerslide=fingerslide, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter, 
-    screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-    efficient_floor=efficient_floor, separator_positions=separator_positions, lip_style=lip_style, flat_base=flat_base);
+    grid_block(
+      num_x, num_y, num_z, 
+      magnet_diameter, 
+      screw_depth, 
+      hole_overhang_remedy=hole_overhang_remedy, 
+      half_pitch=half_pitch,
+      box_corner_attachments_only=box_corner_attachments_only, 
+      flat_base=flat_base);
+    
+    color("red") 
+      partitioned_cavity(
+        num_x, num_y, num_z, 
+        withLabel=withLabel,
+        labelWidth=labelWidth, 
+        fingerslide=fingerslide, 
+        fingerslide_radius=fingerslide_radius, 
+        magnet_diameter=magnet_diameter, 
+        screw_depth=screw_depth, 
+        floor_thickness=floor_thickness, 
+        wall_thickness=wall_thickness,
+        efficient_floor=efficient_floor, 
+        separator_positions=separator_positions, 
+        lip_style=lip_style, 
+        flat_base=flat_base);
+    
+    color("orange")
+      union(){
+        if(tapered_corner == "rounded" || tapered_corner == "champhered"){
+          tapered_corner_size  = tapered_corner_size == 0 ? gridfinity_zpitch*num_z/2 : tapered_corner_size;
+          tapered_setback = tapered_setback < 0 ? gridfinity_corner_radius/2 : tapered_setback;
+          translate([
+            -gridfinity_pitch/2,
+            -gridfinity_pitch/2+tapered_setback+gridfinity_clearance,
+            gridfinity_zpitch*num_z+gridfinity_lip_height-gridfinity_clearance])
+          rotate([270,0,0])
+          union(){
+            if(tapered_corner == "rounded"){
+              roundedCorner(
+                radius = tapered_corner_size, 
+                length=(num_x+1)*gridfinity_pitch, 
+                height = tapered_corner_size);
+            }
+            else if(tapered_corner == "champhered"){
+              champheredCorner(
+                champherLength = tapered_corner_size, 
+                length=(num_x+1)*gridfinity_pitch, 
+                height = tapered_corner_size);
+            }
+          }
+        }
+        
+        if(wallcutout_enabled){
+          wallcutout_thickness = wall_thickness*4;
+          z = gridfinity_zpitch*num_z+gridfinity_lip_height-gridfinity_clearance;
+          front = [
+            [(num_x-1)*gridfinity_pitch/2, -gridfinity_pitch/2+wallcutout_thickness/2, z],
+            num_x*gridfinity_pitch/3,
+            [0,0,0]];
+          back = [
+            [(num_x-1)*gridfinity_pitch/2, (num_y-0.5)*gridfinity_pitch-wallcutout_thickness/2, z],
+            num_x*gridfinity_pitch/3,
+            [0,0,0]];
+          left = [[-gridfinity_pitch/2+wallcutout_thickness/2, (num_y-1)*gridfinity_pitch/2, z],
+            num_y*gridfinity_pitch/3,
+            [0,0,90]];
+          right = [
+            [(num_x-0.5)*gridfinity_pitch-wallcutout_thickness/2, (num_y-1)*gridfinity_pitch/2, z],
+            num_y*gridfinity_pitch/3,
+            [0,0,90]];
+          
+          locations = [front, back, left, right];
+          for(i = [0:1:len(locations)-1])
+          {
+            if(wallcutout_walls[i] > 0)
+            {
+              translate(locations[i][0])
+              rotate(locations[i][2])
+              WallCutout(
+                lowerWidth=default_wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, locations[i][1]) : default_wallcutout_width,
+                wallAngle=wallcutout_angle,
+                height=wallcutout_height <= 0 ? num_z*gridfinity_zpitch*.8 : wallcutout_height,
+                thickness=wallcutout_thickness,
+                cornerRadius=wallcutout_corner_radius);
+            }
+          }
+        }
+        
+        if(wallpattern_enabled){
+         echo(wallpattern_enabled=wallpattern_enabled);
+            
+          wallcutout_thickness = wall_thickness*2;
+          heightz = gridfinity_zpitch*(num_z-1.5) + (
+            lip_style == "reduced" ? 2.5 :
+            lip_style == "none" ? 5 : 0);
+          z =(gridfinity_zpitch+0.5)+heightz/2;
+          
+          front = [
+            [num_x*gridfinity_pitch-gridfinity_corner_radius-wall_thickness*2,heightz],
+            [(num_x-1)*gridfinity_pitch/2, -gridfinity_pitch/2+wallcutout_thickness, z],
+            [90,90,0]];
+          back = [
+            [num_x*gridfinity_pitch-gridfinity_corner_radius-wall_thickness*2,heightz - (withLabel != "disabled" ? 10 : 0)],
+            [(num_x-1)*gridfinity_pitch/2, (num_y-0.5)*gridfinity_pitch, (gridfinity_zpitch+0.5)+(heightz - (withLabel != "disabled" ? 10 : 0))/2],
+            [90,90,0]];
+          left = [
+            [num_y*gridfinity_pitch-gridfinity_corner_radius-wall_thickness*2,heightz],
+            [-gridfinity_pitch/2, (num_y-1)*gridfinity_pitch/2, z],
+            [90,90,90]];
+          right = [
+            [num_y*gridfinity_pitch-gridfinity_corner_radius-wall_thickness*2,heightz],
+            [(num_x-0.5)*gridfinity_pitch-wallcutout_thickness, (num_y-1)*gridfinity_pitch/2, z],
+            [90,90,90]];
+          
+          locations = [front, back, left, right];
+          for(i = [0:1:len(locations)-1])
+          {
+            if(wallpattern_walls[i] > 0)
+            {
+              echo(i=i, wallcutout_walls[i]);
+              translate(locations[i][1])
+              rotate(locations[i][2])
+              render(){
+              GridItemHolder(
+                canvisSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
+                hexGrid = wallpattern_hexgrid,
+                customShape = false,
+                circleFn = wallpattern_hole_sides,
+                holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                holeHeight = wallcutout_thickness,
+                center=true,
+                fill=wallpattern_fill, //"none", "space", "crop"
+                help=true);
+                }
+            }
+          }
+      }
+    }
   }
+  
+  HelpTxt("irregular_cup",[
+    "num_x",num_x
+    ,"num_y",num_y
+    ,"num_z",num_z
+    ,"withLabel",withLabel
+    ,"labelWidth",labelWidth
+    ,"fingerslide",fingerslide
+    ,"fingerslide_radius",fingerslide_radius
+    ,"magnet_diameter",magnet_diameter
+    ,"screw_depth",screw_depth
+    ,"floor_thickness",floor_thickness
+    ,"wall_thickness",wall_thickness
+    ,"hole_overhang_remedy",hole_overhang_remedy
+    ,"efficient_floor",efficient_floor
+    ,"half_pitch",half_pitch
+    ,"separator_positions",separator_positions
+    ,"lip_style",lip_style
+    ,"box_corner_attachments_only",box_corner_attachments_only
+    ,"flat_base",flat_base
+    ,"tapered_corner",tapered_corner
+    ,"tapered_corner_size",tapered_corner_size
+    ,"tapered_setback",tapered_setback
+    ,"wallpattern_enabled",wallpattern_enabled
+    ,"wallpattern_hexgrid",wallpattern_hexgrid
+    ,"wallpattern_walls",wallpattern_walls
+    ,"wallpattern_hole_sides",wallpattern_hole_sides
+    ,"wallpattern_hole_size",wallpattern_hole_size
+    ,"wallpattern_hole_spacing",wallpattern_hole_spacing
+    ,"wallcutout_enabled",wallcutout_enabled
+    ,"wallpattern_fill",wallpattern_fill
+    ,"wallcutout_walls",wallcutout_walls
+    ,"wallcutout_width",wallcutout_width
+    ,"wallcutout_angle",wallcutout_angle
+    ,"wallcutout_height",wallcutout_height
+    ,"wallcutout_corner_radius",wallcutout_corner_radius]
+    ,help);  
 }
-
 
 module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel, 
     labelWidth=default_labelWidth, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
@@ -250,18 +526,12 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
             : (lip_style3=="none" ? seventeen+1.15-gridfinity_pitch/2+0.25+wall_thickness
             : 0
             ) ), 0])
-        translate([-(gridfinity_pitch),-seventeen-1.15, floorht])
-        difference(){
-          union(){
-            translate([0,-fingerslide_radius, 0])
-              cube([gridfinity_pitch*(num_x+1), fingerslide_radius,  gridfinity_zpitch*num_z]);
-            translate([0,-1, -1])
-              cube([gridfinity_pitch*(num_x+1), fingerslide_radius+1,  fingerslide_radius+1]);
-          }
-          translate([0,+fingerslide_radius, fingerslide_radius])
-            rotate([90, 0, 90])
-            cylinder(h = gridfinity_pitch*(num_x+1), r=fingerslide_radius, $fn=64);
-      }      
+        translate([-(gridfinity_pitch/2),-seventeen-1.15, floorht])
+        roundedCorner(
+          radius = fingerslide_radius,
+          length = gridfinity_pitch*(num_x),
+          height = gridfinity_zpitch*num_z
+        );
     }
   }
   
@@ -310,6 +580,8 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     }
   }
 }
+
+
 
 module tz(z) {
   translate([0, 0, z]) children();

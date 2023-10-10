@@ -7,7 +7,21 @@ sharp_corners = 0;
 
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
-module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6, center=false, zeroPosition=false, hole_overhang_remedy=false, half_pitch=false, box_corner_attachments_only = false, flat_base=false, stackable = true) {
+module grid_block(
+  num_x=1, 
+  num_y=1, 
+  num_z=2, 
+  magnet_diameter=6.5, 
+  screw_depth=6, 
+  center=false, 
+  zeroPosition=false, 
+  hole_overhang_remedy=false, 
+  half_pitch=false, 
+  box_corner_attachments_only = false, 
+  flat_base=false, 
+  stackable = true,
+  help)
+{
   corner_radius = 3.75;
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
@@ -58,10 +72,24 @@ module grid_block(num_x=1, num_y=1, num_z=2, magnet_diameter=6.5, screw_depth=6,
         outerHoleDepth = magnet_thickness+0.1,
         innerHoleRadius = screw_hole_diam/2,
         innerHoleDepth = esd+0.1,
-        overhangBridgecount = overhang_fix ? 2 :0,
-        overhangBridgeDepth = overhang_fix_depth
+        overhangBridgeCount = overhang_fix ? 1 :0,
+        overhangBridgeThickness = overhang_fix_depth
       );
   }
+
+  HelpTxt("grid_block",[
+    "num_x",num_x
+    ,"num_y",num_y
+    ,"num_z",num_z
+    ,"magnet_diameter",magnet_diameter
+    ,"screw_depth",screw_depth
+    ,"center",center
+    ,"hole_overhang_remedy",hole_overhang_remedy
+    ,"half_pitch",half_pitch
+    ,"box_corner_attachments_only",box_corner_attachments_only
+    ,"flat_base",flat_base
+    ,"stackable",stackable]
+    ,help);
 }
 
 
@@ -114,7 +142,6 @@ module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
     }
   }
 }
-
 
 module pad_halfsize() {
   render()  // render here to keep tree from blowing up
@@ -210,5 +237,3 @@ module cornercopy(r, num_x=1, num_y=1) {
 module gridcopy(num_x, num_y) {
   for (xi=[1:num_x]) for (yi=[1:num_y]) translate([gridfinity_pitch*(xi-1), gridfinity_pitch*(yi-1), 0]) children();
 }
-
-
