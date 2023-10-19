@@ -8,6 +8,8 @@ WallCutout2(
   thickness=10,
   cornerRadius=5);
 
+#translate([150-50,50,-21])
+cube([100,10,21]);
 translate([150,50,0])
 WallCutout(
   lowerWidth=50,

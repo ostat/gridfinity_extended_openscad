@@ -20,6 +20,7 @@ module grid_block(
   box_corner_attachments_only = false, 
   flat_base=false, 
   stackable = true,
+  fn = 32,
   help)
 {
   corner_radius = 3.75;
@@ -44,27 +45,29 @@ module grid_block(
     intersection() {
       union() {
         // logic for constructing odd-size grids of possibly half-pitch pads
+        color(color_base)
         pad_grid(num_x, num_y, half_pitch, flat_base);
         // main body will be cut down afterward
         translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 5]) 
         cube([gridfinity_pitch*num_x, gridfinity_pitch*num_y, totalht-5]);
       }
       
-      // crop with outer cylinders
-      translate([0, 0, -0.1])
+      color(color_cup)
+      translate([0, 0, -fudgeFactor])
       hull() 
       cornercopy(block_corner_position, num_x, num_y) 
-      cylinder(r=corner_radius, h=totalht+0.2, $fn=32);
+      cylinder(r=corner_radius, h=totalht+fudgeFactor*2, $fn=fn);
     }
     
     if(stackable)
     {
       // remove top so XxY can fit on top
-      color("blue") 
+      color(color_topcavity) 
       translate([0, 0, gridfinity_zpitch*num_z]) 
       pad_oversize(num_x, num_y, 1);
     }
     
+    color(color_basehole)
     translate([0,0,-0.1])
     gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
       SequentialBridgingDoubleHole(
@@ -228,8 +231,15 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false) {
 
 // similar to quadtranslate but expands to extremities of a block
 module cornercopy(r, num_x=1, num_y=1) {
-  for (xx=[-r, gridfinity_pitch*(num_x-1)+r]) for (yy=[-r, gridfinity_pitch*(num_y-1)+r]) 
-    translate([xx, yy, 0]) children();
+  for (xx=[0, 1]) 
+    for (yy=[0, 1]) 
+    {
+      $idx=[xx,yy,0];
+      xpos = xx == 0 ? -r : gridfinity_pitch*(num_x-1)+r;
+      ypos = yy == 0 ? -r : gridfinity_pitch*(num_y-1)+r;
+      translate([xpos, ypos, 0]) 
+        children();
+    }
 }
 
 

@@ -12,9 +12,9 @@ height = 3; //0.1
 // Fill in solid block (overrides all following options)
 filled_in = false;
 // Include overhang for labeling (and specify left/right/center justification)
-withLabel = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
+label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
 // Width of the label in number of units, or zero means full width
-labelWidth = 0;  // .01
+label_width = 0;  // .01
 // Wall thickness (Zack's design is 0.95)
 wall_thickness = 0.95;  // .01
 // Remove some or all of lip
@@ -39,16 +39,17 @@ hole_overhang_remedy = true;
 box_corner_attachments_only = false;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
+cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat (only applies if no magnets, screws, or finger-slide used)
 efficient_floor = false;
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
-// Removes the base grid from inside the shape
+// Removes the internal grid from base the shape
 flat_base = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
-fingerslide = true;
+fingerslide = "none"; //[none, rounded, champhered]
 // Radius of the corner fillet
 fingerslide_radius = 8;
 
@@ -94,67 +95,115 @@ cuty = false;
 help = false;
 
 module end_of_customizer_opts() {}
-difference(){
-  union()
-  {
-    if (filled_in) {
-      grid_block(
-        width, depth, height, 
-        magnet_diameter=magnet_diameter, 
-        screw_depth=screw_depth, 
-        hole_overhang_remedy=hole_overhang_remedy,
-        half_pitch=half_pitch, 
-        box_corner_attachments_only=box_corner_attachments_only,
-        flat_base = flat_base,
-        help = help);
-    }
-    else {
-      sepPositions = irregular_subdivisions 
-        ? separator_positions
-        : calcualteSeparators(chambers-1,width);
+
+gridfinity_basic_cup();
+
+module gridfinity_basic_cup(
+  width = width,
+  depth = depth,
+  height = height,
+  filled_in = filled_in,
+  label=label,
+  label_width=label_width,
+  wall_thickness=wall_thickness,
+  lip_style=lip_style,
+  chambers=chambers,
+  irregular_subdivisions=irregular_subdivisions,
+  separator_positions=separator_positions,
+  magnet_diameter=magnet_diameter,
+  screw_depth=screw_depth,
+  hole_overhang_remedy=hole_overhang_remedy,
+  box_corner_attachments_only=box_corner_attachments_only,
+  floor_thickness=floor_thickness,
+  cavity_floor_radius=cavity_floor_radius,
+  efficient_floor=efficient_floor,
+  half_pitch=half_pitch,
+  flat_base=flat_base,
+  fingerslide=fingerslide,
+  fingerslide_radius=fingerslide_radius,
+  tapered_corner=tapered_corner,
+  tapered_corner_size=tapered_corner_size,
+  tapered_setback=tapered_setback,
+  wallcutout_enabled=wallcutout_enabled,
+  wallcutout_walls=wallcutout_walls,
+  wallcutout_width=wallcutout_width,
+  wallcutout_angle=wallcutout_angle,
+  wallcutout_height=wallcutout_height,
+  wallcutout_corner_radius=wallcutout_corner_radius,
+  wallpattern_enabled=wallpattern_enabled,
+  wallpattern_hexgrid=wallpattern_hexgrid,
+  wallpattern_walls=wallpattern_walls,
+  wallpattern_fill=wallpattern_fill,
+  wallpattern_hole_sides=wallpattern_hole_sides,
+  wallpattern_hole_size=wallpattern_hole_size,
+  wallpattern_hole_spacing=wallpattern_hole_spacing,
+  cutx=cutx,
+  cuty=cuty,
+  help=help) {
+
+  difference(){
+    union()
+    {
+      if (filled_in) {
+        grid_block(
+          width, depth, height, 
+          magnet_diameter=magnet_diameter, 
+          screw_depth=screw_depth, 
+          hole_overhang_remedy=hole_overhang_remedy,
+          half_pitch=half_pitch, 
+          box_corner_attachments_only=box_corner_attachments_only,
+          flat_base = flat_base,
+          help = help);
+      }
+      else {
+        sepPositions = irregular_subdivisions 
+          ? separator_positions
+          : calcualteSeparators(chambers-1,width);
         
-      irregular_cup(
-        num_x=width, num_y=depth, num_z=height,
-        withLabel=withLabel,
-        labelWidth=labelWidth,
-        fingerslide=fingerslide,
-        fingerslide_radius=fingerslide_radius,
-        magnet_diameter=magnet_diameter,
-        screw_depth=screw_depth,
-        floor_thickness=floor_thickness,
-        wall_thickness=wall_thickness,
-        hole_overhang_remedy=hole_overhang_remedy,
-        efficient_floor=efficient_floor,
-        separator_positions=sepPositions,
-        half_pitch=half_pitch,
-        lip_style=lip_style,
-        box_corner_attachments_only=box_corner_attachments_only,
-        flat_base = flat_base,
-        tapered_corner=tapered_corner,
-        tapered_corner_size = tapered_corner_size,
-        tapered_setback = tapered_setback,
-        wallpattern_enabled=wallpattern_enabled,
-        wallpattern_hexgrid=wallpattern_hexgrid,
-        wallpattern_walls=wallpattern_walls, 
-        wallpattern_hole_sides=wallpattern_hole_sides,
-        wallpattern_hole_size=wallpattern_hole_size,
-        wallpattern_hole_spacing=wallpattern_hole_spacing,
-        wallcutout_enabled=wallcutout_enabled,
-        wallpattern_fill=wallpattern_fill,
-        wallcutout_walls=wallcutout_walls,
-        wallcutout_width=wallcutout_width,
-        wallcutout_angle=wallcutout_angle,
-        wallcutout_height=wallcutout_height,
-        wallcutout_corner_radius=wallcutout_corner_radius,
-        help = help);
+        irregular_cup(
+          num_x=width, num_y=depth, num_z=height,
+          withLabel=label,
+          labelWidth=label_width,
+          fingerslide=fingerslide,
+          fingerslide_radius=fingerslide_radius,
+          magnet_diameter=magnet_diameter,
+          screw_depth=screw_depth,
+          floor_thickness=floor_thickness,
+          cavity_floor_radius=cavity_floor_radius,
+          wall_thickness=wall_thickness,
+          hole_overhang_remedy=hole_overhang_remedy,
+          efficient_floor=efficient_floor,
+          separator_positions=sepPositions,
+          half_pitch=half_pitch,
+          lip_style=lip_style,
+          box_corner_attachments_only=box_corner_attachments_only,
+          flat_base = flat_base,
+          tapered_corner=tapered_corner,
+          tapered_corner_size = tapered_corner_size,
+          tapered_setback = tapered_setback,
+          wallpattern_enabled=wallpattern_enabled,
+          wallpattern_hexgrid=wallpattern_hexgrid,
+          wallpattern_walls=wallpattern_walls, 
+          wallpattern_hole_sides=wallpattern_hole_sides,
+          wallpattern_hole_size=wallpattern_hole_size, 
+          wallpattern_hole_spacing=wallpattern_hole_spacing,
+          wallpattern_fill=wallpattern_fill,
+          wallcutout_enabled=wallcutout_enabled,
+          wallcutout_walls=wallcutout_walls,
+          wallcutout_width=wallcutout_width,
+          wallcutout_angle=wallcutout_angle,
+          wallcutout_height=wallcutout_height,
+          wallcutout_corner_radius=wallcutout_corner_radius,
+          help = help);
+      }
     }
+    if(cutx && $preview){
+      translate([-gridfinity_pitch,-gridfinity_pitch,-fudgeFactor])
+        cube([(width+1)*gridfinity_pitch,gridfinity_pitch,(height+1)*gridfinity_zpitch]);
+    }
+    if(cuty && $preview){
+      translate([-gridfinity_pitch*0.75,-gridfinity_pitch,-fudgeFactor])
+        cube([gridfinity_pitch,(depth+1)*gridfinity_pitch,(height+1)*gridfinity_zpitch]);
+    } 
   }
-  if(cutx){
-    translate([-gridfinity_pitch,-gridfinity_pitch,-fudgeFactor])
-      cube([(width+1)*gridfinity_pitch,gridfinity_pitch,(height+1)*gridfinity_zpitch]);
-  }
-  if(cuty){
-    translate([-gridfinity_pitch,-gridfinity_pitch,-fudgeFactor])
-      cube([gridfinity_pitch,(depth+1)*gridfinity_pitch,(height+1)*gridfinity_zpitch]);
-  } 
 }
