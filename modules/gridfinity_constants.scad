@@ -11,6 +11,9 @@ gridfinity_clearance = 0.5;
 // each bin is undersize by this much
 gridfinity_lip_height = 4.4;  
 
+const_base_part_ht = 5;  
+const_magnet_height = 2.4;
+
 //Small amount to add to prevent clipping in openSCAD
 fudgeFactor = 0.01;
 

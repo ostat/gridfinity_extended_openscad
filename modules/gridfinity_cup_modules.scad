@@ -4,7 +4,8 @@ include <modules_item_holder.scad>
 default_num_x=2;
 default_num_y=1;
 default_num_z=3;
-
+default_position="default"; //["default","center","zero"]
+default_filled_in = "off"; //["off","on","notstackable"] 
 // X dimension subdivisions
 default_chambers = 1;
 // Include overhang for labeling
@@ -12,7 +13,7 @@ default_withLabel = "disabled"; //[disabled: no label, left: left aligned label,
 // Width of the label in number of units, or zero for full width
 default_labelWidth = 0; // 0.01
 // Include larger corner fillet
-default_fingerslide = "none"; //[none, rounded, champhered]
+default_fingerslide = "none"; //[none, rounded, chamfered]
 // radius of the corner fillet
 default_fingerslide_radius = 8;
 // Set magnet diameter and depth to 0 to print without magnet holes
@@ -37,7 +38,7 @@ default_lip_style = "normal"; //[normal, reduced, none]
 default_box_corner_attachments_only = false;
 // Removes the base grid from inside the shape
 default_flat_base = false;
-default_tapered_corner = "none"; //[none, rounded, champhered]
+default_tapered_corner = "none"; //[none, rounded, chamfered]
 default_tapered_corner_size = 10;
 // Set back of the tapered corner, default is the gridfinity corner radius
 default_tapered_setback = -1;//gridfinity_corner_radius/2;
@@ -57,11 +58,14 @@ default_wallpattern_walls=[1,0,0,0];
 default_wallpattern_hole_sides = 4;
 default_wallpattern_hole_size = 5; //0.1
 default_wallpattern_hole_spacing = 2; //0.1
- 
+default_help = false;
+
 basic_cup(
   num_x=default_num_x,
   num_y=default_num_y,
   num_z=default_num_z,
+  position=default_position,
+  filled_in = default_filled_in,
   chambers=default_chambers,
   withLabel=default_withLabel,
   labelWidth=default_labelWidth,
@@ -92,14 +96,9 @@ basic_cup(
   wallcutout_angle=default_wallcutout_angle,
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
-  help = false
+  help = default_help
 );
 
-// calculate the position of separators from the size
-function calcualteSeparators(num_separators, num_x) = num_separators < 1 
-      ? [] 
-      : [ for (i=[1:num_separators]) i*(num_x/(num_separators+1))];
-        
 // It's recommended that all parameters other than x, y, z size should be specified by keyword 
 // and not by position.  The number of parameters makes positional parameters error prone, and
 // additional parameters may be added over time and break things.
@@ -107,6 +106,8 @@ module basic_cup(
   num_x,
   num_y,
   num_z,
+  position=default_position,
+  filled_in = default_filled_in,
   chambers=default_chambers,
   withLabel=default_withLabel,
   labelWidth=default_labelWidth,
@@ -145,6 +146,8 @@ module basic_cup(
     num_x = num_x,
     num_y = num_y,
     num_z = num_z,
+    position=position,
+    filled_in = filled_in,
     withLabel=withLabel,
     labelWidth=labelWidth,
     fingerslide=fingerslide,
@@ -180,15 +183,13 @@ module basic_cup(
     help = help);
 }
 
-function LookupKnownShapes(name="round") = 
-  name == "square" ? 4 :
-  name == "hex" ? 6 : 64;
-  
 // separator positions are defined in units from the left side
 module irregular_cup(
   num_x,
   num_y,
   num_z,
+  position=default_position,
+  filled_in = default_filled_in,
   withLabel=default_withLabel,
   labelWidth=default_labelWidth,
   fingerslide=default_fingerslide,
@@ -223,6 +224,7 @@ module irregular_cup(
   wallcutout_corner_radius=default_wallcutout_corner_radius,
   help) {
 
+  translate(caluclatePosition(position,num_x,num_y))
   difference() {
     grid_block(
       num_x, num_y, num_z, 
@@ -231,8 +233,11 @@ module irregular_cup(
       hole_overhang_remedy=hole_overhang_remedy, 
       half_pitch=half_pitch,
       box_corner_attachments_only=box_corner_attachments_only, 
+      stackable = filled_in!="notstackable",
       flat_base=flat_base);
-    
+      
+    if(filled_in == "off") 
+    union(){
       partitioned_cavity(
         num_x, num_y, num_z, 
         withLabel=withLabel,
@@ -253,9 +258,15 @@ module irregular_cup(
       union(){
         fh = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
         cfr = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness);
-
-        if(tapered_corner == "rounded" || tapered_corner == "champhered"){
-          tapered_corner_size  = tapered_corner_size == 0 ? gridfinity_zpitch*num_z/2 : tapered_corner_size;
+        z = gridfinity_zpitch * num_z + gridfinity_lip_height - gridfinity_clearance;
+    
+        if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
+          //tapered_corner_size = tapered_corner_size == 0 ? gridfinity_zpitch*num_z/2 : tapered_corner_size;
+          tapered_corner_size  = tapered_corner_size < 0 
+              ? z - fh 
+              : tapered_corner_size == 0 ? z - fh -cfr
+              : tapered_corner_size;
+              
           tapered_setback = tapered_setback < 0 ? gridfinity_corner_radius/2 : tapered_setback;
           translate([
             -gridfinity_pitch/2,
@@ -269,9 +280,9 @@ module irregular_cup(
                 length=(num_x+1)*gridfinity_pitch, 
                 height = tapered_corner_size);
             }
-            else if(tapered_corner == "champhered"){
-              champheredCorner(
-                champherLength = tapered_corner_size, 
+            else if(tapered_corner == "chamfered"){
+              chamferedCorner(
+                chamferLength = tapered_corner_size, 
                 length=(num_x+1)*gridfinity_pitch, 
                 height = tapered_corner_size);
             }
@@ -279,7 +290,6 @@ module irregular_cup(
         }
         
         if(wallcutout_enabled){
-          z = gridfinity_zpitch * num_z + gridfinity_lip_height - gridfinity_clearance;
           wallcutout_thickness = wall_thickness*2+max(wall_thickness*2,cfr);//wall_thickness*2 should be lip thickness
          
           wcheight = wallcutout_height < 0 
@@ -373,6 +383,7 @@ module irregular_cup(
                 }
             }
           }
+        }
       }
     }
   }
@@ -381,6 +392,8 @@ module irregular_cup(
     "num_x",num_x
     ,"num_y",num_y
     ,"num_z",num_z
+    ,"position",position
+    ,"filled_in",filled_in
     ,"withLabel",withLabel
     ,"labelWidth",labelWidth
     ,"fingerslide",fingerslide
@@ -484,16 +497,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
     }
   }
 }
-const_base_part_ht = 5;  
-const_magnet_height = 2.4;
 
-function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness) = let(
-  q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
-) cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
-  
- function calculateFloorHeight(magnet_diameter,screw_depth, floor_thickness) = let (
-    mag_ht = magnet_diameter > 0 ? const_magnet_height: 0)
-    max(mag_ht, screw_depth, const_base_part_ht) + floor_thickness;
 
 module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
@@ -514,7 +518,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   facets = 13;
   mag_ht = magnet_diameter > 0 ? 2.4: 0;
   m3_ht = screw_depth;
-  efloor = efficient_floor && magnet_diameter == 0 && screw_depth == 0 && !fingerslide;
+  efloor = efficient_floor && magnet_diameter == 0 && screw_depth == 0 && fingerslide == "none";
   seventeen = gridfinity_pitch/2-4;
   
   floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
@@ -573,9 +577,9 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                 length=gridfinity_pitch*(num_x), 
                 height = gridfinity_zpitch*num_z);
             }
-            else if(fingerslide == "champhered"){
-              champheredCorner(
-                champherLength = fingerslide_radius, 
+            else if(fingerslide == "chamfered"){
+              chamferedCorner(
+                chamferLength = fingerslide_radius, 
                 length=gridfinity_pitch*(num_x),
                 height = gridfinity_zpitch*num_z);
         }
@@ -593,7 +597,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   
   if (efloor) {
     if (num_x < 1) {
-      gridcopy(1, num_y) {
+      #gridcopy(1, num_y) {
         tz(floor_thickness) intersection() {
           hull() cornercopy(seventeen-0.5) cylinder(r=1, h=5, $fn=32);
           translate([gridfinity_pitch*(-1+num_x), 0, 0]) hull() cornercopy(seventeen-0.5) cylinder(r=1, h=5, $fn=32);
@@ -627,44 +631,4 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
       }
     }
   }
-}
-
-module roundedCylinder(h,r,roundedr=0,roundedr1=0,roundedr2=0)
-{
-  roundedr1 = roundedr1 > 0 ? roundedr1 : roundedr;
-  roundedr2 = roundedr2 > 0 ? roundedr2 : roundedr;
-  echo(h=h,r=r,roundedr=roundedr,roundedr1,roundedr2)
-  if(roundedr1 > 0 || roundedr2 > 0){
-    hull(){
-      if(roundedr1 > 0)
-        roundedDisk(r,roundedr1);
-      else
-        cylinder(r=r,h=h-roundedr2);
-        
-      if(roundedr2 > 0)
-        translate([0,0,h-roundedr2*2]) 
-          roundedDisk(r,roundedr2);
-      else
-        translate([0,0,roundedr1]) 
-          cylinder(r=r,h=h-roundedr1);
-    }
-  }
-  else {
-    cylinder(r=r,h=h);
-  }
-}
-
-module roundedDisk(r,roundedr){
-  translate([0,0,roundedr]) 
-  rotate_extrude() 
-  translate([r-roundedr,0,0])
-  difference(){
-    circle(roundedr);
-    translate([-roundedr*2,-roundedr,0])
-    square(roundedr*2);
-  }
-}
-
-module tz(z) {
-  translate([0, 0, z]) children();
 }

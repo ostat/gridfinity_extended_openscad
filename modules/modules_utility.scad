@@ -89,7 +89,7 @@ module roundedCube(
       translate(positions[x]) 
         sphere(cornerRadius, $fn=fn);
       translate(positions[x]) 
-        cylinder(z,r=cornerRadius, $fn=fn);
+        cylinder(z-cornerRadius,r=cornerRadius, $fn=fn);
     }
   }
 }
@@ -125,13 +125,13 @@ module roundedCorner(
   }  
 }
 
-//create a negative champher corner that subtracted from a shape
-//champherLength = the amount that will be subtracted from the 
+//create a negative chamfer corner that subtracted from a shape
+//chamferLength = the amount that will be subtracted from the 
 //cornerRadius = the radius of the corners 
 //length = the extrusion/length
 //height = the distance past the corner.
-module champheredCorner(
-  champherLength = 10, 
+module chamferedCorner(
+  chamferLength = 10, 
   cornerRadius = 4, 
   length, 
   height,
@@ -141,23 +141,22 @@ module champheredCorner(
     union(){
       //main corner to be removed
       translate([0,-1, -1])
-        cube([length, champherLength+1,  champherLength+1]);
+        cube([length, chamferLength+1,  chamferLength+1]);
       //corner extention in y
-      translate([0,0, -champherLength])
-        cube([length, height, champherLength]);
+      translate([0,0, -chamferLength])
+        cube([length, height, chamferLength]);
       //corner extention in x
-      translate([0,-champherLength, 0])
-        cube([length, champherLength, height]);
+      translate([0,-chamferLength, 0])
+        cube([length, chamferLength, height]);
 
     }
     hull(){
       positions = [
-        [-1,champherLength, cornerRadius],
-        [-1,cornerRadius, champherLength],
-        [-1,champherLength, champherLength]];
+        [-1,chamferLength, cornerRadius],
+        [-1,cornerRadius, chamferLength],
+        [-1,chamferLength, chamferLength]];
       for(i=[0:len(positions)-1])
       {
-        echo(i=i, positions[i]);
         translate(positions[i])
           rotate([90, 0, 90])
           cylinder(h = length+2, r=cornerRadius, $fn=fn);
@@ -207,4 +206,57 @@ module SequentialBridgingDoubleHole(
       cylinder(r=innerHoleRadius, h=innerHoleDepth-outerHoleDepth-overhangBridgeHeight, $fn=fn);
     }
   }
+}
+
+module roundedCylinder(h,r,roundedr=0,roundedr1=0,roundedr2=0)
+{
+  roundedr1 = roundedr1 > 0 ? roundedr1 : roundedr;
+  roundedr2 = roundedr2 > 0 ? roundedr2 : roundedr;
+  if(roundedr1 > 0 || roundedr2 > 0){
+    hull(){
+      if(roundedr1 > 0)
+        roundedDisk(r,roundedr1,half=-1);
+      else
+        cylinder(r=r,h=h-roundedr2);
+        
+      if(roundedr2 > 0)
+        translate([0,0,h-roundedr2*2]) 
+          roundedDisk(r,roundedr2,half=1);
+      else
+        translate([0,0,roundedr1]) 
+          cylinder(r=r,h=h-roundedr1);
+    }
+  }
+  else {
+    cylinder(r=r,h=h);
+  }
+}
+
+module roundedDisk(r,roundedr, half=0){
+ hull(){
+    translate([0,0,roundedr]) 
+    rotate_extrude() 
+    translate([r-roundedr,0,0])
+    difference(){
+      circle(roundedr);
+      //Remove inner half so we dont get error when r<roundedr*2
+      translate([-roundedr*2,-roundedr,0])
+      square(roundedr*2);
+      
+      if(half<0){
+        //Remove top half
+        translate([-roundedr,0,0])
+        square(roundedr*2);   
+      }
+      if(half>0){
+        //Remove bottom half
+        translate([-roundedr,-roundedr*2,0])
+        square(roundedr*2);   
+      }
+    }
+  }
+}
+
+module tz(z) {
+  translate([0, 0, z]) children();
 }

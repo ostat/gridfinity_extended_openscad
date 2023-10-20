@@ -5,6 +5,28 @@ include <gridfinity_constants.scad>
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
+function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness) = let(
+  q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
+) cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
+  
+ function calculateFloorHeight(magnet_diameter,screw_depth, floor_thickness) = let (
+    mag_ht = magnet_diameter > 0 ? const_magnet_height: 0)
+    max(mag_ht, screw_depth, const_base_part_ht) + floor_thickness;
+    
+// calculate the position of separators from the size
+function calcualteSeparators(num_separators, num_x) = num_separators < 1 
+      ? [] 
+      : [ for (i=[1:num_separators]) i*(num_x/(num_separators+1))];
+
+function LookupKnownShapes(name="round") = 
+  name == "square" ? 4 :
+  name == "hex" ? 6 : 64;
+  
+function caluclatePosition(position, num_x, num_y) = position == "center" 
+    ? [-(num_x-1)*gridfinity_pitch/2, -(num_y-1)*gridfinity_pitch/2, 0] 
+    : position == "zero" ? [gridfinity_pitch/2, gridfinity_pitch/2, 0] 
+    : [0, 0, 0]; 
+    
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(
@@ -13,8 +35,7 @@ module grid_block(
   num_z=2, 
   magnet_diameter=6.5, 
   screw_depth=6, 
-  center=false, 
-  zeroPosition=false, 
+  position = "default",
   hole_overhang_remedy=false, 
   half_pitch=false, 
   box_corner_attachments_only = false, 
@@ -40,7 +61,7 @@ module grid_block(
   overhang_fix_depth = 0.3;  // assume this is enough
   
   totalht=gridfinity_zpitch*num_z+3.75;
-  translate( center ? [-(num_x-1)*gridfinity_pitch/2, -(num_y-1)*gridfinity_pitch/2, 0] : zeroPosition ? [gridfinity_pitch/2, gridfinity_pitch/2, 0] : [0, 0, 0])
+  translate(caluclatePosition(position,num_x,num_y))
   difference() {
     intersection() {
       union() {
@@ -86,7 +107,7 @@ module grid_block(
     ,"num_z",num_z
     ,"magnet_diameter",magnet_diameter
     ,"screw_depth",screw_depth
-    ,"center",center
+    ,"position",position
     ,"hole_overhang_remedy",hole_overhang_remedy
     ,"half_pitch",half_pitch
     ,"box_corner_attachments_only",box_corner_attachments_only
