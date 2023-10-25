@@ -11,6 +11,8 @@ gridfinity_clearance = 0.5;
 // each bin is undersize by this much
 gridfinity_lip_height = 4.4;  
 
+minFloorThickness = 0.7;  
+
 const_base_part_ht = 5;  
 const_magnet_height = 2.4;
 
@@ -25,3 +27,4 @@ color_cupcavity = "IndianRed";
 color_wallcutout = "SandyBrown";
 color_basehole = "DarkSlateGray";
 color_base = "DimGray";
+color_extention = "lightpink";

@@ -8,10 +8,22 @@ sharp_corners = 0;
 function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
 ) cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
+
+constTopHeight = 5.7+fudgeFactor*5; //Need to confirm this
+
+//Height of base, not including the floor
+function calculateCupBaseHeight(magnet_diameter, screw_depth) = let (
+    mag_ht = magnet_diameter > 0 ? const_magnet_height : 0)
+    max(mag_ht, screw_depth, const_base_part_ht);
+
+function calculateFloorDepth(filledin, floor_thickness, num_z) = 
+  filledin == "on" ? (num_z-1) * gridfinity_zpitch + 2.0
+  : filledin == "notstackable" ?  (num_z-1) * gridfinity_zpitch + constTopHeight
+  : floor_thickness;
   
- function calculateFloorHeight(magnet_diameter,screw_depth, floor_thickness) = let (
-    mag_ht = magnet_diameter > 0 ? const_magnet_height: 0)
-    max(mag_ht, screw_depth, const_base_part_ht) + floor_thickness;
+//Height of base including the floor.
+function calculateFloorHeight(magnet_diameter,screw_depth, floor_thickness) = 
+    calculateCupBaseHeight(magnet_diameter,screw_depth) + floor_thickness;
     
 // calculate the position of separators from the size
 function calcualteSeparators(num_separators, num_x) = num_separators < 1 
@@ -41,6 +53,8 @@ module grid_block(
   box_corner_attachments_only = false, 
   flat_base=false, 
   stackable = true,
+  center_magnet_diameter = 0,
+  center_magnet_thickness = 0,
   fn = 32,
   help)
 {
@@ -78,6 +92,19 @@ module grid_block(
       hull() 
       cornercopy(block_corner_position, num_x, num_y) 
       cylinder(r=corner_radius, h=totalht+fudgeFactor*2, $fn=fn);
+    }
+    
+    if(center_magnet_diameter> 0 && center_magnet_thickness>0){
+      //Center Magnet
+      for(x =[0:1:num_x-1])
+      {
+        for(y =[0:1:num_y-1])
+        {
+          color(color_basehole)
+          translate([x*gridfinity_pitch,y*gridfinity_pitch,-fudgeFactor])
+            cylinder(h=center_magnet_thickness-fudgeFactor, d=center_magnet_diameter);
+        }
+      }
     }
     
     if(stackable)

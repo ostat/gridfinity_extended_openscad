@@ -21,6 +21,8 @@ default_fingerslide_radius = 8;
 default_magnet_diameter = 6.5;  // .1
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
+default_center_magnet_diameter = 0;
+default_center_magnet_thickness = 0;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 default_floor_thickness = 1.2;
 // Thickness of outer walls (Zack's design is 0.95 mm)
@@ -71,6 +73,8 @@ basic_cup(
   labelWidth=default_labelWidth,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
+  center_magnet_diameter = default_center_magnet_diameter,
+  center_magnet_thickness = default_center_magnet_thickness,
   floor_thickness=default_floor_thickness,
   cavity_floor_radius=default_cavity_floor_radius,
   wall_thickness=default_wall_thickness,
@@ -115,6 +119,8 @@ module basic_cup(
   fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
+  center_magnet_diameter = default_center_magnet_diameter,
+  center_magnet_thickness = default_center_magnet_thickness,
   floor_thickness=default_floor_thickness,
   cavity_floor_radius=default_cavity_floor_radius,
   wall_thickness=default_wall_thickness,
@@ -154,6 +160,8 @@ module basic_cup(
     fingerslide_radius=fingerslide_radius,
     magnet_diameter=magnet_diameter,
     screw_depth=screw_depth,
+    center_magnet_diameter = center_magnet_diameter,
+    center_magnet_thickness = center_magnet_thickness,
     floor_thickness=floor_thickness,
     cavity_floor_radius=cavity_floor_radius,
     wall_thickness=wall_thickness,
@@ -196,6 +204,8 @@ module irregular_cup(
   fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
   screw_depth=default_screw_depth,
+  center_magnet_diameter = default_center_magnet_diameter,
+  center_magnet_thickness = default_center_magnet_thickness,
   floor_thickness=default_floor_thickness,
   cavity_floor_radius=default_cavity_floor_radius,
   wall_thickness=default_wall_thickness,
@@ -230,6 +240,8 @@ module irregular_cup(
       num_x, num_y, num_z, 
       magnet_diameter, 
       screw_depth, 
+      center_magnet_diameter = center_magnet_diameter,
+      center_magnet_thickness = center_magnet_thickness,
       hole_overhang_remedy=hole_overhang_remedy, 
       half_pitch=half_pitch,
       box_corner_attachments_only=box_corner_attachments_only, 
@@ -258,6 +270,7 @@ module irregular_cup(
       union(){
         fh = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
         cfr = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness);
+
         z = gridfinity_zpitch * num_z + gridfinity_lip_height - gridfinity_clearance;
     
         if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
