@@ -2,6 +2,7 @@
 use <modules/gridfinity_cup_modules.scad>
 include <modules/gridfinity_constants.scad>
 
+/*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
 // X dimension in grid units  (multiples of 42mm)
 width = 2; // [ 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
@@ -34,6 +35,8 @@ separator_positions = [ 0.25, 0.5, 1, 1.33, 1.66];
 magnet_diameter = 0;  // .1
 // (Zack's design uses depth of 6)
 screw_depth = 0;
+center_magnet_diameter =0;
+center_magnet_thickness = 0;
 // Hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = true;
 //Only add attachments (magnets and screw) to box corners (prints faster).
@@ -96,7 +99,7 @@ cuty = false;
 help = false;
 
 module end_of_customizer_opts() {}
-
+/*<!!end gridfinity_basic_cup!!>*/
 gridfinity_basic_cup();
 
 module gridfinity_basic_cup(
@@ -114,6 +117,8 @@ module gridfinity_basic_cup(
   separator_positions=separator_positions,
   magnet_diameter=magnet_diameter,
   screw_depth=screw_depth,
+  center_magnet_diameter=center_magnet_diameter,
+  center_magnet_thickness=center_magnet_thickness,
   hole_overhang_remedy=hole_overhang_remedy,
   box_corner_attachments_only=box_corner_attachments_only,
   floor_thickness=floor_thickness,
@@ -158,6 +163,8 @@ module gridfinity_basic_cup(
       fingerslide_radius=fingerslide_radius,
       magnet_diameter=magnet_diameter,
       screw_depth=screw_depth,
+      center_magnet_diameter=center_magnet_diameter,
+      center_magnet_thickness=center_magnet_thickness,
       floor_thickness=floor_thickness,
       cavity_floor_radius=cavity_floor_radius,
       wall_thickness=wall_thickness,

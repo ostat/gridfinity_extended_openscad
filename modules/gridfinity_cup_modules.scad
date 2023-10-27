@@ -57,7 +57,7 @@ default_wallpattern_enabled=true;
 default_wallpattern_hexgrid = false;
 default_wallpattern_fill = "none"; //["none", "space", "crop"]
 default_wallpattern_walls=[1,0,0,0]; 
-default_wallpattern_hole_sides = 4;
+default_wallpattern_hole_sides = 6;
 default_wallpattern_hole_size = 5; //0.1
 default_wallpattern_hole_spacing = 2; //0.1
 default_help = false;
@@ -233,7 +233,10 @@ module irregular_cup(
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
   help) {
-
+  
+  //efficient floor does not support half pitch
+  efficient_floor = half_pitch ? false :efficient_floor;
+  
   translate(caluclatePosition(position,num_x,num_y))
   difference() {
     grid_block(
@@ -261,6 +264,7 @@ module irregular_cup(
         floor_thickness=floor_thickness, 
         wall_thickness=wall_thickness,
         efficient_floor=efficient_floor, 
+        half_pitch=half_pitch,
         separator_positions=separator_positions, 
         lip_style=lip_style, 
         flat_base=flat_base,
@@ -270,17 +274,40 @@ module irregular_cup(
       union(){
         fh = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
         cfr = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness);
-
         z = gridfinity_zpitch * num_z + gridfinity_lip_height - gridfinity_clearance;
-    
-        if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
-          //tapered_corner_size = tapered_corner_size == 0 ? gridfinity_zpitch*num_z/2 : tapered_corner_size;
-          tapered_corner_size  = tapered_corner_size < 0 
+        cutoutclearance = gridfinity_corner_radius/2;
+
+        tapered_setback = tapered_setback < 0 ? gridfinity_corner_radius/2 : tapered_setback;
+        tapered_corner_size  = tapered_corner_size < 0 
               ? z - fh 
               : tapered_corner_size == 0 ? z - fh -cfr
               : tapered_corner_size;
               
-          tapered_setback = tapered_setback < 0 ? gridfinity_corner_radius/2 : tapered_setback;
+        wallcutout_thickness = wall_thickness*2+max(wall_thickness*2,cfr);//wall_thickness*2 should be lip thickness
+        wallcutout_hgt = wallcutout_height < 0 
+            ? z - fh 
+            : wallcutout_height == 0 ? z - fh -cfr
+            : wallcutout_height;
+        wallcutout_front = [
+          [(num_x-1)*gridfinity_pitch/2, -gridfinity_pitch/2+wallcutout_thickness/2, z],
+          num_x*gridfinity_pitch/3,
+          [0,0,0]];
+        wallcutout_back = [
+          [(num_x-1)*gridfinity_pitch/2, (num_y-0.5)*gridfinity_pitch-wallcutout_thickness/2, z],
+          num_x*gridfinity_pitch/3,
+          [0,0,0]];
+        wallcutout_left = [[-gridfinity_pitch/2+wallcutout_thickness/2, (num_y-1)*gridfinity_pitch/2, z],
+          num_y*gridfinity_pitch/3,
+          [0,0,90]];
+        wallcutout_right = [
+          [(num_x-0.5)*gridfinity_pitch-wallcutout_thickness/2, (num_y-1)*gridfinity_pitch/2, z],
+          num_y*gridfinity_pitch/3,
+          [0,0,90]];
+        
+        wallcutout_locations = [wallcutout_front, wallcutout_back, wallcutout_left, wallcutout_right];
+        
+        if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
+          //tapered_corner_size = tapered_corner_size == 0 ? gridfinity_zpitch*num_z/2 : tapered_corner_size;
           translate([
             -gridfinity_pitch/2,
             -gridfinity_pitch/2+tapered_setback+gridfinity_clearance,
@@ -303,41 +330,17 @@ module irregular_cup(
         }
         
         if(wallcutout_enabled){
-          wallcutout_thickness = wall_thickness*2+max(wall_thickness*2,cfr);//wall_thickness*2 should be lip thickness
-         
-          wcheight = wallcutout_height < 0 
-              ? z - fh 
-              : wallcutout_height == 0 ? z - fh -cfr
-              : wallcutout_height;
-          //z = gridfinity_zpitch*num_z+gridfinity_lip_height-gridfinity_clearance;
-          front = [
-            [(num_x-1)*gridfinity_pitch/2, -gridfinity_pitch/2+wallcutout_thickness/2, z],
-            num_x*gridfinity_pitch/3,
-            [0,0,0]];
-          back = [
-            [(num_x-1)*gridfinity_pitch/2, (num_y-0.5)*gridfinity_pitch-wallcutout_thickness/2, z],
-            num_x*gridfinity_pitch/3,
-            [0,0,0]];
-          left = [[-gridfinity_pitch/2+wallcutout_thickness/2, (num_y-1)*gridfinity_pitch/2, z],
-            num_y*gridfinity_pitch/3,
-            [0,0,90]];
-          right = [
-            [(num_x-0.5)*gridfinity_pitch-wallcutout_thickness/2, (num_y-1)*gridfinity_pitch/2, z],
-            num_y*gridfinity_pitch/3,
-            [0,0,90]];
-          
-          locations = [front, back, left, right];
-          for(i = [0:1:len(locations)-1])
+
+          for(i = [0:1:len(wallcutout_locations)-1])
           {
             if(wallcutout_walls[i] > 0)
             {
-             translate(locations[i][0])
-              rotate(locations[i][2])
+              translate(wallcutout_locations[i][0])
+              rotate(wallcutout_locations[i][2])
               WallCutout(
-                lowerWidth=wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, locations[i][1]) : wallcutout_width,
+                lowerWidth=wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, wallcutout_locations[i][1]) : wallcutout_width,
                 wallAngle=wallcutout_angle,
-                //height=wallcutout_height <= 0 ? (num_z)*gridfinity_zpitch : wallcutout_height,
-                height=wcheight,
+                height=wallcutout_hgt,
                 thickness=wallcutout_thickness,
                 cornerRadius=wallcutout_corner_radius);
             }
@@ -375,25 +378,79 @@ module irregular_cup(
             [90,90,90]];
           
           locations = [front, back, left, right];
-          for(i = [0:1:len(locations)-1])
-          {
-            if(wallpattern_walls[i] > 0)
+          difference(){
+            for(i = [0:1:len(locations)-1])
             {
-              translate(locations[i][1])
-              rotate(locations[i][2])
-              render(){
-              GridItemHolder(
-                canvisSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
-                hexGrid = wallpattern_hexgrid,
-                customShape = false,
-                circleFn = wallpattern_hole_sides,
-                holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                holeHeight = wallpattern_thickness,
-                center=true,
-                fill=wallpattern_fill, //"none", "space", "crop"
-                help=help);
+              union(){
+              if(wallpattern_walls[i] > 0)
+              {
+                translate(locations[i][1])
+                rotate(locations[i][2])
+                render(){
+                GridItemHolder(
+                  canvisSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
+                  hexGrid = wallpattern_hexgrid,
+                  customShape = false,
+                  circleFn = wallpattern_hole_sides,
+                  holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                  holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                  holeHeight = wallpattern_thickness,
+                  center=true,
+                  fill=wallpattern_fill, //"none", "space", "crop"
+                  help=true);
+                  }
+              }
+              }
+            }
+          
+            //subtract dividers from wall pattern
+            if (len(separator_positions) > 0) {
+              for (i=[0:len(separator_positions)-1]) {
+                translate([gridfinity_pitch*(-0.5+separator_positions[i])-cutoutclearance, -gridfinity_pitch/2, fudgeFactor]) 
+                  cube([cutoutclearance*2, num_y*gridfinity_pitch, (num_z+1)*gridfinity_zpitch]);
+              }
+            }
+          
+            //Subtract cutout from wall pattern
+            if(wallcutout_enabled){
+              for(i = [0:1:len(wallcutout_locations)-1])
+              {
+                if(wallcutout_walls[i] > 0)
+                {
+                  translate(wallcutout_locations[i][0])
+                  rotate(wallcutout_locations[i][2])
+                  WallCutout(
+                    lowerWidth=(wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, wallcutout_locations[i][1]) : wallcutout_width)+cutoutclearance*2,
+                    wallAngle=wallcutout_angle,
+                    height=wallcutout_hgt+cutoutclearance,
+                    thickness=wallcutout_thickness,
+                    cornerRadius=wallcutout_corner_radius);
                 }
+              }
+            }
+          
+            //Subtract setback from wall pattern
+            if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
+              //tapered_corner_size = tapered_corner_size == 0 ? gridfinity_zpitch*num_z/2 : tapered_corner_size;
+              translate([
+                -gridfinity_pitch/2-cutoutclearance,
+                -gridfinity_pitch/2+tapered_setback+gridfinity_clearance+cutoutclearance,
+                gridfinity_zpitch*num_z+gridfinity_lip_height-gridfinity_clearance-cutoutclearance])
+              rotate([270,0,0])
+              union(){
+                if(tapered_corner == "rounded"){
+                  roundedCorner(
+                    radius = tapered_corner_size-cutoutclearance, 
+                    length=(num_x+1)*gridfinity_pitch, 
+                    height = tapered_corner_size);
+                }
+                else if(tapered_corner == "chamfered"){
+                  chamferedCorner(
+                    chamferLength = tapered_corner_size-cutoutclearance, 
+                    length=(num_x+1)*gridfinity_pitch, 
+                    height = tapered_corner_size);
+                }
+              }
             }
           }
         }
@@ -610,7 +667,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   
   if (efloor) {
     if (num_x < 1) {
-      #gridcopy(1, num_y) {
+      gridcopy(1, num_y) {
         tz(floor_thickness) intersection() {
           hull() cornercopy(seventeen-0.5) cylinder(r=1, h=5, $fn=32);
           translate([gridfinity_pitch*(-1+num_x), 0, 0]) hull() cornercopy(seventeen-0.5) cylinder(r=1, h=5, $fn=32);

@@ -195,14 +195,10 @@ module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
 }
 
 module pad_halfsize() {
-  render()  // render here to keep tree from blowing up
-  for (xi=[0:1]) for (yi=[0:1]) translate([xi*gridfinity_pitch/2, yi*gridfinity_pitch/2, 0])
-  intersection() {
-    pad_oversize();
-    translate([-gridfinity_pitch/2, 0, 0]) pad_oversize();
-    translate([0, -gridfinity_pitch/2, 0]) pad_oversize();
-    translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 0]) pad_oversize();
-  }
+  //render()  // render here to keep tree from blowing up
+  for (xi=[0:1]) for (yi=[0:1]) 
+  translate([xi*gridfinity_pitch/2, yi*gridfinity_pitch/2, 0])
+  pad_oversize(0.5,0.5);
 }
 
 // like a cylinder but produces a square solid instead of a round one
