@@ -148,7 +148,7 @@ module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
   // if num_x (or num_y) is less than 1 (or less than 0.5 if half_pitch is enabled) then round over the far side
   cut_far_x = (num_x < 1 && !half_pitch) || (num_x < 0.5);
   cut_far_y = (num_y < 1 && !half_pitch) || (num_y < 0.5);
-  echo("pad_grid", cut_far_x=cut_far_x, cut_far_y=cut_far_y);
+
   intersection() {
     union(){
       if (flat_base) {

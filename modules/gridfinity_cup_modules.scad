@@ -676,7 +676,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     translate([x, y, (floorht+7*num_z)/2])
     cylinder(d=3, h=7*num_z, $fn=24);
   }
-  echo(efloor=efloor,flat_base=flat_base,half_pitch=half_pitch);
+ 
   if (efloor) {
     if (num_x < 1) {
       gridcopy(1, num_y) {
