@@ -66,8 +66,6 @@ module GridItemHolder(
         fill == "crop" ? e[0]+2 : e[0],
         fill == "crop" ? e[1]+2 : e[1]];
         
-      echo(e=e, es=es, eFill=eFill);
-        
       /*Grid(4)Text($pos.xy,size=3);
       // Grid but with alternating row offset - hex or circle packing
       HexGrid()circle(d=$es.y);

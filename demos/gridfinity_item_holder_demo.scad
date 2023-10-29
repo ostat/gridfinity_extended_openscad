@@ -95,7 +95,7 @@ defaultDemoSetting =
     //wall_thickness, lip_style, chambers, irregular_subdivisions, separator_positions
     0.95, "normal", 1, false, [], 
     //magnet_diameter, screw_depth, icenter_magnet_diameter, icenter_magnet_thickness, hole_overhang_remedy, box_corner_attachments_only
-    0, 0, 0, 0, true, false, 
+    0, 0, 0, 0, 2, false, 
     //floor_thickness, cavity_floor_radius, efficient_floor, half_pitch, flat_base
     10, -1, false, false, false, 
     //fingerslide,fingerslide_radius,

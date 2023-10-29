@@ -71,7 +71,7 @@ defaultDemoSetting =
     //wall_thickness, lip_style, chambers, irregular_subdivisions, separator_positions
     0.95, "normal", 1, false, [], 
     //magnet_diameter, screw_depth, center_magnet_diameter, center_magnet_thickness, hole_overhang_remedy, box_corner_attachments_only
-    0, 0, 0, 0, 1, false, 
+    0, 0, 0, 0, 2, false, 
     //floor_thickness, cavity_floor_radius, efficient_floor, half_pitch, flat_base
     0.7, -1, false, false, false, 
     //fingerslide,fingerslide_radius,
@@ -256,9 +256,7 @@ scenarioDefaults = selectedScenario[0];
 animationStep = len(selectedScenario) >= round($t*(len(selectedScenario)-1)) ? selectedScenario[min(round($t*(len(selectedScenario)-1))+1,len(selectedScenario)-1)] : selectedScenario[1];  
 currentStepSettings = replace_Items(concat(scenarioDefaults[2],animationStep[2]), defaultDemoSetting);
 
-echo("🟧gridfinity_basic_cup",scenario = scenario, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1));
-echo(animationStep=animationStep);
-echo(currentStepSettings=currentStepSettings);
+echo("🟧gridfinity_basic_cup",scenario = scenario, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1), animationStep=animationStep, currentStepSettings=currentStepSettings);
 
 if(showtext)
 color("GhostWhite")
