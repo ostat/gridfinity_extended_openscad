@@ -1,2 +1,4 @@
 sandpit/
 demos/output/
+modules/*.json
+demos/*.json
