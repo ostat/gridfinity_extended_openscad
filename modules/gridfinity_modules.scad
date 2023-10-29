@@ -48,7 +48,7 @@ module grid_block(
   magnet_diameter=6.5, 
   screw_depth=6, 
   position = "default",
-  hole_overhang_remedy=false, 
+  hole_overhang_remedy=0, 
   half_pitch=false, 
   box_corner_attachments_only = false, 
   flat_base=false, 
@@ -71,7 +71,7 @@ module grid_block(
   emd = suppress_holes ? 0 : magnet_diameter; // effective magnet diameter after override
   esd = suppress_holes ? 0 : screw_depth;     // effective screw depth after override
   
-  overhang_fix = hole_overhang_remedy && emd > 0 && esd > 0;
+  overhang_fix = hole_overhang_remedy > 0 && emd > 0 && esd > 0 ? hole_overhang_remedy : 0;
   overhang_fix_depth = 0.3;  // assume this is enough
   
   totalht=gridfinity_zpitch*num_z+3.75;
@@ -123,7 +123,7 @@ module grid_block(
         outerHoleDepth = magnet_thickness+0.1,
         innerHoleRadius = screw_hole_diam/2,
         innerHoleDepth = esd+0.1,
-        overhangBridgeCount = overhang_fix ? 1 :0,
+        overhangBridgeCount = overhang_fix,
         overhangBridgeThickness = overhang_fix_depth
       );
   }
@@ -148,48 +148,30 @@ module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
   // if num_x (or num_y) is less than 1 (or less than 0.5 if half_pitch is enabled) then round over the far side
   cut_far_x = (num_x < 1 && !half_pitch) || (num_x < 0.5);
   cut_far_y = (num_y < 1 && !half_pitch) || (num_y < 0.5);
-  
-  if (half_pitch) {
-    gridcopy(ceil(num_x), ceil(num_y)) intersection() {
-      pad_halfsize();
-      if (cut_far_x) {
-        translate([gridfinity_pitch*(-0.5+num_x), 0, 0]) pad_halfsize();
+  echo("pad_grid", cut_far_x=cut_far_x, cut_far_y=cut_far_y);
+  intersection() {
+    union(){
+      if (flat_base) {
+        pad_oversize(ceil(num_x), ceil(num_y));
       }
-      if (cut_far_y) {
-        translate([0, gridfinity_pitch*(-0.5+num_y), 0]) pad_halfsize();
+      else if (half_pitch) {
+        gridcopy(ceil(num_x)*2, ceil(num_y)*2, gridfinity_pitch)// intersection() {
+          pad_halfsize();
       }
-      if (cut_far_x && cut_far_y) {
-        // without this the far corner would be rectangular
-        translate([gridfinity_pitch*(-0.5+num_x), gridfinity_pitch*(-0.5+num_y), 0]) pad_halfsize();
+      else {
+        gridcopy(ceil(num_x), ceil(num_y)) 
+          pad_oversize();
       }
     }
-  }
-  else if (flat_base) {
-      pad_oversize(ceil(num_x), ceil(num_y));
-      if (cut_far_x) {
-        translate([gridfinity_pitch*(-1+num_x), 0, 0]) pad_oversize();
-      }
-      if (cut_far_y) {
-        translate([0, gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
-      }
-      if (cut_far_x && cut_far_y) {
-        // without this the far corner would be rectangular
-        translate([gridfinity_pitch*(-1+num_x), gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
-      }
-  }
-  else {
-    gridcopy(ceil(num_x), ceil(num_y)) intersection() {
-      pad_oversize();
-      if (cut_far_x) {
-        translate([gridfinity_pitch*(-1+num_x), 0, 0]) pad_oversize();
-      }
-      if (cut_far_y) {
-        translate([0, gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
-      }
-      if (cut_far_x && cut_far_y) {
-        // without this the far corner would be rectangular
-        translate([gridfinity_pitch*(-1+num_x), gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
-      }
+    if (cut_far_x) {
+      translate([gridfinity_pitch*(-1+num_x), 0, 0]) pad_oversize();
+    }
+    if (cut_far_y) {
+      translate([0, gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
+    }
+    if (cut_far_x && cut_far_y) {
+      // without this the far corner would be rectangular
+      translate([gridfinity_pitch*(-1+num_x), gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
     }
   }
 }
@@ -261,7 +243,7 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
 }
 
 // similar to cornercopy, can only copy to box corners
-module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false) {
+module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gridfinity_pitch) {
   for (xi=[1:num_x]) for (yi=[1:num_y]) 
     for (xx=[-1, 1]) for (yy=[-1, 1]) 
       if(!onlyBoxCorners || 
@@ -269,18 +251,18 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false) {
         (xi == num_x && yi == num_y && xx == 1 && yy == 1) ||
         (xi == 1 && yi == num_y && xx == -1 && yy == 1) ||
         (xi == num_x && yi == 1 && xx == 1 && yy == -1))  
-        translate([gridfinity_pitch*(xi-1), gridfinity_pitch*(yi-1), 0]) 
+        translate([pitch*(xi-1), pitch*(yi-1), 0]) 
         translate([xx*r, yy*r, 0]) children();
 }
 
 // similar to quadtranslate but expands to extremities of a block
-module cornercopy(r, num_x=1, num_y=1) {
+module cornercopy(r, num_x=1, num_y=1,pitch=gridfinity_pitch) {
   for (xx=[0, 1]) 
     for (yy=[0, 1]) 
     {
       $idx=[xx,yy,0];
-      xpos = xx == 0 ? -r : gridfinity_pitch*(num_x-1)+r;
-      ypos = yy == 0 ? -r : gridfinity_pitch*(num_y-1)+r;
+      xpos = xx == 0 ? -r : pitch*(num_x-1)+r;
+      ypos = yy == 0 ? -r : pitch*(num_y-1)+r;
       translate([xpos, ypos, 0]) 
         children();
     }
@@ -288,6 +270,10 @@ module cornercopy(r, num_x=1, num_y=1) {
 
 
 // make repeated copies of something(s) at the gridfinity spacing of 42mm
-module gridcopy(num_x, num_y) {
-  for (xi=[1:num_x]) for (yi=[1:num_y]) translate([gridfinity_pitch*(xi-1), gridfinity_pitch*(yi-1), 0]) children();
+module gridcopy(num_x, num_y, pitch=gridfinity_pitch) {
+  for (xi=[1:num_x]) 
+    for (yi=[1:num_y]) 
+      translate([pitch*(xi-1), 
+        pitch*(yi-1), 0]) 
+        children();
 }

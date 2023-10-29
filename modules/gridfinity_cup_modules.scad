@@ -1,9 +1,9 @@
 include <gridfinity_modules.scad>
 include <modules_item_holder.scad>
 
-default_num_x=2;
-default_num_y=1;
-default_num_z=3;
+default_num_x=2; //0.1
+default_num_y=1; //0.1
+default_num_z=3; //0.1
 default_position="default"; //["default","center","zero"]
 default_filled_in = "off"; //["off","on","notstackable"] 
 // X dimension subdivisions
@@ -28,8 +28,8 @@ default_floor_thickness = 1.2;
 // Thickness of outer walls (Zack's design is 0.95 mm)
 default_wall_thickness = 0.95;
 default_cavity_floor_radius = -1;
-// Use rectangular inset for better bridging/printability
-default_hole_overhang_remedy = false;
+// Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
+default_hole_overhang_remedy = 2;
 // Save material with thinner floor (only if no magnets, screws, or finger-slide used)
 default_efficient_floor = false;
 // Half-pitch base pads for offset stacking
@@ -61,47 +61,61 @@ default_wallpattern_hole_sides = 6;
 default_wallpattern_hole_size = 5; //0.1
 default_wallpattern_hole_spacing = 2; //0.1
 default_help = false;
+/* [debug] */
+cutx = false;
+cuty = false;
 
-basic_cup(
-  num_x=default_num_x,
-  num_y=default_num_y,
-  num_z=default_num_z,
-  position=default_position,
-  filled_in = default_filled_in,
-  chambers=default_chambers,
-  withLabel=default_withLabel,
-  labelWidth=default_labelWidth,
-  magnet_diameter=default_magnet_diameter,
-  screw_depth=default_screw_depth,
-  center_magnet_diameter = default_center_magnet_diameter,
-  center_magnet_thickness = default_center_magnet_thickness,
-  floor_thickness=default_floor_thickness,
-  cavity_floor_radius=default_cavity_floor_radius,
-  wall_thickness=default_wall_thickness,
-  hole_overhang_remedy=default_hole_overhang_remedy,
-  efficient_floor=default_efficient_floor,
-  half_pitch=default_half_pitch,
-  lip_style=default_lip_style,
-  box_corner_attachments_only=default_box_corner_attachments_only,
-  flat_base=default_flat_base,
-  tapered_corner=default_tapered_corner,
-  tapered_corner_size=default_tapered_corner_size,
-  tapered_setback=default_tapered_setback,
-  wallpattern_enabled=default_wallpattern_enabled,
-  wallpattern_hexgrid=default_wallpattern_hexgrid,
-  wallpattern_fill=default_wallpattern_fill,
-  wallpattern_walls=default_wallpattern_walls, 
-  wallpattern_hole_sides=default_wallpattern_hole_sides,
-  wallpattern_hole_size=default_wallpattern_hole_size,
-  wallpattern_hole_spacing=default_wallpattern_hole_spacing,
-  wallcutout_enabled=default_wallcutout_enabled,
-  wallcutout_walls=default_wallcutout_walls,
-  wallcutout_width=default_wallcutout_width,
-  wallcutout_angle=default_wallcutout_angle,
-  wallcutout_height=default_wallcutout_height,
-  wallcutout_corner_radius=default_wallcutout_corner_radius,
-  help = default_help
-);
+difference(){
+  basic_cup(
+    num_x=default_num_x,
+    num_y=default_num_y,
+    num_z=default_num_z,
+    position=default_position,
+    filled_in = default_filled_in,
+    chambers=default_chambers,
+    withLabel=default_withLabel,
+    labelWidth=default_labelWidth,
+    magnet_diameter=default_magnet_diameter,
+    screw_depth=default_screw_depth,
+    center_magnet_diameter = default_center_magnet_diameter,
+    center_magnet_thickness = default_center_magnet_thickness,
+    floor_thickness=default_floor_thickness,
+    cavity_floor_radius=default_cavity_floor_radius,
+    wall_thickness=default_wall_thickness,
+    hole_overhang_remedy=default_hole_overhang_remedy,
+    efficient_floor=default_efficient_floor,
+    half_pitch=default_half_pitch,
+    lip_style=default_lip_style,
+    box_corner_attachments_only=default_box_corner_attachments_only,
+    flat_base=default_flat_base,
+    tapered_corner=default_tapered_corner,
+    tapered_corner_size=default_tapered_corner_size,
+    tapered_setback=default_tapered_setback,
+    wallpattern_enabled=default_wallpattern_enabled,
+    wallpattern_hexgrid=default_wallpattern_hexgrid,
+    wallpattern_fill=default_wallpattern_fill,
+    wallpattern_walls=default_wallpattern_walls, 
+    wallpattern_hole_sides=default_wallpattern_hole_sides,
+    wallpattern_hole_size=default_wallpattern_hole_size,
+    wallpattern_hole_spacing=default_wallpattern_hole_spacing,
+    wallcutout_enabled=default_wallcutout_enabled,
+    wallcutout_walls=default_wallcutout_walls,
+    wallcutout_width=default_wallcutout_width,
+    wallcutout_angle=default_wallcutout_angle,
+    wallcutout_height=default_wallcutout_height,
+    wallcutout_corner_radius=default_wallcutout_corner_radius,
+    help = default_help
+  );
+
+  if(cutx && $preview){
+    translate([-gridfinity_pitch,-gridfinity_pitch,-fudgeFactor])
+      cube([(default_num_x+1)*gridfinity_pitch,gridfinity_pitch,(default_num_z+1)*gridfinity_zpitch]);
+  }
+  if(cuty && $preview){
+    translate([-gridfinity_pitch*0.75,-gridfinity_pitch,-fudgeFactor])
+      cube([gridfinity_pitch,(default_num_y+1)*gridfinity_pitch,(default_num_z+1)*gridfinity_zpitch]);
+  } 
+}
 
 // It's recommended that all parameters other than x, y, z size should be specified by keyword 
 // and not by position.  The number of parameters makes positional parameters error prone, and
@@ -233,10 +247,6 @@ module irregular_cup(
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
   help) {
-  
-  //efficient floor does not support half pitch
-  efficient_floor = half_pitch ? false :efficient_floor;
-  
   translate(caluclatePosition(position,num_x,num_y))
   difference() {
     grid_block(
@@ -503,7 +513,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
     labelWidth=default_labelWidth, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
-    efficient_floor=default_efficient_floor, separator_positions=[], lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius) {
+    efficient_floor=default_efficient_floor, half_pitch=default_half_pitch, separator_positions=[], lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius) {
     
 // height of partition between cells
   // cavity with removed segments so that we leave dividing walls behind
@@ -526,7 +536,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
     render()
     basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-    efficient_floor=efficient_floor, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius);
+    efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius);
     
     color(color_divider)
     if (len(separator_positions) > 0) {
@@ -572,14 +582,13 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
 module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
-    efficient_floor=default_efficient_floor, 
+    efficient_floor=default_efficient_floor, half_pitch=default_half_pitch, 
     lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius) {
   eps = 0.1;
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
   // arount the top inside edge.
   q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
-  cavity_floor_radius = calcualteCavityFloorRadius(cavity_floor_radius,wall_thickness);
   q2 = 0.1;
   inner_lip_ht = 1.2;
   part_ht = 5;  // height of partition between cells
@@ -589,6 +598,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   mag_ht = magnet_diameter > 0 ? 2.4: 0;
   m3_ht = screw_depth;
   efloor = efficient_floor && magnet_diameter == 0 && screw_depth == 0 && fingerslide == "none";
+  cavity_floor_radius =  efloor ? 0 : calcualteCavityFloorRadius(cavity_floor_radius,wall_thickness);
   seventeen = gridfinity_pitch/2-4;
   
   floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
@@ -624,7 +634,9 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
         tz(floorht)
           roundedCylinder(h=max(fudgeFactor,cavity_floor_radius*2),r=(2.3+2*q)/2,roundedr1=cavity_floor_radius,roundedr2=0, $fn=32)
         
-        tz(2.3/2+q+floorht) mirror([0, 0, 1]) cylinder(d1=2.3+2*q, d2=0, h=1.15+q, $fn=32);
+        tz(2.3/2+q+floorht) 
+          mirror([0, 0, 1]) 
+          cylinder(d1=2.3+2*q, d2=0, h=1.15+q, $fn=32);
       }
     }
     
@@ -664,7 +676,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     translate([x, y, (floorht+7*num_z)/2])
     cylinder(d=3, h=7*num_z, $fn=24);
   }
-  
+  echo(efloor=efloor,flat_base=flat_base,half_pitch=half_pitch);
   if (efloor) {
     if (num_x < 1) {
       gridcopy(1, num_y) {
@@ -685,20 +697,61 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
           }
         }
       }
+    } else if (flat_base) {
+      gridcopy(1, 1) 
+        EfficientFloor(num_x, num_y,floor_thickness, q);
+    } else if (half_pitch) {
+      gridcopy(num_x*2, num_y*2, gridfinity_pitch/2) 
+      EfficientFloor(0.5, 0.5,floor_thickness, q);
     } else {
+      gridcopy(num_x, num_y) 
+      EfficientFloor(1, 1, floor_thickness, q);
+    }
+    /*
+    else {
       _gridx = flat_base ? 1 : num_x;
       _gridCornerx = flat_base ? num_x : 1;
       _gridy = flat_base ? 1 : num_y;
       _gridCornery = flat_base ? num_y : 1;
       
+      gridcopy(_gridx, _gridy) 
+      EfficientFloor(_gridCornerx, _gridCornery,floor_thickness, q);
+      
       // establishes floor
-      gridcopy(_gridx, _gridy) hull() tz(floor_thickness) gridcopycorners(_gridCornerx, _gridCornery, seventeen-0.5, flat_base) cylinder(r=1, h=5, $fn=32);
+      gridcopy(_gridx, _gridy) 
+        hull() 
+        tz(floor_thickness) 
+        gridcopycorners(_gridCornerx, _gridCornery, seventeen-0.5, flat_base) 
+        cylinder(r=1, h=5, $fn=32);
    
       // tapered top portion
       gridcopy(_gridx, _gridy) hull() {
         tz(3) gridcopycorners(_gridCornerx, _gridCornery, seventeen-0.5, flat_base) cylinder(r=1, h=1, $fn=32);
         tz(5-(+2.5-1.15-q)) gridcopycorners(_gridCornerx, _gridCornery, seventeen, flat_base) cylinder(r=1.15+q, h=4, $fn=32);
       }
+    }*/
+  }
+}
+
+module EfficientFloor(num_x=1, num_y=1, floor_thickness, margins=0){
+  seventeen = gridfinity_pitch/2-4;
+  
+  union(){
+    // establishes floor
+    hull() 
+      tz(floor_thickness) 
+      cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
+      cylinder(r=1, h=5, $fn=32);
+
+    // tapered top portion
+    hull() {
+      tz(3) 
+      cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
+      cylinder(r=1, h=1, $fn=32);
+      
+      tz(5-(+2.5-1.15-margins)) 
+      cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+      cylinder(r=1.15+margins, h=4, $fn=32);
     }
   }
 }

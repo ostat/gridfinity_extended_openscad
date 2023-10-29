@@ -5,7 +5,7 @@ include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
-scenario = "basiccup"; //["demos","basiccup","position","chambers","label", "halfpitch", "lip_style","fingerslide","basecorner","wallpattern","wallcutout","taperedcorner","floorthickness","filledin","efficient_floor","box_corner_attachments_only","flatbase"]
+scenario = "demo"; //["demo","basiccup","position","chambers","label", "halfpitch", "lip_style","fingerslide","basecorner","sequentialbridging","wallpattern","wallcutout","taperedcorner","floorthickness","filledin","efficient_floor","box_corner_attachments_only","center_magnet","flatbase"]
 height = 5;
 showtext = true;
 
@@ -29,39 +29,40 @@ iirregular_subdivisions=10;
 iseparator_positions=11;
 imagnet_diameter=12;
 iscrew_depth=13;
-ihole_overhang_remedy=14;
-ibox_corner_attachments_only=15;
-ifloor_thickness=16;
-icavity_floor_radius=17;
-iefficient_floor=18;
-ihalf_pitch=19;
-iflat_base=20;
-ifingerslide=21;
-ifingerslide_radius=22;
-itapered_corner=23;
-itapered_corner_size=24;
-itapered_setback=25;
-iwallcutout_enabled=26;
-iwallcutout_walls=27;
-iwallcutout_width=28;
-iwallcutout_angle=29;
-iwallcutout_height=30;
-iwallcutout_corner_radius=31;
-iwallpattern_enabled=32;
-iwallpattern_hexgrid=33;
-iwallpattern_walls=34;
-iwallpattern_fill=35;
-iwallpattern_hole_sides=36;
-iwallpattern_hole_size=37;
-iwallpattern_hole_spacing=38;
-icutx=39;
-icuty=40;
+icenter_magnet_diameter=14;
+icenter_magnet_thickness=15;
+ihole_overhang_remedy=16;
+ibox_corner_attachments_only=17;
+ifloor_thickness=18;
+icavity_floor_radius=19;
+iefficient_floor=20;
+ihalf_pitch=21;
+iflat_base=22;
+ifingerslide=23;
+ifingerslide_radius=24;
+itapered_corner=25;
+itapered_corner_size=26;
+itapered_setback=27;
+iwallcutout_enabled=28;
+iwallcutout_walls=29;
+iwallcutout_width=30;
+iwallcutout_angle=31;
+iwallcutout_height=32;
+iwallcutout_corner_radius=33;
+iwallpattern_enabled=34;
+iwallpattern_hexgrid=35;
+iwallpattern_walls=36;
+iwallpattern_fill=37;
+iwallpattern_hole_sides=38;
+iwallpattern_hole_size=39;
+iwallpattern_hole_spacing=40;
+icutx=41;
+icuty=42;
 
 $vpr = setViewPort ? [60,0,320] : $vpr;
-//$vpr = [240,0,40];
 $vpt = setViewPort ? [32,13,16] : $vpt; //shows translation (i.e. won't be affected by rotate and zoom)
 $vpf = setViewPort ? 25 : $vpf; //shows the FOV (Field of View) of the view [Note: Requires version 2021.01]
-$vpd = setViewPort ? 300 : $vpd;//shows the camera distance [Note: Requires version 2015.03]
+$vpd = setViewPort ? 280 : $vpd;//shows the camera distance [Note: Requires version 2015.03]
 
 //Basic cup default settings for demo
 defaultDemoSetting = 
@@ -69,8 +70,8 @@ defaultDemoSetting =
     [3,2,height,"default","off","disabled",1.5,
     //wall_thickness, lip_style, chambers, irregular_subdivisions, separator_positions
     0.95, "normal", 1, false, [], 
-    //magnet_diameter, screw_depth, hole_overhang_remedy, box_corner_attachments_only
-    0, 0, true, false, 
+    //magnet_diameter, screw_depth, center_magnet_diameter, center_magnet_thickness, hole_overhang_remedy, box_corner_attachments_only
+    0, 0, 0, 0, 1, false, 
     //floor_thickness, cavity_floor_radius, efficient_floor, half_pitch, flat_base
     0.7, -1, false, false, false, 
     //fingerslide,fingerslide_radius,
@@ -84,26 +85,32 @@ defaultDemoSetting =
     //cutx,cuty
     false, false];
 selectedScenario = 
-  scenario == "basiccup" ? [["",1,[]],
-      ["basiccup",false, []]]
- 
-   : scenario == "basiccupdemo" ? [["Bin Height",16,[]],
-      ["basiccup",false, []],
-      ["multi chamber",false, [[ichambers, 3]]],
-      ["multi chamber",false, [[ichambers, 6]]],
-      ["efficient floor",false, [[iefficient_floor,true]]],
-      ["half pitch",false, [[ihalf_pitch, true], [iefficient_floor,false]]],
-      ["half pitch with efficient floor",false, [[ihalf_pitch, true], [iefficient_floor,true]]],
-      ["label full",false, [[ilabel, "center"],[ilabel_width, 3],[ichambers, 0]]],
-      ["label left",false, [[ilabel, "left"],[ilabel_width, 1.5],[ichambers, 0]]],
-      ["label right",false, [[ilabel, "right"],[ilabel_width, 1.5],[ichambers, 0]]],
-      ["label center",false, [[ilabel, "center"],[ilabel_width, 1.5],[ichambers, 0]]],
-      ["label left",false, [[ilabel, "left"],[ilabel_width, 1.5],[ichambers, 3]]],
-      ["label right",false, [[ilabel, "right"],[ilabel_width, 1.5],[ichambers, 3]]],
-      ["label center",false, [[ilabel, "center"],[ilabel_width, 1.5],[ichambers, 3]]],
-      ["label left chamber",false, [[ilabel, "leftchamber"],[ilabel_width, 0.5],[ichambers, 3]]],
-      ["label right chamber",false, [[ilabel, "rightchamber"],[ilabel_width, 0.5],[ichambers, 3]]],
-      ["label center chamber",false, [[ilabel, "centerchamber"],[ilabel_width, 0.5],[ichambers, 3]]]]
+  scenario == "demo" ? [["Basic Cup",19,[]],
+      ["Simple",false, []],
+      ["Multi Chamber",false, [[ichambers, 3]]],
+      ["Multi Chamber",false, [[ichambers, 6]]],
+      ["Efficient Floor",false, [[iefficient_floor,true]]],
+      ["Half Pitch",false, [[ihalf_pitch, true], [iefficient_floor,false]]],
+      ["Half Pitch with Efficient Floor",false, [[ihalf_pitch, true], [iefficient_floor,true]]],
+      ["Label Full",false, [[ilabel, "center"],[ilabel_width, 3],[ichambers, 0]]],
+      ["Label Left",false, [[ilabel, "left"],[ilabel_width, 1.5],[ichambers, 0]]],
+      ["Label Right",false, [[ilabel, "right"],[ilabel_width, 1.5],[ichambers, 0]]],
+      ["Label Center",false, [[ilabel, "center"],[ilabel_width, 1.5],[ichambers, 0]]],
+      ["Label Left",false, [[ilabel, "left"],[ilabel_width, 1.5],[ichambers, 3]]],
+      ["Label Right",false, [[ilabel, "right"],[ilabel_width, 1.5],[ichambers, 3]]],
+      ["Label Center",false, [[ilabel, "center"],[ilabel_width, 1.5],[ichambers, 3]]],
+      ["Label Left Chamber",false, [[ilabel, "leftchamber"],[ilabel_width, 0.5],[ichambers, 3]]],
+      ["Label Right Chamber",false, [[ilabel, "rightchamber"],[ilabel_width, 0.5],[ichambers, 3]]],
+      ["Label Center Chamber",false, [[ilabel, "centerchamber"],[ilabel_width, 0.5],[ichambers, 3]]], 
+      ["Demo 1",false, [[iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],[ilabel, "center"],[ilabel_width, 1.5]]],
+      ["Demo 2",false, [[iirregular_subdivisions, true], [iseparator_positions, [0.25, 0.5, 1, 2]],
+      [itapered_corner, "rounded"],[itapered_corner_size,30],[itapered_setback,15]]],
+      ["Demo 3",false, [[ifloor_thickness, 10], [icavity_floor_radius, 0],
+          [iwallpattern_enabled,true],[iwallpattern_walls,[0,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
+          [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]
+          
+  : scenario == "basiccup" ? [["Basic Cup",1,[]],
+      ["simple",false, []]]
       
   : scenario == "position" ? [["",3,[]],
       ["default",false, [[iposition, "default"]]],
@@ -132,7 +139,7 @@ selectedScenario =
       ["1mm",false, [[icavity_floor_radius, 1]]],
       ["2mm",false, [[icavity_floor_radius, 2]]]]
       
-   : scenario == "filledin" ? [["Filled in",3,[[icuty, true]]],
+   : scenario == "filledin" ? [["Filled In",3,[[icuty, true]]],
       ["on",false, [[ifilled_in, "on"]]],
       ["on, stackable false",false, [[ifilled_in, "notstackable"]]],
       ["off",false, [[ifilled_in, "off"]]]]
@@ -180,6 +187,12 @@ selectedScenario =
   : scenario == "box_corner_attachments_only" ? [["Corner Attachments only",2,[[imagnet_diameter,6.5],[iscrew_depth,6]]],
       ["enabled",true, [[ibox_corner_attachments_only,true]]],
       ["disabled",true, [[ibox_corner_attachments_only,false]]]]
+
+  : scenario == "sequentialbridging" ? [["Sequential Bridging",2,[[imagnet_diameter,6.5],[iscrew_depth,6]]],
+      ["1",true, [[ihole_overhang_remedy,1]]],
+      ["2",true, [[ihole_overhang_remedy,2]]],
+      ["3",true, [[ihole_overhang_remedy,3]]],
+      ["disabled",true, [[ihole_overhang_remedy,0]]]]
       
   : scenario == "halfpitch" ? [["Half Pitch",6,[[icuty, true]]],
       ["enabled",false, [[ihalf_pitch, true], [iefficient_floor,false]]],
@@ -189,6 +202,13 @@ selectedScenario =
       ["enabled with efficient floor",true, [[ihalf_pitch, true], [iefficient_floor,true]]],
       ["disabled",true, [[ihalf_pitch, false], [iefficient_floor,false]]]]
       
+  : scenario == "center_magnet" ? [["Center Magnet",5,[]],
+     ["6mm x 2.4mm",true, [[icenter_magnet_diameter, 6], [icenter_magnet_thickness, 2.4]]],
+     ["10mm x 5mm",true, [[icenter_magnet_diameter, 10], [icenter_magnet_thickness, 5]]],
+     ["15mm x 5mm",true, [[icenter_magnet_diameter, 15], [icenter_magnet_thickness, 5]]],
+     ["20mm x 5mm",true, [[icenter_magnet_diameter, 20], [icenter_magnet_thickness, 5]]],
+     ["off",true, []]]
+     
    : scenario == "wallcutout" ? [["Wall Cutout",11,[[iwallcutout_enabled, true],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,0],[iwallcutout_corner_radius,5]]],
       ["front",false, [[iwallcutout_walls,[1,0,0,0]]]],
       ["back",false, [[iwallcutout_walls,[0,1,0,0]]]],
@@ -230,32 +250,25 @@ selectedScenario =
       ["rounded setback 15",false, [[itapered_corner, "rounded"],[itapered_corner_size,20],[itapered_setback,15]]],
       ["rounded to floor",false, [[itapered_corner, "rounded"],[itapered_corner_size,-1],[itapered_setback,15]]],
       ["rounded to raised floor",false, [[itapered_corner, "rounded"],[itapered_corner_size,-1],[itapered_setback,15],[ifloor_thickness, 10]]]]
-      
-  : scenario == "demos" ? [["Gridfinity Extended",3,[]],
-      ["Demo 1",false, [[iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],[ilabel, "center"],[ilabel_width, 1.5]]],
-      ["Demo 2",false, [[iirregular_subdivisions, true], [iseparator_positions, [0.25, 0.5, 1, 2]],
-      [itapered_corner, "rounded"],[itapered_corner_size,30],[itapered_setback,15]]],
-      ["Demo 3",false, [[ifloor_thickness, 10], [icavity_floor_radius, 0],
-          [iwallpattern_enabled,true],[iwallpattern_walls,[0,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
-          [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]
    : [];
 
 scenarioDefaults = selectedScenario[0];
 animationStep = len(selectedScenario) >= round($t*(len(selectedScenario)-1)) ? selectedScenario[min(round($t*(len(selectedScenario)-1))+1,len(selectedScenario)-1)] : selectedScenario[1];  
 currentStepSettings = replace_Items(concat(scenarioDefaults[2],animationStep[2]), defaultDemoSetting);
 
-echo(scenario = scenario, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1));
+echo("🟧gridfinity_basic_cup",scenario = scenario, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1));
 echo(animationStep=animationStep);
 echo(currentStepSettings=currentStepSettings);
 
 if(showtext)
 color("GhostWhite")
-translate([-5,-45,-5])
+translate($vpt)
 rotate($vpr)
+translate([0,-45,60])
  linear_extrude(height = 0.1)
- text(str(scenarioDefaults[0], " ", animationStep[0]), size=5,halign="center");
-
-//translate(animation[1] ? [0,gridfinity_pitch,0] : [0,0,0])
+ text(str(scenarioDefaults[0], " - ", animationStep[0]), size=5,halign="center");
+ 
+if(scenarioDefaults[0] != "unknown scenario")
 rotate(animationStep[1] ? [180,0,0] : [0,0,0]) 
 translate(animationStep[1] ? [0,-gridfinity_pitch,-gridfinity_pitch] : [0,0,0])
 gridfinity_basic_cup(
@@ -273,6 +286,8 @@ gridfinity_basic_cup(
   separator_positions=currentStepSettings[iseparator_positions],
   magnet_diameter=currentStepSettings[imagnet_diameter],
   screw_depth=currentStepSettings[iscrew_depth],
+  center_magnet_diameter=currentStepSettings[icenter_magnet_diameter],
+  center_magnet_thickness=currentStepSettings[icenter_magnet_thickness],
   hole_overhang_remedy=currentStepSettings[ihole_overhang_remedy],
   box_corner_attachments_only=currentStepSettings[ibox_corner_attachments_only],
   floor_thickness=currentStepSettings[ifloor_thickness],

@@ -1,5 +1,4 @@
 // String functions found here https://github.com/thehans/funcutils/blob/master/string.scad
-// 
 join = function (l,delimiter="") 
   let(s = len(l), d = delimiter,
       jb = function (b,e) let(s = e-b, m = floor(b+s/2)) // join binary
