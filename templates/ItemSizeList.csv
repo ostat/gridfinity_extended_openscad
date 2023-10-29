@@ -1,0 +1,104 @@
+type,code,shape,width,thickness,height,depthneeded,description,source
+battery,aaaa,round,8.3,0,42.5,10.625,AAAA cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,aaa,round,10.5,0,44.5,11.125,AAA cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,aa,round,14.5,0,50.5,12.625,AA cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,c,round,26.2,0,50,12.5,C cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,d,round,34.2,0,61.5,15.375,d cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,7540,round,7.5,0,40,10,7540 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,8570,round,8.5,0,70,17.5,8570 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,10180,round,10,0,18,4.5,10180 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,10280,round,10,0,28,7,10280 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,10440,round,10,0,44,11,10440 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,10850,round,10,0,85,21.25,10850 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,13400,round,13,0,40,10,13400 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,14250,round,14,0,25,6.25,14250 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,14300,round,14,0,30,7.5,14300 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,14430,round,14,0,43,10.75,14430 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,14500,round,14,0,53,13.25,14500 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,14650,round,14,0,65,16.25,14650 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,15270,round,15,0,27,6.75,15270 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,16340,round,16,0,34,8.5,16340 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,16650,round,16,0,65,16.25,16650 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,17500,round,17,0,50,12.5,17500 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,17650,round,17,0,65,16.25,17650 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,17670,round,17,0,67,16.75,17670 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,18350,round,18,0,35,8.75,18350 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,18490,round,18,0,49,12.25,18490 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,18500,round,18,0,50,12.5,18500 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,18650,round,18,0,65,16.25,18650 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,20700,round,20,0,70,17.5,20700 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,21700,round,21,0,70,17.5,21700 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,25500,round,25,0,50,12.5,25500 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,26500,round,26,0,50,12.5,26500 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,26650,round,26,0,65,16.25,26650 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,26700,round,26,0,70,17.5,26700 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,26800,round,26,0,80,20,26800 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,32600,round,32,0,60,15,32600 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,32650,round,32,0,67.7,16.925,32650 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,32700,round,32,0,70,17.5,32700 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,38120,round,38,0,120,30,38120 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,38140,round,38,0,140,35,38140 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,40152,round,40,0,152,38,40152 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+battery,4680,round,46,0,80,20,4680 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+tool,4hexshank,hex,4,0,20,5,4mm Hex Shank,
+tool,1/4hexshank,hex,6.35,0,15,8,1/4 Hex Shank,
+tool,1/4hexshanklong,hex,6.35,0,40,15,1/4 Hex Long Shank,
+tool,5/16hexshank,hex,7.94,0,0,7,5/16 Hex Shank,
+tool,3/8hexshank,hex,9.52,0,0,10,3/8 Hex Shank,
+card,compactflashi,square,43,3.3,36,9,"CompactFlash, Type I",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,compactflashii,square,43,5,36,9,"CompactFlash, Type II",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,smartmedia,square,37,0.76,45,11.25,SmartMedia,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,mmc,square,24,1.4,32,8,"MMC, MMCplus",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,mmcmobile,square,24,1.4,18,4.5,"RS-MMC, MMCmobile",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,mmcmicro,square,14,1.1,12,3,MMCmicro,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,sd,square,24,2.1,32,18,"SD, SDHC, SDXC, SDIO, MicroP2",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,minisd,square,20,1.4,21.5,10,"miniSD, miniSDHC, miniSDIO",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,microsd,square,11,1,15,3.75,"microSD, microSDHC, microSDXC",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,memorystickstandard,square,21.5,2.8,50,12.5,"Memory Stick Standard, PRO",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,memorystickduo,square,20,1.6,31,7.75,"Memory Stick Duo, PRO Duo, PRO-HG, XC",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,memorystickmicro,square,12.5,1.2,15,3.75,"Memory Stick Micro (M2), XC",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,nano,square,12.3,0.7,8.8,2.2,Nano Memory,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,psvita,square,15,1.6,12.5,3.125,PS Vita Memory Card,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,xqd,square,38.5,3.8,29.8,7.45,XQD card,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,xD,square,25,1.78,20,5,xD,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,USB A,square,12,4.5,13,12.8,USB A,
+card,USB C,square,8.5,4,0,10,USB C,
+cartridge,atari800,square,68,21,77,19.25,Atari 800,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,atari2600,square,81,19,87,21.75,Atari 2600/7800/Colecovision,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,atari5200,square,104,20,112,28,Atari 5200,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,atari7800,square,81,19,87,21.75,Atari 7800,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,commodore,square,79,17,139,34.75,Commodore Vic20,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,magnavoxodyssey,square,100,5.5,60,15,Magnavox Odyssey,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,magnavoxodysseymulticard,square,105,15,110,27.5,Magnavox Odyssey (multicard),https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,magnavoxodyssey2,square,80,21,127,31.75,Magnavox Odyssey2,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,mattelintellivision,square,68,16,88,22,Mattel Intellivision I & II,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendofamicom,square,71,17,108,27,Nintendo Famicom,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendofamicomdisk,square,76,4,90,22.5,Nintendo Famicom Disk,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendosuperfamicom,square,127,20,86,21.5,Nintendo Super Famicom / SNES (Pal),https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nes,square,120,17,134,33.5,NES,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,snes,square,136,20,87.7,21.925,SNES,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendo64,square,116,18,75,18.75,Nintendo 64,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendogb,square,57,7.5,65.5,16.375,Nintendo GB,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendogbc,square,57,9,65.5,16.375,Nintendo GBC,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendogba,square,35,6,57,14.25,Nintendo GBA,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendods,square,33,3.8,35,8.75,Nintendo DS,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendo2ds,square,35,3.8,35,8.75,Nintendo 2DS/3DS,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendovb,square,75,7,68,17,Nintendo Virtual Boy,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,nintendoswitch,square,21,3,31,7.75,Nintendo Switch,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,segagamegear,square,66,10,68,17,Sega Game Gear,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,segagenesis,square,118,15,68,17,Sega Genesis,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,segagenesistall,square,96,16,88,22,Sega Genesis (tall cart),https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,segamegadrive,square,93,17,67,16.75,Sega MegaDrive,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,segamegadrivecodemasters,square,109,17,75,18.75,Sega MegaDrive Codemasters,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,segamastersystem,square,69,17,108,27,Sega Master System,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,sega32x,square,72,16,111,27.75,Sega 32x,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,segacard,square,84,2,53,13.25,Sega Card/TG16,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,segapico,square,181,15,223,55.75,Sega Pico,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,sonyumd,round,64,0,4.2,1.05,Sony UMD,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,sonypsvita,square,22,2,30,7.5,Sony PS Vita,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,sonypsvitamemcard,square,12.5,1.6,15,3.75,Sony PS Vita (Mem Card),https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,necpcehucard,square,53,2,84,21,NEC PCE HuCard,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,snkneogeoaes,square,146.05,31.75,190.5,47.625,SNK Neo Geo AES,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,snkneogeomvs,square,145,35,185,46.25,SNK Neo Geo MVS,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,bandai,square,41,6,66,16.5,Bandai Wonderswan/Color,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
+cartridge,msx,square,109,16.8,69.4,17.35,MSX,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/

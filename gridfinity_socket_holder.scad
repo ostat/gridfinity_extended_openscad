@@ -1,4 +1,4 @@
-include <gridfinity_modules.scad>
+include <modules/gridfinity_modules.scad>
 
 part = 5;
 
