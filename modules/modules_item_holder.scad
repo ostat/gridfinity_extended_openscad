@@ -12,7 +12,8 @@ module GridItemHolder(
   holeGrid = [0,0],
   holeHeight = 0,
   center=false,
-  fill="none", //"none", "space", "crop"
+  fill="none", //"none", "space", "crop", "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"
+  
   help) 
 {
   //Sides, 
@@ -26,6 +27,12 @@ module GridItemHolder(
   
   //For hex in a hex grid we can optomise the spacing, otherwise its too hard      
   Ri = holeSize[0]/2;//(circleFn==6 && hexGrid) || (circleFn==4) ? (holeSize[0]/2) : Rc;
+  
+  //Single lines should not be hex
+  hexGrid = 
+    canvisSize.x<=holeSize.x+holeSpacing.x || 
+    canvisSize.y<=holeSize.y+holeSpacing.y ||
+    holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
   
   calcHoleDimentions = [
       customShape ? holeSize[0] :
@@ -55,16 +62,18 @@ module GridItemHolder(
       
       //x and y spacing including the item size.
       es = [
-        fill == "space"
-          ? calcHoleDimentions[0]+((canvisSize[0]-e[0]*calcHoleDimentions[0])/(e[0]-1)) 
+        fill == "space" || fill == "spaceverticle" ||fill == "crophorizontal_spaceverticle"
+          ? calcHoleDimentions[0]+(e[0]<=1?0:((canvisSize[0]-e[0]*calcHoleDimentions[0])/(e[0]-1))) 
           : hexxSpacing,
-        fill == "space"
-          ? calcHoleDimentions[1]+((canvisSize[1]-(e[1]+0.5)*calcHoleDimentions[1])/(e[1]-0.5)) 
+        fill == "space" || fill == "spacehorizontal" ||fill == "cropverticle_spacehorizontal"
+          ? calcHoleDimentions[1]+(e[1]<=0.5?0:((canvisSize[1]-(e[1]+0.5)*calcHoleDimentions[1])/(e[1]-0.5))) 
           : holeSpacing[1] + calcHoleDimentions[1]];
           
       eFill=[
-        fill == "crop" ? e[0]+2 : e[0],
-        fill == "crop" ? e[1]+2 : e[1]];
+        fill == "crop" || fill == "cropverticle" || fill == "cropverticle_spacehorizontal"
+          ? e[0]+2 : e[0],
+        fill == "crop" || fill == "crophorizontal" || fill == "crophorizontal_spaceverticle"
+          ? e[1]+2 : e[1]];
         
       /*Grid(4)Text($pos.xy,size=3);
       // Grid but with alternating row offset - hex or circle packing
@@ -96,15 +105,17 @@ module GridItemHolder(
           : floor((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1]))];
           
       es = [
-        fill == "space"
-          ? calcHoleDimentions[0]+((canvisSize[0]-e[0]*calcHoleDimentions[0])/(e[0]-1)) 
+        fill == "space" || fill == "spaceverticle" ||fill == "crophorizontal_spaceverticle"
+          ? calcHoleDimentions[0]+(e[0]<=1?0:((canvisSize[0]-e[0]*calcHoleDimentions[0])/(e[0]-1))) 
           : calcHoleDimentions[0]+holeSpacing[0],
-        fill == "space"
-          ? calcHoleDimentions[1]+((canvisSize[1]-e[1]*calcHoleDimentions[1])/(e[1]-1)) 
+        fill == "space" || fill == "spacehorizontal" ||fill == "cropverticle_spacehorizontal"
+          ? calcHoleDimentions[1]+(e[1]<=1?0:((canvisSize[1]-e[1]*calcHoleDimentions[1])/(e[1]-1)))
           : calcHoleDimentions[1]+holeSpacing[1]];
       eFill=[
-        fill == "crop" ? e[0]+2 : e[0],
-        fill == "crop" ? e[1]+2 : e[1]];
+        fill == "crop" || fill == "cropverticle" || fill == "cropverticle_spacehorizontal"
+          ? e[0]+2 : e[0],
+        fill == "crop" || fill == "crophorizontal" || fill == "crophorizontal_spaceverticle"
+          ? e[1]+2 : e[1]];
       /*Grid() children(); creates a grid of children
       \param e elements [x,y]
       \param es element spacing [x,y]
@@ -136,6 +147,7 @@ module GridItemHolder(
     ,"fill",fill
     ,"customShape",customShape
     ,"hexxSpacing",hexxSpacing
+    ,"calcHoleDimentions",calcHoleDimentions
     ,"Rc",Rc
     ,"Ri",Ri]
     ,help);

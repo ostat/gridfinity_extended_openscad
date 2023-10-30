@@ -63,6 +63,23 @@ tapered_corner_size = 10;
 // Set back of the tapered corner, default is the gridfinity corner radius
 tapered_setback = -1;//gridfinity_corner_radius/2;
 
+/* [Wall Pattern] */
+// Grid wall patter
+wallpattern_enabled=false;
+// Spacing between pattern
+wallpattern_hole_spacing = 2; //0.1
+// set the grid as hex or square
+wallpattern_hexgrid = true;
+// wall to enable on, front, back, left, right.
+wallpattern_walls=[1,1,1,1]; 
+// pattern fill mode
+wallpattern_fill = "none"; //["none":No fill, "space":Increase Space, "crop":Over fill and crop, "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"]
+//Number of sides of the hole op
+wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
+//Size of the hole
+wallpattern_hole_size = 5; //0.1
+
+
 /* [Wall Cutout] */
 wallcutout_enabled=false;
 // wall to enable on, front, back, left, right.
@@ -74,21 +91,6 @@ wallcutout_angle=70;
 wallcutout_height=0;
 wallcutout_corner_radius=5;
 
-/* [Wall Pattern] */
-// Grid wall pattern
-wallpattern_enabled=false;
-// set the grid as hex or square
-wallpattern_hexgrid = true;
-// wall to enable on, front, back, left, right.
-wallpattern_walls=[1,1,1,1]; 
-// pattern fill mode
-wallpattern_fill = "none"; //["none":No fill, "space":Increase Space, "crop":Over fill and crop]
-//Number of sides of the hole op
-wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
-//Size of the hole
-wallpattern_hole_size = 5; //0.1
-// Spacing between pattern
-wallpattern_hole_spacing = 2; //0.1
 
 /* [debug] */
 //Slice along the x axis

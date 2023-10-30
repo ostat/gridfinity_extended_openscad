@@ -55,7 +55,7 @@ default_wallcutout_height=0;
 default_wallcutout_corner_radius=5;
 default_wallpattern_enabled=true; 
 default_wallpattern_hexgrid = false;
-default_wallpattern_fill = "none"; //["none", "space", "crop"]
+default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0]; 
 default_wallpattern_hole_sides = 6;
 default_wallpattern_hole_size = 5; //0.1
@@ -247,6 +247,8 @@ module irregular_cup(
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
   help) {
+  //  echo("irregular_cupy", num_y=num_y, is05=num_y==0.5, cells_y=ceil(num_y*2));
+
   translate(caluclatePosition(position,num_x,num_y))
   difference() {
     grid_block(

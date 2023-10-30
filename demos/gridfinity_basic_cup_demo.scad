@@ -6,7 +6,11 @@ include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
 scenario = "demo"; //["demo","basiccup","position","chambers","label", "halfpitch", "lip_style","fingerslide","basecorner","sequentialbridging","wallpattern","wallcutout","taperedcorner","floorthickness","filledin","efficient_floor","box_corner_attachments_only","center_magnet","flatbase"]
-height = 5;
+height = -1;
+width=-1;
+depth=-1;
+iheight=2;
+stepIndex = -1;
 showtext = true;
 
 //Include help info in the logs
@@ -15,6 +19,19 @@ setViewPort=true;
 
 module end_of_customizer_opts() {}
 
+gridfinity_basic_cup_demo();
+
+module gridfinity_basic_cup_demo(
+  scenario = scenario,
+  height = height,
+  width=width,
+  depth=depth,
+  stepIndex = stepIndex,
+  showtext = showtext,
+  help=help,
+  setViewPort=setViewPort
+)
+{
 iwidth=0;
 idepth=1;
 iheight=2;
@@ -67,7 +84,7 @@ $vpd = setViewPort ? 280 : $vpd;//shows the camera distance [Note: Requires vers
 //Basic cup default settings for demo
 defaultDemoSetting = 
     //width, depth, height, filled_in, label, label_width
-    [3,2,height,"default","off","disabled",1.5,
+    [3,2,5,"default","off","disabled",1.5,
     //wall_thickness, lip_style, chambers, irregular_subdivisions, separator_positions
     0.95, "normal", 1, false, [], 
     //magnet_diameter, screw_depth, center_magnet_diameter, center_magnet_thickness, hole_overhang_remedy, box_corner_attachments_only
@@ -85,7 +102,11 @@ defaultDemoSetting =
     //cutx,cuty
     false, false];
 selectedScenario = 
-  scenario == "demo" ? [["Basic Cup",19,[]],
+  scenario == "demo" ? [["Basic Cup",16,[]],
+      ["Demo",false, [
+          [iirregular_subdivisions, true], [iseparator_positions, [0.75, 2.25]],
+          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],
+          [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]],
       ["Simple",false, []],
       ["Multi Chamber",false, [[ichambers, 3]]],
       ["Multi Chamber",false, [[ichambers, 6]]],
@@ -96,17 +117,14 @@ selectedScenario =
       ["Label Left",false, [[ilabel, "left"],[ilabel_width, 1.5],[ichambers, 0]]],
       ["Label Right",false, [[ilabel, "right"],[ilabel_width, 1.5],[ichambers, 0]]],
       ["Label Center",false, [[ilabel, "center"],[ilabel_width, 1.5],[ichambers, 0]]],
-      ["Label Left",false, [[ilabel, "left"],[ilabel_width, 1.5],[ichambers, 3]]],
-      ["Label Right",false, [[ilabel, "right"],[ilabel_width, 1.5],[ichambers, 3]]],
       ["Label Center",false, [[ilabel, "center"],[ilabel_width, 1.5],[ichambers, 3]]],
-      ["Label Left Chamber",false, [[ilabel, "leftchamber"],[ilabel_width, 0.5],[ichambers, 3]]],
-      ["Label Right Chamber",false, [[ilabel, "rightchamber"],[ilabel_width, 0.5],[ichambers, 3]]],
       ["Label Center Chamber",false, [[ilabel, "centerchamber"],[ilabel_width, 0.5],[ichambers, 3]]], 
-      ["Demo 1",false, [[iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],[ilabel, "center"],[ilabel_width, 1.5]]],
-      ["Demo 2",false, [[iirregular_subdivisions, true], [iseparator_positions, [0.25, 0.5, 1, 2]],
-      [itapered_corner, "rounded"],[itapered_corner_size,30],[itapered_setback,15]]],
-      ["Demo 3",false, [[ifloor_thickness, 10], [icavity_floor_radius, 0],
-          [iwallpattern_enabled,true],[iwallpattern_walls,[0,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
+      ["Wall Cutout",false, [[ifloor_thickness, 1], [icavity_floor_radius, 0],
+          [iwallcutout_enabled, true], [iwallcutout_walls,[1,1,0,0]],[iwallcutout_width,70],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]],
+      ["Chamfered",false, [[iirregular_subdivisions, true], [iseparator_positions, [0.5, 1, 2]],
+      [itapered_corner, "chamfered"],[itapered_corner_size,25],[itapered_setback,-1]]],
+      ["Demo 3",false, [[ifloor_thickness, 2], [icavity_floor_radius, -1],
+          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]
           
   : scenario == "basiccup" ? [["Basic Cup",1,[]],
@@ -253,12 +271,13 @@ selectedScenario =
    : [];
 
 scenarioDefaults = selectedScenario[0];
-animationStep = len(selectedScenario) >= round($t*(len(selectedScenario)-1)) ? selectedScenario[min(round($t*(len(selectedScenario)-1))+1,len(selectedScenario)-1)] : selectedScenario[1];  
+stepIndex = stepIndex > -1 ? stepIndex+1 : min(round($t*(len(selectedScenario)-1))+1,len(selectedScenario)-1);
+animationStep = (len(selectedScenario) >= stepIndex ? selectedScenario[stepIndex] : selectedScenario[1]);  
 currentStepSettings = replace_Items(concat(scenarioDefaults[2],animationStep[2]), defaultDemoSetting);
 
 echo("🟧gridfinity_basic_cup",scenario = scenario, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1), animationStep=animationStep, currentStepSettings=currentStepSettings);
 
-if(showtext)
+if(showtext && $preview)
 color("GhostWhite")
 translate($vpt)
 rotate($vpr)
@@ -270,9 +289,9 @@ if(scenarioDefaults[0] != "unknown scenario")
 rotate(animationStep[1] ? [180,0,0] : [0,0,0]) 
 translate(animationStep[1] ? [0,-gridfinity_pitch,-gridfinity_pitch] : [0,0,0])
 gridfinity_basic_cup(
-  width = currentStepSettings[iwidth],
-  depth = currentStepSettings[idepth],
-  height = currentStepSettings[iheight],
+  width = width > -1 ? width : currentStepSettings[iwidth],
+  depth = depth > -1 ? depth : currentStepSettings[idepth],
+  height = height > -1 ? height : currentStepSettings[iheight],
   position = currentStepSettings[iposition],
   filled_in = currentStepSettings[ifilled_in],
   label=currentStepSettings[ilabel],
@@ -314,3 +333,4 @@ gridfinity_basic_cup(
   cutx=currentStepSettings[icutx],
   cuty=currentStepSettings[icuty],
   help=help);
+}
