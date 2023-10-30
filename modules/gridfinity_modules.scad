@@ -58,6 +58,9 @@ module grid_block(
   fn = 32,
   help)
 {
+  //echo("grid_blocky", num_y=num_y, is05=num_y==0.5, cells_y=ceil(num_y*2));
+       
+       
   corner_radius = 3.75;
   outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
   block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
@@ -145,42 +148,23 @@ module grid_block(
 
 
 module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
-  // if num_x (or num_y) is less than 1 (or less than 0.5 if half_pitch is enabled) then round over the far side
-  cut_far_x = (num_x < 1 && !half_pitch) || (num_x < 0.5);
-  cut_far_y = (num_y < 1 && !half_pitch) || (num_y < 0.5);
-
-  intersection() {
-    union(){
-      if (flat_base) {
-        pad_oversize(ceil(num_x), ceil(num_y));
-      }
-      else if (half_pitch) {
-        gridcopy(ceil(num_x)*2, ceil(num_y)*2, gridfinity_pitch)// intersection() {
-          pad_halfsize();
-      }
-      else {
-        gridcopy(ceil(num_x), ceil(num_y)) 
-          pad_oversize();
-      }
-    }
-    if (cut_far_x) {
-      translate([gridfinity_pitch*(-1+num_x), 0, 0]) pad_oversize();
-    }
-    if (cut_far_y) {
-      translate([0, gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
-    }
-    if (cut_far_x && cut_far_y) {
-      // without this the far corner would be rectangular
-      translate([gridfinity_pitch*(-1+num_x), gridfinity_pitch*(-1+num_y), 0]) pad_oversize();
+  if (flat_base) {
+    pad_oversize(ceil(num_x), ceil(num_y));
+  }
+  else if (half_pitch) {
+    gridcopy(ceil(num_x*2), ceil(num_y*2), gridfinity_pitch/2) {
+      pad_oversize(
+        ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
+        ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5));
     }
   }
-}
-
-module pad_halfsize() {
-  //render()  // render here to keep tree from blowing up
-  for (xi=[0:1]) for (yi=[0:1]) 
-  translate([xi*gridfinity_pitch/2, yi*gridfinity_pitch/2, 0])
-  pad_oversize(0.5,0.5);
+  else {
+    gridcopy(ceil(num_x), ceil(num_y)) {
+      pad_oversize(
+        ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
+        ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1));
+    }
+  }
 }
 
 // like a cylinder but produces a square solid instead of a round one
@@ -271,9 +255,11 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gridfinity_pitch) {
 
 // make repeated copies of something(s) at the gridfinity spacing of 42mm
 module gridcopy(num_x, num_y, pitch=gridfinity_pitch) {
-  for (xi=[1:num_x]) 
-    for (yi=[1:num_y]) 
-      translate([pitch*(xi-1), 
-        pitch*(yi-1), 0]) 
+  for (xi=[0:num_x-1]) 
+    for (yi=[0:num_y-1])
+    {
+      $gci=[xi,yi,0];
+      translate([pitch*xi, pitch*yi, 0]) 
         children();
+    }
 }

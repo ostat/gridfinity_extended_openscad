@@ -63,7 +63,7 @@ screw_depth = 0;
 center_magnet_diameter = 0;
 center_magnet_thickness = 0;
 // Hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
-hole_overhang_remedy = true;
+hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
 box_corner_attachments_only = false;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
