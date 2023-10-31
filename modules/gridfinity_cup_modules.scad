@@ -32,6 +32,8 @@ default_cavity_floor_radius = -1;
 default_hole_overhang_remedy = 2;
 // Save material with thinner floor (only if no magnets, screws, or finger-slide used)
 default_efficient_floor = false;
+// Remove floor to create a spacer
+default_spacer = false;
 // Half-pitch base pads for offset stacking
 default_half_pitch = false;
 // Might want to remove inner lip of cup
@@ -85,6 +87,7 @@ difference(){
     hole_overhang_remedy=default_hole_overhang_remedy,
     efficient_floor=default_efficient_floor,
     half_pitch=default_half_pitch,
+    spacer=default_spacer,
     lip_style=default_lip_style,
     box_corner_attachments_only=default_box_corner_attachments_only,
     flat_base=default_flat_base,
@@ -141,6 +144,7 @@ module basic_cup(
   hole_overhang_remedy=default_hole_overhang_remedy,
   efficient_floor=default_efficient_floor,
   half_pitch=default_half_pitch,
+  spacer=default_spacer,
   lip_style=default_lip_style,
   box_corner_attachments_only=default_box_corner_attachments_only,
   flat_base = default_flat_base,
@@ -226,6 +230,7 @@ module irregular_cup(
   hole_overhang_remedy=default_hole_overhang_remedy,
   efficient_floor=default_efficient_floor,
   half_pitch=default_half_pitch,
+  spacer=default_spacer,
   separator_positions=[],
   lip_style=default_lip_style, 
   box_corner_attachments_only=default_box_corner_attachments_only,
@@ -280,6 +285,7 @@ module irregular_cup(
         separator_positions=separator_positions, 
         lip_style=lip_style, 
         flat_base=flat_base,
+        spacer=spacer,
         cavity_floor_radius=cavity_floor_radius);
     
     color(color_wallcutout)
@@ -515,7 +521,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
     labelWidth=default_labelWidth, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
-    efficient_floor=default_efficient_floor, half_pitch=default_half_pitch, separator_positions=[], lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius) {
+    efficient_floor=default_efficient_floor, half_pitch=default_half_pitch, separator_positions=[], lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius,spacer=default_spacer) {
     
 // height of partition between cells
   // cavity with removed segments so that we leave dividing walls behind
@@ -538,7 +544,7 @@ module partitioned_cavity(num_x, num_y, num_z, withLabel=default_withLabel,
     render()
     basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
     screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-    efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius);
+    efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius, spacer=spacer);
     
     color(color_divider)
     if (len(separator_positions) > 0) {
@@ -585,7 +591,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, half_pitch=default_half_pitch, 
-    lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius) {
+    lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius, spacer=default_spacer) {
   eps = 0.1;
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
@@ -600,6 +606,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   mag_ht = magnet_diameter > 0 ? 2.4: 0;
   m3_ht = screw_depth;
   efloor = efficient_floor && magnet_diameter == 0 && screw_depth == 0 && fingerslide == "none";
+  nofloor = spacer && fingerslide == "none";
   cavity_floor_radius =  efloor ? 0 : calcualteCavityFloorRadius(cavity_floor_radius,wall_thickness);
   seventeen = gridfinity_pitch/2-4;
   
@@ -679,7 +686,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     cylinder(d=3, h=7*num_z, $fn=24);
   }
  
-  if (efloor) {
+  if (efloor || nofloor) {
     if (num_x < 1) {
       gridcopy(1, num_y) {
         tz(floor_thickness) intersection() {
@@ -699,6 +706,13 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
           }
         }
       }
+    } else if (nofloor) {
+      tz(-eps)
+        hull()
+        cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+        cylinder(r=2, h=0.9, $fn=32);
+      gridcopy(1, 1) 
+        EfficientFloor(num_x, num_y,-eps, q);
     } else if (flat_base) {
       gridcopy(1, 1) 
         EfficientFloor(num_x, num_y,floor_thickness, q);
