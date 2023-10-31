@@ -5,7 +5,7 @@ use <modules/gridfinity_modules.scad>
 /* [Plate] */
 // Plate Style
 Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base]
-Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base]
+Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew]
 Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch, halfpitch base]
 
 /* [Size] */
@@ -127,6 +127,9 @@ module baseplate(
   else if (plateOptions == "weighted") {
     weighted_baseplate(width, depth, roundedCorners=roundedCorners);
   }
+  else if (plateOptions == "woodscrew") {
+    woodscrew_baseplate(width, depth, roundedCorners=roundedCorners);
+  }
   else if (plateOptions == "magnet"){
     magnet_baseplate(width, depth, roundedCorners=roundedCorners);
   }
@@ -174,6 +177,38 @@ module base_lid(
   }
 }
 
+module woodscrew_baseplate(
+  num_x, 
+  num_y,  
+  cornerRadius = gridfinity_corner_radius,
+  roundedCorners = 15) {
+  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_od/2);
+  eps = 0.1;
+  frameHeight = 6.4;
+    
+  difference() {
+    frame_plain(num_x, num_y, 
+      extra_down=frameHeight,
+      cornerRadius = cornerRadius,
+      roundedCorners = roundedCorners);
+    
+    gridcopy(num_x, num_y) {
+      cornercopy(magnet_position) {
+        translate([0, 0, -magnet_thickness])
+        cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=48);
+        
+        translate([0, 0, -frameHeight]) cylinder(d=3.5, h=frameHeight, $fn=24);
+        
+        // counter-sunk holes in the bottom
+        translate([0, 0, -frameHeight -fudgeFactor]) cylinder(d1=8.5, d2=3.5, h=2.5, $fn=24);
+      }
+      
+      //counter-sunk holes for woodscrews
+      translate([0, 0, -2.5]) cylinder(d1=3.5, d2=8.5, h=2.5, $fn=24);
+      translate([0, 0, -frameHeight -fudgeFactor]) cylinder(d=3.5, h=frameHeight, $fn=24);
+    }
+  }
+}
 module weighted_baseplate(
   num_x, 
   num_y,
