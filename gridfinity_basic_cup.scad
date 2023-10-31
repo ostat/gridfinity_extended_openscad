@@ -50,7 +50,8 @@ efficient_floor = false;
 half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
-
+// Remove floor to create a veritcal spacer
+spacer = false;
 /* [Finger Slide] */
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
@@ -128,6 +129,7 @@ module gridfinity_basic_cup(
   efficient_floor=efficient_floor,
   half_pitch=half_pitch,
   flat_base=flat_base,
+  spacer=spacer,
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   tapered_corner=tapered_corner,
@@ -177,6 +179,7 @@ module gridfinity_basic_cup(
       lip_style=lip_style,
       box_corner_attachments_only=box_corner_attachments_only,
       flat_base = flat_base,
+      spacer=spacer,
       tapered_corner=tapered_corner,
       tapered_corner_size = tapered_corner_size,
       tapered_setback = tapered_setback,
