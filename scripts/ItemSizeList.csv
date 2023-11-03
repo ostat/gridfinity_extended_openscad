@@ -45,6 +45,7 @@ tool,1/4hexshank,hex,6.35,0,15,8,1/4 Hex Shank,
 tool,1/4hexshanklong,hex,6.35,0,40,15,1/4 Hex Long Shank,
 tool,5/16hexshank,hex,7.94,0,0,7,5/16 Hex Shank,
 tool,3/8hexshank,hex,9.52,0,0,10,3/8 Hex Shank,
+card,multicard,square,0,0,0,0,"Multi card slot",
 card,compactflashi,square,43,3.3,36,9,"CompactFlash, Type I",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,compactflashii,square,43,5,36,9,"CompactFlash, Type II",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,smartmedia,square,37,0.76,45,11.25,SmartMedia,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
@@ -53,7 +54,7 @@ card,mmcmobile,square,24,1.4,18,4.5,"RS-MMC, MMCmobile",https://en.wikipedia.org
 card,mmcmicro,square,14,1.1,12,3,MMCmicro,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,sd,square,24,2.1,32,18,"SD, SDHC, SDXC, SDIO, MicroP2",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,minisd,square,20,1.4,21.5,10,"miniSD, miniSDHC, miniSDIO",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
-card,microsd,square,11,1,15,3.75,"microSD, microSDHC, microSDXC",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
+card,microsd,square,11,0.7,15,9,"microSD, microSDHC, microSDXC",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,memorystickstandard,square,21.5,2.8,50,12.5,"Memory Stick Standard, PRO",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,memorystickduo,square,20,1.6,31,7.75,"Memory Stick Duo, PRO Duo, PRO-HG, XC",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,memorystickmicro,square,12.5,1.2,15,3.75,"Memory Stick Micro (M2), XC",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
@@ -61,7 +62,7 @@ card,nano,square,12.3,0.7,8.8,2.2,Nano Memory,https://en.wikipedia.org/wiki/Comp
 card,psvita,square,15,1.6,12.5,3.125,PS Vita Memory Card,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,xqd,square,38.5,3.8,29.8,7.45,XQD card,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,xD,square,25,1.78,20,5,xD,https://en.wikipedia.org/wiki/Comparison_of_memory_cards
-card,USB A,square,12,4.5,13,12.8,USB A,
+card,USB A,square,12,4.5,13,13,USB A,
 card,USB C,square,8.5,4,0,10,USB C,
 cartridge,atari800,square,68,21,77,19.25,Atari 800,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/
 cartridge,atari2600,square,81,19,87,21.75,Atari 2600/7800/Colecovision,https://www.reddit.com/r/gamecollecting/comments/23stkf/q_dimensions_for_game_cartridges/

@@ -1,5 +1,6 @@
 // include <gridfinity_modules.scad>
 use <modules/gridfinity_cup_modules.scad>
+use <modules/gridfinity_modules.scad>
 include <modules/gridfinity_constants.scad>
 
 /*<!!start gridfinity_basic_cup!!>*/
@@ -74,12 +75,11 @@ wallpattern_hexgrid = true;
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1]; 
 // pattern fill mode
-wallpattern_fill = "none"; //["none":No fill, "space":Increase Space, "crop":Over fill and crop, "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"]
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
 wallpattern_hole_size = 5; //0.1
-
+wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"]
 
 /* [Wall Cutout] */
 wallcutout_enabled=false;
@@ -92,12 +92,11 @@ wallcutout_angle=70;
 wallcutout_height=0;
 wallcutout_corner_radius=5;
 
-
 /* [debug] */
 //Slice along the x axis
-cutx = false;
+cutx = 0; //0.1
 //Slice along the y axis
-cuty = false;
+cuty = 0; //0.1
 // enable loging of help messages during render.
 help = false;
 
@@ -196,15 +195,8 @@ module gridfinity_basic_cup(
       wallcutout_angle=wallcutout_angle,
       wallcutout_height=wallcutout_height,
       wallcutout_corner_radius=wallcutout_corner_radius,
-        help = help);
-
-    if(cutx && $preview){
-      translate([-gridfinity_pitch,-gridfinity_pitch,-fudgeFactor])
-        cube([(width+1)*gridfinity_pitch,gridfinity_pitch,(height+1)*gridfinity_zpitch]);
-    }
-    if(cuty && $preview){
-      translate([-gridfinity_pitch*0.75,-gridfinity_pitch,-fudgeFactor])
-        cube([gridfinity_pitch,(depth+1)*gridfinity_pitch,(height+1)*gridfinity_zpitch]);
-    } 
-  }
+      cutx=cutx,
+      cuty=cuty,
+      help = help);
+   }
 }

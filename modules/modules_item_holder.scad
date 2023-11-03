@@ -11,9 +11,10 @@ module GridItemHolder(
   holeSpacing = [0,0],
   holeGrid = [0,0],
   holeHeight = 0,
+  holeChamfer = 0,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"
-  
+  crop = true,
   help) 
 {
   //Sides, 
@@ -48,8 +49,11 @@ module GridItemHolder(
     : customShape ? holeSize[0]+holeSpacing[0]
     : sqrt((Ri*2+holeSpacing[0])^2-((calcHoleDimentions[1]+holeSpacing[1])/2)^2);
   intersection(){
-    translate([-fudgeFactor,-fudgeFactor,(center?holeHeight/2:0)-fudgeFactor])
-    cube([canvisSize[0]+fudgeFactor*2,canvisSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
+    //Crop to ensure that we dont go outside the bounds 
+    
+    if(fill == "crop" || fill == "crophorizontal"  || fill == "cropverticle"  || fill ==  "crophorizontal_spaceverticle"  || fill == "cropverticle_spacehorizontal")
+      translate([-fudgeFactor,-fudgeFactor,(center?holeHeight/2:0)-fudgeFactor])
+      cube([canvisSize[0]+fudgeFactor*2,canvisSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
     
     if(hexGrid){
       //Calcualte the x and y items count
@@ -68,7 +72,7 @@ module GridItemHolder(
         fill == "space" || fill == "spacehorizontal" ||fill == "cropverticle_spacehorizontal"
           ? calcHoleDimentions[1]+(e[1]<=0.5?0:((canvisSize[1]-(e[1]+0.5)*calcHoleDimentions[1])/(e[1]-0.5))) 
           : holeSpacing[1] + calcHoleDimentions[1]];
-          
+      
       eFill=[
         fill == "crop" || fill == "cropverticle" || fill == "cropverticle_spacehorizontal"
           ? e[0]+2 : e[0],
@@ -94,7 +98,7 @@ module GridItemHolder(
             children();
         } else {
           translate(!center ? [calcHoleDimentions[0]/2,calcHoleDimentions[1]/2,0] : [0,0,0])
-            cylinder(h=holeHeight, r=Rc, $fn = circleFn);
+            chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
         }
     }
     else {
@@ -111,6 +115,7 @@ module GridItemHolder(
         fill == "space" || fill == "spacehorizontal" ||fill == "cropverticle_spacehorizontal"
           ? calcHoleDimentions[1]+(e[1]<=1?0:((canvisSize[1]-e[1]*calcHoleDimentions[1])/(e[1]-1)))
           : calcHoleDimentions[1]+holeSpacing[1]];
+      
       eFill=[
         fill == "crop" || fill == "cropverticle" || fill == "cropverticle_spacehorizontal"
           ? e[0]+2 : e[0],
@@ -131,7 +136,7 @@ module GridItemHolder(
           children();
         } else {
           translate(center ? [0,0,0] : [calcHoleDimentions[0]/2,calcHoleDimentions[1]/2,0])
-            cylinder(h=holeHeight, r=Rc, $fn = circleFn);
+            chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
         }
     }
   }
@@ -152,3 +157,91 @@ module GridItemHolder(
     ,"Ri",Ri]
     ,help);
 }
+
+module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
+  union(){
+  cylinder(h=h, r=r, $fn = circleFn);
+  translate([0, 0, h-chamfer]) 
+    cylinder(h=chamfer, r1=r, r2=r+chamfer,$fn = circleFn);
+    }
+}
+
+module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
+  union(){
+    minspacing = 3;
+    translate([(longCenter.x)/2,side.x/2,0])
+    union(){
+    translate([-(longCenter.x)/2,-longCenter.y/2,0])
+    slotCutout([longCenter.x, longCenter.y, longCenter.z+fudgeFactor], chamfer);
+    
+    translate([-smallCenter.x/2,-smallCenter.y/2,(longCenter.z-smallCenter.z)])
+    slotCutout([smallCenter.x, smallCenter.y, smallCenter.z+fudgeFactor], chamfer);
+    
+    
+    if(alternate){
+      pos = let(targetPos = (longCenter.x)/4-(side.y)/2) max(targetPos, smallCenter.y+minspacing);
+      translate([-pos-side.y/2, 0, 0])
+        rotate([0,0,90])
+        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
+        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+      
+      translate([+pos+side.y/2, 0, 0])
+      rotate([0,0,90])
+        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
+        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+    } else {
+      rotate([0,0,90])
+        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
+        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+      
+      translate([-(longCenter.x)/2+(side.y)/2, 0, 0])
+      rotate([0,0,90])
+        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
+        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        
+      translate([(longCenter.x)/2-(side.y)/2, 0, 0])
+      rotate([0,0,90])
+        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
+        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+      }
+    }
+  }
+}
+            
+            
+// Creates a slot with a small champer for easy insertertion
+//#slotCutout(100,20,40);
+//width = width of slot
+//depth = depth of slot
+//height = height of slot
+//chamfer = chamfer size
+module slotCutout(size, chamfer = 1)
+{
+  translate([size.x/2,size.y/2,0])
+  intersection(){
+    union(){
+      // Main slot
+      translate([-size.x/2,-size.y/2,0])
+        cube([size.x, size.y, size.z]);
+      
+     // chamfer
+     translate([-size.x/2,-size.y/2,size.z+fudgeFactor])
+     hull(){
+        translate([0,0,0])
+          rotate([180,0,45])
+          cylinder(chamfer,chamfer,00,$fn=4);
+        translate([size.x,0,0])
+        rotate([180,0,45])
+          cylinder(chamfer,chamfer,00,$fn=4);
+        translate([0,size.y,0])
+        rotate([180,0,45])
+          cylinder(chamfer,chamfer,00,$fn=4);
+        translate([size.x,size.y,0])
+        rotate([180,0,45])
+          cylinder(chamfer,chamfer,00,$fn=4);          
+          
+      }
+    }
+  }
+}
+

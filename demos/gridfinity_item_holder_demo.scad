@@ -21,13 +21,15 @@ iitemholder_hole_spacing = 4;
 iitemholder_hole_grid = 5;
 iitemholder_hole_clearance = 6;
 iitemholder_hole_depth = 7;
-iitemholder_compartments = 8;
-iitemholder_compartment_spacing = 9;
-iitemholder_compartment_centered = 10;
-iitemholder_compartment_fill  = 11;
-iitemholder_customcompartments = 12;
-iitemholder_auto_bin_height = 13;
-extendedsettingscount=14;
+iitemholder_hole_chamfer =8;
+iitemholder_compartments = 9;
+iitemholder_compartment_spacing = 10;
+iitemholder_compartment_centered = 11;
+iitemholder_compartment_fill  = 12;
+iitemholder_customcompartments = 13;
+iitemholder_auto_bin_height = 14;
+iitemholder_multi_card_compact = 15; 
+extendedsettingscount=16;
 
 iwidth=extendedsettingscount;
 idepth=1+extendedsettingscount;
@@ -82,12 +84,12 @@ $vpd = setViewPort ? 280 : $vpd;//shows the camera distance [Note: Requires vers
 defaultDemoSetting = 
     //itemholder_known_item, itemholder_hex_grid, itemholder_hole_sides, itemholder_hole_size, itemholder_hole_spacing, 
     ["1/4hexshank", false, 6, 5, 2,
-    //itemholder_hole_grid, itemholder_hole_clearance, itemholder_hole_depth,
-    [0, 0], 0.65, 0,
+    //itemholder_hole_grid, itemholder_hole_clearance, itemholder_hole_depth, itemholder_hole_chamfer
+    [0, 0], 0.65, 0, 1,
     //itemholder_compartments, itemholder_compartment_spacing, itemholder_compartment_centered, itemholder_compartment_fill
     [1,1], 5, true, "none",
-    //itemholder_customcompartments, itemholder_auto_bin_height, 
-    "", true,
+    //itemholder_customcompartments, itemholder_auto_bin_height, itemholder_multi_card_compact
+    "", true, 0,
   
     //Gridfinity settins
     //width, depth, height, filled_in, label, label_width
@@ -107,16 +109,17 @@ defaultDemoSetting =
     //wallpattern_enabled, wallpattern_hexgrid, wallpattern_walls, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing
     false, true, [1,1,1,1], "none", 6, 5, 2, 
     //cutx,cuty
-    false, false];
+    0, 0];
    
    //iitemholder_hole_grid
 scenarioSteps = 
   scenario == "demo" ? [["Item Holder",6,[]],
-      ["4mm Hex Shank",false, [[iitemholder_known_item,"4hexshank"]]],
+      ["4mm Hex Shank",false, [[iitemholder_known_item,"4hexshank"],[iitemholder_hole_chamfer,0.5]]],
       ["1/4\" Hex Shank",false, [[iitemholder_known_item,"1/4hexshank"],[iitemholder_hex_grid,true]]],
       ["AAA on hex grid",false, [[iitemholder_known_item,"aaa"],[iitemholder_hex_grid,true]]],
-      ["AA",false, [[iitemholder_known_item,"aa"]]],
+      ["AA",false, [[iitemholder_known_item,"aa"],[ifilled_in, "on"]]],
       ["18650",false, [[iitemholder_known_item,"18650"]]],
+      ["Multi Card",false, [[iitemholder_known_item,"multicard"],[iitemholder_hole_chamfer,1],[iitemholder_multi_card_compact,0.7],[ifilled_in, "notstackable"]]],
       ["Nintendo DS",false, [[iitemholder_known_item,"nintendo2ds"],[iitemholder_hole_spacing,5], [iheight,5],
           [iwallpattern_enabled,true],[iwallpattern_walls,[0,1,1,1]], [iitemholder_auto_bin_height,false],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,90],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]//endscenario
@@ -218,12 +221,14 @@ gridfinity_itemholder(
   itemholder_hole_grid = scenarioStepSettings[iitemholder_hole_grid],
   itemholder_hole_clearance = scenarioStepSettings[iitemholder_hole_clearance],
   itemholder_hole_depth = scenarioStepSettings[iitemholder_hole_depth],
+  itemholder_hole_chamfer = scenarioStepSettings[iitemholder_hole_chamfer],
   itemholder_compartments = scenarioStepSettings[iitemholder_compartments],
   itemholder_compartment_spacing = scenarioStepSettings[iitemholder_compartment_spacing],
   itemholder_compartment_centered = scenarioStepSettings[iitemholder_compartment_centered],
   itemholder_compartment_fill  = scenarioStepSettings[iitemholder_compartment_fill],
   itemholder_customcompartments = scenarioStepSettings[iitemholder_customcompartments],
   itemholder_auto_bin_height = scenarioStepSettings[iitemholder_auto_bin_height],
+  itemholder_multi_card_compact = scenarioStepSettings[iitemholder_multi_card_compact],
   itemholder_known_item = scenarioStepSettings[iitemholder_known_item],
   
   width = scenarioStepSettings[iwidth],

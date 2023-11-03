@@ -3059,7 +3059,7 @@ else HelpTxt("Help",["titel",titel,"string",string,"help",help],help=1);
 //Caliper(end=3,txt2="X—Length",in=+1);
 
 
-module Caliper(l=40,in=1,center=true,messpunkt=true,translate=[0,0,0],end=1,h,on=$preview,l2,txt,txt2,size=$vpd/15,render,s,t,help){
+module Caliper(l=40,in=1,center=true,messpunkt=true,translate=[0,0,0],end=1,h,on=$preview,l2,txt,txt2,size=$vpd/15,render,s,t,cx,cy,help){
     
     on=render?render:on;
     s=s?s:size;
@@ -3077,7 +3077,7 @@ module Caliper(l=40,in=1,center=true,messpunkt=true,translate=[0,0,0],end=1,h,on
         rotate(in?in==2?90:in==3?-90:180:0)linear_extrude(h,center=true)Mklon(tx=l/2,mz=0)polygon([[max(-5,-l/3),0],[0,s],[0,0]]);
         rotate(in?in==2?90:in==3?-90:180:0)linear_extrude(h,center=true)Mklon(tx=-l/2,mz=0)polygon([[max(-5,-l/3),0],[0,-s],[0,0]]);
         
-        Text(h=h+.1,text=txt,center=true,size=s/4,trueSize="size");
+        Text(h=h+.1,text=txt,center=true,size=s/4,trueSize="size",cx=cx,cy=cy);
         }
      else if(end==2)Col(3)union(){
         h=is_undef(h)?1.1:max(minVal,h);
@@ -3085,7 +3085,7 @@ module Caliper(l=40,in=1,center=true,messpunkt=true,translate=[0,0,0],end=1,h,on
         rotate(in?in==2?90:in==3?-90:180:0)MKlon(tx=l/2)cube([line,s,h],center=true);    
         translate([(l<textl+1&&in<2)?l/2+textl/2+1.5:0,
           l<s/2 +1&&in>1?l/2+s/4+1:0,0])
-            Text(h=h+.1,text=txt,center=true,size=s/2,trueSize="size");
+            Text(h=h+.1,text=txt,center=true,size=s/2,trueSize="size",cx=cx,cy=cy);
          if(l<textl+1&&in<2)translate([.25,0])square([l+.5,line],true);
          if(l<s+1&&in>=2) translate([0,.25])square([line,l+.5],true);
          
@@ -3144,8 +3144,8 @@ Pivot(messpunkt=messpunkt,p0=translate,active=[1,1,1,1,norm(translate)]);
 // text pos
         translate(in!=2&&in!=3?[(in?1:-1) * -translate.x,0]:[(in==2?1:-1)*translate.y,0]){
           translate([textOffset,0])rotate(in>1?-90:180){
-            if(len(txt2))translate([0,-textS/1.5])Text(h=0,text=txt2,center=true,size=textS,trueSize="size",name=false);
-            translate([0,len(txt2)?textS/1.5:0])Text(h=0,text=txt,center=true,size=textS,trueSize="size",name=false);
+            if(len(txt2))translate([0,-textS/1.5])Text(h=0,text=txt2,center=true,size=textS,trueSize="size",name=false,cx=cx,cy=cy);
+            translate([0,len(txt2)?textS/1.5:0])Text(h=0,text=txt,center=true,size=textS,trueSize="size",name=false,cx=cx,cy=cy);
           }
         }
 // verbindung text ausserhalb

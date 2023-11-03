@@ -11,19 +11,23 @@ function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness) = let(
 
 constTopHeight = 5.7+fudgeFactor*5; //Need to confirm this
 
-//Height of base, not including the floor
-function calculateCupBaseHeight(magnet_diameter, screw_depth) = let (
+//Height to clear the voids in the base
+function cupBaseClearanceHeight(magnet_diameter, screw_depth) = let (
     mag_ht = magnet_diameter > 0 ? const_magnet_height : 0)
-    max(mag_ht, screw_depth, const_base_part_ht);
+    max(mag_ht, screw_depth, gf_min_base_height);
 
-function calculateFloorDepth(filledin, floor_thickness, num_z) = 
-  filledin == "on" ? (num_z-1) * gridfinity_zpitch + 2.0
-  : filledin == "notstackable" ?  (num_z-1) * gridfinity_zpitch + constTopHeight
-  : floor_thickness;
-  
+function calculateMinFloorHeight(magnet_diameter,screw_depth) = 
+    cupBaseClearanceHeight(magnet_diameter,screw_depth) + gf_cup_floor_thickness;
+    
 //Height of base including the floor.
-function calculateFloorHeight(magnet_diameter,screw_depth, floor_thickness) = 
-    calculateCupBaseHeight(magnet_diameter,screw_depth) + floor_thickness;
+function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) = 
+  filledin == "on" || filledin == "notstackable" 
+    ? num_z * gridfinity_zpitch 
+    : cupBaseClearanceHeight(magnet_diameter,screw_depth) + max(floor_thickness, gf_cup_floor_thickness);
+    
+//Usable floor depth (florr height - min floor)
+function calculateFloorThickness(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) = 
+  calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) - cupBaseClearanceHeight(magnet_diameter, screw_depth);
     
 // calculate the position of separators from the size
 function calcualteSeparators(num_separators, num_x) = num_separators < 1 
@@ -34,19 +38,21 @@ function LookupKnownShapes(name="round") =
   name == "square" ? 4 :
   name == "hex" ? 6 : 64;
   
-function caluclatePosition(position, num_x, num_y) = position == "center" 
-    ? [-(num_x-1)*gridfinity_pitch/2, -(num_y-1)*gridfinity_pitch/2, 0] 
-    : position == "zero" ? [gridfinity_pitch/2, gridfinity_pitch/2, 0] 
+function cupPosition(position, num_x, num_y) = position == "center" 
+    ? [-(num_x-1)*gf_pitch/2, -(num_y-1)*gf_pitch/2, 0] 
+    : position == "zero" ? [gf_pitch/2, gf_pitch/2, 0] 
     : [0, 0, 0]; 
-    
+
+grid_block();
+
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(
   num_x=1, 
-  num_y=1, 
+  num_y=2, 
   num_z=2, 
-  magnet_diameter=6.5, 
-  screw_depth=6, 
+  magnet_diameter=gf_magnet_diameter, 
+  screw_depth=gf_cupbase_screw_depth, 
   position = "default",
   hole_overhang_remedy=0, 
   half_pitch=false, 
@@ -59,18 +65,13 @@ module grid_block(
   help)
 {
   //echo("grid_blocky", num_y=num_y, is05=num_y==0.5, cells_y=ceil(num_y*2));
-       
-       
-  corner_radius = 3.75;
-  outer_size = gridfinity_pitch - gridfinity_clearance;  // typically 41.5
-  block_corner_position = outer_size/2 - corner_radius;  // need not match center of pad corners
-  magnet_thickness = 2.4;
-  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_diameter/2);
-  screw_hole_diam = 3;
-  gp = gridfinity_pitch;
+ 
+  outer_size = gf_pitch - gridfinity_clearance;  // typically 41.5
+  block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
+
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
   
   suppress_holes = num_x < 1 || num_y < 1;
-  
   emd = suppress_holes ? 0 : magnet_diameter; // effective magnet diameter after override
   esd = suppress_holes ? 0 : screw_depth;     // effective screw depth after override
   
@@ -78,7 +79,7 @@ module grid_block(
   overhang_fix_depth = 0.3;  // assume this is enough
   
   totalht=gridfinity_zpitch*num_z+3.75;
-  translate(caluclatePosition(position,num_x,num_y))
+  translate(cupPosition(position,num_x,num_y))
   difference() {
     intersection() {
       union() {
@@ -86,15 +87,15 @@ module grid_block(
         color(color_base)
         pad_grid(num_x, num_y, half_pitch, flat_base);
         // main body will be cut down afterward
-        translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 5]) 
-        cube([gridfinity_pitch*num_x, gridfinity_pitch*num_y, totalht-5]);
+        translate([-gf_pitch/2, -gf_pitch/2, 5]) 
+        cube([gf_pitch*num_x, gf_pitch*num_y, totalht-5]);
       }
       
       color(color_cup)
       translate([0, 0, -fudgeFactor])
       hull() 
       cornercopy(block_corner_position, num_x, num_y) 
-      cylinder(r=corner_radius, h=totalht+fudgeFactor*2, $fn=fn);
+      cylinder(r=gf_cup_corner_radius, h=totalht+fudgeFactor*2, $fn=fn);
     }
     
     if(center_magnet_diameter> 0 && center_magnet_thickness>0){
@@ -104,7 +105,7 @@ module grid_block(
         for(y =[0:1:num_y-1])
         {
           color(color_basehole)
-          translate([x*gridfinity_pitch,y*gridfinity_pitch,-fudgeFactor])
+          translate([x*gf_pitch,y*gf_pitch,-fudgeFactor])
             cylinder(h=center_magnet_thickness-fudgeFactor, d=center_magnet_diameter);
         }
       }
@@ -114,8 +115,13 @@ module grid_block(
     {
       // remove top so XxY can fit on top
       color(color_topcavity) 
-      translate([0, 0, gridfinity_zpitch*num_z]) 
-      pad_oversize(num_x, num_y, 1);
+        translate([0, 0, gridfinity_zpitch*num_z]) 
+        pad_oversize(num_x, num_y, 1);
+    }
+    else{
+      color(color_topcavity) 
+        translate([-gf_pitch/2, -gf_pitch/2, gridfinity_zpitch*num_z]) 
+        cube([num_x*gf_pitch,num_y*gf_pitch, gridfinity_zpitch]);
     }
     
     color(color_basehole)
@@ -123,14 +129,14 @@ module grid_block(
     gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
       SequentialBridgingDoubleHole(
         outerHoleRadius = emd/2,
-        outerHoleDepth = magnet_thickness+0.1,
-        innerHoleRadius = screw_hole_diam/2,
+        outerHoleDepth = gf_magnet_thickness+0.1,
+        innerHoleRadius = gf_cupbase_screw_diameter/2,
         innerHoleDepth = esd+0.1,
         overhangBridgeCount = overhang_fix,
         overhangBridgeThickness = overhang_fix_depth
       );
   }
-
+ 
   HelpTxt("grid_block",[
     "num_x",num_x
     ,"num_y",num_y
@@ -152,7 +158,7 @@ module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
     pad_oversize(ceil(num_x), ceil(num_y));
   }
   else if (half_pitch) {
-    gridcopy(ceil(num_x*2), ceil(num_y*2), gridfinity_pitch/2) {
+    gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
       pad_oversize(
         ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
         ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5));
@@ -182,7 +188,7 @@ module cylsq2(d1, d2, h) {
 // unit pad slightly oversize at the top to be trimmed or joined with other feet or the rest of the model
 // also useful as cutouts for stacking
 module pad_oversize(num_x=1, num_y=1, margins=0) {
-  pad_corner_position = gridfinity_pitch/2 - 4; // must be 17 to be compatible
+  pad_corner_position = gf_pitch/2 - 4; // must be 17 to be compatible
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
   bevel2_top = 5;       // z of top of second bevel
@@ -220,14 +226,14 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
     
     // cut off bottom if we're going to go negative
     if (margins) {
-      translate([-gridfinity_pitch/2, -gridfinity_pitch/2, 0])
-      cube([gridfinity_pitch*num_x, gridfinity_pitch*num_y, axialdown]);
+      translate([-gf_pitch/2, -gf_pitch/2, 0])
+      cube([gf_pitch*num_x, gf_pitch*num_y, axialdown]);
     }
   }
 }
 
 // similar to cornercopy, can only copy to box corners
-module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gridfinity_pitch) {
+module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) {
   for (xi=[1:num_x]) for (yi=[1:num_y]) 
     for (xx=[-1, 1]) for (yy=[-1, 1]) 
       if(!onlyBoxCorners || 
@@ -240,7 +246,7 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gridfinity
 }
 
 // similar to quadtranslate but expands to extremities of a block
-module cornercopy(r, num_x=1, num_y=1,pitch=gridfinity_pitch) {
+module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
   for (xx=[0, 1]) 
     for (yy=[0, 1]) 
     {
@@ -254,7 +260,7 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gridfinity_pitch) {
 
 
 // make repeated copies of something(s) at the gridfinity spacing of 42mm
-module gridcopy(num_x, num_y, pitch=gridfinity_pitch) {
+module gridcopy(num_x, num_y, pitch=gf_pitch) {
   for (xi=[0:num_x-1]) 
     for (yi=[0:num_y-1])
     {

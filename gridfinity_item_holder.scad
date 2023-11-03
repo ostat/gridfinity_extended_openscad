@@ -2,13 +2,20 @@ include <modules/modules_item_holder.scad>
 include <modules/gridfinity_constants.scad>
 include <modules/functions_general.scad>
 use <modules/gridfinity_cup_modules.scad>
+use <modules/gridfinity_modules.scad>
 
 /*<!!start gridfinity_itemholder!!>*/
 /* [Item Holder] */
 
 itemholder_known_item = "1/4hexshank"; // [ custom:"Custome", 4hexshank:"4mm Hex Shank", 1/4hexshank:"1/4 Hex Shank", 1/4hexlongshank:"1/4 Hex Long Shank", 5/16hexshank:"5/16 Hex Shank", 3/8hexshank:"3/8 Hex Shank", "aaaa":"AAAA cell", "aaa":"AAA cell", "aa":"AA cell", "c":"C cell", "d":"d cell", "7540":"7540 cell", "8570":"8570 cell", "10180":"10180 cell", "10280":"10280 cell", "10440":"10440 cell", "10850":"10850 cell", "13400":"13400 cell", "14250":"14250 cell", "14300":"14300 cell", "14430":"14430 cell", "14500":"14500 cell", "14650":"14650 cell", "15270":"15270 cell", "16340":"16340 cell", "16650":"16650 cell", "17500":"17500 cell", "17650":"17650 cell", "17670":"17670 cell", "18350":"18350 cell", "18490":"18490 cell", "18500":"18500 cell", "18650":"18650 cell", "20700":"20700 cell", "21700":"21700 cell", "25500":"25500 cell", "26500":"26500 cell", "26650":"26650 cell", "26700":"26700 cell", "26800":"26800 cell", "32600":"32600 cell", "32650":"32650 cell", "32700":"32700 cell", "38120":"38120 cell", "38140":"38140 cell", "40152":"40152 cell", "4680":"4680 cell"]
-itemholder_known_cards = "custom"; // [ custom:"Custome", "compactflashi":"CompactFlash, Type I", "compactflashii":"CompactFlash, Type II", "smartmedia":"SmartMedia", "mmc":"MMC, MMCplus", "mmcmobile":"RS-MMC, MMCmobile", "mmcmicro":"MMCmicro", "sd":"SD, SDHC, SDXC, SDIO, MicroP2", "minisd":"miniSD, miniSDHC, miniSDIO", "microsd":"microSD, microSDHC, microSDXC", "memorystickstandard":"Memory Stick Standard, PRO", "memorystickduo":"Memory Stick Duo, PRO Duo, PRO-HG, XC", "memorystickmicro":"Memory Stick Micro (M2), XC", "nano":"Nano Memory", "psvita":"PS Vita Memory Card", "xqd":"XQD card", "xD":"xD", "USBA":"USB A", "USBC":"USB C"]
+itemholder_known_cards = "custom"; // [ custom:"Custome", "multicard":"Multi card slot", "compactflashi":"CompactFlash, Type I", "compactflashii":"CompactFlash, Type II", "smartmedia":"SmartMedia", "mmc":"MMC, MMCplus", "mmcmobile":"RS-MMC, MMCmobile", "mmcmicro":"MMCmicro", "sd":"SD, SDHC, SDXC, SDIO, MicroP2", "minisd":"miniSD, miniSDHC, miniSDIO", "microsd":"microSD, microSDHC, microSDXC", "memorystickstandard":"Memory Stick Standard, PRO", "memorystickduo":"Memory Stick Duo, PRO Duo, PRO-HG, XC", "memorystickmicro":"Memory Stick Micro (M2), XC", "nano":"Nano Memory", "psvita":"PS Vita Memory Card", "xqd":"XQD card", "xD":"xD", "USBA":"USB A", "USBC":"USB C"]
 itemholder_known_cartridges = "custom"; // [ custom:"Custome", "atari800":"Atari 800", "atari2600":"Atari 2600/7800/Colecovision", "atari5200":"Atari 5200", "atari7800":"Atari 7800", "commodore":"Commodore Vic20", "magnavoxodyssey":"Magnavox Odyssey", "magnavoxodysseymulticard":"Magnavox Odyssey (multicard)", "magnavoxodyssey2":"Magnavox Odyssey2", "mattelintellivision":"Mattel Intellivision I & II", "nintendofamicom":"Nintendo Famicom", "nintendofamicomdisk":"Nintendo Famicom Disk", "nintendosuperfamicom":"Nintendo Super Famicom / SNES (Pal)", "nes":"NES", "snes":"SNES", "nintendo64":"Nintendo 64", "nintendogb":"Nintendo GB", "nintendogbc":"Nintendo GBC", "nintendogba":"Nintendo GBA", "nintendods":"Nintendo DS", "nintendo2ds":"Nintendo 2DS/3DS", "nintendovb":"Nintendo Virtual Boy", "nintendoswitch":"Nintendo Switch", "segagamegear":"Sega Game Gear", "segagenesis":"Sega Genesis", "segagenesistall":"Sega Genesis (tall cart)", "segamegadrive":"Sega MegaDrive", "segamegadrivecodemasters":"Sega MegaDrive Codemasters", "segamastersystem":"Sega Master System", "sega32x":"Sega 32x", "segacard":"Sega Card/TG16", "segapico":"Sega Pico", "sonyumd":"Sony UMD", "sonypsvita":"Sony PS Vita", "sonypsvitamemcard":"Sony PS Vita (Mem Card)", "necpcehucard":"NEC PCE HuCard", "snkneogeoaes":"SNK Neo Geo AES", "snkneogeomvs":"SNK Neo Geo MVS", "bandai":"Bandai Wonderswan/Color", "msx":"MSX"]
+
+// cards to use when multi card is selected I.E. sd;USBA;microsd
+itemholder_multi_cards = "sd;USBA;microsd";
+
+// Nest multi cards, This has a but where the last one could be cropped.
+itemholder_multi_card_compact = 0; // [0:0.1:1]
 
 // Should the grid be square or hex
 itemholder_hex_grid = false;
@@ -21,6 +28,9 @@ itemholder_hole_clearance = 0.65;
 // Depth of hole, Overrides the know item depth. Limited by floor height
 itemholder_hole_depth = 0; //0.1
 
+// 45 deg chamfer added to the top of the hole (mm)
+itemholder_hole_chamfer = 1; //0.5
+
 // The number of sides for the hole, when custom is selected
 itemholder_hole_sides = 4; 
 // The size the hole, when custom is selected
@@ -31,7 +41,7 @@ itemholder_hole_gridx = 0; //1
 // Number of holes in the y dimension, 0 is dynamic, y.5, is only valid for hex.
 itemholder_hole_gridy = 0; //0.5
 //Auto set the bin height based on the hole size.
-itemholder_auto_bin_height = false;
+itemholder_auto_bin_height = true;
 itemholder_compartments = [1,1]; //[1:10]
 // Spacing around the compartments
 itemholder_compartment_spacing = 3; //0.1
@@ -55,7 +65,7 @@ itemholder_customcompartments = "";
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
 // X dimension in grid units  (multiples of 42mm)
-width = 4; // [ 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
+width = 2; // [ 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
 // Y dimension in grid units (multiples of 42mm)
 depth = 3; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
 // Z dimension (multiples of 7mm)
@@ -142,9 +152,9 @@ wallpattern_hole_spacing = 2; //0.1
 
 /* [debug] */
 //Slice along the x axis
-cutx = false;
+cutx = 0; //0.1
 //Slice along the y axis
-cuty = false;
+cuty = 0;//0.1
 // enable loging of help messages during render.
 help = false;
 /*<!!end gridfinity_basic_cup!!>*/
@@ -216,6 +226,7 @@ function LookupKnownItem(name="custom") =
  // result is dimentions for commnly know items
 //[width, thickness, depthneeded, itemHeight, shape]
 function LookupKnownCard(name="custom") = 
+  name == "multicard" ? [0, 0, 0, 0, "square"] :
   name == "compactflashi" ? [43, 3.3, 9, 36, "square"] :
   name == "compactflashii" ? [43, 5, 9, 36, "square"] :
   name == "smartmedia" ? [37, 0.76, 11.25, 45, "square"] :
@@ -224,7 +235,7 @@ function LookupKnownCard(name="custom") =
   name == "mmcmicro" ? [14, 1.1, 3, 12, "square"] :
   name == "sd" ? [24, 2.1, 18, 32, "square"] :
   name == "minisd" ? [20, 1.4, 10, 21.5, "square"] :
-  name == "microsd" ? [11, 1, 3.75, 15, "square"] :
+  name == "microsd" ? [11, 0.7, 9, 15, "square"] :
   name == "memorystickstandard" ? [21.5, 2.8, 12.5, 50, "square"] :
   name == "memorystickduo" ? [20, 1.6, 7.75, 31, "square"] :
   name == "memorystickmicro" ? [12.5, 1.2, 3.75, 15, "square"] :
@@ -232,7 +243,7 @@ function LookupKnownCard(name="custom") =
   name == "psvita" ? [15, 1.6, 3.125, 12.5, "square"] :
   name == "xqd" ? [38.5, 3.8, 7.45, 29.8, "square"] :
   name == "xD" ? [25, 1.78, 5, 20, "square"] :
-  name == "USBA" ? [12, 4.5, 12.8, 13, "square"] :
+  name == "USBA" ? [12, 4.5, 13, 13, "square"] :
   name == "USBC" ? [8.5, 4, 10, 0, "square"] :
   [0,0,0,0,""];
 
@@ -290,7 +301,11 @@ function LookupKnown(knowItem) = let(
     ) knownCard[4] != "" ? knownCard 
       : knownCartridge[4] != "" ? knownCartridge
       : knownItem;
-      
+function addClearance(dim, clearance) =
+    [dim.x > 0 ? dim.x+clearance : 0
+    ,dim.y > 0 ? dim.y+clearance : 0
+    ,dim.z];
+
 //TODO for the hose size its not correct due to loss in the number of faces.
 //E.G a 10mm circle cant contain a 10mm hex
 //This also throws off the calculated spacing.
@@ -299,10 +314,13 @@ module itemholder(
   num_y = 2,
   num_z, 
   knowItem = "custom",
+  multiCards = "sd,USBA,microsd",
+  multiCardCompact = 0,
   hexGrid = false,
   sides = 4,
   holeSize = 10,
   holeDepth = 5, 
+  holeChamfer = 1,
   holeClearance = 0.65,
   holeSpacing = 0,
   holeGrid  = [0,0],
@@ -316,27 +334,36 @@ module itemholder(
   help = false)
 {
   //Non custom components
-  echo(n=num_x*gridfinity_pitch-(compartments.x+1)*compartment_spacing,d=compartments.x);
-  xSize = (num_x*gridfinity_pitch-(compartments.x+1)*compartment_spacing)/compartments.x;
-  xStep = xSize + compartment_spacing;
-  ySize = (num_y*gridfinity_pitch-(compartments.y+1)*compartment_spacing)/compartments.y;
-  yStep = ySize + compartment_spacing;
-  
   item = LookupKnown(knowItem);
-
-  _sides = item[4] == "" ? sides : LookupKnownShapes(item[4]);
-  _holeSize = item[4] != "square" ?
+  mc = split(multiCards, ";");
+  
+  longCenter = addClearance(LookupKnown(mc[0]), holeClearance);
+  smallCenter = addClearance(LookupKnown(mc[1]), holeClearance);
+  side = addClearance(LookupKnown(mc[2]), holeClearance);
+  
+  _multiCardCompact = (knowItem == "multicard" && multiCardCompact > 0 ? side.x * (1 - min(multiCardCompact/2 + 0.5 ,1)) : 0);
+  
+  _sides = knowItem == "multicard" ? 4
+    : item[4] == "" ? sides : LookupKnownShapes(item[4]);
+  _holeSize = knowItem == "multicard" ? [max(longCenter.x,smallCenter.x), max(longCenter.y, smallCenter.y, side.x -_multiCardCompact)]
+    : item[4] != "square" ?
     let(s = (item[0] == 0 ? holeSize : item[0])+holeClearance) [s, s]
     : [item[0],item[1]];
-
     
-  _depth= let(desiredDepth=(holeDepth > 0 ? holeDepth : item[2])) desiredDepth > floorThickness ? floorThickness : desiredDepth;
+  _depth= let( 
+    itemDepth = knowItem == "multicard" ? max(longCenter.z, smallCenter.z, side.z) : item.z,
+    desiredDepth=(holeDepth > 0 ? holeDepth : itemDepth))
+      desiredDepth > floorThickness ? floorThickness : desiredDepth;
+
+  xSize = (num_x*gridfinity_pitch-(compartments.x+1)*compartment_spacing)/compartments.x;
+  xStep = xSize + compartment_spacing;
+  ySize = (num_y*gridfinity_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
+  yStep = ySize + compartment_spacing;
   
   for(x =[0:1:compartments.x-1])
   {
     for(y =[0:1:compartments.y-1])
     {
-      echo("itemholder", x=x,y=y,xStep=xStep,yStep=yStep,xSize=xSize,ySize=ySize);
       translate(compartment_centered 
         ? [compartment_spacing+x*xStep+(xSize-gridfinity_pitch)/2, compartment_spacing+y*yStep+(ySize-gridfinity_pitch)/2, floorThickness-_depth]
         : [compartment_spacing+x*xStep-gridfinity_pitch/2, compartment_spacing+y*yStep-gridfinity_pitch/2, floorThickness-_depth])
@@ -349,11 +376,21 @@ module itemholder(
           holeSpacing = [holeSpacing,holeSpacing],
           holeGrid = holeGrid,
           holeHeight = _depth+fudgeFactor,
+          holeChamfer = holeChamfer,
           center=compartment_centered,
           fill=compartment_fill,
           help=help)
-          if(item[4] == "square")
-              slotCutout([_holeSize.x, _holeSize.y, _depth+fudgeFactor]);
+          union(){
+            if(knowItem=="multicard")
+            {
+              multiCard(
+                longCenter, smallCenter, side, 
+                chamfer = holeChamfer,
+                alternate = _multiCardCompact > 0 && (($idx.y % 2) != $idx.x % 2));
+            }else if(item[4] == "square") {
+              slotCutout([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer);
+            }
+          }
     }
   }
   
@@ -367,6 +404,7 @@ module itemholder(
     ,"holeClearance",holeClearance
     ,"holeSpacing",holeSpacing
     ,"holeGrid",holeGrid
+    ,"holeChamfer",holeChamfer
     ,"floorThickness",floorThickness
     ,"wallThickness",wallThickness
     ,"compartments",compartments
@@ -385,35 +423,6 @@ module itemholder(
     ,help);
 }
 
-// Creates a slot with a small champer for easy insertertion
-//#slotCutout(100,20,40);
-//width = width of slot
-//depth = depth of slot
-//height = height of slot
-//champer = champer size
-module slotCutout(size, champer = 1.2)
-{
-  c = size.y * champer;
-  echo(sizey=size.y, champer=champer, c=c, size.z);
-  translate([size.x/2,size.y/2,0])
-  intersection(){
-    union(){
-      // Main slot
-      translate([-size.x/2,-size.y/2,0])
-        cube([size.x, size.y, size.z]);
-      
-     translate([(size.y-size.x)/2,0,size.z+fudgeFactor])
-     hull(){
-        translate([size.x-size.y,0,0])
-          rotate([180,0,45])
-          cylinder(c,c,00,$fn=4);
-        rotate([180,0,45])
-          cylinder(c,c,00,$fn=4);
-     }
-    }
-  }
-}
-
 // Generates the gridfinity bin with cutouts.
 // Runs the function without needing to pass the variables.
 module gridfinity_itemholder(
@@ -425,12 +434,15 @@ module gridfinity_itemholder(
   itemholder_hole_grid = [itemholder_hole_gridx, itemholder_hole_gridy],
   itemholder_hole_clearance = itemholder_hole_clearance,
   itemholder_hole_depth = itemholder_hole_depth,
+  itemholder_hole_chamfer = itemholder_hole_chamfer,
   itemholder_compartments = itemholder_compartments,
   itemholder_compartment_spacing = itemholder_compartment_spacing,
   itemholder_compartment_centered = itemholder_compartment_centered,
   itemholder_compartment_fill  = itemholder_compartment_fill,
   itemholder_customcompartments = itemholder_customcompartments,
   itemholder_auto_bin_height = itemholder_auto_bin_height,
+  itemholder_multi_cards = itemholder_multi_cards,
+  itemholder_multi_card_compact = itemholder_multi_card_compact,
   itemholder_known_item = itemholder_known_item != "custom" ? itemholder_known_item  
       : itemholder_known_cards != "custom"? itemholder_known_cards
       : itemholder_known_cartridges, 
@@ -482,26 +494,40 @@ module gridfinity_itemholder(
   help=help) {
   
   difference() {
-  
     //calcualte height if needed.
-    item = LookupKnown(itemholder_known_item);
-    itemholder_hole_depth=(itemholder_hole_depth > 0 ? itemholder_hole_depth : item[2]);
+   knowItemDepth = itemholder_known_item == "multicard" ? 
+    let (
+      mc = split(itemholder_multi_cards, ";"), 
+      longCenter = LookupKnown(mc[0]),
+      smallCenter = LookupKnown(mc[1]),
+      side = LookupKnown(mc[2])) max(longCenter.z,smallCenter.z,side.z)
+    : let( item = LookupKnown(itemholder_known_item)) item.z;
+   
+    itemholder_hole_depth=(itemholder_hole_depth > 0 ? itemholder_hole_depth : knowItemDepth);
     
-    //calk the bin height. This math is not right
+    // min floor height
+    bch = cupBaseClearanceHeight(magnet_diameter, screw_depth);
+    mfh = calculateMinFloorHeight(magnet_diameter, screw_depth);
+    
+    //calculate the bin height. This math is not right
     height = !itemholder_auto_bin_height ? height
         : itemholder_hole_depth <=0 ? height
-        : filled_in == "notstackable" ? ceil(itemholder_hole_depth/gridfinity_zpitch) + 1
-        : filled_in == "on" ? ceil(itemholder_hole_depth/gridfinity_zpitch) + 2
-        : ceil(itemholder_hole_depth/gridfinity_zpitch) + 1;
- 
-    floor_thickness = !itemholder_auto_bin_height ? floor_thickness 
-      : itemholder_hole_depth + minFloorThickness;
-    
+        : filled_in == "notstackable" ? (mfh+itemholder_hole_depth)/gridfinity_zpitch
+        : filled_in == "on" ? ceil((mfh+itemholder_hole_depth)/gridfinity_zpitch)
+        : ceil((mfh+itemholder_hole_depth)/gridfinity_zpitch);
+
+    // calculate floor thickness
+    ft = calculateFloorThickness(magnet_diameter, screw_depth, itemholder_hole_depth+gf_cup_floor_thickness, height, filled_in);  
+      
+    itemZpos = filled_in == "notstackable" ? mfh+itemholder_hole_depth
+        : filled_in == "on" ? height*gridfinity_zpitch
+        : mfh+itemholder_hole_depth;
+      
     /*<!!start gridfinity_basic_cup!!>*/
     sepPositions = irregular_subdivisions 
       ? separator_positions
       : calcualteSeparators(chambers-1,width);
-    echo("gridfinity_itemholder", itemholder_known_item=itemholder_known_item, item=item,itemholder_hole_depth=itemholder_hole_depth, height=height, floor_thickness=floor_thickness);
+    
     irregular_cup(
       num_x=width, num_y=depth, num_z=height,
       position=position,
@@ -514,7 +540,7 @@ module gridfinity_itemholder(
       screw_depth=screw_depth,
       center_magnet_diameter = center_magnet_diameter, 
       center_magnet_thickness = center_magnet_thickness,
-      floor_thickness=floor_thickness,
+      floor_thickness=ft,
       cavity_floor_radius=cavity_floor_radius,
       wall_thickness=wall_thickness,
       hole_overhang_remedy=hole_overhang_remedy,
@@ -540,26 +566,27 @@ module gridfinity_itemholder(
       wallcutout_angle=wallcutout_angle,
       wallcutout_height=wallcutout_height,
       wallcutout_corner_radius=wallcutout_corner_radius,
+      cutx=cutx,
+      cuty=cuty,
       help = help);
     /*<!!end gridfinity_basic_cup!!>*/
 
-    cbh = calculateCupBaseHeight(magnet_diameter, screw_depth);
-    fh = calculateFloorHeight(magnet_diameter,screw_depth, floor_thickness);
-    fd = calculateFloorDepth(filled_in, floor_thickness, height);
-  
     color(color_extention)
-    translate([0,0,cbh+minFloorThickness])
+    translate([0,0,bch])
     itemholder(
       num_x=width, num_y=depth, num_z=height,
       knowItem = itemholder_known_item,
+      multiCards = itemholder_multi_cards,
+      multiCardCompact = itemholder_multi_card_compact,
       hexGrid = itemholder_hex_grid,
       sides = itemholder_hole_sides,
       holeSize = itemholder_hole_size,
       holeSpacing = itemholder_hole_spacing,
       holeDepth = itemholder_hole_depth, 
+      holeChamfer = itemholder_hole_chamfer,
       holeGrid  = itemholder_hole_grid,
       holeClearance = itemholder_hole_clearance,
-      floorThickness = fd-minFloorThickness,
+      floorThickness = ft,
       wallThickness = wall_thickness,
       compartments = itemholder_compartments,
       compartment_spacing = itemholder_compartment_spacing,
@@ -567,16 +594,6 @@ module gridfinity_itemholder(
       compartment_fill = itemholder_compartment_fill,
       customcompartments = itemholder_customcompartments,
       help=help);
-
-    if(cutx && $preview){
-      translate([-gridfinity_pitch,-gridfinity_pitch,-fudgeFactor])
-        cube([(width+1)*gridfinity_pitch,gridfinity_pitch,(height+1)*gridfinity_zpitch]);
-    }
-    if(cuty && $preview){
-      translate([-gridfinity_pitch*0.75,-gridfinity_pitch,-fudgeFactor])
-        cube([gridfinity_pitch,(depth+1)*gridfinity_pitch,(height+1)*gridfinity_zpitch]);
-    } 
-    
   }
 }
 

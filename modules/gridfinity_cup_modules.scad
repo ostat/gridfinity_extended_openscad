@@ -1,5 +1,6 @@
-include <gridfinity_modules.scad>
-include <modules_item_holder.scad>
+use <gridfinity_modules.scad>
+use <modules_item_holder.scad>
+include <gridfinity_constants.scad>
 
 default_num_x=2; //0.1
 default_num_y=1; //0.1
@@ -64,8 +65,8 @@ default_wallpattern_hole_size = 5; //0.1
 default_wallpattern_hole_spacing = 2; //0.1
 default_help = false;
 /* [debug] */
-cutx = false;
-cuty = false;
+default_cutx = 0;//0.1
+default_cuty = 0;//0.1
 
 difference(){
   basic_cup(
@@ -107,17 +108,10 @@ difference(){
     wallcutout_angle=default_wallcutout_angle,
     wallcutout_height=default_wallcutout_height,
     wallcutout_corner_radius=default_wallcutout_corner_radius,
+    cutx=default_cutx,
+    cuty=default_cuty,
     help = default_help
   );
-
-  if(cutx && $preview){
-    translate([-gridfinity_pitch,-gridfinity_pitch,-fudgeFactor])
-      cube([(default_num_x+1)*gridfinity_pitch,gridfinity_pitch,(default_num_z+1)*gridfinity_zpitch]);
-  }
-  if(cuty && $preview){
-    translate([-gridfinity_pitch*0.75,-gridfinity_pitch,-fudgeFactor])
-      cube([gridfinity_pitch,(default_num_y+1)*gridfinity_pitch,(default_num_z+1)*gridfinity_zpitch]);
-  } 
 }
 
 // It's recommended that all parameters other than x, y, z size should be specified by keyword 
@@ -164,6 +158,8 @@ module basic_cup(
   wallcutout_angle=default_wallcutout_angle,
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
+  cutx=default_cutx,
+  cuty=default_cuty,
   help) {
     
   irregular_cup(
@@ -206,6 +202,8 @@ module basic_cup(
     wallcutout_angle=wallcutout_angle,
     wallcutout_height=wallcutout_height,
     wallcutout_corner_radius=wallcutout_corner_radius,
+    cutx=cutx,
+    cuty=cuty,
     help = help);
 }
 
@@ -251,10 +249,12 @@ module irregular_cup(
   wallcutout_angle=default_wallcutout_angle,
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
+  cutx=default_cutx,
+  cuty=default_cuty,
   help) {
   //  echo("irregular_cupy", num_y=num_y, is05=num_y==0.5, cells_y=ceil(num_y*2));
 
-  translate(caluclatePosition(position,num_x,num_y))
+  translate(cupPosition(position,num_x,num_y))
   difference() {
     grid_block(
       num_x, num_y, num_z, 
@@ -348,7 +348,6 @@ module irregular_cup(
         }
         
         if(wallcutout_enabled){
-
           for(i = [0:1:len(wallcutout_locations)-1])
           {
             if(wallcutout_walls[i] > 0)
@@ -415,7 +414,7 @@ module irregular_cup(
                   holeHeight = wallpattern_thickness,
                   center=true,
                   fill=wallpattern_fill, //"none", "space", "crop"
-                  help=true);
+                  help=help);
                   }
               }
               }
@@ -474,8 +473,90 @@ module irregular_cup(
         }
       }
     }
+        
+    if(cutx > 0 && $preview){
+      translate([-gridfinity_pitch*cutx,-gridfinity_pitch,-fudgeFactor])
+        cube([(num_x+1)*gridfinity_pitch,gridfinity_pitch,(num_x+1)*gridfinity_zpitch]);
+    }
+    if(cuty > 0 && $preview){
+      translate([-gridfinity_pitch*0.5-gridfinity_pitch*cuty,-gridfinity_pitch,-fudgeFactor])
+        cube([gridfinity_pitch,(num_y+1)*gridfinity_pitch,(num_z+1)*gridfinity_zpitch]);
+    }
   }
-  
+
+  if(cuty > 0 && $preview)
+  {
+    echo(cuty = cuty, preview=$preview);
+    bh = gfBaseHeight();
+    cbh = cupBaseClearanceHeight(magnet_diameter, screw_depth);
+    mfh = calculateMinFloorHeight(magnet_diameter, screw_depth);
+    fh = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filled_in);
+    fd = fh - mfh;//calculateFloorDepth(filled_in, floor_thickness, num_z);
+
+    fontSize = 3;
+    translate([gridfinity_pitch*0.5-gridfinity_pitch*cuty,0,0]){
+    translate([0,-gridfinity_pitch/2,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, size = fontSize,
+        cx=0, end=0, in=2,
+        l=num_z*gridfinity_zpitch, 
+        txt2 = str("height ", num_z));
+        
+    translate([0,-gridfinity_pitch/2,num_z*gridfinity_zpitch])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, size = fontSize,
+        cx=0, end=0, in=2,
+        l=gridfinity_lip_height, 
+        txt2 = str("lip height"));
+        
+   translate([0,-gridfinity_pitch/2,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, size = fontSize,
+        cx=0, end=0, in=2,
+        translate=[fontSize*3,0,0],
+        l=gridfinity_lip_height+num_z*gridfinity_zpitch, 
+        txt2 = str("total height"));
+        
+        
+
+    translate([0,+gridfinity_pitch/2,mfh])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize,
+        cx=-1, end=0, in=2,
+        translate=[00,0,0],
+        l=fd, 
+        txt2 = "floor thickness");
+    translate([0,+gridfinity_pitch/2,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize*.75,
+        cx=0, end=0, in=2,
+        translate=[00,0,0],
+        l=bh, 
+        txt2 = "min base height");
+    translate([0,+gridfinity_pitch/2,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize*.75,
+        cx=-1, end=0, in=2,
+        translate=[-2,0,0],
+        l=mfh, 
+        txt2 = "min floor height");
+    translate([0,0,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize,
+        cx=-1, end=0, in=2,
+        translate=[0,-fh/2+2,0],
+        l=fh, 
+        txt2 = "floor height");
+    }
+  }  
+      
   HelpTxt("irregular_cup",[
     "num_x",num_x
     ,"num_y",num_y
@@ -513,7 +594,9 @@ module irregular_cup(
     ,"wallcutout_width",wallcutout_width
     ,"wallcutout_angle",wallcutout_angle
     ,"wallcutout_height",wallcutout_height
-    ,"wallcutout_corner_radius",wallcutout_corner_radius]
+    ,"wallcutout_corner_radius",wallcutout_corner_radius
+    ,"cutx",cutx
+    ,"cuty",cuty]
     ,help);  
 }
 
@@ -616,16 +699,18 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   lip_style2 = (num_z < 1.8 && lip_style == "normal") ? "reduced" : lip_style;
   // replace "reduced" with "none" if z-height is less than 1.1
   lip_style3 = (num_z < 1.2 && lip_style2 == "reduced") ? "none" : lip_style2;
-  
+  echo("basic_cavity",lip_style3=lip_style3,floorht=floorht,zpoint=zpoint,cavity_floor_radius=cavity_floor_radius,efloor=efloor);
   difference() {
     union() {
       // cut out inside edge of standard lip
+      //color("green")
       hull() cornercopy(seventeen, num_x, num_y) {
         tz(zpoint-eps) cylinder(d=2.3, h=inner_lip_ht+2*eps, $fn=24); // lip
       }
       
       hull() cornercopy(seventeen, num_x, num_y) {
         // create bevels below the lip
+        union(){
         if (lip_style3 == "reduced") {
           tz(zpoint+1.8) cylinder(d=3.7, h=0.1, $fn=32); // transition from lip (where top of lip would be) ...
           // radius increases by (2.3+2*q-3.7)/2 = q-1.4/2 = q-0.7
@@ -638,10 +723,12 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
           tz(zpoint-0.1) cylinder(d=2.3, h=0.1, $fn=24);       // transition from lip ...
           tz(zpoint-q-q2) cylinder(d=2.3+2*q, h=q2, $fn=32);   // ... to top of thin wall ...
         }
+        }
+        
         // create rounded bottom of bowl (8.5 is high enough to not expose gaps)
         //tz(2.3/2+q+floorht) sphere(d=2.3+2*q, $fn=32);       // .. to bottom of thin wall and floor
         tz(floorht)
-          roundedCylinder(h=max(fudgeFactor,cavity_floor_radius*2),r=(2.3+2*q)/2,roundedr1=cavity_floor_radius,roundedr2=0, $fn=32)
+          roundedCylinder(h=max(fudgeFactor,min(floorht - zpoint , cavity_floor_radius)),r=(2.3+2*q)/2,roundedr1=cavity_floor_radius,roundedr2=0, $fn=32)
         
         tz(2.3/2+q+floorht) 
           mirror([0, 0, 1]) 
@@ -723,29 +810,6 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
       gridcopy(num_x, num_y) 
       EfficientFloor(1, 1, floor_thickness, q);
     }
-    /*
-    else {
-      _gridx = flat_base ? 1 : num_x;
-      _gridCornerx = flat_base ? num_x : 1;
-      _gridy = flat_base ? 1 : num_y;
-      _gridCornery = flat_base ? num_y : 1;
-      
-      gridcopy(_gridx, _gridy) 
-      EfficientFloor(_gridCornerx, _gridCornery,floor_thickness, q);
-      
-      // establishes floor
-      gridcopy(_gridx, _gridy) 
-        hull() 
-        tz(floor_thickness) 
-        gridcopycorners(_gridCornerx, _gridCornery, seventeen-0.5, flat_base) 
-        cylinder(r=1, h=5, $fn=32);
-   
-      // tapered top portion
-      gridcopy(_gridx, _gridy) hull() {
-        tz(3) gridcopycorners(_gridCornerx, _gridCornery, seventeen-0.5, flat_base) cylinder(r=1, h=1, $fn=32);
-        tz(5-(+2.5-1.15-q)) gridcopycorners(_gridCornerx, _gridCornery, seventeen, flat_base) cylinder(r=1.15+q, h=4, $fn=32);
-      }
-    }*/
   }
 }
 
