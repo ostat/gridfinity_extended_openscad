@@ -13,14 +13,14 @@ constTopHeight = 5.7+fudgeFactor*5; //Need to confirm this
 
 //Height to clear the voids in the base
 function cupBaseClearanceHeight(magnet_diameter, screw_depth) = let (
-    mag_ht = magnet_diameter > 0 ? const_magnet_height : 0)
+    mag_ht = magnet_diameter > 0 ? gf_magnet_thickness : 0)
     max(mag_ht, screw_depth, gf_min_base_height);
 
 function calculateMinFloorHeight(magnet_diameter,screw_depth) = 
     cupBaseClearanceHeight(magnet_diameter,screw_depth) + gf_cup_floor_thickness;
     
 //Height of base including the floor.
-function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) = 
+function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off") = 
   filledin == "on" || filledin == "notstackable" 
     ? num_z * gridfinity_zpitch 
     : cupBaseClearanceHeight(magnet_diameter,screw_depth) + max(floor_thickness, gf_cup_floor_thickness);
@@ -66,7 +66,7 @@ module grid_block(
 {
   //echo("grid_blocky", num_y=num_y, is05=num_y==0.5, cells_y=ceil(num_y*2));
  
-  outer_size = gf_pitch - gridfinity_clearance;  // typically 41.5
+  outer_size = gf_pitch - gf_tolerance;  // typically 41.5
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
 
   magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
@@ -78,7 +78,7 @@ module grid_block(
   overhang_fix = hole_overhang_remedy > 0 && emd > 0 && esd > 0 ? hole_overhang_remedy : 0;
   overhang_fix_depth = 0.3;  // assume this is enough
   
-  totalht=gridfinity_zpitch*num_z+3.75;
+  totalht=gf_zpitch*num_z+3.75;
   translate(cupPosition(position,num_x,num_y))
   difference() {
     intersection() {
@@ -115,7 +115,7 @@ module grid_block(
     {
       // remove top so XxY can fit on top
       color(color_topcavity) 
-        translate([0, 0, gridfinity_zpitch*num_z]) 
+        translate([0, 0, gf_zpitch*num_z]) 
         pad_oversize(num_x, num_y, 1);
     }
     else{

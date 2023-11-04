@@ -3059,7 +3059,7 @@ else HelpTxt("Help",["titel",titel,"string",string,"help",help],help=1);
 //Caliper(end=3,txt2="X—Length",in=+1);
 
 
-module Caliper(l=40,in=1,center=true,messpunkt=true,translate=[0,0,0],end=1,h,on=$preview,l2,txt,txt2,size=$vpd/15,render,s,t,cx,cy,help){
+module Caliper(l=40,in=1,center=true,messpunkt=true,translate=[0,0,0],end=1,h,on=$preview,l2,txt,txt2,size=$vpd/15,render,s,t,cx,cy,help=false){
     
     on=render?render:on;
     s=s?s:size;

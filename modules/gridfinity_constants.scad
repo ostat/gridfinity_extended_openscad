@@ -5,7 +5,7 @@ gf_pitch = 42;
 // each bin is undersize by this much
 gf_tolerance = 0.5;
 //Gridfinity height size
-gridfinity_zpitch = 7;
+gf_zpitch = 7;
 gf_taper_angle = 45;
 
 // cup
@@ -22,10 +22,27 @@ gf_cupbase_screw_depth = 6;
 gf_magnet_diameter = 6.5;
 gf_magnet_thickness = 2.4;
 
-//stacking lip
+//stacking lips
+// Standard lip
+// \        gf_lip_upper_taper_height 
+//  |       gf_lip_riser_height
+//   \      gf_lip_lower_taper_height
+//    |     gf_lip_height
+//   /      gf_lip_support_taper_height
+//  /
+// /
+///
+// Reduced lip
+// \        gf_lip_upper_taper_height 
+//  |       gf_lip_riser_height
+// /        gf_lip_reduced_support_taper_height
+/// 
 gf_lip_lower_taper_height = 0.7;
 gf_lip_riser_height = 1.8;
 gf_lip_upper_taper_height = 1.9;
+gf_lip_height = 1.2;
+//gf_lip_support_taper_height = 2.5;
+//gf_lip_reduced_support_taper_height = 1.9;
 
 // base plate
 gf_baseplate_lower_taper_height = 0.7;
@@ -33,7 +50,7 @@ gf_baseplate_riser_height = 1.8;
 gf_baseplate_upper_taper_height = 2.15;
 
 // top lip height 4.4mm
-function gfLipHeight() = gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;
+gf_Lip_Height = gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;
 
 // cupbase heighttop lip height 4.75mm
 function gfBaseHeight() = gf_cupbase_lower_taper_height + gf_cupbase_riser_height + gf_cupbase_upper_taper_height;
@@ -41,14 +58,18 @@ function gfBaseHeight() = gf_cupbase_lower_taper_height + gf_cupbase_riser_heigh
 // base heighttop lip height 4.4mm
 function gfBasePlateHeight() = gf_baseplate_lower_taper_height + gf_baseplate_riser_height + gf_baseplate_upper_taper_height;
 
+gf_min_base_height = gfBaseHeight()+0.25;  //results in 5
+
 // old names, that will get replaced
-gridfinity_lip_height = gfLipHeight(); 
+/*
+gridfinity_lip_height = gf_Lip_Height; 
 gridfinity_corner_radius = gf_cup_corner_radius ; 
 gridfinity_pitch = gf_pitch; 
+gridfinity_zpitch = gf_zpitch;
 gridfinity_clearance = gf_tolerance; 
 minFloorThickness = gf_cup_floor_thickness;  
 const_magnet_height = gf_magnet_thickness;
-gf_min_base_height = gfBaseHeight()+0.25; 
+*/
 
 //Small amount to add to prevent clipping in openSCAD
 fudgeFactor = 0.01;
