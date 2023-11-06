@@ -57,6 +57,7 @@ default_wallcutout_angle=70;
 default_wallcutout_height=0;
 default_wallcutout_corner_radius=5;
 default_wallpattern_enabled=false; 
+default_wallpattern_dividers_enabled=false; 
 default_wallpattern_hexgrid = false;
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0]; 
@@ -149,6 +150,7 @@ module basic_cup(
   wallpattern_hexgrid=default_wallpattern_hexgrid,
   wallpattern_fill=default_wallpattern_fill,
   wallpattern_walls=default_wallpattern_walls, 
+  wallpattern_dividers_enabled = default_wallpattern_dividers_enabled,
   wallpattern_hole_sides=default_wallpattern_hole_sides,
   wallpattern_hole_size=default_wallpattern_hole_size,
   wallpattern_hole_spacing=default_wallpattern_hole_spacing,
@@ -193,6 +195,7 @@ module basic_cup(
     wallpattern_hexgrid=wallpattern_hexgrid,
     wallpattern_fill=wallpattern_fill,
     wallpattern_walls=wallpattern_walls, 
+    wallpattern_dividers_enabled = wallpattern_dividers_enabled,
     wallpattern_hole_sides=wallpattern_hole_sides,
     wallpattern_hole_size=wallpattern_hole_size,
     wallpattern_hole_spacing=wallpattern_hole_spacing,
@@ -240,6 +243,7 @@ module irregular_cup(
   wallpattern_hexgrid=default_wallpattern_hexgrid,
   wallpattern_fill=default_wallpattern_fill,
   wallpattern_walls=default_wallpattern_walls, 
+  wallpattern_dividers_enabled = default_wallpattern_dividers_enabled,
   wallpattern_hole_sides=default_wallpattern_hole_sides,
   wallpattern_hole_size=default_wallpattern_hole_size,
   wallpattern_hole_spacing=default_wallpattern_hole_spacing,
@@ -393,30 +397,53 @@ module irregular_cup(
             [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz],
             [(num_x-0.5)*gf_pitch-wallpattern_thickness, (num_y-1)*gf_pitch/2, z],
             [90,90,90]];
+
+        if(wallpattern_dividers_enabled){
+            dividerLocation = locations[2];
+           for (i=[0:len(separator_positions)-1]) {
+           
+              translate([gf_pitch*(separator_positions[i])-wall_thickness, 0, fudgeFactor]) 
+              translate(dividerLocation[1])
+              rotate(dividerLocation[2])
+              render(){
+              GridItemHolder(
+                canvisSize = [dividerLocation[0][1],dividerLocation[0][0]], //Swap x and y and rotate so hex is easier to print
+                hexGrid = wallpattern_hexgrid,
+                customShape = false,
+                circleFn = wallpattern_hole_sides,
+                holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                holeHeight = wallpattern_thickness,
+                center=true,
+                fill=wallpattern_fill, //"none", "space", "crop"
+                help=help);
+                }
+            }
+          }
           
           locations = [front, back, left, right];
           difference(){
             for(i = [0:1:len(locations)-1])
             {
               union(){
-              if(wallpattern_walls[i] > 0)
-              {
-                translate(locations[i][1])
-                rotate(locations[i][2])
-                render(){
-                GridItemHolder(
-                  canvisSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
-                  hexGrid = wallpattern_hexgrid,
-                  customShape = false,
-                  circleFn = wallpattern_hole_sides,
-                  holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                  holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                  holeHeight = wallpattern_thickness,
-                  center=true,
-                  fill=wallpattern_fill, //"none", "space", "crop"
-                  help=help);
-                  }
-              }
+                if(wallpattern_walls[i] > 0)
+                {
+                  translate(locations[i][1])
+                  rotate(locations[i][2])
+                  render(){
+                  GridItemHolder(
+                    canvisSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
+                    hexGrid = wallpattern_hexgrid,
+                    customShape = false,
+                    circleFn = wallpattern_hole_sides,
+                    holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                    holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                    holeHeight = wallpattern_thickness,
+                    center=true,
+                    fill=wallpattern_fill, //"none", "space", "crop"
+                    help=help);
+                    }
+                }
               }
             }
           

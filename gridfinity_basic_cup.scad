@@ -1,4 +1,12 @@
-// include <gridfinity_modules.scad>
+// Gridfinity extended basic cup
+// version 2023-11-07
+//
+// Source
+// https://www.printables.com/model/630057-gridfinity-extended-openscad
+//
+// Documentation
+// https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup.html
+
 use <modules/gridfinity_cup_modules.scad>
 use <modules/gridfinity_modules.scad>
 include <modules/gridfinity_constants.scad>
@@ -74,11 +82,13 @@ wallpattern_hole_spacing = 2; //0.1
 wallpattern_hexgrid = true;
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1]; 
-// pattern fill mode
+// Add the pattern to the dividers
+wallpattern_dividers_enabled=false; 
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
 wallpattern_hole_size = 5; //0.1
+// pattern fill mode
 wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"]
 
 /* [Wall Cutout] */
@@ -143,6 +153,7 @@ module gridfinity_basic_cup(
   wallpattern_enabled=wallpattern_enabled,
   wallpattern_hexgrid=wallpattern_hexgrid,
   wallpattern_walls=wallpattern_walls,
+  wallpattern_dividers_enabled=wallpattern_dividers_enabled,
   wallpattern_fill=wallpattern_fill,
   wallpattern_hole_sides=wallpattern_hole_sides,
   wallpattern_hole_size=wallpattern_hole_size,
@@ -185,6 +196,7 @@ module gridfinity_basic_cup(
       wallpattern_enabled=wallpattern_enabled,
       wallpattern_hexgrid=wallpattern_hexgrid,
       wallpattern_walls=wallpattern_walls, 
+      wallpattern_dividers_enabled=wallpattern_dividers_enabled,
       wallpattern_hole_sides=wallpattern_hole_sides,
       wallpattern_hole_size=wallpattern_hole_size, 
       wallpattern_hole_spacing=wallpattern_hole_spacing,

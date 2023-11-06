@@ -69,12 +69,13 @@ iwallcutout_corner_radius=33;
 iwallpattern_enabled=34;
 iwallpattern_hexgrid=35;
 iwallpattern_walls=36;
-iwallpattern_fill=37;
-iwallpattern_hole_sides=38;
-iwallpattern_hole_size=39;
-iwallpattern_hole_spacing=40;
-icutx=41;
-icuty=42;
+iwallpattern_dividers_enabled=37;
+iwallpattern_fill=38;
+iwallpattern_hole_sides=39;
+iwallpattern_hole_size=40;
+iwallpattern_hole_spacing=41;
+icutx=42;
+icuty=43;
 
 $vpr = setViewPort ? [60,0,320] : $vpr;
 $vpt = setViewPort ? [32,13,16] : $vpt; //shows translation (i.e. won't be affected by rotate and zoom)
@@ -97,15 +98,15 @@ defaultDemoSetting =
     "none", 10, -1,
     //wallcutout_enabled, wallcutout_walls, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius
     false, [1,0,0,0], 0, 70, 0, 5, 
-    //wallpattern_enabled, wallpattern_hexgrid, wallpattern_walls, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing
-    false, true, [1,1,1,1], "none", 6, 5, 2, 
+    //wallpattern_enabled, wallpattern_hexgrid, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing
+    false, true, [1,1,1,1], false, "none", 6, 5, 2, 
     //cutx,cuty
-    false, false];
+    0, 0];
 selectedScenario = 
   scenario == "demo" ? [["Basic Cup",16,[]],
       ["Demo",false, [
           [iirregular_subdivisions, true], [iseparator_positions, [0.75, 2.25]],
-          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],
+          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]],
       ["Simple",false, []],
       ["Multi Chamber",false, [[ichambers, 3]]],
@@ -135,12 +136,12 @@ selectedScenario =
       ["center",false, [[iposition, "center"]]],
       ["zero",false, [[iposition, "zero"]]]]
       
-  : scenario == "lip_style" ? [["Lip Style",3,[[icuty, true]]],
+  : scenario == "lip_style" ? [["Lip Style",3,[[icuty, 0.5]]],
       ["normal",false, [[ilip_style, "normal"]]],
       ["reduced",false, [[ilip_style, "reduced"]]],
       ["none",false, [[ilip_style, "none"]]]]
       
-  : scenario == "fingerslide" ? [["Finger Slide",9,[[icuty, true]]],
+  : scenario == "fingerslide" ? [["Finger Slide",9,[[icuty, 0.5]]],
       ["rounded 5mm",false, [[ifingerslide, "rounded"],[ifingerslide_radius, 5]]],
       ["chamfered 5mm",false, [[ifingerslide, "chamfered"],[ifingerslide_radius, 5]]],
       ["rounded 8mm (default)",false, [[ifingerslide, "rounded"],[ifingerslide_radius, 8]]],
@@ -151,18 +152,18 @@ selectedScenario =
       ["chamfered 20mm",false, [[ifingerslide, "chamfered"],[ifingerslide_radius, 20]]],
       ["none",false, [[ifingerslide, "none"]]]]
       
-   : scenario == "basecorner" ? [["Internal Corner",4,[[icuty, true]]],
+   : scenario == "basecorner" ? [["Internal Corner",4,[[icuty, 0.5]]],
       ["normal",false, [[icavity_floor_radius, -1]]],
       ["0mm",false, [[icavity_floor_radius, 0]]],
       ["1mm",false, [[icavity_floor_radius, 1]]],
       ["2mm",false, [[icavity_floor_radius, 2]]]]
       
-   : scenario == "filledin" ? [["Filled In",3,[[icuty, true]]],
+   : scenario == "filledin" ? [["Filled In",3,[[icuty, 0.5]]],
       ["on",false, [[ifilled_in, "on"]]],
       ["on, stackable false",false, [[ifilled_in, "notstackable"]]],
       ["off",false, [[ifilled_in, "off"]]]]
       
-   : scenario == "floorthickness" ? [["Floor Thickness",5,[[icuty, true]]],
+   : scenario == "floorthickness" ? [["Floor Thickness",5,[[icuty, 0.5]]],
       ["0.7mm (default)",false, [[ifloor_thickness, 0.7]]],
       ["1mm",false, [[ifloor_thickness, 1]]],
       ["5mm",false, [[ifloor_thickness, 5]]],
@@ -188,13 +189,13 @@ selectedScenario =
       ["4 chambers",false, [[ichambers, 4]]],     
       ["irregular chambers",false, [[iirregular_subdivisions, true], [iseparator_positions, [0.25, 0.5, 1, 2]]]]]
   
-  : scenario == "efficient_floor" ? [["Efficient Floor",4,[[icuty, true]]],
+  : scenario == "efficient_floor" ? [["Efficient Floor",4,[[icuty, 0.5]]],
       ["enabled",false, [[iefficient_floor,true]]],
       ["disabled",false, [[iefficient_floor,false]]],
       ["enabled",true, [[iefficient_floor,true]]],
       ["disabled",true, [[iefficient_floor,false]]]]
       
-  : scenario == "flatbase" ? [["Flat Base",6,[[icuty, true]]],
+  : scenario == "flatbase" ? [["Flat Base",6,[[icuty, 0.5]]],
       ["enabled",false, [[iflat_base,true]]],
       ["enabled with efficient floor",false, [[iflat_base, true], [iefficient_floor,true]]],
       ["disabled",false, [[iflat_base,false]]],
@@ -212,7 +213,7 @@ selectedScenario =
       ["3",true, [[ihole_overhang_remedy,3]]],
       ["disabled",true, [[ihole_overhang_remedy,0]]]]
       
-  : scenario == "halfpitch" ? [["Half Pitch",6,[[icuty, true]]],
+  : scenario == "halfpitch" ? [["Half Pitch",6,[[icuty, 0.5]]],
       ["enabled",false, [[ihalf_pitch, true], [iefficient_floor,false]]],
       ["enabled with efficient floor",false, [[ihalf_pitch, true], [iefficient_floor,true]]],
       ["disabled",false, [[ihalf_pitch, false], [iefficient_floor,false]]],
@@ -326,6 +327,7 @@ gridfinity_basic_cup(
   wallpattern_enabled=currentStepSettings[iwallpattern_enabled],
   wallpattern_hexgrid=currentStepSettings[iwallpattern_hexgrid],
   wallpattern_walls=currentStepSettings[iwallpattern_walls],
+  wallpattern_dividers_enabled=currentStepSettings[iwallpattern_dividers_enabled],
   wallpattern_fill=currentStepSettings[iwallpattern_fill],
   wallpattern_hole_sides=currentStepSettings[iwallpattern_hole_sides],
   wallpattern_hole_size=currentStepSettings[iwallpattern_hole_size],
