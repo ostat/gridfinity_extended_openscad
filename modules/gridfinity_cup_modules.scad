@@ -296,10 +296,10 @@ module irregular_cup(
       union(){
         fh = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
         cfr = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness);
-        z = gf_zpitch * num_z + gf_Lip_Height - gf_magnet_thickness;
+        z = gf_zpitch * num_z + gf_Lip_Height-0.6; //0.6 is needed to align the top of the cutout, need to fix this
         cutoutclearance = gf_cup_corner_radius/2;
 
-        tapered_setback = tapered_setback < 0 ? gf_cup_corner_radius/2 : tapered_setback;
+        tapered_setback = tapered_setback < 0 ? gf_cup_corner_radius : tapered_setback;
         tapered_corner_size  = tapered_corner_size < 0 
               ? z - fh 
               : tapered_corner_size == 0 ? z - fh -cfr
@@ -332,8 +332,8 @@ module irregular_cup(
           //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
           translate([
             -gf_pitch/2,
-            -gf_pitch/2+tapered_setback+gridfinity_clearance,
-            gf_zpitch*num_z+gf_Lip_Height-gridfinity_clearance])
+            -gf_pitch/2+tapered_setback+gf_tolerance,
+            gf_zpitch*num_z+gf_Lip_Height-gf_tolerance])
           rotate([270,0,0])
           union(){
             if(tapered_corner == "rounded"){
@@ -400,8 +400,9 @@ module irregular_cup(
 
         if(wallpattern_dividers_enabled){
             dividerLocation = locations[2];
+          difference(){
            for (i=[0:len(separator_positions)-1]) {
-           
+              union(){
               translate([gf_pitch*(separator_positions[i])-wall_thickness, 0, fudgeFactor]) 
               translate(dividerLocation[1])
               rotate(dividerLocation[2])
@@ -418,6 +419,33 @@ module irregular_cup(
                 fill=wallpattern_fill, //"none", "space", "crop"
                 help=help);
                 }
+              }
+            }
+            
+            //Subtract setback from wall pattern
+            if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
+              //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
+              translate([
+                -gf_pitch/2-cutoutclearance,
+                -gf_pitch/2+tapered_setback+gf_tolerance+cutoutclearance,
+                gf_zpitch*num_z+gf_Lip_Height-gf_tolerance-cutoutclearance])
+              rotate([270,0,0])
+              union(){
+                if(tapered_corner == "rounded"){
+                  roundedCorner(
+                    radius = tapered_corner_size-cutoutclearance, 
+                    length=(num_x+1)*gf_pitch, 
+                    height = tapered_corner_size);
+                }
+                else if(tapered_corner == "chamfered"){
+                  chamferedCorner(
+                    chamferLength = tapered_corner_size-cutoutclearance, 
+                    length=(num_x+1)*gf_pitch, 
+                    height = tapered_corner_size);
+                }
+              }
+            }
+            
             }
           }
           
@@ -478,8 +506,8 @@ module irregular_cup(
               //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
               translate([
                 -gf_pitch/2-cutoutclearance,
-                -gf_pitch/2+tapered_setback+gridfinity_clearance+cutoutclearance,
-                gf_zpitch*num_z+gf_Lip_Height-gridfinity_clearance-cutoutclearance])
+                -gf_pitch/2+tapered_setback+gf_tolerance+cutoutclearance,
+                gf_zpitch*num_z+gf_Lip_Height-gf_tolerance-cutoutclearance])
               rotate([270,0,0])
               union(){
                 if(tapered_corner == "rounded"){
@@ -744,8 +772,9 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     
   echo("basic_cavity",reducedlipstyle=reducedlipstyle,lipSupportThickness=lipSupportThickness,floorht=floorht,innerWallRadius=innerWallRadius,innerLipRadius=innerLipRadius,cavity_floor_radius=cavity_floor_radius,efloor=efloor);
   
-  difference() {
+
     if(filledInZ>floorht) {
+      difference() {
       union() {
         if (reducedlipstyle == "none") {
           hull() cornercopy(seventeen, num_x, num_y)

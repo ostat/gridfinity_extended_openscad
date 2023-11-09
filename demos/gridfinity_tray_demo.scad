@@ -5,7 +5,7 @@ include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
-scenario = "demo"; //["demo","verticalcompartments","horizontalcompartments","traycornerradius","floorheight","magnet","custom"]
+scenario = "demo"; //["demo","verticalcompartments","horizontalcompartments","traycornerradius","floorheight","magnet","coaster","custom"]
 showtext = true;
 
 //Include help info in the logs
@@ -134,7 +134,18 @@ scenarioSteps =
      ["10mm",false, [[ifloor_thickness, 10]]],
      ["filledin",false, [[ifilled_in, "on"]]],
      ["filledin not stackable",false, [[ifilled_in, "notstackable"]]]]
-
+     
+  : scenario == "coaster" ? [["Coaster",8,[[iwidth, 2],[idepth, 2],[iheight, 1]]],
+     ["5x5 r1 stackable",false, [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5], [itraycornerradius, 1], [ifilled_in, "on"]]],
+     ["5x5 r1 not stackable",false, [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5],[itraycornerradius, 1], [ifilled_in, "notstackable"]]],
+     ["5x5 r2 stackable",false, [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5], [itraycornerradius, 2],[ifilled_in, "on"]]],
+     ["5x5 r2 not stackable",false, [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5], [itraycornerradius, 2],[ifilled_in, "notstackable"]]],
+     ["1x1 r1 stackable",false, [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 1],[ifilled_in, "on"]]],
+     ["1x1 r1 not stackable",false, [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 1],[ifilled_in, "notstackable"]]],
+     ["1x1 r2 stackable",false, [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 2],[ifilled_in, "on"]]],
+     ["1x1 r2 not stackable",false, [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 2],[ifilled_in, "notstackable"]]]]
+     
+     
   : scenario == "custom" ? [["Custom",3,[]],
       ["1",false, [[iwidth, 4],[idepth, 3],[iheight,2],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 0.5, 3, 2, 6|0.5, 0, 0.5, 3,2, 6|1, 0, 3, 1.5|1, 1.5, 3, 1.5"]]],
       ["2",false, [[iwidth, 4],[idepth, 3],[iheight,1],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 2, 1.5, 1, 1|0, 1.5, 2, 1.5, 1, 1|2, 0, 2, 3,6"]]],
@@ -160,7 +171,7 @@ translate([0,-45,60])
 
 if(scenarioDefaults[0] != "unknown scenario")
 rotate(animationStep[1] ? [180,0,0] : [0,0,0]) 
-translate(animationStep[1] ? [0,-gridfinity_pitch,0] : [0,0,0])
+translate(animationStep[1] ? [0,-gf_pitch,0] : [0,0,0])
 gridfinity_tray(
   tray_spacing = scenarioStepSettings[itrayspacing],
   tray_corner_radius = scenarioStepSettings[itraycornerradius], 

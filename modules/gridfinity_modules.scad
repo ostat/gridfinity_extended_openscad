@@ -22,7 +22,7 @@ function calculateMinFloorHeight(magnet_diameter,screw_depth) =
 //Height of base including the floor.
 function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off") = 
   filledin == "on" || filledin == "notstackable" 
-    ? num_z * gridfinity_zpitch 
+    ? num_z * gf_zpitch 
     : cupBaseClearanceHeight(magnet_diameter,screw_depth) + max(floor_thickness, gf_cup_floor_thickness);
     
 //Usable floor depth (florr height - min floor)
@@ -120,8 +120,8 @@ module grid_block(
     }
     else{
       color(color_topcavity) 
-        translate([-gf_pitch/2, -gf_pitch/2, gridfinity_zpitch*num_z]) 
-        cube([num_x*gf_pitch,num_y*gf_pitch, gridfinity_zpitch]);
+        translate([-gf_pitch/2, -gf_pitch/2, gf_zpitch*num_z]) 
+        cube([num_x*gf_pitch,num_y*gf_pitch, gf_zpitch]);
     }
     
     color(color_basehole)

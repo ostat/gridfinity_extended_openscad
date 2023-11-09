@@ -109,7 +109,7 @@ translate([0,-40,60])
 
 if(scenarioDefaults[0] != "unknown scenario")
 rotate(animationStep[1] ? [180,0,0] : [0,0,0]) 
-translate(animationStep[1] ? [0,-gridfinity_pitch,0] : [0,0,0])
+translate(animationStep[1] ? [0,-gf_pitch,0] : [0,0,0])
 gridfinity_baseplate(
   width = currentStepSettings[iwidth],
   depth = currentStepSettings[idepth],

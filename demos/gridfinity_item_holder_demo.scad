@@ -5,7 +5,7 @@ include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
-scenario = "demo"; //["demo","grid", "hole_grid", "hole_sides", "hole_size", "hole_spacing", "hole_clearance", "hole_depth", "compartments", "compartment_spacing", "compartment_centered", "compartment_fill", "auto_bin_height", "floorheight","magnet","custom"]
+scenario = "demo"; //["demo","grid", "hole_grid", "hole_sides", "hole_size", "hole_spacing", "hole_clearance", "hole_depth", "compartments", "compartment_spacing", "compartment_centered", "compartment_fill", "auto_bin_height", "floorheight","magnet","coaster", "custom"]
 showtext = true;
 
 //Include help info in the logs
@@ -185,12 +185,21 @@ scenarioSteps =
       ["on",false, [[iitemholder_auto_bin_height, true]]],
       ["off",false, [[iitemholder_auto_bin_height, false]]]]//endscenario
     
-  : scenario == "floorheight" ? [["Floor height", 4, [[itrayverticalcompartments, 2],[iheight, 2]]],
+  : scenario == "floorheight" ? [["Floor height", 4, [[iitemholder_compartments, [1,2]],[iheight, 2]]],
      ["5mm",false, [[ifloor_thickness, 5]]],
      ["10mm",false, [[ifloor_thickness, 10]]],
      ["filledin",false, [[ifilled_in, "on"]]],
      ["filledin not stackable",false, [[ifilled_in, "notstackable"]]]]//endscenario
 
+   : scenario == "coaster" ? [["Coaster", 6, [[iitemholder_known_item,""],[iitemholder_hole_depth,1],[iwidth, 2],[idepth, 2],[iheight, 1],[iitemholder_auto_bin_height,false]]],
+     ["circle 73mm stackable",false, [[iitemholder_hole_size,73],[iitemholder_hole_sides,64],[ifilled_in, "on"]]],
+     ["circle 73mm",false, [[iitemholder_hole_size,73],[iitemholder_hole_sides,64],[ifilled_in, "notstackable"]]],
+     ["hex grid chamfer stackable",false, [[iitemholder_hole_spacing,1.5],[iitemholder_hole_sides,6],[iitemholder_hex_grid,true],[iitemholder_hole_chamfer,0],[ifilled_in, "on"]]],
+     ["hex grid chamfer",false, [[iitemholder_hole_sides,6],[iitemholder_hex_grid,true],[iitemholder_hole_chamfer,0],[ifilled_in, "notstackable"]]],
+      ["hex grid stackable",false, [[iitemholder_hole_sides,6],[iitemholder_hex_grid,true],[iitemholder_hole_chamfer,1],[ifilled_in, "on"]]],
+     ["hex grid",false, [[iitemholder_hole_sides,6],[iitemholder_hex_grid,true],[iitemholder_hole_chamfer,1],[ifilled_in, "notstackable"]]]]//
+     
+     
   : scenario == "custom" ? [["Custom", 3, []]]//endscenario
 
    : [["unknown scenario",[]]];

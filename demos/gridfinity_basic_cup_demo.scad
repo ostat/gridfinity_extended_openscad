@@ -17,6 +17,11 @@ showtext = true;
 help=false;
 setViewPort=true;
 
+$vpr = setViewPort ? [60,0,320] : $vpr;
+$vpt = setViewPort ? [32,13,16] : $vpt; //shows translation (i.e. won't be affected by rotate and zoom)
+$vpf = setViewPort ? 25 : $vpf; //shows the FOV (Field of View) of the view [Note: Requires version 2021.01]
+$vpd = setViewPort ? 280 : $vpd;//shows the camera distance [Note: Requires version 2015.03]
+
 module end_of_customizer_opts() {}
 
 gridfinity_basic_cup_demo();
@@ -77,11 +82,6 @@ iwallpattern_hole_spacing=41;
 icutx=42;
 icuty=43;
 
-$vpr = setViewPort ? [60,0,320] : $vpr;
-$vpt = setViewPort ? [32,13,16] : $vpt; //shows translation (i.e. won't be affected by rotate and zoom)
-$vpf = setViewPort ? 25 : $vpf; //shows the FOV (Field of View) of the view [Note: Requires version 2021.01]
-$vpd = setViewPort ? 280 : $vpd;//shows the camera distance [Note: Requires version 2015.03]
-
 //Basic cup default settings for demo
 defaultDemoSetting = 
     //width, depth, height, filled_in, label, label_width
@@ -105,6 +105,10 @@ defaultDemoSetting =
 selectedScenario = 
   scenario == "demo" ? [["Basic Cup",16,[]],
       ["Demo",false, [
+          [iirregular_subdivisions, true], [iseparator_positions, [0.75, 2.25]],
+          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
+          [itapered_corner, "chamfered"],[itapered_corner_size,20],[itapered_setback,-1]]],
+     ["Demo",false, [
           [iirregular_subdivisions, true], [iseparator_positions, [0.75, 2.25]],
           [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]],
@@ -246,6 +250,9 @@ selectedScenario =
       ["back",false, [[iwallpattern_walls,[0,1,0,0]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
       ["left",false, [[iwallpattern_walls,[0,0,1,0]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
       ["right",false, [[iwallpattern_walls,[0,0,0,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
+      ["chambers",false, [[iwallpattern_walls,[0,0,0,0]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],[ichambers, 3],[iwallpattern_dividers_enabled,true]]],
+        
+        
       ["square grid - diamond",false, [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,false],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
       ["square grid - hex",false, [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,false],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
       ["square grid - circle",false, [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,false],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"]]],
@@ -257,7 +264,7 @@ selectedScenario =
       ["hex grid - hex crop fill",false, [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"crop"]]],
       ["hex grid - corner radius 0mm",false, [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6], [iwallpattern_fill,"crop"], [icavity_floor_radius,0]]],
       ["hex grid - hex 7.5mm",false, [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true], [iwallpattern_hole_size,7.5],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
-      ["hex grid - hex 9mm crop fill",false, [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true], [iwallpattern_hole_size,9], [iwallpattern_hole_sides,6],[iwallpattern_fill,"crop"]]]]
+      ["hex grid - hex 9mm crop fill",false, [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true], [iwallpattern_hole_size,9], [iwallpattern_hole_sides,6],[iwallpattern_fill,"crop"],[ichambers, 3],[iwallpattern_dividers_enabled,true]]]]
       
    : scenario == "taperedcorner" ? [["Tapered Box",9,[]],
       ["",false, [[itapered_corner, "none"],[itapered_corner_size,0],[itapered_setback,-1]]],

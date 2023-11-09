@@ -159,6 +159,7 @@ module GridItemHolder(
 }
 
 module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
+  chamfer = min(h, chamfer);
   union(){
   cylinder(h=h, r=r, $fn = circleFn);
   translate([0, 0, h-chamfer]) 
@@ -217,6 +218,8 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
 //chamfer = chamfer size
 module slotCutout(size, chamfer = 1)
 {
+  chamfer = min(size.z, chamfer);
+  
   translate([size.x/2,size.y/2,0])
   intersection(){
     union(){

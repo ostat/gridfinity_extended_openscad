@@ -1,4 +1,5 @@
 use <modules/gridfinity_cup_modules.scad>
+use <modules/gridfinity_modules.scad>
 include <modules/gridfinity_constants.scad>
 include <modules/functions_general.scad>
 
@@ -152,7 +153,7 @@ module tray(
   horizontalCompartments = 1,
   customCompartments = "") 
 {
-  cutoutSize = gridfinity_pitch - spacing*2;
+  cutoutSize = gf_pitch - spacing*2;
 
   verticalCompartments = verticalCompartments > 0 ? verticalCompartments : num_x ;
   horizontalCompartments = horizontalCompartments > 0 ? horizontalCompartments : num_y;
@@ -160,10 +161,10 @@ module tray(
   if(len(customCompartments) == 0)
   {
     //Non custom components
-    //echo(n=num_x*gridfinity_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
-    xSize = (num_x*gridfinity_pitch-(verticalCompartments+1)*spacing)/verticalCompartments;
+    //echo(n=num_x*gf_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
+    xSize = (num_x*gf_pitch-(verticalCompartments+1)*spacing)/verticalCompartments;
     xStep = xSize + spacing;
-    ySize = (num_y*gridfinity_pitch-(horizontalCompartments+1)*spacing)/horizontalCompartments;
+    ySize = (num_y*gf_pitch-(horizontalCompartments+1)*spacing)/horizontalCompartments;
     yStep = ySize + spacing;
     
     for(x =[0:1:verticalCompartments-1])
@@ -174,7 +175,7 @@ module tray(
         translate([spacing+x*xStep,spacing+y*yStep,baseHeight+trayZpos])
         roundedCube(
             xSize, ySize,
-            height*gridfinity_zpitch,cornerRadius);
+            height*gf_zpitch,cornerRadius);
       }
     }
   }
@@ -194,11 +195,11 @@ module tray(
         radius = len(comp) >= 5 ? comp[icornerradius] : cornerRadius;
         depth = baseHeight+(len(comp) >= 6 ? comp[idepth] : trayZpos);
       
-        translate([spacing+xpos*gridfinity_pitch,spacing+ypos*gridfinity_pitch,depth])
+        translate([spacing+xpos*gf_pitch,spacing+ypos*gf_pitch,depth])
         roundedCube(
-            min(1,xsize)*cutoutSize+max(0,xsize-1)*gridfinity_pitch,
-            min(1,ysize)*cutoutSize+max(0,ysize-1)*gridfinity_pitch,
-            height*gridfinity_zpitch,radius);
+            min(1,xsize)*cutoutSize+max(0,xsize-1)*gf_pitch,
+            min(1,ysize)*cutoutSize+max(0,ysize-1)*gf_pitch,
+            height*gf_zpitch,radius);
     }
   }
 }
@@ -307,7 +308,7 @@ module gridfinity_tray(
       help = help);
     /*<!!end gridfinity_basic_cup!!>*/
 
-    translate([-gridfinity_pitch/2,-gridfinity_pitch/2,0])
+    translate([-gf_pitch/2,-gf_pitch/2,0])
     tray(
       num_x = width,
       num_y = depth,
@@ -317,7 +318,7 @@ module gridfinity_tray(
       spacing = tray_spacing,
       cornerRadius = tray_corner_radius, 
       trayZpos = tray_zpos, 
-      baseHeight = calculateCupBaseHeight(magnet_diameter, screw_depth),
+      baseHeight = cupBaseClearanceHeight(magnet_diameter, screw_depth),
       verticalCompartments = tray_vertical_compartments,
       horizontalCompartments = tray_horizontal_compartments,
       customCompartments = tray_custom_compartments);

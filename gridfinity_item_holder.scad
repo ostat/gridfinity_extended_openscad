@@ -355,9 +355,9 @@ module itemholder(
     desiredDepth=(holeDepth > 0 ? holeDepth : itemDepth))
       desiredDepth > floorThickness ? floorThickness : desiredDepth;
 
-  xSize = (num_x*gridfinity_pitch-(compartments.x+1)*compartment_spacing)/compartments.x;
+  xSize = (num_x*gf_pitch-(compartments.x+1)*compartment_spacing)/compartments.x;
   xStep = xSize + compartment_spacing;
-  ySize = (num_y*gridfinity_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
+  ySize = (num_y*gf_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
   yStep = ySize + compartment_spacing;
   
   for(x =[0:1:compartments.x-1])
@@ -365,8 +365,8 @@ module itemholder(
     for(y =[0:1:compartments.y-1])
     {
       translate(compartment_centered 
-        ? [compartment_spacing+x*xStep+(xSize-gridfinity_pitch)/2, compartment_spacing+y*yStep+(ySize-gridfinity_pitch)/2, floorThickness-_depth]
-        : [compartment_spacing+x*xStep-gridfinity_pitch/2, compartment_spacing+y*yStep-gridfinity_pitch/2, floorThickness-_depth])
+        ? [compartment_spacing+x*xStep+(xSize-gf_pitch)/2, compartment_spacing+y*yStep+(ySize-gf_pitch)/2, floorThickness-_depth]
+        : [compartment_spacing+x*xStep-gf_pitch/2, compartment_spacing+y*yStep-gf_pitch/2, floorThickness-_depth])
         GridItemHolder(
           canvisSize = [xSize,ySize],
           hexGrid= hexGrid,
@@ -512,15 +512,15 @@ module gridfinity_itemholder(
     //calculate the bin height. This math is not right
     height = !itemholder_auto_bin_height ? height
         : itemholder_hole_depth <=0 ? height
-        : filled_in == "notstackable" ? (mfh+itemholder_hole_depth)/gridfinity_zpitch
-        : filled_in == "on" ? ceil((mfh+itemholder_hole_depth)/gridfinity_zpitch)
-        : ceil((mfh+itemholder_hole_depth)/gridfinity_zpitch);
+        : filled_in == "notstackable" ? (mfh+itemholder_hole_depth)/gf_zpitch
+        : filled_in == "on" ? ceil((mfh+itemholder_hole_depth)/gf_zpitch)
+        : ceil((mfh+itemholder_hole_depth)/gf_zpitch);
 
     // calculate floor thickness
     ft = calculateFloorThickness(magnet_diameter, screw_depth, itemholder_hole_depth+gf_cup_floor_thickness, height, filled_in);  
       
     itemZpos = filled_in == "notstackable" ? mfh+itemholder_hole_depth
-        : filled_in == "on" ? height*gridfinity_zpitch
+        : filled_in == "on" ? height*gf_zpitch
         : mfh+itemholder_hole_depth;
       
     /*<!!start gridfinity_basic_cup!!>*/
