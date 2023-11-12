@@ -43,8 +43,187 @@ function cupPosition(position, num_x, num_y) = position == "center"
     : position == "zero" ? [gf_pitch/2, gf_pitch/2, 0] 
     : [0, 0, 0]; 
 
-grid_block();
+module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness){
+  num_x=size.x;
+  num_y=size.y;
+  num_z=size.z;
 
+  bh = gfBaseHeight();
+  cbh = cupBaseClearanceHeight(magnet_diameter, screw_depth);
+  mfh = calculateMinFloorHeight(magnet_diameter, screw_depth);
+  fh = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filled_in);
+  fd = fh - mfh;//calculateFloorDepth(filled_in, floor_thickness, num_z);
+
+  fontSize = 3;  
+  color(color_text)
+  if(cuty > 0 && $preview)
+  {
+    translate([0,-gf_pitch*0.5+gf_pitch*cuty,0]) 
+    {
+      translate([-0.5*gf_pitch+gf_tolerance/2,0,num_z*gf_zpitch+gf_Lip_Height])
+      rotate([90,0,0])
+        Caliper(messpunkt = false, center=false,
+          h = 0.1, s = fontSize
+          , end=0, in=1,
+          translate=[0,5,0],
+          l=num_x*gf_pitch-gf_tolerance, 
+          txt2 = str("total width ", num_x));
+     
+      translate([-0.5*gf_pitch+gf_tolerance/2+wall_thickness,0,(1+(num_z-1)/2)*gf_zpitch])
+      rotate([90,0,0])
+        Caliper(messpunkt = false, center=false,
+          h = 0.1, s = fontSize
+          , end=0, in=1,
+          l=num_x*gf_pitch-gf_tolerance-wall_thickness*2, 
+          txt2 = "inner width"); 
+          
+      translate([(num_x-0.5)*gf_pitch,0,0])
+      rotate([90,0,0])
+        Caliper(messpunkt = false, center=false,
+          h = 0.1, size = fontSize,
+          cx=0, end=0, in=2,
+          l=num_z*gf_zpitch, 
+          translate=[1,0,0],
+          txt2 = str("height ", num_z));
+          
+      translate([(num_x-0.5)*gf_pitch,0,num_z*gf_zpitch])
+      rotate([90,0,0])
+        Caliper(messpunkt = false, center=false,
+          h = 0.1, size = fontSize,
+          cx=0, end=0, in=2,
+          l=gf_Lip_Height, 
+          translate=[1,0,0],
+          txt2 = str("lip height"));
+          
+     translate([(num_x-0.5)*gf_pitch,0,0])
+      rotate([90,0,0])
+        Caliper(messpunkt = false, center=false,
+          h = 0.1, size = fontSize,
+          cx=0, end=0, in=2,
+          translate=[fontSize*3,0,0],
+          l=gf_Lip_Height+num_z*gf_zpitch, 
+          txt2 = str("total height"));
+
+      translate([-gf_pitch/2,0,mfh])
+      rotate([90,0,0])
+        Caliper(messpunkt = false, center=false,
+          h = 0.1, s = fontSize,
+          cx=-1, end=0, in=2,
+          translate=[00,0,0],
+          l=fd, 
+          txt2 = "floor thickness");
+      translate([-gf_pitch/2,0,0])
+      rotate([90,0,0])
+        Caliper(messpunkt = false, center=false,
+          h = 0.1, s = fontSize*.75,
+          cx=0, end=0, in=2,
+          translate=[00,0,0],
+          l=bh, 
+          txt2 = "min base height");
+      translate([-gf_pitch/2,0,0])
+      rotate([90,0,0])
+        Caliper(messpunkt = false, center=false,
+          h = 0.1, s = fontSize*.75,
+          cx=-1, end=0, in=2,
+          translate=[-2,0,0],
+          l=mfh, 
+          txt2 = "min floor height");
+  
+    rotate([90,0,0])
+        Caliper(messpunkt = false, center=false,
+          h = 0.1, s = fontSize,
+          cx=-1, end=0, in=2,
+          translate=[0,-fh/2+2,0],
+          l=fh, 
+          txt2 = "floor height");
+    }
+  }  
+  
+  color(color_text)
+  if(cutx > 0 && $preview)
+  {
+  translate([-gf_pitch*0.5+gf_pitch*cutx,0,0]) 
+  {
+    translate([0,(num_y-0.5)*gf_pitch-gf_tolerance/2,num_z*gf_zpitch+gf_Lip_Height])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize
+        , end=0, in=1,
+        translate=[0,5,0],
+        l=num_y*gf_pitch-gf_tolerance, 
+        txt2 = str("total depth ", num_y));
+   
+    translate([0,(num_y-0.5)*gf_pitch-gf_tolerance/2-wall_thickness,(1+(num_z-1)/2)*gf_zpitch])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize
+        , end=0, in=1,
+        l=num_y*gf_pitch-gf_tolerance-wall_thickness*2, 
+        txt2 = "inner depth"); 
+        
+    translate([0,-gf_pitch/2,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, size = fontSize,
+        cx=0, end=0, in=2,
+        l=num_z*gf_zpitch, 
+        translate=[1,0,0],
+        txt2 = str("height ", num_z));
+        
+    translate([0,-gf_pitch/2,num_z*gf_zpitch])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, size = fontSize,
+        cx=0, end=0, in=2,
+        l=gf_Lip_Height, 
+        translate=[1,0,0],
+        txt2 = str("lip height"));
+        
+   translate([0,-gf_pitch/2,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, size = fontSize,
+        cx=0, end=0, in=2,
+        translate=[fontSize*3,0,0],
+        l=gf_Lip_Height+num_z*gf_zpitch, 
+        txt2 = str("total height"));
+
+    translate([0,+gf_pitch/2,mfh])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize,
+        cx=-1, end=0, in=2,
+        translate=[00,0,0],
+        l=fd, 
+        txt2 = "floor thickness");
+    translate([0,+gf_pitch/2,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize*.75,
+        cx=0, end=0, in=2,
+        translate=[00,0,0],
+        l=bh, 
+        txt2 = "min base height");
+    translate([0,+gf_pitch/2,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize*.75,
+        cx=-1, end=0, in=2,
+        translate=[-2,0,0],
+        l=mfh, 
+        txt2 = "min floor height");
+    translate([0,0,0])
+    rotate([90,0,270])
+      Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize,
+        cx=-1, end=0, in=2,
+        translate=[0,-fh/2+2,0],
+        l=fh, 
+        txt2 = "floor height");
+    }
+  }  
+}
+ 
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(
@@ -64,8 +243,6 @@ module grid_block(
   fn = 32,
   help)
 {
-  //echo("grid_blocky", num_y=num_y, is05=num_y==0.5, cells_y=ceil(num_y*2));
- 
   outer_size = gf_pitch - gf_tolerance;  // typically 41.5
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
 
@@ -127,14 +304,19 @@ module grid_block(
     color(color_basehole)
     translate([0,0,-0.1])
     gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
-      SequentialBridgingDoubleHole(
-        outerHoleRadius = emd/2,
-        outerHoleDepth = gf_magnet_thickness+0.1,
-        innerHoleRadius = gf_cupbase_screw_diameter/2,
-        innerHoleDepth = esd+0.1,
-        overhangBridgeCount = overhang_fix,
-        overhangBridgeThickness = overhang_fix_depth
-      );
+    union(){
+      // dont include magnet holes when the block is not full sized
+      if($gcci[0].x<=(floor(num_x*2)/2-0.5)*gf_pitch && $gcci[0].y<=(floor(num_y*2)/2-0.5)*gf_pitch)
+      {
+        SequentialBridgingDoubleHole(
+          outerHoleRadius = emd/2,
+          outerHoleDepth = gf_magnet_thickness+0.1,
+          innerHoleRadius = gf_cupbase_screw_diameter/2,
+          innerHoleDepth = esd+0.1,
+          overhangBridgeCount = overhang_fix,
+          overhangBridgeThickness = overhang_fix_depth);
+      }
+    }
   }
  
   HelpTxt("grid_block",[
@@ -235,14 +417,19 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
 // similar to cornercopy, can only copy to box corners
 module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) {
   for (xi=[1:num_x]) for (yi=[1:num_y]) 
-    for (xx=[-1, 1]) for (yy=[-1, 1]) 
+    for (xx=[-1, 1]) for (yy=[-1, 1]) {
+      trans = [pitch*(xi-1)+xx*r, pitch*(yi-1)+ yy*r, 0];
+      $gcci=[trans,xi,yi,xx,yy];
       if(!onlyBoxCorners || 
         (xi == 1 && yi == 1 && xx == -1 && yy == -1) ||
         (xi == num_x && yi == num_y && xx == 1 && yy == 1) ||
         (xi == 1 && yi == num_y && xx == -1 && yy == 1) ||
         (xi == num_x && yi == 1 && xx == 1 && yy == -1))  
-        translate([pitch*(xi-1), pitch*(yi-1), 0]) 
-        translate([xx*r, yy*r, 0]) children();
+        //translate([pitch*(xi-1), pitch*(yi-1), 0]) 
+        //translate([xx*r, yy*r, 0]) 
+        translate(trans)
+        children();
+      }
 }
 
 // similar to quadtranslate but expands to extremities of a block

@@ -5,14 +5,21 @@ include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
-scenario = "demo"; //["demo","verticalcompartments","horizontalcompartments","traycornerradius","floorheight","magnet","coaster","custom"]
+scenario = "demo"; //["demo","verticalcompartments","horizontalcompartments","traycornerradius","floorheight","magnet","coastert","multicoastert","custom"]
+height = -1;
+width=-1;
+depth=-1;
+stepIndex = -1;
 showtext = true;
+colour = "";
 
 //Include help info in the logs
 help=false;
 setViewPort=true;
 
-module end_of_customizer_opts() {}
+multi_spacing = [0.2,0.5];
+
+/* [Hidden] */
 itraycornerradius = 0;
 itrayzpos = 1;
 itrayspacing = 2;
@@ -64,11 +71,31 @@ iwallpattern_hole_size=39+traysettingscount;
 iwallpattern_hole_spacing=40+traysettingscount;
 icutx=41+traysettingscount;
 icuty=42+traysettingscount;
+itranslate=43+traysettingscount;
+irotate=44+traysettingscount;
 
-$vpr = setViewPort ? [60,0,320] : $vpr;
-$vpt = setViewPort ? [32,13,16] : $vpt; //shows translation (i.e. won't be affected by rotate and zoom)
-$vpf = setViewPort ? 25 : $vpf; //shows the FOV (Field of View) of the view [Note: Requires version 2021.01]
-$vpd = setViewPort ? 280 : $vpd;//shows the camera distance [Note: Requires version 2015.03]
+iscenarioName=0;
+iscenarioCount=1;
+iscenarioVp=2;
+iscenariokv=3;
+   
+istepName=0;
+istepkv=1;
+
+
+selectedScenario = getScenario(scenario);
+vp=selectedScenario[0][iscenarioVp];
+$vpr = setViewPort ? let(vpr = getcustomVpr(vp)) is_list(vpr) ? vpr : [60,0,320] : $vpr;
+//shows translation (i.e. won't be affected by rotate and zoom)
+$vpt = setViewPort ? let(vpt = getcustomVpt(vp)) is_list(vpt) ? vpt : [32,13,16] : $vpt; 
+//shows the camera distance [Note: Requires version 2015.03]
+$vpd = setViewPort ? let(vpd = getcustomVpd(vp)) is_num(vpd) ? vpd : 280 : $vpd;
+ //shows the FOV (Field of View) of the view [Note: Requires version 2021.01]
+$vpf = setViewPort ? let(vpf = getcustomVpf(vp)) is_num(vpf) ? vpf : 25 : $vpf;
+
+module end_of_customizer_opts() {}
+
+echo("start",vp=vp, vpr = getcustomVpr(vp), vpt = getcustomVpt(vp), vpd = getcustomVpd(vp), vpf = getcustomVpf(vp));
      
 //Basic cup default settings for demo
 defaultDemoSetting = 
@@ -92,135 +119,177 @@ defaultDemoSetting =
     false, [1,0,0,0], 0, 70, 0, 5, 
     //wallpattern_enabled, wallpattern_hexgrid, wallpattern_walls, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing
     false, true, [1,1,1,1], "none", 6, 5, 2, 
-    //cutx,cuty
-    false, false];
+    //cutx,cuty,rotate, translate
+    0, 0, [0,0,0], [0,0,0]];
    
-scenarioSteps = 
-  scenario == "demo" ? [["Tray",5,[]],
-      ["catchall",false, [[itraycornerradius, 1],[ifloor_thickness, 10]]],
-      ["parts holder",false, [[itraycornerradius, 5],[ifloor_thickness, 10],[itrayhorizontalcompartments, 2],[itrayverticalcompartments, 3]]],
-      ["custom parts1",false, [[iwidth, 3],[idepth, 2],[iheight,2],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 0.5, 2, 2, 6|0.5, 0, 0.5, 2,2, 6|1, 0, 2, 1|1, 1, 2, 1"]]],
-      ["custom parts1",false, [[iwidth, 4],[idepth, 3],[iheight,1],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 2, 1.5, 1, 1|0, 1.5, 2, 1.5, 1, 1|2, 0, 2, 3,6"]]],
-      ["walled catchall ",false, [[itraycornerradius, 1],[ifloor_thickness, 10], [iheight,5],
+function isMulti(scenario) = search("multi",scenario) == [0, 1, 2, 3, 4];
+function iscustomVP(scenarioVp, length = 0) = is_list(scenarioVp) && len(scenarioVp) >= length;
+function getcustomVpr(scenarioVp) = iscustomVP(scenarioVp, 1) ? let(vpr = scenarioVp[0]) is_list(vpr) && len(vpr)==3 ? vpr : false : false;
+function getcustomVpt(scenarioVp) = iscustomVP(scenarioVp, 2) ? let(vpt = scenarioVp[1]) is_list(vpt) && len(vpt)==3? vpt : false : false;
+function getcustomVpd(scenarioVp) = iscustomVP(scenarioVp, 3) ? let(vpd = scenarioVp[2]) is_num(vpd) ? vpd : false : false;
+function getcustomVpf(scenarioVp) = iscustomVP(scenarioVp, 4) ? let(vpf = scenarioVp[3]) is_num(vpf) ? vpf : false : false;
+
+function getScenario(scenario) = 
+//[0]: seenarioName,scenarioCount,[vpr,vpt,vpd,vpf],[[key,value]]
+//[1]: name,[[key,value]]
+  scenario == "demo" ? [["Tray",5,[],[]],
+      ["catchall", [[itraycornerradius, 1],[ifloor_thickness, 10]]],
+      ["parts holder", [[itraycornerradius, 5],[ifloor_thickness, 10],[itrayhorizontalcompartments, 2],[itrayverticalcompartments, 3]]],
+      ["custom parts1", [[iwidth, 3],[idepth, 2],[iheight,2],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 0.5, 2, 2, 6|0.5, 0, 0.5, 2,2, 6|1, 0, 2, 1|1, 1, 2, 1"]]],
+      ["custom parts1", [[iwidth, 4],[idepth, 3],[iheight,1],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 2, 1.5, 1, 1|0, 1.5, 2, 1.5, 1, 1|2, 0, 2, 3,6"]]],
+      ["walled catchall ", [[itraycornerradius, 1],[ifloor_thickness, 10], [iheight,5],
       [iwallpattern_enabled,true],[iwallpattern_walls,[0,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,90],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]
       
-  : scenario == "traycornerradius" ? [["Tray Corner Radius", 3, [[ifilled_in, "notstackable"]]],
-      ["1",false, [[itraycornerradius, 1]]],
-      ["2",false, [[itraycornerradius, 2]]],
-      ["4",false, [[itraycornerradius, 4]]]]
+  : scenario == "traycornerradius" ? [["Tray Corner Radius", 3,[],[[ifilled_in, "notstackable"]]],
+      ["1", [[itraycornerradius, 1]]],
+      ["2", [[itraycornerradius, 2]]],
+      ["4", [[itraycornerradius, 4]]]]
       
-  : scenario == "verticalcompartments" ? [["Vertical Compartments", 4, [[ifilled_in, "on"]]],
-      ["0",false, [[itrayverticalcompartments, 0]]],
-      ["1",false, [[itrayverticalcompartments, 1]]],
-      ["2",false, [[itrayverticalcompartments, 2]]],
-      ["4",false, [[itrayverticalcompartments, 4]]]]
+  : scenario == "verticalcompartments" ? [["Vertical Compartments", 4,[],[[ifilled_in, "on"]]],
+      ["0", [[itrayverticalcompartments, 0]]],
+      ["1", [[itrayverticalcompartments, 1]]],
+      ["2", [[itrayverticalcompartments, 2]]],
+      ["4", [[itrayverticalcompartments, 4]]]]
 
-  : scenario == "horizontalcompartments" ? [["Horizontal Compartments", 4, [[ifilled_in, "on"]]],
-      ["0",false, [[itrayhorizontalcompartments, 0]]],
-      ["1",false, [[itrayhorizontalcompartments, 1]]],
-      ["2",false, [[itrayhorizontalcompartments, 2]]],
-      ["4",false, [[itrayhorizontalcompartments, 4]]]]
+  : scenario == "horizontalcompartments" ? [["Horizontal Compartments", 4,[],[[ifilled_in, "on"]]],
+      ["0", [[itrayhorizontalcompartments, 0]]],
+      ["1", [[itrayhorizontalcompartments, 1]]],
+      ["2", [[itrayhorizontalcompartments, 2]]],
+      ["4", [[itrayhorizontalcompartments, 4]]]]
       
-  : scenario == "magnet" ? [["Tray Magnet",5,[]],
-     ["6mm x 2.4mm",true, [[icenter_magnet_diameter, 6], [icenter_magnet_thickness, 2.4]]],
-     ["10mm x 5mm",true, [[icenter_magnet_diameter, 10], [icenter_magnet_thickness, 5]]],
-     ["15mm x 5mm",true, [[icenter_magnet_diameter, 15], [icenter_magnet_thickness, 5]]],
-     ["20mm x 5mm",true, [[icenter_magnet_diameter, 20], [icenter_magnet_thickness, 5]]],
-     ["off",true, []]]
+  : scenario == "magnet" ? [["Tray Magnet",5,[],[]],
+     ["6mm x 2.4mm", [[irotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]],[icenter_magnet_diameter, 6], [icenter_magnet_thickness, 2.4]]],
+     ["10mm x 5mm", [[irotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]],[icenter_magnet_diameter, 10], [icenter_magnet_thickness, 5]]],
+     ["15mm x 5mm", [[irotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]],[icenter_magnet_diameter, 15], [icenter_magnet_thickness, 5]]],
+     ["20mm x 5mm", [[[irotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]],icenter_magnet_diameter, 20], [icenter_magnet_thickness, 5]]],
+     ["off", [[irotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]]]]]
     
-  : scenario == "floorheight" ? [["Floor height",4,[[itrayverticalcompartments, 2],[iheight, 2]]],
-     ["5mm",false, [[ifloor_thickness, 5]]],
-     ["10mm",false, [[ifloor_thickness, 10]]],
-     ["filledin",false, [[ifilled_in, "on"]]],
-     ["filledin not stackable",false, [[ifilled_in, "notstackable"]]]]
+  : scenario == "floorheight" ? [["Floor height",4,[],[[itrayverticalcompartments, 2],[iheight, 2]]],
+     ["5mm", [[ifloor_thickness, 5]]],
+     ["10mm", [[ifloor_thickness, 10]]],
+     ["filledin", [[ifilled_in, "on"]]],
+     ["filledin not stackable", [[ifilled_in, "notstackable"]]]]
      
-  : scenario == "coaster" ? [["Coaster",8,[[iwidth, 2],[idepth, 2],[iheight, 1]]],
-     ["5x5 r1 stackable",false, [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5], [itraycornerradius, 1], [ifilled_in, "on"]]],
-     ["5x5 r1 not stackable",false, [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5],[itraycornerradius, 1], [ifilled_in, "notstackable"]]],
-     ["5x5 r2 stackable",false, [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5], [itraycornerradius, 2],[ifilled_in, "on"]]],
-     ["5x5 r2 not stackable",false, [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5], [itraycornerradius, 2],[ifilled_in, "notstackable"]]],
-     ["1x1 r1 stackable",false, [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 1],[ifilled_in, "on"]]],
-     ["1x1 r1 not stackable",false, [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 1],[ifilled_in, "notstackable"]]],
-     ["1x1 r2 stackable",false, [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 2],[ifilled_in, "on"]]],
-     ["1x1 r2 not stackable",false, [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 2],[ifilled_in, "notstackable"]]]]
+  : scenario == "coastert" ? [["Coaster",8,[],[[iwidth, 2],[idepth, 2],[iheight, 1]]],
+     ["5x5 r1 stackable", [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5], [itraycornerradius, 1], [ifilled_in, "on"]]],
+     ["5x5 r1 not stackable", [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5],[itraycornerradius, 1], [ifilled_in, "notstackable"]]],
+     ["5x5 r2 stackable", [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5], [itraycornerradius, 2],[ifilled_in, "on"]]],
+     ["5x5 r2 not stackable", [[itrayverticalcompartments, 5],[itrayhorizontalcompartments, 5], [itraycornerradius, 2],[ifilled_in, "notstackable"]]],
+     ["1x1 r1 stackable", [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 1],[ifilled_in, "on"]]],
+     ["1x1 r1 not stackable", [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 1],[ifilled_in, "notstackable"]]],
+     ["1x1 r2 stackable", [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 2],[ifilled_in, "on"]]],
+     ["1x1 r2 not stackable", [[itrayverticalcompartments, 1],[itrayhorizontalcompartments, 1], [itraycornerradius, 2],[ifilled_in, "notstackable"]]]]
      
      
-  : scenario == "custom" ? [["Custom",3,[]],
-      ["1",false, [[iwidth, 4],[idepth, 3],[iheight,2],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 0.5, 3, 2, 6|0.5, 0, 0.5, 3,2, 6|1, 0, 3, 1.5|1, 1.5, 3, 1.5"]]],
-      ["2",false, [[iwidth, 4],[idepth, 3],[iheight,1],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 2, 1.5, 1, 1|0, 1.5, 2, 1.5, 1, 1|2, 0, 2, 3,6"]]],
-      ["3",false, [[iwidth, 4],[idepth, 3],[iheight,1.5],[ifilled_in, "on"],[itraycustomcompartments, "0,0,0.5,1.5,1,1|0.5,0,0.5,1.5,1,2|1,0,0.5,1.5,1,3|1.5,0,0.5,1.5,1,4|0,1.5,0.5,1.5,1,1|0.5,1.5,0.5,1.5,2,1|1,1.5,0.5,1.5,3,1|1.5,1.5,0.5,1.5,4,1|2, 0, 2, 3,6"]]]]
+  : scenario == "custom" ? [["Custom",3,[],[]],
+      ["1", [[iwidth, 4],[idepth, 3],[iheight,2],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 0.5, 3, 2, 6|0.5, 0, 0.5, 3,2, 6|1, 0, 3, 1.5|1, 1.5, 3, 1.5"]]],
+      ["2", [[iwidth, 4],[idepth, 3],[iheight,1],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 2, 1.5, 1, 1|0, 1.5, 2, 1.5, 1, 1|2, 0, 2, 3,6"]]],
+      ["3", [[iwidth, 4],[idepth, 3],[iheight,1.5],[ifilled_in, "on"],[itraycustomcompartments, "0,0,0.5,1.5,1,1|0.5,0,0.5,1.5,1,2|1,0,0.5,1.5,1,3|1.5,0,0.5,1.5,1,4|0,1.5,0.5,1.5,1,1|0.5,1.5,0.5,1.5,2,1|1,1.5,0.5,1.5,3,1|1.5,1.5,0.5,1.5,4,1|2, 0, 2, 3,6"]]]]
 
+   : scenario == "multicoastert" ? [["Coasters",1,[[60,0,0],[120,0,60],600],[]],
+      ["coastert",1,[0, 0, 0], 5],
+      ["coastert",0,[0, gf_pitch*(2+multi_spacing.y), 0], 8],
+      ["coastert",3,[gf_pitch*(2+multi_spacing.x), 0, 0], 5],
+      ["coastert",2,[gf_pitch*(2+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0], 8],
+      ["coastert",5,[gf_pitch*(2+multi_spacing.x)*2, 0, 0], 5],
+      ["coastert",4,[gf_pitch*(2+multi_spacing.x)*2, gf_pitch*(2+multi_spacing.y), 0], 8]]     
+      
    : [["unknown scenario",[]]];
 
-scenarioDefaults = scenarioSteps[0];
-animationStep = len(scenarioSteps) >= round($t*(len(scenarioSteps)-1)) ? scenarioSteps[min(round($t*(len(scenarioSteps)-1))+1,len(scenarioSteps)-1)] : scenarioSteps[1];  
-scenarioStepSettings = replace_Items(concat(scenarioDefaults[2],animationStep[2]), defaultDemoSetting);
+module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
+  selectedScenario = getScenario(scenario);
+  scenarioDefaults = selectedScenario[0];
+  stepIndex = stepIndex > -1 ? stepIndex+1 : min(round($t*(len(selectedScenario)-1))+1,len(selectedScenario)-1);
+  animationStep = (len(selectedScenario) >= stepIndex ? selectedScenario[stepIndex] : selectedScenario[1]);  
+  currentStepSettings = replace_Items(concat(scenarioDefaults[iscenariokv],animationStep[istepkv]), defaultDemoSetting);
 
-echo("🟧gridfinity_tray", scenario = scenario, steps=len(scenarioSteps)-1, t=$t, time=$t*(len(scenarioSteps)-1), animationStep=animationStep, scenarioStepSettings=scenarioStepSettings);
+  echo("🟧RenderScenario",scenario = scenario, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1), animationStep=animationStep, selectedScenarioLen=len(selectedScenario), defaultDemoSettingLen=len(defaultDemoSetting), currentStepSettings=currentStepSettings);
 
-if(showtext)
-color("GhostWhite")
-//translate([-5,-45,-5])
-//rotate($vpr)
-translate($vpt)
-rotate($vpr)
-translate([0,-45,60])
- linear_extrude(height = 0.1)
- text(str(scenarioDefaults[0], " - ", animationStep[0]), size=5,halign="center");
-
-if(scenarioDefaults[0] != "unknown scenario")
-rotate(animationStep[1] ? [180,0,0] : [0,0,0]) 
-translate(animationStep[1] ? [0,-gf_pitch,0] : [0,0,0])
-gridfinity_tray(
-  tray_spacing = scenarioStepSettings[itrayspacing],
-  tray_corner_radius = scenarioStepSettings[itraycornerradius], 
-  tray_zpos = scenarioStepSettings[itrayzpos], 
-  tray_vertical_compartments = scenarioStepSettings[itrayverticalcompartments],
-  tray_horizontal_compartments = scenarioStepSettings[itrayhorizontalcompartments],
-  tray_custom_compartments = scenarioStepSettings[itraycustomcompartments],
+  if(showtext && $preview)
+  color("DimGray")
+  translate($vpt)
+  rotate($vpr)
+  translate([0,-45,60])
+   linear_extrude(height = 0.1)
+   text(str(scenarioDefaults[iscenarioName], " - ", animationStep[istepName]), size=5,halign="center");
   
-  width = scenarioStepSettings[iwidth],
-  depth = scenarioStepSettings[idepth],
-  height = scenarioStepSettings[iheight],
-  position = scenarioStepSettings[iposition],
-  filled_in = scenarioStepSettings[ifilled_in],
-  label=scenarioStepSettings[ilabel],
-  label_width=scenarioStepSettings[ilabel_width],
-  wall_thickness=scenarioStepSettings[iwall_thickness],
-  lip_style=scenarioStepSettings[ilip_style],
-  chambers=scenarioStepSettings[ichambers],
-  irregular_subdivisions=scenarioStepSettings[iirregular_subdivisions],
-  separator_positions=scenarioStepSettings[iseparator_positions],
-  magnet_diameter=scenarioStepSettings[imagnet_diameter],
-  screw_depth=scenarioStepSettings[iscrew_depth],
-  center_magnet_diameter = scenarioStepSettings[icenter_magnet_diameter], 
-  center_magnet_thickness = scenarioStepSettings[icenter_magnet_thickness],
-  hole_overhang_remedy=scenarioStepSettings[ihole_overhang_remedy],
-  box_corner_attachments_only=scenarioStepSettings[ibox_corner_attachments_only],
-  floor_thickness=scenarioStepSettings[ifloor_thickness],
-  cavity_floor_radius=scenarioStepSettings[icavity_floor_radius],
-  efficient_floor=scenarioStepSettings[iefficient_floor],
-  half_pitch=scenarioStepSettings[ihalf_pitch],
-  flat_base=scenarioStepSettings[iflat_base],
-  fingerslide=scenarioStepSettings[ifingerslide],
-  fingerslide_radius=scenarioStepSettings[ifingerslide_radius],
-  tapered_corner=scenarioStepSettings[itapered_corner],
-  tapered_corner_size=scenarioStepSettings[itapered_corner_size],
-  tapered_setback=scenarioStepSettings[itapered_setback],
-  wallcutout_enabled=scenarioStepSettings[iwallcutout_enabled],
-  wallcutout_walls=scenarioStepSettings[iwallcutout_walls],
-  wallcutout_width=scenarioStepSettings[iwallcutout_width],
-  wallcutout_angle=scenarioStepSettings[iwallcutout_angle],
-  wallcutout_height=scenarioStepSettings[iwallcutout_height],
-  wallcutout_corner_radius=scenarioStepSettings[iwallcutout_corner_radius],
-  wallpattern_enabled=scenarioStepSettings[iwallpattern_enabled],
-  wallpattern_hexgrid=scenarioStepSettings[iwallpattern_hexgrid],
-  wallpattern_walls=scenarioStepSettings[iwallpattern_walls],
-  wallpattern_fill=scenarioStepSettings[iwallpattern_fill],
-  wallpattern_hole_sides=scenarioStepSettings[iwallpattern_hole_sides],
-  wallpattern_hole_size=scenarioStepSettings[iwallpattern_hole_size],
-  wallpattern_hole_spacing=scenarioStepSettings[iwallpattern_hole_spacing],
-  cutx=scenarioStepSettings[icutx],
-  cuty=scenarioStepSettings[icuty],
-  help=help);
+  if(scenarioDefaults[iscenarioName] != "unknown scenario")
+    rotate(currentStepSettings[irotate]) 
+    translate(currentStepSettings[itranslate])
+    gridfinity_tray(
+      tray_spacing = currentStepSettings[itrayspacing],
+      tray_corner_radius = currentStepSettings[itraycornerradius], 
+      tray_zpos = currentStepSettings[itrayzpos], 
+      tray_vertical_compartments = currentStepSettings[itrayverticalcompartments],
+      tray_horizontal_compartments = currentStepSettings[itrayhorizontalcompartments],
+      tray_custom_compartments = currentStepSettings[itraycustomcompartments],
+      
+      width = currentStepSettings[iwidth],
+      depth = currentStepSettings[idepth],
+      height = currentStepSettings[iheight],
+      position = currentStepSettings[iposition],
+      filled_in = currentStepSettings[ifilled_in],
+      label=currentStepSettings[ilabel],
+      label_width=currentStepSettings[ilabel_width],
+      wall_thickness=currentStepSettings[iwall_thickness],
+      lip_style=currentStepSettings[ilip_style],
+      chambers=currentStepSettings[ichambers],
+      irregular_subdivisions=currentStepSettings[iirregular_subdivisions],
+      separator_positions=currentStepSettings[iseparator_positions],
+      magnet_diameter=currentStepSettings[imagnet_diameter],
+      screw_depth=currentStepSettings[iscrew_depth],
+      center_magnet_diameter = currentStepSettings[icenter_magnet_diameter], 
+      center_magnet_thickness = currentStepSettings[icenter_magnet_thickness],
+      hole_overhang_remedy=currentStepSettings[ihole_overhang_remedy],
+      box_corner_attachments_only=currentStepSettings[ibox_corner_attachments_only],
+      floor_thickness=currentStepSettings[ifloor_thickness],
+      cavity_floor_radius=currentStepSettings[icavity_floor_radius],
+      efficient_floor=currentStepSettings[iefficient_floor],
+      half_pitch=currentStepSettings[ihalf_pitch],
+      flat_base=currentStepSettings[iflat_base],
+      fingerslide=currentStepSettings[ifingerslide],
+      fingerslide_radius=currentStepSettings[ifingerslide_radius],
+      tapered_corner=currentStepSettings[itapered_corner],
+      tapered_corner_size=currentStepSettings[itapered_corner_size],
+      tapered_setback=currentStepSettings[itapered_setback],
+      wallcutout_enabled=currentStepSettings[iwallcutout_enabled],
+      wallcutout_walls=currentStepSettings[iwallcutout_walls],
+      wallcutout_width=currentStepSettings[iwallcutout_width],
+      wallcutout_angle=currentStepSettings[iwallcutout_angle],
+      wallcutout_height=currentStepSettings[iwallcutout_height],
+      wallcutout_corner_radius=currentStepSettings[iwallcutout_corner_radius],
+      wallpattern_enabled=currentStepSettings[iwallpattern_enabled],
+      wallpattern_hexgrid=currentStepSettings[iwallpattern_hexgrid],
+      wallpattern_walls=currentStepSettings[iwallpattern_walls],
+      wallpattern_fill=currentStepSettings[iwallpattern_fill],
+      wallpattern_hole_sides=currentStepSettings[iwallpattern_hole_sides],
+      wallpattern_hole_size=currentStepSettings[iwallpattern_hole_size],
+      wallpattern_hole_spacing=currentStepSettings[iwallpattern_hole_spacing],
+      cutx=currentStepSettings[icutx],
+      cuty=currentStepSettings[icuty],
+      help=help);
+ }
+
+color(colour)
+union(){
+  if(isMulti(scenario)){
+    multiScenario = getScenario(scenario);
+    for(i =[1:len(multiScenario)-1])
+    {
+      multiStep = multiScenario[i];
+      if(len(multiStep) == 4)
+      {
+        echo(multiStep=multiStep);
+        //["demo",1, [0, 0, 0], 5]],
+        translate(multiStep[2])
+        RenderScenario(scenario = multiStep[0], height = multiStep[3], stepIndex = multiStep[1], showtext = false);
+      }
+      else{
+        RenderScenario(scenario, stepIndex=i-1, showtext = false);
+      }
+    }
+  } else{
+    RenderScenario(scenario, showtext);
+  }
+}

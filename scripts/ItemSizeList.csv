@@ -40,6 +40,33 @@ battery,38120,round,38,0,120,30,38120 cell,https://en.wikipedia.org/wiki/List_of
 battery,38140,round,38,0,140,35,38140 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
 battery,40152,round,40,0,152,38,40152 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
 battery,4680,round,46,0,80,20,4680 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR927,halfround,9.5,0,2.7,CR927 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR1025,halfround,10,0,2.5,CR1025 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR1130,halfround,11.5,0,3.0,CR1130 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR1216,halfround,12.5,0,1.6,CR1216 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR1220,halfround,12.5,0,2.0,CR1220 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR1225,halfround,12.5,0,2.5,CR1225 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR1616,halfround,16,0,1.6,CR1616 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR1620,halfround,16,0,2.0,CR1620 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR1632,halfround,16,0,3.2,CR1632 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2012,halfround,20,0,1.2,CR2012 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2016,halfround,20,0,1.6,CR2016 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2020,halfround,20,0,2,CR2020 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2025,halfround,20,0,2.5,CR2025 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2032,halfround,20,0,3.2,CR2032 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2040,halfround,20,0,4.0,CR2040 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2050,halfround,20,0,5.0,CR2050 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2320,halfround,23,0,2,CR2320 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2325,halfround,23,0,2.5,CR2325 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2330,halfround,23,0,3.0,CR2330 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,BR2335,halfround,23,0,3.5,BR2335 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2354,halfround,23,0,5.4,CR2354 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2412,halfround,24.5,0,1.2,CR2412 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2430,halfround,24.5,0,3.0,CR2430 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2450,halfround,24.5,0,5.0,CR2450 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR2477,halfround,24.5,0,7.7,CR2477 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR3032,halfround,30.0,0,3.2,CR3032 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
+buttoncell,CR11108,halfround,11.6,0,10.8,CR11108 cell,https://en.wikipedia.org/wiki/List_of_battery_sizes
 tool,4hexshank,hex,4,0,20,5,4mm Hex Shank,
 tool,1/4hexshank,hex,6.35,0,15,8,1/4 Hex Shank,
 tool,1/4hexshanklong,hex,6.35,0,40,15,1/4 Hex Long Shank,

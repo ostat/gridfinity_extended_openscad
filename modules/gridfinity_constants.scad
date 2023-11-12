@@ -50,7 +50,7 @@ gf_baseplate_riser_height = 1.8;
 gf_baseplate_upper_taper_height = 2.15;
 
 // top lip height 4.4mm
-gf_Lip_Height = gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;
+gf_Lip_Height = 4.4;//gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;
 
 // cupbase heighttop lip height 4.75mm
 function gfBaseHeight() = gf_cupbase_lower_taper_height + gf_cupbase_riser_height + gf_cupbase_upper_taper_height;
@@ -75,11 +75,13 @@ const_magnet_height = gf_magnet_thickness;
 fudgeFactor = 0.01;
 
 color_cup = "LightSlateGray";
-color_divider = "LemonChiffon";
-color_topcavity = "DodgerBlue";
-color_label = "PaleGreen";
+color_divider = "Gainsboro"; //LemonChiffon
+color_topcavity = "SteelBlue";
+color_label = "DarkCyan";
 color_cupcavity = "IndianRed";
 color_wallcutout = "SandyBrown";
 color_basehole = "DarkSlateGray";
 color_base = "DimGray";
 color_extention = "lightpink";
+color_text = "Gold";
+color_cut = "Gray";
