@@ -136,7 +136,10 @@ module silverware_pockets(defs, md=magnet_diameter, sd=screw_depth) {
   floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
   
   difference() {
-    grid_block(width, depth, height, magnet_diameter=md, screw_depth=sd, center=true);
-    translate([0, 0, floorht]) linear_extrude(height=7*height) stack_silver(defs);
+    translate(cupPosition("center",width,depth))
+    grid_block(width, depth, height, magnet_diameter=md, screw_depth=sd);
+    translate([0, 0, floorht]) 
+      linear_extrude(height=7*height) 
+      stack_silver(defs);
   }
 }
