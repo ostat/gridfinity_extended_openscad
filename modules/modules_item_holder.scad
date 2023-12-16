@@ -13,7 +13,7 @@ module GridItemHolder(
   holeHeight = 0,
   holeChamfer = 0,
   center=false,
-  fill="none", //"none", "space", "crop", "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"
+  fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   crop = true,
   help) 
 {
@@ -51,7 +51,7 @@ module GridItemHolder(
   intersection(){
     //Crop to ensure that we dont go outside the bounds 
     
-    if(fill == "crop" || fill == "crophorizontal"  || fill == "cropverticle"  || fill ==  "crophorizontal_spaceverticle"  || fill == "cropverticle_spacehorizontal")
+    if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
       translate([-fudgeFactor,-fudgeFactor,(center?holeHeight/2:0)-fudgeFactor])
       cube([canvisSize[0]+fudgeFactor*2,canvisSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
     
@@ -66,17 +66,17 @@ module GridItemHolder(
       
       //x and y spacing including the item size.
       es = [
-        fill == "space" || fill == "spaceverticle" ||fill == "crophorizontal_spaceverticle"
+        fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
           ? calcHoleDimentions[0]+(e[0]<=1?0:((canvisSize[0]-e[0]*calcHoleDimentions[0])/(e[0]-1))) 
           : hexxSpacing,
-        fill == "space" || fill == "spacehorizontal" ||fill == "cropverticle_spacehorizontal"
+        fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
           ? calcHoleDimentions[1]+(e[1]<=0.5?0:((canvisSize[1]-(e[1]+0.5)*calcHoleDimentions[1])/(e[1]-0.5))) 
           : holeSpacing[1] + calcHoleDimentions[1]];
       
       eFill=[
-        fill == "crop" || fill == "cropverticle" || fill == "cropverticle_spacehorizontal"
+        fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
           ? e[0]+2 : e[0],
-        fill == "crop" || fill == "crophorizontal" || fill == "crophorizontal_spaceverticle"
+        fill == "crop" || fill == "crophorizontal" || fill == "crophorizontal_spacevertical"
           ? e[1]+2 : e[1]];
         
       /*Grid(4)Text($pos.xy,size=3);
@@ -109,17 +109,17 @@ module GridItemHolder(
           : floor((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1]))];
           
       es = [
-        fill == "space" || fill == "spaceverticle" ||fill == "crophorizontal_spaceverticle"
+        fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
           ? calcHoleDimentions[0]+(e[0]<=1?0:((canvisSize[0]-e[0]*calcHoleDimentions[0])/(e[0]-1))) 
           : calcHoleDimentions[0]+holeSpacing[0],
-        fill == "space" || fill == "spacehorizontal" ||fill == "cropverticle_spacehorizontal"
+        fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
           ? calcHoleDimentions[1]+(e[1]<=1?0:((canvisSize[1]-e[1]*calcHoleDimentions[1])/(e[1]-1)))
           : calcHoleDimentions[1]+holeSpacing[1]];
       
       eFill=[
-        fill == "crop" || fill == "cropverticle" || fill == "cropverticle_spacehorizontal"
+        fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
           ? e[0]+2 : e[0],
-        fill == "crop" || fill == "crophorizontal" || fill == "crophorizontal_spaceverticle"
+        fill == "crop" || fill == "crophorizontal" || fill == "crophorizontal_spacevertical"
           ? e[1]+2 : e[1]];
       /*Grid() children(); creates a grid of children
       \param e elements [x,y]

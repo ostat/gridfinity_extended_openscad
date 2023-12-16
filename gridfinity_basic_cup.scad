@@ -32,13 +32,27 @@ lip_style = "normal";  // [ "normal", "reduced", "none" ]
 position="default"; //["default","center","zero"]
 
 /* [Subdivisions] */
+chamber_wall_thickness = 1.2;
 // X dimension subdivisions
-chambers = 1;
+vertical_chambers = 1;
+vertical_separator_bend_position = 0;
+vertical_separator_bend_angle = 0;
+vertical_separator_bend_separation = 0;
+vertical_separator_cut_depth=0;
+horizontal_chambers = 1;
+horizontal_separator_bend_position = 0;
+horizontal_separator_bend_angle = 0;
+horizontal_separator_bend_separation = 0;
+horizontal_separator_cut_depth=0;
 // Enable irregular subdivisions
-irregular_subdivisions = false;
+vertical_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
-separator_positions = [ 0.25, 0.5, 1, 1.33, 1.66];
-
+vertical_separator_config = "10.5|21|42|50|60";
+// Enable irregular subdivisions
+horizontal_irregular_subdivisions = false;
+// Separator positions are defined in terms of grid units from the left end
+horizontal_separator_config = "10.5|21|42|50|60";
+      
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
@@ -89,7 +103,7 @@ wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
 wallpattern_hole_size = 5; //0.1
 // pattern fill mode
-wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropverticle", "crophorizontal_spaceverticle", "cropverticle_spacehorizontal", "spaceverticle", "spacehorizontal"]
+wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
 
 /* [Wall Cutout] */
 wallcutout_enabled=false;
@@ -101,6 +115,11 @@ wallcutout_angle=70;
 //default will be binHeight
 wallcutout_height=0;
 wallcutout_corner_radius=5;
+
+/* [Extendable] */
+extention_x_enabled = false;
+extention_y_enabled = false;
+extention_tabs_enabled = true;
 
 /* [debug] */
 //Slice along the x axis
@@ -124,9 +143,21 @@ module gridfinity_basic_cup(
   label_width=label_width,
   wall_thickness=wall_thickness,
   lip_style=lip_style,
-  chambers=chambers,
-  irregular_subdivisions=irregular_subdivisions,
-  separator_positions=separator_positions,
+  chamber_wall_thickness = chamber_wall_thickness,
+  vertical_chambers = vertical_chambers,
+  vertical_separator_bend_position=vertical_separator_bend_position,
+  vertical_separator_bend_angle=vertical_separator_bend_angle,
+  vertical_separator_bend_separation=vertical_separator_bend_separation,
+  vertical_separator_cut_depth=vertical_separator_cut_depth,
+  vertical_irregular_subdivisions=vertical_irregular_subdivisions,
+  vertical_separator_config=vertical_separator_config,
+  horizontal_chambers=horizontal_chambers,
+  horizontal_separator_bend_position=horizontal_separator_bend_position,
+  horizontal_separator_bend_angle=horizontal_separator_bend_angle,
+  horizontal_separator_bend_separation=horizontal_separator_bend_separation,
+  horizontal_separator_cut_depth=horizontal_separator_cut_depth,
+  horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
+  horizontal_separator_config=horizontal_separator_config, 
   magnet_diameter=magnet_diameter,
   screw_depth=screw_depth,
   center_magnet_diameter=center_magnet_diameter,
@@ -158,20 +189,18 @@ module gridfinity_basic_cup(
   wallpattern_hole_sides=wallpattern_hole_sides,
   wallpattern_hole_size=wallpattern_hole_size,
   wallpattern_hole_spacing=wallpattern_hole_spacing,
+  extention_enabled = [extention_x_enabled, extention_y_enabled],
+  extention_tabs_enabled = extention_tabs_enabled,
   cutx=cutx,
   cuty=cuty,
   help=help) {
 
   difference(){
-    sepPositions = irregular_subdivisions 
-      ? separator_positions
-      : calcualteSeparators(chambers-1,width);
-    
     irregular_cup(
       num_x=width, num_y=depth, num_z=height,
       position=position,
       filled_in=filled_in,
-      withLabel=label,
+      label_style=label,
       labelWidth=label_width,
       fingerslide=fingerslide,
       fingerslide_radius=fingerslide_radius,
@@ -184,7 +213,21 @@ module gridfinity_basic_cup(
       wall_thickness=wall_thickness,
       hole_overhang_remedy=hole_overhang_remedy,
       efficient_floor=efficient_floor,
-      separator_positions=sepPositions,
+      chamber_wall_thickness=chamber_wall_thickness,
+      vertical_separator_bend_position=vertical_separator_bend_position,
+      vertical_separator_bend_angle=vertical_separator_bend_angle,
+      vertical_separator_bend_separation=vertical_separator_bend_separation,
+      vertical_separator_cut_depth=vertical_separator_cut_depth,
+      vertical_separator_positions=vertical_irregular_subdivisions 
+        ? vertical_separator_config 
+        : splitChamber(vertical_chambers-1, width),
+      horizontal_separator_bend_position=horizontal_separator_bend_position,
+      horizontal_separator_bend_angle=horizontal_separator_bend_angle,
+      horizontal_separator_bend_separation=horizontal_separator_bend_separation,
+      horizontal_separator_cut_depth=horizontal_separator_cut_depth,
+      horizontal_separator_positions=horizontal_irregular_subdivisions 
+        ? horizontal_separator_config 
+        : splitChamber(horizontal_chambers-1, depth),
       half_pitch=half_pitch,
       lip_style=lip_style,
       box_corner_attachments_only=box_corner_attachments_only,
@@ -207,6 +250,8 @@ module gridfinity_basic_cup(
       wallcutout_angle=wallcutout_angle,
       wallcutout_height=wallcutout_height,
       wallcutout_corner_radius=wallcutout_corner_radius,
+      extention_enabled = extention_enabled,
+      extention_tabs_enabled = extention_tabs_enabled,
       cutx=cutx,
       cuty=cuty,
       help = help);

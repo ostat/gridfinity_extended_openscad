@@ -30,9 +30,9 @@ function calculateFloorThickness(magnet_diameter, screw_depth, floor_thickness, 
   calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) - cupBaseClearanceHeight(magnet_diameter, screw_depth);
     
 // calculate the position of separators from the size
-function calcualteSeparators(num_separators, num_x) = num_separators < 1 
+function splitChamber(num_separators, num_x) = num_separators < 1 
       ? [] 
-      : [ for (i=[1:num_separators]) i*(num_x/(num_separators+1))];
+      : [ for (i=[1:num_separators]) i*(num_x/(num_separators+1))*gf_pitch];
 
 function LookupKnownShapes(name="round") = 
   name == "square" ? 4 :

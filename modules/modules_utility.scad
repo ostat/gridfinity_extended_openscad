@@ -37,6 +37,60 @@ module WallCutout2(
    }
 }
 
+module bentWall(
+  length=100,
+  bendPosition=0,
+  bendAngle=45,
+  separation=10,
+  lowerBendRadius=0,
+  upperBendRadius=0,
+  height=30,
+  thickness=10,
+  wall_cutout_depth = 0,
+  wall_cutout_width = 0,
+  fn = 64) {
+  bendPosition = bendPosition > 0 ?bendPosition: length/2;
+  
+  render()
+  difference()
+  {
+    union(){
+      if(separation != 0) { 
+        translate([thickness/2,bendPosition,0])
+        linear_extrude(height)
+        SBogen(
+          2D=thickness,
+          dist=separation,
+          //x0=true,
+          grad=bendAngle,
+          r1=lowerBendRadius <= 0 ? separation : lowerBendRadius,
+          r2=upperBendRadius <= 0 ? separation : upperBendRadius,
+          l1=bendPosition,
+          l2=length-bendPosition, $fn = fn);   
+      } else {
+        cube([thickness, length, height]);
+      }
+    }
+
+    cutoutHeight = 
+      wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
+        : wall_cutout_depth;
+    cutoutLength = 
+      wall_cutout_width <= -1 ? length/abs(wall_cutout_depth)
+        : wall_cutout_width == 0 ? length/2
+        : wall_cutout_width;
+    if(wall_cutout_depth != 0){
+      translate([0,length/2,height])
+      rotate([0,0,90])
+      WallCutout(
+        height = cutoutHeight,
+        lowerWidth = cutoutLength,
+        cornerRadius = cutoutHeight,
+        thickness = (separation+thickness*2+fudgeFactor*2));
+    }
+  }
+}
+
 module WallCutout(
   lowerWidth=50,
   wallAngle=70,
@@ -104,24 +158,22 @@ module roundedCorner(
   height,
   fn=64)
 {
-  render(){
-    difference(){
-      union(){
-        //main corner to be removed
-        translate([0,-1, -1])
-          cube([length, radius+1,  radius+1]);
-        //corner extention in y
-        translate([0,0, -radius])
-          cube([length, height, radius]);
-        //corner extention in x
-        translate([0,-radius, 0])
-          cube([length, radius, height]);
+  difference(){
+    union(){
+      //main corner to be removed
+      translate([0,-radius, -radius])
+        cube([length, radius*2,  radius*2]);
+      //corner extention in y
+      translate([0,0, -radius])
+        cube([length, height, radius]);
+      //corner extention in x
+      translate([0,-radius, 0])
+        cube([length, radius, height]);
 
-      }
-      translate([-1,radius, radius])
-        rotate([90, 0, 90])
-        cylinder(h = length+2, r=radius, $fn=fn);
     }
+    translate([-1,radius, radius])
+      rotate([90, 0, 90])
+      cylinder(h = length+2, r=radius, $fn=fn);
   }  
 }
 

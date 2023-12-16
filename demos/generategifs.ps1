@@ -73,12 +73,17 @@ function Create-ImageForDemo(
     [string]$outputFolder,
     [bool]$SetFilePath = $true
     ){
+
+ 
     $Scenarios = New-Object System.Collections.ArrayList
 
     $scriptFile =  Get-Item -LiteralPath $scadScriptPath
-    
+
     $demoName = $scriptFile.BaseName.Replace('_demo','')
     $demoOutputFolder = Join-Path $outputFolder "$($demoName)"
+
+    Write-Host "$($demoName ) - generating demos`r`n`ttarget folder $($demoOutputFolder)" -ForegroundColor Green
+    
 
     foreach($line in Get-Content $scadScriptPath) {
         if($line -match 'scenario\s?==\s?"(?<secenario>.*?)"\s?\?\s?\[\["(?<secenariofriendly>.*?)"\,\s?(?<count>\d*)'){
@@ -115,8 +120,8 @@ function Create-ImageForDemo(
 
         $cmdArgs = $cmdArgs += " -D `"scenario=`"`"$($scenario.ScenarioName)`"`"`""
         $cmdArgs = $cmdArgs += " -D `"showtext=$($showtext.ToString().tolower())`""
-        $cmdArgs = $cmdArgs += " --colorscheme BeforeDawn"
-        $cmdArgs = $cmdArgs += " --imgsize 1024,768"
+        $cmdArgs = $cmdArgs += " --colorscheme Tomorrow" #BeforeDawn
+        $cmdArgs = $cmdArgs += " --imgsize 4096,3072"#" --imgsize 1024,768"4096,3072
         $cmdArgs = $cmdArgs += " --animate $($scenario.Count)"
         
         $cmdArgs += " $($scadScriptPath)"
@@ -132,6 +137,6 @@ function Create-ImageForDemo(
 }
 
 Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_basic_cup_demo.scad') -outputFolder $outputFolder 
-#Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_baseplate_demo.scad') -outputFolder $outputFolder
-#Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_item_holder_demo.scad') -outputFolder $outputFolder
-#Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_tray_demo.scad') -outputFolder $outputFolder
+Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_baseplate_demo.scad') -outputFolder $outputFolder
+Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_item_holder_demo.scad') -outputFolder $outputFolder
+Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_tray_demo.scad') -outputFolder $outputFolder
