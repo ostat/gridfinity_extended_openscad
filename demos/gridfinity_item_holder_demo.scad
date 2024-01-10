@@ -20,69 +20,88 @@ setViewPort=true;
 multi_spacing = [0.2,0.5];
 
 /* [Hidden] */
+/* item holder settings */
 iitemholder_known_item = 0;
-iitemholder_hex_grid = 1;
-iitemholder_hole_sides = 2;
-iitemholder_hole_size = 3;
-iitemholder_hole_spacing = 4;
-iitemholder_hole_grid = 5;
-iitemholder_hole_clearance = 6;
-iitemholder_hole_depth = 7;
-iitemholder_hole_chamfer =8;
-iitemholder_compartments = 9;
-iitemholder_compartment_spacing = 10;
-iitemholder_compartment_centered = 11;
-iitemholder_compartment_fill  = 12;
-iitemholder_customcompartments = 13;
-iitemholder_auto_bin_height = 14;
-iitemholder_multi_card_compact = 15; 
-extendedsettingscount=16;
+iitemholder_grid_style = iitemholder_known_item+1;
+iitemholder_hole_sides = iitemholder_grid_style+1;
+iitemholder_hole_size = iitemholder_hole_sides+1;
+iitemholder_hole_spacing = iitemholder_hole_size+1;
+iitemholder_hole_grid = iitemholder_hole_spacing+1;
+iitemholder_hole_clearance = iitemholder_hole_grid+1;
+iitemholder_hole_depth = iitemholder_hole_clearance+1;
+iitemholder_hole_chamfer =iitemholder_hole_depth+1;
+iitemholder_compartments = iitemholder_hole_chamfer+1;
+iitemholder_compartment_spacing = iitemholder_compartments+1;
+iitemholder_compartment_centered = iitemholder_compartment_spacing+1;
+iitemholder_compartment_fill  = iitemholder_compartment_centered+1;
+iitemholder_customcompartments = iitemholder_compartment_fill+1;
+iitemholder_auto_bin_height = iitemholder_customcompartments+1;
+iitemholder_multi_card_compact = iitemholder_auto_bin_height+1;
+extendedsettingscount=iitemholder_multi_card_compact+1;
 
+/*basic cup settings*/
 iwidth=extendedsettingscount;
-idepth=1+extendedsettingscount;
-iheight=2+extendedsettingscount;
-iposition=3+extendedsettingscount;
-ifilled_in=4+extendedsettingscount;
-ilabel=5+extendedsettingscount;
-ilabel_width=6+extendedsettingscount;
-iwall_thickness=7+extendedsettingscount;
-ilip_style=8+extendedsettingscount;
-ichambers=9+extendedsettingscount;
-iirregular_subdivisions=10+extendedsettingscount;
-iseparator_positions=11+extendedsettingscount;
-imagnet_diameter=12+extendedsettingscount;
-iscrew_depth=13+extendedsettingscount;
-icenter_magnet_diameter=14+extendedsettingscount;
-icenter_magnet_thickness=15+extendedsettingscount;
-ihole_overhang_remedy=16+extendedsettingscount;
-ibox_corner_attachments_only=17+extendedsettingscount;
-ifloor_thickness=18+extendedsettingscount;
-icavity_floor_radius=19+extendedsettingscount;
-iefficient_floor=20+extendedsettingscount;
-ihalf_pitch=21+extendedsettingscount;
-iflat_base=22+extendedsettingscount;
-ifingerslide=23+extendedsettingscount;
-ifingerslide_radius=24+extendedsettingscount;
-itapered_corner=25+extendedsettingscount;
-itapered_corner_size=26+extendedsettingscount;
-itapered_setback=27+extendedsettingscount;
-iwallcutout_enabled=28+extendedsettingscount;
-iwallcutout_walls=29+extendedsettingscount;
-iwallcutout_width=30+extendedsettingscount;
-iwallcutout_angle=31+extendedsettingscount;
-iwallcutout_height=32+extendedsettingscount;
-iwallcutout_corner_radius=33+extendedsettingscount;
-iwallpattern_enabled=34+extendedsettingscount;
-iwallpattern_hexgrid=35+extendedsettingscount;
-iwallpattern_walls=36+extendedsettingscount;
-iwallpattern_fill=37+extendedsettingscount;
-iwallpattern_hole_sides=38+extendedsettingscount;
-iwallpattern_hole_size=39+extendedsettingscount;
-iwallpattern_hole_spacing=40+extendedsettingscount;
-icutx=41+extendedsettingscount;
-icuty=42+extendedsettingscount;
-itranslate=43+extendedsettingscount;
-irotate=44+extendedsettingscount;
+idepth=iwidth+1;
+iheight=idepth+1;
+iposition=iheight+1;
+ifilled_in=iposition+1;
+ilabel=ifilled_in+1;
+ilabel_width=ilabel+1;
+iwall_thickness=ilabel_width+1;
+ilip_style=iwall_thickness+1;
+ichamber_wall_thickness=ilip_style+1;
+ivertical_chambers=ichamber_wall_thickness+1;
+ivertical_separator_bend_position=ivertical_chambers+1;
+ivertical_separator_bend_angle=ivertical_separator_bend_position+1;
+ivertical_separator_bend_separation=ivertical_separator_bend_angle+1;
+ivertical_separator_cut_depth=ivertical_separator_bend_separation+1;
+ivertical_irregular_subdivisions=ivertical_separator_cut_depth+1;
+ivertical_separator_config=ivertical_irregular_subdivisions+1;
+ihorizontal_chambers=ivertical_separator_config+1;
+ihorizontal_separator_bend_position=ihorizontal_chambers+1;
+ihorizontal_separator_bend_angle=ihorizontal_separator_bend_position+1;
+ihorizontal_separator_bend_separation=ihorizontal_separator_bend_angle+1;
+ihorizontal_separator_cut_depth=ihorizontal_separator_bend_separation +1;
+ihorizontal_irregular_subdivisions=ihorizontal_separator_cut_depth+1;
+ihorizontal_separator_config=ihorizontal_irregular_subdivisions+1;
+imagnet_diameter=ihorizontal_separator_config+1;
+iscrew_depth=imagnet_diameter+1;
+icenter_magnet_diameter=iscrew_depth+1;
+icenter_magnet_thickness=icenter_magnet_diameter+1;
+ihole_overhang_remedy=icenter_magnet_thickness+1;
+ibox_corner_attachments_only=ihole_overhang_remedy+1;
+ifloor_thickness=ibox_corner_attachments_only+1;
+icavity_floor_radius=ifloor_thickness+1;
+iefficient_floor=icavity_floor_radius+1;
+ihalf_pitch=iefficient_floor+1;
+iflat_base=ihalf_pitch+1;
+ispacer=iflat_base+1;
+ifingerslide=ispacer+1;
+ifingerslide_radius=ifingerslide+1;
+itapered_corner=ifingerslide_radius+1;
+itapered_corner_size=itapered_corner+1;
+itapered_setback=itapered_corner_size+1;
+iwallcutout_enabled=itapered_setback+1;
+iwallcutout_walls=iwallcutout_enabled+1;
+iwallcutout_width=iwallcutout_walls+1;
+iwallcutout_angle=iwallcutout_width+1;
+iwallcutout_height=iwallcutout_angle+1;
+iwallcutout_corner_radius=iwallcutout_height+1;
+iwallpattern_enabled=iwallcutout_corner_radius+1;
+iwallpattern_hexgrid=iwallpattern_enabled+1;
+iwallpattern_walls=iwallpattern_hexgrid+1;
+iwallpattern_dividers_enabled=iwallpattern_walls+1;
+iwallpattern_fill=iwallpattern_dividers_enabled+1;
+iwallpattern_hole_sides=iwallpattern_fill+1;
+iwallpattern_hole_size=iwallpattern_hole_sides+1;
+iwallpattern_hole_spacing=iwallpattern_hole_size+1;
+iextention_enabled = iwallpattern_hole_spacing+1;
+iextention_tabs_enabled = iextention_enabled+1;
+icutx=iextention_tabs_enabled+1;
+icuty=icutx+1;
+ihelp=icuty+1;
+itranslate=ihelp+1;
+irotate=itranslate+1;
 
 iscenarioName=0;
 iscenarioCount=1;
@@ -108,8 +127,8 @@ echo("start",vp=vp, vpr = getcustomVpr(vp), vpt = getcustomVpt(vp), vpd = getcus
 
 //Basic cup default settings for demo
 defaultDemoSetting = 
-    //itemholder_known_item, itemholder_hex_grid, itemholder_hole_sides, itemholder_hole_size, itemholder_hole_spacing, 
-    ["1/4hexshank", false, 6, 5, 2,
+    //itemholder_known_item, itemholder_grid_style, itemholder_hole_sides, itemholder_hole_size, itemholder_hole_spacing, 
+    ["1/4hexshank", "square", 6, 5, 2,
     //itemholder_hole_grid, itemholder_hole_clearance, itemholder_hole_depth, itemholder_hole_chamfer
     [0, 0], 0.65, 0, 1,
     //itemholder_compartments, itemholder_compartment_spacing, itemholder_compartment_centered, itemholder_compartment_fill
@@ -120,22 +139,32 @@ defaultDemoSetting =
     //Gridfinity settins
     //width, depth, height, filled_in, label, label_width
     3,2,2,"default","off","disabled",1.5,
-    //wall_thickness, lip_style, chambers, irregular_subdivisions, separator_positions
-    0.95, "normal", 1, false, [], 
-    //magnet_diameter, screw_depth, icenter_magnet_diameter, icenter_magnet_thickness, hole_overhang_remedy, box_corner_attachments_only
+    //wall_thickness, lip_style, chamber_wall_thickness
+    0.95, "normal",  1.2,
+    //vertical_chambers, vertical_separator_bend_position,vertical_separator_bend_angle,vertical_separator_bend_separation,
+    1, 0,45,0,0,
+    //vertical_separator_cut_depth, vertical_irregular_subdivisionsvertical_separator_config
+    false,"10.5|21|42|50|60",
+    //horizontal_chambers, horizontal_separator_bend_position, horizontal_separator_bend_angle, horizontal_separator_bend_separation
+    1, 0,45,0,0,
+    //horizontal_separator_cut_depth, horizontal_irregular_subdivisions, horizontal_separator_config
+    false,"10.5|21|42|50|60",
+    //magnet_diameter, screw_depth, center_magnet_diameter, center_magnet_thickness, hole_overhang_remedy, box_corner_attachments_only
     0, 0, 0, 0, 2, false, 
     //floor_thickness, cavity_floor_radius, efficient_floor, half_pitch, flat_base
-    10, -1, false, false, false, 
-    //fingerslide,fingerslide_radius,
-    "none", 8,
+    0.7, -1, false, false, false, 
+    //spacer, fingerslide,fingerslide_radius,
+    false, "none", 8,
     //tapered_corner, tapered_corner_size, tapered_setback
     "none", 10, -1,
     //wallcutout_enabled, wallcutout_walls, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius
     false, [1,0,0,0], 0, 70, 0, 5, 
-    //wallpattern_enabled, wallpattern_hexgrid, wallpattern_walls, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing
-    false, true, [1,1,1,1], "none", 6, 5, 2, 
-    //cutx,cuty,rotate,translate
-    0, 0, [0,0,0], [0,0,0]];
+    //wallpattern_enabled, wallpattern_hexgrid, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing
+    false, true, [1,1,1,1], false, "none", 6, 5, 2, 
+    //extention_enabled, extention_tabs_enabled
+    [false,false],false,
+    //cutx,cuty,help,translate,rotate
+    0, 0,false,[0,0,0],[0,0,0]];
    
 function isMulti(scenario) = search("multi",scenario) == [0, 1, 2, 3, 4];
 function iscustomVP(scenarioVp, length = 0) = is_list(scenarioVp) && len(scenarioVp) >= length;
@@ -149,8 +178,8 @@ function getScenario(scenario) =
 //[1]: name,[[key,value]]
   scenario == "demo" ? [["Item Holder",6,[],[]],
       ["4mm Hex Shank", [[iitemholder_known_item,"4hexshank"],[iitemholder_hole_chamfer,0.5]]],
-      ["1/4\" Hex Shank", [[iitemholder_known_item,"1/4hexshank"],[iitemholder_hex_grid,true]]],
-      ["AAA on hex grid", [[iitemholder_known_item,"aaa"],[iitemholder_hex_grid,true]]],
+      ["1/4\" Hex Shank", [[iitemholder_known_item,"1/4hexshank"],[iitemholder_grid_style,"hex"]]],
+      ["AAA on hex grid", [[iitemholder_known_item,"aaa"],[iitemholder_grid_style,"hex"]]],
       ["AA", [[iitemholder_known_item,"aa"],[ifilled_in, "on"]]],
       ["18650", [[iitemholder_known_item,"18650"]]],
       ["Multi Card", [[iitemholder_known_item,"multicard"],[iitemholder_hole_chamfer,1],[iitemholder_multi_card_compact,0.7],[ifilled_in, "notstackable"]]],
@@ -159,8 +188,8 @@ function getScenario(scenario) =
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,90],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]//endscenario
 
   : scenario == "grid" ? [["grid",2,[],[[iitemholder_known_item,"aaa"]]],
-      ["square", [[iitemholder_hex_grid,false]]],
-      ["hex", [[iitemholder_hex_grid,true]]]]//endscenario
+      ["square", [[iitemholder_grid_style,"square"]]],
+      ["hex", [[iitemholder_grid_style,"hex"]]]]//endscenario
 
   : scenario == "hole_sides" ? [["hole sides",4,[],[[iitemholder_known_item,""],[iitemholder_hole_depth, 10], [icuty,true]]],
       [4, [[iitemholder_hole_sides,4]]],
@@ -228,19 +257,27 @@ function getScenario(scenario) =
    : scenario == "coaster" ? [["Coaster", 6,[],[[iitemholder_known_item,""],[iitemholder_hole_depth,1],[iwidth, 2],[idepth, 2],[iheight, 1],[iitemholder_auto_bin_height,false]]],
      ["circle 73mm stackable", [[iitemholder_hole_size,73],[iitemholder_hole_sides,64],[ifilled_in, "on"]]],
      ["circle 73mm", [[iitemholder_hole_size,73],[iitemholder_hole_sides,64],[ifilled_in, "notstackable"]]],
-     ["hex grid chamfer stackable", [[iitemholder_hole_spacing,1.5],[iitemholder_hole_sides,6],[iitemholder_hex_grid,true],[iitemholder_hole_chamfer,0],[ifilled_in, "on"]]],
-     ["hex grid chamfer", [[iitemholder_hole_sides,6],[iitemholder_hex_grid,true],[iitemholder_hole_chamfer,0],[ifilled_in, "notstackable"]]],
-     ["hex grid stackable", [[iitemholder_hole_sides,6],[iitemholder_hex_grid,true],[iitemholder_hole_chamfer,1],[ifilled_in, "on"]]],
-     ["hex grid", [[iitemholder_hole_sides,6],[iitemholder_hex_grid,true],[iitemholder_hole_chamfer,1],[ifilled_in, "notstackable"]]]]//
+     ["hex grid chamfer stackable", [[iitemholder_hole_spacing,1.5],[iitemholder_hole_sides,6],[iitemholder_grid_style,"hex"],[iitemholder_hole_chamfer,0],[ifilled_in, "on"]]],
+     ["hex grid chamfer", [[iitemholder_hole_sides,6],[iitemholder_grid_style,"hex"],[iitemholder_hole_chamfer,0],[ifilled_in, "notstackable"]]],
+     ["hex grid stackable", [[iitemholder_hole_sides,6],[iitemholder_grid_style,"hex"],[iitemholder_hole_chamfer,1],[ifilled_in, "on"]]],
+     ["hex grid", [[iitemholder_hole_sides,6],[iitemholder_grid_style,"hex"],[iitemholder_hole_chamfer,1],[ifilled_in, "notstackable"]]]]//
 
    : scenario == "multicoaster" ? [["Multi",1,[[60,0,0],[120,0,60],600],[]],
-      ["coaster",1,[0, 0, 0], 5],
-      ["coaster",0,[0, gf_pitch*(2+multi_spacing.y), 0], 8],
-      ["coaster",3,[gf_pitch*(2+multi_spacing.x), 0, 0], 5],
-      ["coaster",2,[gf_pitch*(2+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0], 8],
-      ["coaster",5,[gf_pitch*(2+multi_spacing.x)*2, 0, 0], 5],
-      ["coaster",4,[gf_pitch*(2+multi_spacing.x)*2, gf_pitch*(2+multi_spacing.y), 0], 8]]     
-     
+      ["coaster",1,[0, 0, 0], -1],
+      ["coaster",0,[0, gf_pitch*(2+multi_spacing.y), 0], -1],
+      ["coaster",3,[gf_pitch*(2+multi_spacing.x), 0, 0], -1],
+      ["coaster",2,[gf_pitch*(2+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0], -1],
+      ["coaster",5,[gf_pitch*(2+multi_spacing.x)*2, 0, 0], -1],
+      ["coaster",4,[gf_pitch*(2+multi_spacing.x)*2, gf_pitch*(2+multi_spacing.y), 0], -1]]     
+ 
+   : scenario == "multibattery" ? [["Multi",1,[[60,0,0],[120,0,60],600],[]],
+      ["battery",1,[0, 0, 0], -1],
+      ["battery",0,[0, gf_pitch*(2+multi_spacing.y), 0], -1],
+      ["battery",3,[gf_pitch*(2+multi_spacing.x), 0, 0], -1],
+      ["battery",2,[gf_pitch*(2+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0], -1],
+      ["battery",5,[gf_pitch*(2+multi_spacing.x)*2, 0, 0], -1],
+      ["battery",4,[gf_pitch*(2+multi_spacing.x)*2, gf_pitch*(2+multi_spacing.y), 0], -1]]    
+      
   : scenario == "custom" ? [["Custom", 3, []]]//endscenario
 
    : [["unknown scenario",[]]];
@@ -267,7 +304,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
     translate(currentStepSettings[itranslate])
     gridfinity_itemholder(
       //itemholder settings
-      itemholder_hex_grid = currentStepSettings[iitemholder_hex_grid],
+      itemholder_grid_style = currentStepSettings[iitemholder_grid_style],
       itemholder_hole_sides = currentStepSettings[iitemholder_hole_sides],
       itemholder_hole_size = currentStepSettings[iitemholder_hole_size],
       itemholder_hole_spacing = currentStepSettings[iitemholder_hole_spacing],
@@ -284,22 +321,34 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
       itemholder_multi_card_compact = currentStepSettings[iitemholder_multi_card_compact],
       itemholder_known_item = currentStepSettings[iitemholder_known_item],
       
-      width = currentStepSettings[iwidth],
-      depth = currentStepSettings[idepth],
-      height = currentStepSettings[iheight],
+      width = width > -1 ? width : currentStepSettings[iwidth],
+      depth = depth > -1 ? depth : currentStepSettings[idepth],
+      height = height > -1 ? height : currentStepSettings[iheight],
       position = currentStepSettings[iposition],
       filled_in = currentStepSettings[ifilled_in],
       label=currentStepSettings[ilabel],
       label_width=currentStepSettings[ilabel_width],
       wall_thickness=currentStepSettings[iwall_thickness],
       lip_style=currentStepSettings[ilip_style],
-      chambers=currentStepSettings[ichambers],
-      irregular_subdivisions=currentStepSettings[iirregular_subdivisions],
-      separator_positions=currentStepSettings[iseparator_positions],
+      chamber_wall_thickness=currentStepSettings[ichamber_wall_thickness],
+      vertical_chambers=currentStepSettings[ivertical_chambers],
+      vertical_separator_bend_position=currentStepSettings[ivertical_separator_bend_position],
+      vertical_separator_bend_angle=currentStepSettings[ivertical_separator_bend_angle],
+      vertical_separator_bend_separation=currentStepSettings[ivertical_separator_bend_separation],
+      vertical_separator_cut_depth=currentStepSettings[ivertical_separator_cut_depth],
+      vertical_irregular_subdivisions=currentStepSettings[ivertical_irregular_subdivisions],
+      vertical_separator_config=currentStepSettings[ivertical_separator_config],
+      horizontal_chambers=currentStepSettings[ihorizontal_chambers],
+      horizontal_separator_bend_position=currentStepSettings[ihorizontal_separator_bend_position],
+      horizontal_separator_bend_angle=currentStepSettings[ihorizontal_separator_bend_angle],
+      horizontal_separator_bend_separation=currentStepSettings[ihorizontal_separator_bend_separation],
+      horizontal_separator_cut_depth=currentStepSettings[ihorizontal_separator_cut_depth],
+      horizontal_irregular_subdivisions=currentStepSettings[ihorizontal_irregular_subdivisions],
+      horizontal_separator_config=currentStepSettings[ihorizontal_separator_config],
       magnet_diameter=currentStepSettings[imagnet_diameter],
       screw_depth=currentStepSettings[iscrew_depth],
-      center_magnet_diameter = currentStepSettings[icenter_magnet_diameter], 
-      center_magnet_thickness = currentStepSettings[icenter_magnet_thickness],
+      center_magnet_diameter=currentStepSettings[icenter_magnet_diameter],
+      center_magnet_thickness=currentStepSettings[icenter_magnet_thickness],
       hole_overhang_remedy=currentStepSettings[ihole_overhang_remedy],
       box_corner_attachments_only=currentStepSettings[ibox_corner_attachments_only],
       floor_thickness=currentStepSettings[ifloor_thickness],
@@ -307,6 +356,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
       efficient_floor=currentStepSettings[iefficient_floor],
       half_pitch=currentStepSettings[ihalf_pitch],
       flat_base=currentStepSettings[iflat_base],
+      spacer=currentStepSettings[ispacer],
       fingerslide=currentStepSettings[ifingerslide],
       fingerslide_radius=currentStepSettings[ifingerslide_radius],
       tapered_corner=currentStepSettings[itapered_corner],
@@ -321,13 +371,16 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
       wallpattern_enabled=currentStepSettings[iwallpattern_enabled],
       wallpattern_hexgrid=currentStepSettings[iwallpattern_hexgrid],
       wallpattern_walls=currentStepSettings[iwallpattern_walls],
+      wallpattern_dividers_enabled=currentStepSettings[iwallpattern_dividers_enabled],
       wallpattern_fill=currentStepSettings[iwallpattern_fill],
       wallpattern_hole_sides=currentStepSettings[iwallpattern_hole_sides],
       wallpattern_hole_size=currentStepSettings[iwallpattern_hole_size],
       wallpattern_hole_spacing=currentStepSettings[iwallpattern_hole_spacing],
+      extention_enabled=currentStepSettings[iextention_enabled],
+      extention_tabs_enabled=currentStepSettings[iextention_tabs_enabled],
       cutx=currentStepSettings[icutx],
       cuty=currentStepSettings[icuty],
-      help=help);
+      help=help || currentStepSettings[ihelp]);
 }
 
 color(colour)

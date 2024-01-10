@@ -4,7 +4,7 @@ fudgeFactor = 0.01;
 
 module GridItemHolder(
   canvisSize = [0,0],
-  hexGrid = true,
+  hexGrid = true, //false, true, "auto"
   customShape=false,
   circleFn = 6,
   holeSize = [0,0],
@@ -29,12 +29,6 @@ module GridItemHolder(
   //For hex in a hex grid we can optomise the spacing, otherwise its too hard      
   Ri = holeSize[0]/2;//(circleFn==6 && hexGrid) || (circleFn==4) ? (holeSize[0]/2) : Rc;
   
-  //Single lines should not be hex
-  hexGrid = 
-    canvisSize.x<=holeSize.x+holeSpacing.x || 
-    canvisSize.y<=holeSize.y+holeSpacing.y ||
-    holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
-  
   calcHoleDimentions = [
       customShape ? holeSize[0] :
       circleFn == 4 ? Rc*2 : 
@@ -43,41 +37,60 @@ module GridItemHolder(
       circleFn == 4 ? Rc*2 : 
       circleFn == 6 ? Ri*2 : Rc*2];
 
-  //x spacing for hex, center to center 
+        //x spacing for hex, center to center 
   hexxSpacing = 
     circleFn == 4 ? holeSpacing[1]/2 + calcHoleDimentions[1]/2
     : customShape ? holeSize[0]+holeSpacing[0]
     : sqrt((Ri*2+holeSpacing[0])^2-((calcHoleDimentions[1]+holeSpacing[1])/2)^2);
+    
+  //Calcualte the x and y items count for hexgrid
+  eHexGrid = [
+      holeGrid[0] !=0 ? holeGrid[0]
+        : floor((canvisSize[0]-calcHoleDimentions[0])/hexxSpacing+1), 
+      holeGrid[1] !=0 ? holeGrid[1]
+        : floor(((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1])-0.5)*2)/2
+      ];
+
+  //Calcualte the x and y hex items count for squaregrid
+  eSquareGrid = [
+      holeGrid[0]!=0 ? holeGrid[0]
+        : floor((canvisSize[0]+holeSpacing[0])/(calcHoleDimentions[0]+holeSpacing[0])),
+      holeGrid[1]!=0 ? holeGrid[1]
+        : floor((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1]))];
+
+  //Single lines should not be hex
+  hexGrid = 
+    canvisSize.x<=holeSize.x+holeSpacing.x || 
+    canvisSize.y<=holeSize.y+holeSpacing.y ||
+    holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
+  echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
+  hexGridCount = let(count = eHexGrid[0]*eHexGrid[1]) eHexGrid[0] % 2 == 0 ? floor(count) : ceil(count);
+  squareCount = eSquareGrid[0]*eSquareGrid[1];
+  _hexGrid = hexGrid != "auto" ? hexGrid //if not auto use what was chose
+          : hexGridCount == squareCount ? false //if equal prefer square
+          : hexGridCount > squareCount;
+    
   intersection(){
     //Crop to ensure that we dont go outside the bounds 
-    
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
       translate([-fudgeFactor,-fudgeFactor,(center?holeHeight/2:0)-fudgeFactor])
       cube([canvisSize[0]+fudgeFactor*2,canvisSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
     
-    if(hexGrid){
-      //Calcualte the x and y items count
-      e = [
-        holeGrid[0] !=0 ? holeGrid[0]
-          : floor((canvisSize[0]-calcHoleDimentions[0])/hexxSpacing+1), 
-        holeGrid[1] !=0 ? holeGrid[1]
-          : floor(((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1])-0.5)*2)/2
-        ];
-      
+    if(_hexGrid){
       //x and y spacing including the item size.
       es = [
         fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
-          ? calcHoleDimentions[0]+(e[0]<=1?0:((canvisSize[0]-e[0]*calcHoleDimentions[0])/(e[0]-1))) 
+          ? calcHoleDimentions[0]+(eHexGrid[0]<=1?0:((canvisSize[0]-eHexGrid[0]*calcHoleDimentions[0])/(eHexGrid[0]-1))) 
           : hexxSpacing,
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoleDimentions[1]+(e[1]<=0.5?0:((canvisSize[1]-(e[1]+0.5)*calcHoleDimentions[1])/(e[1]-0.5))) 
+          ? calcHoleDimentions[1]+(eHexGrid[1]<=0.5?0:((canvisSize[1]-(eHexGrid[1]+0.5)*calcHoleDimentions[1])/(eHexGrid[1]-0.5))) 
           : holeSpacing[1] + calcHoleDimentions[1]];
       
       eFill=[
         fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
-          ? e[0]+2 : e[0],
+          ? eHexGrid[0]+2 : eHexGrid[0],
         fill == "crop" || fill == "crophorizontal" || fill == "crophorizontal_spacevertical"
-          ? e[1]+2 : e[1]];
+          ? eHexGrid[1]+2 : eHexGrid[1]];
         
       /*Grid(4)Text($pos.xy,size=3);
       // Grid but with alternating row offset - hex or circle packing
@@ -102,25 +115,19 @@ module GridItemHolder(
         }
     }
     else {
-      e = [
-        holeGrid[0]!=0 ? holeGrid[0]
-          : floor((canvisSize[0]+holeSpacing[0])/(calcHoleDimentions[0]+holeSpacing[0])),
-        holeGrid[1]!=0 ? holeGrid[1]
-          : floor((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1]))];
-          
       es = [
-        fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
-          ? calcHoleDimentions[0]+(e[0]<=1?0:((canvisSize[0]-e[0]*calcHoleDimentions[0])/(e[0]-1))) 
+        fill == "space" || fill == "spacevertical" || fill == "crophorizontal_spacevertical"
+          ? calcHoleDimentions[0]+(eSquareGrid[0]<=1?0:((canvisSize[0]-eSquareGrid[0]*calcHoleDimentions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
           : calcHoleDimentions[0]+holeSpacing[0],
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoleDimentions[1]+(e[1]<=1?0:((canvisSize[1]-e[1]*calcHoleDimentions[1])/(e[1]-1)))
+          ? calcHoleDimentions[1]+(eSquareGrid[1]<=1?0:((canvisSize[1]-eSquareGrid[1]*calcHoleDimentions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
           : calcHoleDimentions[1]+holeSpacing[1]];
       
       eFill=[
         fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
-          ? e[0]+2 : e[0],
+          ? eSquareGrid[0]+2 : eSquareGrid[0],
         fill == "crop" || fill == "crophorizontal" || fill == "crophorizontal_spacevertical"
-          ? e[1]+2 : e[1]];
+          ? eSquareGrid[1]+2 : eSquareGrid[1]];
       /*Grid() children(); creates a grid of children
       \param e elements [x,y]
       \param es element spacing [x,y]
@@ -153,7 +160,11 @@ module GridItemHolder(
     ,"customShape",customShape
     ,"hexxSpacing",hexxSpacing
     ,"calcHoleDimentions",calcHoleDimentions
-    ,"Rc",Rc
+    ,"eHexGrid",eHexGrid
+    ,"eSquareGrid",eSquareGrid  
+    ,"hexGridCount",hexGridCount  
+    ,"squareCount",squareCount  
+     ,"Rc",Rc
     ,"Ri",Ri]
     ,help);
 }

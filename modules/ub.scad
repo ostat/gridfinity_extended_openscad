@@ -6546,7 +6546,8 @@ else T(-shiftx/2*0){
 MO(!$children);
 
     module Ecke(r=r){
-        render()intersection(){
+        //render()
+        intersection(){
             T(r)children();
             translate([0,-150])square(300);
         }
@@ -10859,7 +10860,7 @@ module Anschluss(h=10,d1=10,d2=15,rad=5,rad2,grad=30,r1,r2,center=true,fn=0,fs=f
     if(!2D)RotEx(fn=fn,fs=fs,fa=fa)Ansch();
     else Ansch();
    
-   module Ansch()render()difference(){ // new generation 
+   module Ansch()difference(){ // new generation 
    if(wand<0)SBogen(extrude=(center?center>0?(r1+r2)/2:r2:r1)-wand,grad=abs(grad),dist=r2-r1,l1=l1,l2=l2,r1=rad+(r2>r1?wand:-wand),2D=0,r2=rad2+(r2>r1?-wand:wand),center=center,fn=fn2,fs=fs,fa=fa,grad2=grad2,name=name,x0=x0,lRef=hRef,messpunkt=false);
    
    SBogen(extrude=(center?center>0?(r1+r2)/2:r2:r1),grad=abs(grad),dist=r2-r1,l1=l1,l2=l2,r1=rad,2D=0,r2=rad2,center=center,fn=fn2,fs=fs,fa=fa,grad2=grad2,name=name,x0=wand>0?x0:x0-.1,lRef=hRef,messpunkt=false);

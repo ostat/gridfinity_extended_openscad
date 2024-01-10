@@ -2,6 +2,7 @@ use <gridfinity_modules.scad>
 use <modules_item_holder.scad>
 include <gridfinity_constants.scad>
 include <functions_general.scad>
+include <voronoi.scad>
 
 default_num_x=2; //0.1
 default_num_y=1; //0.1
@@ -18,6 +19,8 @@ default_fingerslide = "none"; //[none, rounded, chamfered]
 default_fingerslide_radius = 8;
 // Set magnet diameter and depth to 0 to print without magnet holes
 // (Zack's design uses magnet diameter of 6.5)
+// Might want to remove inner lip of cup
+default_lip_style = "normal"; //[normal, reduced, none]
 /* [Subdivisions] */
 // X dimension subdivisions
 default_chamber_wall_thickness = 1.2;//0.1
@@ -58,8 +61,7 @@ default_efficient_floor = false;
 default_spacer = false;
 // Half-pitch base pads for offset stacking
 default_half_pitch = false;
-// Might want to remove inner lip of cup
-default_lip_style = "normal"; //[normal, reduced, none]
+
 // Limit attachments (magnets and scres) to box corners for faster printing.
 default_box_corner_attachments_only = false;
 // Removes the base grid from inside the shape
@@ -81,13 +83,15 @@ default_wallcutout_height=0;
 default_wallcutout_corner_radius=5;
 /* [Wall Pattern] */
 default_wallpattern_enabled=false; 
+default_wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi"]
 default_wallpattern_dividers_enabled=false; 
-default_wallpattern_hexgrid = false;
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0]; 
 default_wallpattern_hole_sides = 6;
 default_wallpattern_hole_size = 5; //0.1
 default_wallpattern_hole_spacing = 2; //0.1
+default_wallpattern_voronoi_density_ratio = 75;
+default_wallpattern_voronoi_radius = 0.5;
 
 /* [Extendable] */
 default_extention_x_enabled = false;
@@ -140,12 +144,14 @@ basic_cup(
   tapered_corner_size=default_tapered_corner_size,
   tapered_setback=default_tapered_setback,
   wallpattern_enabled=default_wallpattern_enabled,
-  wallpattern_hexgrid=default_wallpattern_hexgrid,
+  wallpattern_style = default_wallpattern_style,
   wallpattern_fill=default_wallpattern_fill,
   wallpattern_walls=default_wallpattern_walls, 
   wallpattern_hole_sides=default_wallpattern_hole_sides,
   wallpattern_hole_size=default_wallpattern_hole_size,
   wallpattern_hole_spacing=default_wallpattern_hole_spacing,
+  wallpattern_voronoi_density_ratio = default_wallpattern_voronoi_density_ratio,
+  wallpattern_voronoi_radius = default_wallpattern_voronoi_radius,
   wallcutout_enabled=default_wallcutout_enabled,
   wallcutout_walls=default_wallcutout_walls,
   wallcutout_width=default_wallcutout_width,
@@ -205,13 +211,15 @@ module basic_cup(
   tapered_corner_size = default_tapered_corner_size,
   tapered_setback = default_tapered_setback,
   wallpattern_enabled=default_wallpattern_enabled,
-  wallpattern_hexgrid=default_wallpattern_hexgrid,
+  wallpattern_style=default_wallpattern_style,
   wallpattern_fill=default_wallpattern_fill,
   wallpattern_walls=default_wallpattern_walls, 
   wallpattern_dividers_enabled = default_wallpattern_dividers_enabled,
   wallpattern_hole_sides=default_wallpattern_hole_sides,
   wallpattern_hole_size=default_wallpattern_hole_size,
   wallpattern_hole_spacing=default_wallpattern_hole_spacing,
+  wallpattern_voronoi_density_ratio = default_wallpattern_voronoi_density_ratio,
+  wallpattern_voronoi_radius = default_wallpattern_voronoi_radius,
   wallcutout_enabled=default_wallcutout_enabled,
   wallcutout_walls=default_wallcutout_walls,
   wallcutout_width=default_wallcutout_width,
@@ -266,13 +274,15 @@ module basic_cup(
     tapered_corner_size=tapered_corner_size,
     tapered_setback=tapered_setback,
     wallpattern_enabled=wallpattern_enabled,
-    wallpattern_hexgrid=wallpattern_hexgrid,
+    wallpattern_style=wallpattern_style,
     wallpattern_fill=wallpattern_fill,
     wallpattern_walls=wallpattern_walls, 
     wallpattern_dividers_enabled = wallpattern_dividers_enabled,
     wallpattern_hole_sides=wallpattern_hole_sides,
     wallpattern_hole_size=wallpattern_hole_size,
     wallpattern_hole_spacing=wallpattern_hole_spacing,
+    wallpattern_voronoi_density_ratio = wallpattern_voronoi_density_ratio,
+    wallpattern_voronoi_radius = wallpattern_voronoi_radius,
     wallcutout_enabled=wallcutout_enabled,
     wallcutout_walls=wallcutout_walls,
     wallcutout_width=wallcutout_width,
@@ -326,7 +336,7 @@ module irregular_cup(
   tapered_corner_size = default_tapered_corner_size,
   tapered_setback = default_tapered_setback,
   wallpattern_enabled=default_wallpattern_enabled,
-  wallpattern_hexgrid=default_wallpattern_hexgrid,
+  wallpattern_style=default_wallpattern_style,
   wallpattern_fill=default_wallpattern_fill,
   wallpattern_walls=default_wallpattern_walls, 
   wallpattern_dividers_enabled = default_wallpattern_dividers_enabled,
@@ -334,6 +344,8 @@ module irregular_cup(
   wallpattern_hole_size=default_wallpattern_hole_size,
   wallpattern_hole_spacing=default_wallpattern_hole_spacing,
   wallcutout_enabled=default_wallcutout_enabled,
+  wallpattern_voronoi_density_ratio = default_wallpattern_voronoi_density_ratio,
+  wallpattern_voronoi_radius = default_wallpattern_voronoi_radius,
   wallcutout_walls=default_wallcutout_walls,
   wallcutout_width=default_wallcutout_width,
   wallcutout_angle=default_wallcutout_angle,
@@ -502,29 +514,38 @@ module irregular_cup(
             [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz],
             [(num_x-0.5)*gf_pitch-wallpattern_thickness, (num_y-1)*gf_pitch/2, z],
             [90,90,90]];
-
+        
+        locations = [front, back, left, right];
+          
         if(wallpattern_dividers_enabled){
             dividerLocation = locations[2];
+            //TODO wall patterns only support the simple dividers
           difference(){
              separator_positions = calculateSeparators(vertical_separator_positions);
-             //Add wall pattern to the separators 
-             for (i=[0:len(separator_positions)-1]) {
-                union(){
-                translate([gf_pitch*(separator_positions[i])-wall_thickness, 0, fudgeFactor]) 
-                translate(dividerLocation[1])
-                rotate(dividerLocation[2])
-                render(){
-                GridItemHolder(
-                  canvisSize = [dividerLocation[0][1],dividerLocation[0][0]], //Swap x and y and rotate so hex is easier to print
-                  hexGrid = wallpattern_hexgrid,
-                  customShape = false,
-                  circleFn = wallpattern_hole_sides,
-                  holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                  holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                  holeHeight = wallpattern_thickness,
-                  center=true,
-                  fill=wallpattern_fill, //"none", "space", "crop"
-                  help=help);
+
+             if(len(separator_positions)>0)
+             {
+               //Add wall pattern to the separators 
+               for (i=[0:len(separator_positions)-1]) {
+                  union(){
+                  translate([(separator_positions[i])-wall_thickness, 0, fudgeFactor]) 
+                  translate(dividerLocation[1])
+                  rotate(dividerLocation[2])
+                  render(){
+                  cutout_pattern(
+                    patternstyle = wallpattern_style ,
+                    canvisSize = [dividerLocation[0][1],dividerLocation[0][0]], //Swap x and y and rotate so hex is easier to print
+                    customShape = false,
+                    circleFn = wallpattern_hole_sides,
+                    holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                    holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                    holeHeight = wallpattern_thickness,
+                    center=true,
+                    fill=wallpattern_fill, //"none", "space", "crop"
+                    voronoiDensityRatio = wallpattern_voronoi_density_ratio,
+                    voronoiRadius = wallpattern_voronoi_radius,
+                    help=help);
+                    }
                   }
                 }
               }
@@ -555,7 +576,6 @@ module irregular_cup(
             }
           }
           
-          locations = [front, back, left, right];
           difference(){
             for(i = [0:1:len(locations)-1])
             {
@@ -565,9 +585,9 @@ module irregular_cup(
                   translate(locations[i][1])
                   rotate(locations[i][2])
                   render(){
-                  GridItemHolder(
+                  cutout_pattern(
+                    patternstyle = wallpattern_style,
                     canvisSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
-                    hexGrid = wallpattern_hexgrid,
                     customShape = false,
                     circleFn = wallpattern_hole_sides,
                     holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -575,8 +595,10 @@ module irregular_cup(
                     holeHeight = wallpattern_thickness,
                     center=true,
                     fill=wallpattern_fill, //"none", "space", "crop"
+                    voronoiDensityRatio = wallpattern_voronoi_density_ratio,
+                    voronoiRadius = wallpattern_voronoi_radius,
                     help=help);
-                    }
+                  }
                 }
               }
             }
@@ -751,13 +773,15 @@ module irregular_cup(
     ,"tapered_corner_size",tapered_corner_size
     ,"tapered_setback",tapered_setback
     ,"wallpattern_enabled",wallpattern_enabled
-    ,"wallpattern_hexgrid",wallpattern_hexgrid
+    ,"wallpattern_style",wallpattern_style
     ,"wallpattern_walls",wallpattern_walls
     ,"wallpattern_hole_sides",wallpattern_hole_sides
     ,"wallpattern_hole_size",wallpattern_hole_size
     ,"wallpattern_hole_spacing",wallpattern_hole_spacing
-    ,"wallcutout_enabled",wallcutout_enabled
     ,"wallpattern_fill",wallpattern_fill
+    ,"wallpattern_voronoi_density_ratio",wallpattern_voronoi_density_ratio
+    ,"wallpattern_voronoi_radius",wallpattern_voronoi_radius
+    ,"wallcutout_enabled",wallcutout_enabled
     ,"wallcutout_walls",wallcutout_walls
     ,"wallcutout_width",wallcutout_width
     ,"wallcutout_angle",wallcutout_angle
@@ -768,6 +792,42 @@ module irregular_cup(
     ,"cutx",cutx
     ,"cuty",cuty]
     ,help);  
+}
+
+module cutout_pattern(
+  patternstyle,
+  canvisSize,
+  customShape,
+  circleFn,
+  holeSize,
+  holeSpacing,
+  holeHeight,
+  center,
+  fill,
+  voronoiDensityRatio,
+  voronoiRadius,
+  help=help){
+  if(patternstyle == "grid" || patternstyle == "hexgrid") {
+    GridItemHolder(
+      canvisSize = canvisSize,
+      hexGrid = patternstyle == "hexgrid",
+      customShape = customShape,
+      circleFn = circleFn,
+      holeSize = holeSize,
+      holeSpacing = holeSpacing,
+      holeHeight = holeHeight,
+      center=center,
+      fill=fill, //"none", "space", "crop"
+      help=help);
+  }
+  else if(patternstyle == "voronoi"){
+    echo("cutout_pattern", canvisSize = [canvisSize.x,canvisSize.y,holeHeight], thickness = holeSpacing.x, round=1);
+    rectangle_voronoi(
+      canvisSize = [canvisSize.x,canvisSize.y,holeHeight], 
+      spacing = holeSpacing.x, 
+      densityRatio=voronoiDensityRatio,
+      radius=voronoiRadius);
+  }
 }
 
 module attachement_clip(
@@ -1101,6 +1161,13 @@ function calculateSeparators(seperator_config) =
   is_string(seperator_config) ? [] : 
   is_list(seperator_config) ? seperator_config : [];
 
+  function calculateSeparatorsv2(seperator_config) = is_string(seperator_config) 
+    ? let(separators = split(seperator_config, "|")) // takes part of an array
+      [for (i = [0:len(separators)-1]) csv_parse(separators[i])]
+    : (is_list(seperator_config) && len(seperator_config) > 0) 
+    ? [for (i = [0:len(seperator_config)-1])[seperator_config[i]]]
+    : [];
+
 module separators(  
   length,
   height,
@@ -1113,7 +1180,6 @@ module separators(
 {
   if(is_string(seperator_config))
   {
-    //echo(separators="custom",seperator_config = splitCustomConfig(seperator_config),length=length,height=height,wall_thickness=wall_thickness);
     //Non custom components
     separators = split(seperator_config, "|");
     for (i =[0:1:len(separators)-1])
@@ -1148,9 +1214,6 @@ module separators(
        wall_cutout_depth = cut_depth,
        thickness=wall_thickness);
     }
-  }
-  else {
-    echo(separators="unknown or null",seperator_config=seperator_config);
   }
 }
 

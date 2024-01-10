@@ -111,7 +111,7 @@ defaultDemoSetting =
     [3,2,5,"default","off","disabled",1.5,
     //wall_thickness, lip_style, chamber_wall_thickness
     0.95, "normal",  1.2,
-    //vertical_chambers, vertical_separator_bend_position,vertical_separator_bend_angle,vertical_separator_bend_separation,
+    //vertical_chambers, vertical_separator_bend_position, vertical_separator_bend_angle, vertical_separator_bend_separation,
     1, 0,45,0,0,
     //vertical_separator_cut_depth, vertical_irregular_subdivisionsvertical_separator_config
     false,"10.5|21|42|50|60",
@@ -149,7 +149,7 @@ function getScenario(scenario) =
 
   scenario == "demo" ? [["Basic Cup",16,[],[]],
       ["Demo", [
-          [ivertical_irregular_subdivisions, true], [ivertical_separator_config, "31.5|94.5"],
+          [ivertical_chambers, 3],
           [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
           [itapered_corner, "chamfered"],[itapered_corner_size,20],[itapered_setback,-1]]],
      ["Demo", [
@@ -157,8 +157,8 @@ function getScenario(scenario) =
           [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]],
       ["Simple", []],
-      ["Multi Chamber", [[ivertical_chambers, 3]]],
-      ["Multi Chamber", [[ivertical_chambers, 6]]],
+      ["Multi Chamber 3", [[ivertical_chambers, 3]]],
+      ["Multi Chamber 6", [[ivertical_chambers, 6]]],
       ["Efficient Floor", [[iefficient_floor,true]]],
       ["Half Pitch", [[ihalf_pitch, true], [iefficient_floor,false]]],
       ["Half Pitch with Efficient Floor", [[ihalf_pitch, true], [iefficient_floor,true]]],
@@ -399,7 +399,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
   animationStep = (len(selectedScenario) >= stepIndex ? selectedScenario[stepIndex] : selectedScenario[1]);  
   currentStepSettings = replace_Items(concat(scenarioDefaults[iscenariokv],animationStep[istepkv]), defaultDemoSetting);
 
-  echo("🟧RenderScenario",scenario = scenario, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1), animationStep=animationStep, currentStepSettings=currentStepSettings);
+  echo("🟧RenderScenario",scenario = scenario, stepIndex=stepIndex, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1), animationStep=animationStep, currentStepSettings=currentStepSettings);
 
   if(showtext && $preview)
   color("DimGray")
