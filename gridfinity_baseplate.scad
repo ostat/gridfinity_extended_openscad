@@ -8,6 +8,19 @@ Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base
 Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew]
 Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch, halfpitch base]
 
+/* [Base Plate Clips - POC dont use yet]*/
+//This feature is not yet finalised, or working properly. 
+Butterfly_Clip_Enabled = true;
+Butterfly_Clip_Size = [6,6,1.5];
+Butterfly_Clip_Radius = 0.1;
+Butterfly_Clip_Tollerance = 0.1;
+Butterfly_Clip_Only = false;
+
+//This feature is not yet finalised, or working properly. 
+Filament_Clip_Enabled = true;
+Filament_Clip_Diameter = 2;
+Filament_Clip_Length = 8;
+
 /* [Size] */
 // X dimension in grid units  (multiples of 42mm)
 Width = 2; // [ 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
@@ -26,7 +39,8 @@ xpos4 = [2,2,2,2,2,2,0];
 xpos5 = [6,2,2,2,2,10,0];
 xpos6 = [0,0,0,0,0,0,0];
 xpos7 = [0,0,0,0,0,0,0];
- 
+
+
 /* [Debug] */
 //Slice along the x axis
 cutx = false;
@@ -40,19 +54,35 @@ module end_of_customizer_opts() {}
 /*constants */
 magnet_od = 6.5;
 magnet_thickness = 2.4;
-      
-gridfinity_baseplate(
-    width = Width,
-    depth = Depth,
-    plateStyle = Plate_Style,
-    plateOptions = Base_Plate_Options,
-    lidOptions = Lid_Options,
-    customGridEnabled = Custom_Grid_Enabled,
-    gridPossitions=[xpos1,xpos2,xpos3,xpos4,xpos5,xpos6,xpos7],
-    cutx = cutx,
-    cuty = cuty,
-    help = help);
 
+if(Butterfly_Clip_Only)
+{
+  ButterFly(
+    size=[
+      Butterfly_Clip_Size.x+Butterfly_Clip_Tollerance,
+      Butterfly_Clip_Size.y+Butterfly_Clip_Tollerance,
+      Butterfly_Clip_Size.z],
+    r=Butterfly_Clip_Radius);
+}
+else{
+  gridfinity_baseplate(
+      width = Width,
+      depth = Depth,
+      plateStyle = Plate_Style,
+      plateOptions = Base_Plate_Options,
+      lidOptions = Lid_Options,
+      customGridEnabled = Custom_Grid_Enabled,
+      gridPossitions=[xpos1,xpos2,xpos3,xpos4,xpos5,xpos6,xpos7],
+      butterflyClipEnabled  = Butterfly_Clip_Enabled,
+      butterflyClipSize = Butterfly_Clip_Size,
+      butterflyClipRadius = Butterfly_Clip_Radius,
+      filamentClipEnabled=Filament_Clip_Enabled,
+      filamentClipDiameter=Filament_Clip_Diameter,
+      filamentClipLength=Filament_Clip_Length ,
+      cutx = cutx,
+      cuty = cuty,
+      help = help);
+}
 function bitwise_and
    (v1, v2, bv = 1 ) = 
       ((v1 + v2) == 0) ? 0
@@ -75,6 +105,12 @@ module gridfinity_baseplate(
   lidOptions = "default",
   customGridEnabled = false,
   gridPossitions = [[1]],
+  butterflyClipEnabled  = Butterfly_Clip_Enabled,
+  butterflyClipSize = Butterfly_Clip_Size,
+  butterflyClipRadius = Butterfly_Clip_Radius,
+  filamentClipEnabled = Filament_Clip_Enabled,
+  filamentClipDiameter = Filament_Clip_Diameter,
+  filamentClipLength = Filament_Clip_Length,
   cutx = false,
   cuty = false,
   help = false)
@@ -88,26 +124,32 @@ module gridfinity_baseplate(
         {
           if(_gridPossitions[xi][yi])
           {
-            translate([gridfinity_pitch*xi,gridfinity_pitch*yi,0])
+            translate([gf_pitch*xi,gf_pitch*yi,0])
             baseplate(
               width = customGridEnabled ? 1 : width,
               depth = customGridEnabled ? 1 : depth,
               plateStyle = plateStyle,
               plateOptions= plateOptions,
               lidOptions = lidOptions,
+              butterflyClipEnabled  = butterflyClipEnabled,
+              butterflyClipSize = butterflyClipSize,
+              butterflyClipRadius = butterflyClipRadius,
+              filamentClipEnabled = filamentClipEnabled,
+              filamentClipDiameter = filamentClipDiameter,
+              filamentClipLength = filamentClipLength,
               roundedCorners = _gridPossitions[xi][yi] == 1 ? 15 : _gridPossitions[xi][yi] - 2,
-               help = help);
+              help = help);
           }
         }
       }
     
     if(cutx && $preview){
-      translate([-gridfinity_pitch,-gridfinity_pitch,-fudgeFactor])
-        cube([(width+1)*gridfinity_pitch,gridfinity_pitch,2*gridfinity_zpitch]);
+      translate([-gf_pitch,-gf_pitch,-fudgeFactor])
+        cube([(width+1)*gf_pitch,gf_pitch,2*gf_zpitch]);
     }
     if(cuty && $preview){
-      translate([-gridfinity_pitch*0.75,-gridfinity_pitch,-fudgeFactor])
-        cube([gridfinity_pitch,(depth+1)*gridfinity_pitch,2*gridfinity_zpitch]);
+      translate([-gf_pitch*0.75,-gf_pitch,-fudgeFactor])
+        cube([gf_pitch,(depth+1)*gf_pitch,2*gf_zpitch]);
     } 
   }
 }
@@ -119,22 +161,44 @@ module baseplate(
   plateOptions = "default",
   lidOptions = "default",
   roundedCorners = 15,
+  butterflyClipEnabled  = butterflyClipEnabled,
+  butterflyClipSize = butterflyClipSize,
+  butterflyClipRadius = butterflyClipRadius,
+  filamentClipEnabled = filamentClipEnabled,
+  filamentClipDiameter = filamentClipDiameter,
+  filamentClipLength = filamentClipLength,
   help = false)
 {
-  if (plateStyle == "lid") {
-    base_lid(width, depth, lidOptions);
-  }
-  else if (plateOptions == "weighted") {
-    weighted_baseplate(width, depth, roundedCorners=roundedCorners);
-  }
-  else if (plateOptions == "woodscrew") {
-    woodscrew_baseplate(width, depth, roundedCorners=roundedCorners);
-  }
-  else if (plateOptions == "magnet"){
-    magnet_baseplate(width, depth, roundedCorners=roundedCorners);
-  }
-  else {
-    frame_plain(width, depth, trim=0, roundedCorners=roundedCorners);
+  difference(){
+    union(){
+      if (plateStyle == "lid") {
+        base_lid(width, depth, lidOptions);
+      }
+      else if (plateOptions == "weighted") {
+        weighted_baseplate(width, depth, roundedCorners=roundedCorners);
+      }
+      else if (plateOptions == "woodscrew") {
+        woodscrew_baseplate(width, depth, roundedCorners=roundedCorners);
+      }
+      else if (plateOptions == "magnet"){
+        magnet_baseplate(width, depth, roundedCorners=roundedCorners);
+      }
+      else {
+        frame_plain(width, depth, trim=0, roundedCorners=roundedCorners);
+      }
+    }
+    
+    if(butterflyClipEnabled || filamentClipEnabled){
+      gridcopy(width, depth) 
+      union(){
+        echo("frame_plain", gci=$gci);
+        if(butterflyClipEnabled)
+          AttachButterFly(size=butterflyClipSize,r=butterflyClipRadius,left=$gci.x==0,right=$gci.x==width-1,front=$gci.y==0,back=$gci.y==depth-1);
+          
+        if(filamentClipEnabled)
+          AttachFilament(l=filamentClipLength,d=filamentClipDiameter,left=$gci.x==0,right=$gci.x==width-1,front=$gci.y==0,back=$gci.y==depth-1);
+      }
+    }
   }
 }
 
@@ -142,7 +206,7 @@ module base_lid(
   num_x, num_y, 
   lidOptions = "default") 
 {
-  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_od/2);
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_od/2);
   eps = 0.1;
   
   flat_base = lidOptions == "flat";
@@ -150,11 +214,11 @@ module base_lid(
   
   fn = 44;
   height = flat_base ? 0.6 : 1;
-  translate([0, 0, (gridfinity_zpitch*height)]) 
+  translate([0, 0, (gf_zpitch*height)]) 
     frame_plain(
       num_x, num_y, 
       trim=0.25,
-      baseTaper = gridfinity_corner_radius/2,
+      baseTaper = gf_cup_corner_radius/2,
       fn = fn);
 
   difference() {
@@ -170,7 +234,7 @@ module base_lid(
       
     gridcopy(num_x, num_y) {
       cornercopy(magnet_position) {
-        translate([0, 0, (gridfinity_zpitch*height)-magnet_thickness])
+        translate([0, 0, (gf_zpitch*height)-magnet_thickness])
         cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=32);
       }
     }
@@ -180,12 +244,13 @@ module base_lid(
 module woodscrew_baseplate(
   num_x, 
   num_y,  
-  cornerRadius = gridfinity_corner_radius,
+  cornerRadius = gf_cup_corner_radius,
   roundedCorners = 15) {
-  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_od/2);
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_od/2);
   eps = 0.1;
   frameHeight = 6.4;
-    
+  
+  translate([0,0,frameHeight])
   difference() {
     frame_plain(num_x, num_y, 
       extra_down=frameHeight,
@@ -212,10 +277,10 @@ module woodscrew_baseplate(
 module weighted_baseplate(
   num_x, 
   num_y,
-  cornerRadius = gridfinity_corner_radius,
+  cornerRadius = gf_cup_corner_radius,
   roundedCorners = 15) {
   
-  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_od/2);
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_od/2);
   eps = 0.1;
   frameHeight = 6.4;
 
@@ -256,10 +321,10 @@ module weighted_baseplate(
 module magnet_baseplate(
   num_x, 
   num_y,
-  cornerRadius = gridfinity_corner_radius,
+  cornerRadius = gf_cup_corner_radius,
   roundedCorners = 15) {
   
-  magnet_position = min(gridfinity_pitch/2-8, gridfinity_pitch/2-4-magnet_od/2);
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_od/2);
   frameHeight = magnet_thickness;
   magnetborder = 5;
   
@@ -276,7 +341,7 @@ module magnet_baseplate(
          cylinder(d=magnet_od, h=magnet_thickness+fudgeFactor*2, $fn=48);
       }
       
-      cubeSize = gridfinity_pitch-magnet_position+magnet_od;
+      cubeSize = gf_pitch-magnet_position+magnet_od;
       
       difference(){
       translate([-cubeSize/2, -cubeSize/2, -fudgeFactor]) 
@@ -307,17 +372,17 @@ module frame_plain(
     trim=0, 
     baseTaper = 0, 
     height = 4,
-    cornerRadius = gridfinity_corner_radius,
+    cornerRadius = gf_cup_corner_radius,
     roundedCorners = 15,
     fn = 44) {
   ht = extra_down > 0 ? height -0.6 : height;
 
-  corner_position = gridfinity_pitch/2-cornerRadius-trim;
+  corner_position = gf_pitch/2-cornerRadius-trim;
   
   difference() {
     color(color_cup)
     hull() 
-      render()
+      //render()
       cornercopy(corner_position, num_x, num_y) {
         radius = bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? cornerRadius : 0.01;// 0.01 is almost zero....
         ctrn = [
@@ -333,8 +398,81 @@ module frame_plain(
       
     color(color_topcavity)
     translate([0, 0, -fudgeFactor]) 
-      render() 
       gridcopy(num_x, num_y) 
       pad_oversize(margins=1);
   }
 }
+
+module AttachFilament(l=5, d=1.75,left= true, right=true, front=true, back=true){
+ h=4;
+  positions = [
+    //left
+    [left,[-gf_pitch/2,0, h],[0,90,0]],
+    //right
+    [right,[gf_pitch/2,0, h],[0,90,0]],
+    //front
+    [front,[0, -gf_pitch/2,h],[90,0,0]],
+    //back
+    [back,[0, gf_pitch/2,h],[90,0,0]]];
+  for(pi = [0:len(positions)-1]){
+    if(positions[pi][0])
+      translate(positions[pi][1])
+      rotate(positions[pi][2])
+      cylinder(h=l,d=d, center=true,$fn=32);
+  }
+}
+
+module AttachButterFly(size=[5,3,2],r=0.5,left= true, right=true, front=true, back=true){
+  inset = 12;
+  if(left || right || front || back){
+  
+  positions = [
+    //left
+    [left,[-gf_pitch/2,inset, -fudgeFactor],[0,0,-90]],
+    [left,[-gf_pitch/2,-inset, -fudgeFactor],[0,0,-90]],
+    //right
+    [right,[gf_pitch/2,inset, -fudgeFactor],[0,0,90]],
+    [right,[gf_pitch/2,-inset, -fudgeFactor],[0,0,90]],
+    //front
+    [front,[inset, -gf_pitch/2,-fudgeFactor],[0,0,0]],
+    [front,[-inset, -gf_pitch/2,-fudgeFactor],[0,0,0]],
+    //back
+    [back,[inset, gf_pitch/2,-fudgeFactor],[00,0,180]],
+    [back,[-inset, gf_pitch/2,-fudgeFactor],[0,0,180]]];
+  for(pi = [0:len(positions)-1]){
+    if(positions[pi][0])
+      translate(positions[pi][1])
+      rotate(positions[pi][2])
+      ButterFly(size,r,taper=false,half=true);
+    }
+  }
+}
+
+module ButterFly(size,r,taper=false,half=false)
+{
+  h = taper ? size.y/2+size.z : size.z;
+  render(){
+    intersection(){
+      positions = [
+        [-(size.x/2-r), size.y/2-r, h/2],
+        [size.x/2-r, size.y/2-r, h/2],
+        [0, -(size.y/2-r), h/2]];
+      
+      union()
+      for(ri = [0:half?0:1]){
+        mirror([0,1,0]*ri)
+        hull(){
+          for(pi = [0:len(positions)-1]){
+            translate(positions[pi])
+              cylinder(h=h,r=r,center=true, $fn=32);
+          }
+        }
+      }
+      
+      if(taper)
+      rotate([0,90,0])
+      cylinder(h=size.x,r=size.y/2+size.z,$fn=4,center=true);
+    }
+  }
+}
+
