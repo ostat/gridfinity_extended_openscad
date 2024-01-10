@@ -6,7 +6,13 @@ use <modules/gridfinity_modules.scad>
 // Plate Style
 Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base]
 Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew]
-Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch, halfpitch base]
+Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch: halfpitch base, efficient]
+
+Lid_Include_Magnets = true;
+// Base height, when the bin on top will sit, in GF units
+Lid_Efficient_Base_Height = 0.4;// [0.4:0.1:1]
+// Thickness of the efficient floor
+Lid_Efficient_Floor_Thickness = 0.7;// [0.7:0.1:7]
 
 /* [Base Plate Clips - POC dont use yet]*/
 //This feature is not yet finalised, or working properly. 
@@ -41,11 +47,11 @@ xpos6 = [0,0,0,0,0,0,0];
 xpos7 = [0,0,0,0,0,0,0];
 
 
-/* [Debug] */
+/* [debug] */
 //Slice along the x axis
-cutx = false;
+cutx = 0; //0.1
 //Slice along the y axis
-cuty = false;
+cuty = 0; //0.1
 // enable loging of help messages during render.
 help = false;
 
@@ -78,11 +84,15 @@ else{
       butterflyClipRadius = Butterfly_Clip_Radius,
       filamentClipEnabled=Filament_Clip_Enabled,
       filamentClipDiameter=Filament_Clip_Diameter,
-      filamentClipLength=Filament_Clip_Length ,
+      filamentClipLength=Filament_Clip_Length,
+      lidIncludeMagnets = Lid_Include_Magnets,
+      lidEfficientFloorThickness = Lid_Efficient_Floor_Thickness,
+      lidEfficientBaseHeight = Lid_Efficient_Base_Height,
       cutx = cutx,
       cuty = cuty,
       help = help);
 }
+
 function bitwise_and
    (v1, v2, bv = 1 ) = 
       ((v1 + v2) == 0) ? 0
@@ -111,6 +121,9 @@ module gridfinity_baseplate(
   filamentClipEnabled = Filament_Clip_Enabled,
   filamentClipDiameter = Filament_Clip_Diameter,
   filamentClipLength = Filament_Clip_Length,
+  lidIncludeMagnets = Lid_Include_Magnets,
+  lidEfficientFloorThickness = Lid_Efficient_Floor_Thickness,
+  lidEfficientBaseHeight = Lid_Efficient_Base_Height,
   cutx = false,
   cuty = false,
   help = false)
@@ -138,11 +151,14 @@ module gridfinity_baseplate(
               filamentClipDiameter = filamentClipDiameter,
               filamentClipLength = filamentClipLength,
               roundedCorners = _gridPossitions[xi][yi] == 1 ? 15 : _gridPossitions[xi][yi] - 2,
+              lidIncludeMagnets = lidIncludeMagnets,
+              lidEfficientFloorThickness = lidEfficientFloorThickness,
+              lidEfficientBaseHeight = lidEfficientBaseHeight,
               help = help);
           }
         }
       }
-    
+    /*
     if(cutx && $preview){
       translate([-gf_pitch,-gf_pitch,-fudgeFactor])
         cube([(width+1)*gf_pitch,gf_pitch,2*gf_zpitch]);
@@ -150,7 +166,18 @@ module gridfinity_baseplate(
     if(cuty && $preview){
       translate([-gf_pitch*0.75,-gf_pitch,-fudgeFactor])
         cube([gf_pitch,(depth+1)*gf_pitch,2*gf_zpitch]);
-    } 
+    } */
+    
+    if(cutx > 0 && $preview){
+      color(color_cut)
+      translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
+        cube([gf_pitch*cutx,(depth+1)*gf_pitch,2*gf_zpitch]);
+    }
+    if(cuty > 0 && $preview){
+      color(color_cut)
+      translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
+        cube([(width+1)*gf_pitch,gf_pitch*cuty,2*gf_zpitch]);
+    }
   }
 }
     
@@ -167,12 +194,18 @@ module baseplate(
   filamentClipEnabled = filamentClipEnabled,
   filamentClipDiameter = filamentClipDiameter,
   filamentClipLength = filamentClipLength,
+  lidIncludeMagnets = true,
+  lidEfficientFloorThickness = 0.7,
+  lidEfficientBaseHeight = 0.4,
   help = false)
 {
   difference(){
     union(){
       if (plateStyle == "lid") {
-        base_lid(width, depth, lidOptions);
+        base_lid(width, depth, lidOptions, 
+          lidIncludeMagnets = lidIncludeMagnets, 
+          lidEfficientFloorThickness = lidEfficientFloorThickness, 
+          lidEfficientBaseHeight = lidEfficientBaseHeight);
       }
       else if (plateOptions == "weighted") {
         weighted_baseplate(width, depth, roundedCorners=roundedCorners);
@@ -204,40 +237,78 @@ module baseplate(
 
 module base_lid(
   num_x, num_y, 
-  lidOptions = "default") 
+  lidOptions = "default",
+  lidIncludeMagnets = true,
+  lidEfficientFloorThickness = 0.7,
+  lidEfficientBaseHeight = 0.4) 
 {
   magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_od/2);
   eps = 0.1;
   
   flat_base = lidOptions == "flat";
   half_pitch = lidOptions == "halfpitch";
+  efficient_base = lidOptions == "efficient";
   
   fn = 44;
-  height = flat_base ? 0.6 : 1;
-  translate([0, 0, (gf_zpitch*height)]) 
-    frame_plain(
-      num_x, num_y, 
-      trim=0.25,
-      baseTaper = gf_cup_corner_radius/2,
-      fn = fn);
-
+  height = flat_base ? 0.6 : 
+            efficient_base ? lidEfficientBaseHeight : 1;
+  if(!efficient_base)
+  {
+    translate([0, 0, (gf_zpitch*height)]) 
+      frame_plain(
+        num_x, num_y, 
+        trim=0.25,
+        baseTaper = gf_cup_corner_radius/2,
+        fn = fn);
+  }
   difference() {
     grid_block(
       num_x, 
       num_y, 
-      height, 
+      efficient_base ? lidEfficientBaseHeight+0.6 : height, 
       magnet_diameter=0, 
       screw_depth=0, 
       flat_base=flat_base,
       half_pitch=half_pitch, 
       fn = fn);
+    
+    if(lidOptions == "efficient")
+    {
+      translate([-gf_pitch/2,-gf_pitch/2,(lidEfficientBaseHeight+0.6)*gf_zpitch])
+        cube([gf_pitch*num_x,gf_pitch*num_y,gf_zpitch]);
       
-    gridcopy(num_x, num_y) {
-      cornercopy(magnet_position) {
-        translate([0, 0, (gf_zpitch*height)-magnet_thickness])
-        cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=32);
-      }
     }
+    
+    union(){
+      translate([0, 0, (gf_zpitch*height)]) 
+        color(color_topcavity)
+        translate([0, 0, -fudgeFactor]) 
+          gridcopy(num_x, num_y) 
+          pad_oversize(margins=1);
+ 
+      //efficient
+      lowerDia = 1;
+      upperDia = 2.3;
+      lowerTaperHeight = (upperDia-lowerDia)/2;
+      
+      gridcopy(num_x, num_y) 
+        hull(){
+          cornercopy(17) {
+            translate([0, 0, lidEfficientFloorThickness+lowerTaperHeight])
+              cylinder(d=upperDia, h=gf_zpitch, $fn=32);
+            translate([0, 0, lidEfficientFloorThickness])
+              cylinder(d1=lowerDia,d2=upperDia, h=lowerTaperHeight, $fn=32);
+         }
+       }
+   }
+
+   
+   
+    if(lidIncludeMagnets)
+      gridcopy(num_x, num_y) 
+        cornercopy(magnet_position) 
+          translate([0, 0, (gf_zpitch*height)-magnet_thickness])
+          cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=32);
   }
 }
 
@@ -395,7 +466,6 @@ module frame_plain(
           cylinder(r2=radius,r1=baseTaper, h=baseTaper+fudgeFactor, $fn=fn);
         }
       }
-      
     color(color_topcavity)
     translate([0, 0, -fudgeFactor]) 
       gridcopy(num_x, num_y) 
