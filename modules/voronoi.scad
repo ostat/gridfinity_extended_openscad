@@ -82,26 +82,38 @@ module vrn2_from(points, spacing = 1, r = 0, delta = 0, chamfer = false, region_
 }
 
 module rectangle_voronoi(
-   canvisSize = [200,150,10],
-   pointCount=0,
-   densityRatio = 50,
+   canvisSize = [200,200,10],
+   points=[],
+   cellsize=10,
+   noise=0.5, 
+   grid=false,
+   gridOffset = false,
    spacing = 2, 
-   radius = 0.5, 
+   radius = 0.5,
    seed = undef, 
    fn = 32)
 {
   $fn=fn;
   _spacing = spacing + radius*2;
-  _pointCount = max(pointCount == 0 ? (canvisSize.x * canvisSize.y)/densityRatio : pointCount, 30);
-
-  echo("random_rectangle_voronoi", canvisSize=canvisSize, radius=radius, spacing=_spacing, _pointCount=_pointCount);
-  
-  seed = seed == undef ? rands(0, 100000, 2)[0] : seed;
-  seeds = rands(0, 100000, 2, seed); // you need a different seed for x and y
-  pointsx = rands(-canvisSize.x/2, canvisSize.x/2, _pointCount, seeds[0]);
-  pointsy = rands(-canvisSize.y/2, canvisSize.y/2, _pointCount, seeds[1]);
-  
-  points = [for(i = [0:_pointCount-1]) [pointsx[i],pointsy[i]]];
+  points = points != undef && is_list(points) && len(points) > 0 
+    ? points 
+    : grid ?
+     let(
+      _pointCount = [ceil(canvisSize.x/cellsize)+1,ceil(canvisSize.y/cellsize)+1],
+      seed = seed == undef ? rands(0, 100000, 2)[0] : seed,
+      seeds = rands(0, 100000, 2, seed), // you need a different seed for x and y
+      pointsx = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[0]),
+      pointsy = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[1])
+    )[for(i = [0:_pointCount.x-1], y = [0:_pointCount.y-1]) 
+        [i*cellsize + pointsx[i+y*_pointCount.x]-canvisSize.x/2 + (y % 2 == 0 && gridOffset ? cellsize/2 : 0),
+          y*cellsize + pointsy[i*_pointCount.y+y]-canvisSize.y/2]]
+    : let(
+      _pointCount = max((canvisSize.x * canvisSize.y)/(cellsize^2), 30),
+      seed = seed == undef ? rands(0, 100000, 2)[0] : seed,
+      seeds = rands(0, 100000, 2, seed), // you need a different seed for x and y
+      pointsx = rands(-canvisSize.x/2, canvisSize.x/2, _pointCount, seeds[0]),
+      pointsy = rands(-canvisSize.y/2, canvisSize.y/2, _pointCount, seeds[1])
+    )[for(i = [0:_pointCount-1]) [pointsx[i],pointsy[i]]];
   
   intersection() {
     translate([0,0,canvisSize.z/2])
@@ -117,3 +129,22 @@ module rectangle_voronoi(
         region_type = "square");
   }
 }
+/*
+canvisSize = [200,200,10];
+cellsize=10;
+noise=0.5;
+grid=false;
+gridOffset = true;
+pointCount=[ceil(canvisSize.x/cellsize)+1,ceil(canvisSize.y/cellsize)+1];
+seed = undef;
+points=let(
+      _pointCount = pointCount,
+      seed = seed == undef ? rands(0, 100000, 2)[0] : seed,
+      seeds = rands(0, 100000, 2, seed), // you need a different seed for x and y
+      pointsx = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[0]),
+      pointsy = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[1])
+    )[for(i = [0:_pointCount.x-1], y = [0:_pointCount.y-1]) 
+        [i*cellsize + pointsx[i+y*_pointCount.y]-canvisSize.x/2 + (y % 2 == 0 && gridOffset ? cellsize/2 : 0),
+          y*cellsize + pointsy[i*_pointCount.x+y]-canvisSize.y/2]];
+rectangle_voronoi(grid=true);
+//rectangle_voronoi(canvisSize=canvisSize, points=points);*/

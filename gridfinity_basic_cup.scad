@@ -91,7 +91,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi"]
+wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -101,10 +101,10 @@ wallpattern_dividers_enabled=false;
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
-wallpattern_hole_size = 5; //0.1
+wallpattern_hole_size = 10; //0.1
 // pattern fill mode
 wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
-wallpattern_voronoi_density_ratio = 50;
+wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
 /* [Wall Cutout] */
@@ -191,10 +191,10 @@ module gridfinity_basic_cup(
   wallpattern_hole_sides=wallpattern_hole_sides,
   wallpattern_hole_size=wallpattern_hole_size,
   wallpattern_hole_spacing=wallpattern_hole_spacing,
-  wallpattern_voronoi_density_ratio = wallpattern_voronoi_density_ratio,
-  wallpattern_voronoi_radius = wallpattern_voronoi_radius,
-  extention_enabled = [extention_x_enabled, extention_y_enabled],
-  extention_tabs_enabled = extention_tabs_enabled,
+  wallpattern_voronoi_noise=wallpattern_voronoi_noise,
+  wallpattern_voronoi_radius=wallpattern_voronoi_radius,
+  extention_enabled=[extention_x_enabled, extention_y_enabled],
+  extention_tabs_enabled=extention_tabs_enabled,
   cutx=cutx,
   cuty=cuty,
   help=help) {
@@ -248,7 +248,7 @@ module gridfinity_basic_cup(
       wallpattern_hole_size=wallpattern_hole_size, 
       wallpattern_hole_spacing=wallpattern_hole_spacing,
       wallpattern_fill=wallpattern_fill,
-      wallpattern_voronoi_density_ratio = wallpattern_voronoi_density_ratio,
+      wallpattern_voronoi_noise=wallpattern_voronoi_noise,
       wallpattern_voronoi_radius = wallpattern_voronoi_radius,
       wallcutout_enabled=wallcutout_enabled,
       wallcutout_walls=wallcutout_walls,

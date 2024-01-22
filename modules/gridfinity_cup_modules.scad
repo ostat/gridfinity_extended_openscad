@@ -83,14 +83,14 @@ default_wallcutout_height=0;
 default_wallcutout_corner_radius=5;
 /* [Wall Pattern] */
 default_wallpattern_enabled=false; 
-default_wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi"]
+default_wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
 default_wallpattern_dividers_enabled=false; 
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0]; 
 default_wallpattern_hole_sides = 6;
-default_wallpattern_hole_size = 5; //0.1
+default_wallpattern_hole_size = 10; //0.1
 default_wallpattern_hole_spacing = 2; //0.1
-default_wallpattern_voronoi_density_ratio = 75;
+default_wallpattern_voronoi_noise = 0.75;
 default_wallpattern_voronoi_radius = 0.5;
 
 /* [Extendable] */
@@ -150,8 +150,8 @@ basic_cup(
   wallpattern_hole_sides=default_wallpattern_hole_sides,
   wallpattern_hole_size=default_wallpattern_hole_size,
   wallpattern_hole_spacing=default_wallpattern_hole_spacing,
-  wallpattern_voronoi_density_ratio = default_wallpattern_voronoi_density_ratio,
-  wallpattern_voronoi_radius = default_wallpattern_voronoi_radius,
+  wallpattern_voronoi_noise=default_wallpattern_voronoi_noise,
+  wallpattern_voronoi_radius=default_wallpattern_voronoi_radius,
   wallcutout_enabled=default_wallcutout_enabled,
   wallcutout_walls=default_wallcutout_walls,
   wallcutout_width=default_wallcutout_width,
@@ -218,7 +218,7 @@ module basic_cup(
   wallpattern_hole_sides=default_wallpattern_hole_sides,
   wallpattern_hole_size=default_wallpattern_hole_size,
   wallpattern_hole_spacing=default_wallpattern_hole_spacing,
-  wallpattern_voronoi_density_ratio = default_wallpattern_voronoi_density_ratio,
+  wallpattern_voronoi_noise=default_wallpattern_voronoi_noise,
   wallpattern_voronoi_radius = default_wallpattern_voronoi_radius,
   wallcutout_enabled=default_wallcutout_enabled,
   wallcutout_walls=default_wallcutout_walls,
@@ -281,8 +281,8 @@ module basic_cup(
     wallpattern_hole_sides=wallpattern_hole_sides,
     wallpattern_hole_size=wallpattern_hole_size,
     wallpattern_hole_spacing=wallpattern_hole_spacing,
-    wallpattern_voronoi_density_ratio = wallpattern_voronoi_density_ratio,
-    wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+    wallpattern_voronoi_noise=wallpattern_voronoi_noise,
+    wallpattern_voronoi_radius=wallpattern_voronoi_radius,
     wallcutout_enabled=wallcutout_enabled,
     wallcutout_walls=wallcutout_walls,
     wallcutout_width=wallcutout_width,
@@ -344,7 +344,7 @@ module irregular_cup(
   wallpattern_hole_size=default_wallpattern_hole_size,
   wallpattern_hole_spacing=default_wallpattern_hole_spacing,
   wallcutout_enabled=default_wallcutout_enabled,
-  wallpattern_voronoi_density_ratio = default_wallpattern_voronoi_density_ratio,
+  wallpattern_voronoi_noise=default_wallpattern_voronoi_noise,
   wallpattern_voronoi_radius = default_wallpattern_voronoi_radius,
   wallcutout_walls=default_wallcutout_walls,
   wallcutout_width=default_wallcutout_width,
@@ -542,7 +542,7 @@ module irregular_cup(
                     holeHeight = wallpattern_thickness,
                     center=true,
                     fill=wallpattern_fill, //"none", "space", "crop"
-                    voronoiDensityRatio = wallpattern_voronoi_density_ratio,
+                    voronoiNoise=wallpattern_voronoi_noise,
                     voronoiRadius = wallpattern_voronoi_radius,
                     help=help);
                     }
@@ -595,7 +595,7 @@ module irregular_cup(
                     holeHeight = wallpattern_thickness,
                     center=true,
                     fill=wallpattern_fill, //"none", "space", "crop"
-                    voronoiDensityRatio = wallpattern_voronoi_density_ratio,
+                    voronoiNoise=wallpattern_voronoi_noise,
                     voronoiRadius = wallpattern_voronoi_radius,
                     help=help);
                   }
@@ -779,7 +779,7 @@ module irregular_cup(
     ,"wallpattern_hole_size",wallpattern_hole_size
     ,"wallpattern_hole_spacing",wallpattern_hole_spacing
     ,"wallpattern_fill",wallpattern_fill
-    ,"wallpattern_voronoi_density_ratio",wallpattern_voronoi_density_ratio
+    ,"wallpattern_voronoi_noise",wallpattern_voronoi_noise
     ,"wallpattern_voronoi_radius",wallpattern_voronoi_radius
     ,"wallcutout_enabled",wallcutout_enabled
     ,"wallcutout_walls",wallcutout_walls
@@ -799,14 +799,14 @@ module cutout_pattern(
   canvisSize,
   customShape,
   circleFn,
-  holeSize,
+  holeSize = [],
   holeSpacing,
   holeHeight,
   center,
   fill,
-  voronoiDensityRatio,
+  voronoiNoise,
   voronoiRadius,
-  help=help){
+  help){
   if(patternstyle == "grid" || patternstyle == "hexgrid") {
     GridItemHolder(
       canvisSize = canvisSize,
@@ -820,13 +820,16 @@ module cutout_pattern(
       fill=fill, //"none", "space", "crop"
       help=help);
   }
-  else if(patternstyle == "voronoi"){
+  else if(patternstyle == "voronoi" || patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"){
     echo("cutout_pattern", canvisSize = [canvisSize.x,canvisSize.y,holeHeight], thickness = holeSpacing.x, round=1);
     rectangle_voronoi(
       canvisSize = [canvisSize.x,canvisSize.y,holeHeight], 
       spacing = holeSpacing.x, 
-      densityRatio=voronoiDensityRatio,
-      radius=voronoiRadius);
+      cellsize = holeSize.x,
+      grid = (patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"),
+      gridOffset = (patternstyle == "voronoihexgrid"),
+      noise=voronoiNoise,
+      radius = voronoiRadius);
   }
 }
 
