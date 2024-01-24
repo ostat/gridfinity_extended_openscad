@@ -63,7 +63,7 @@ default_spacer = false;
 default_half_pitch = false;
 
 // Limit attachments (magnets and scres) to box corners for faster printing.
-default_box_corner_attachments_only = false;
+default_box_corner_attachments_only = true;
 // Removes the base grid from inside the shape
 default_flat_base = false;
 /* [Tapered Corner] */
@@ -358,10 +358,10 @@ module irregular_cup(
   help) {
 
   //If efficient_floor disable the base magnets and screws
-  center_magnet_thickness = efficient_floor ? 0 : center_magnet_thickness;
-  center_magnet_diameter = efficient_floor ? 0 : center_magnet_diameter;
-  magnet_diameter = efficient_floor ? 0 : magnet_diameter;
-  screw_depth = efficient_floor ? 0 : screw_depth;
+  //center_magnet_thickness = efficient_floor ? 0 : center_magnet_thickness;
+  //center_magnet_diameter = efficient_floor ? 0 : center_magnet_diameter;
+  //magnet_diameter = efficient_floor ? 0 : magnet_diameter;
+  //screw_depth = efficient_floor ? 0 : screw_depth;
   fingerslide = efficient_floor ? "none" : fingerslide;
   
   translate(cupPosition(position,num_x,num_y))
@@ -406,7 +406,8 @@ module irregular_cup(
         lip_style=lip_style, 
         flat_base=flat_base,
         spacer=spacer,
-        cavity_floor_radius=cavity_floor_radius);
+        cavity_floor_radius=cavity_floor_radius,
+        box_corner_attachments_only = box_corner_attachments_only);
     
     color(color_wallcutout)
       union(){
@@ -896,7 +897,7 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style,
     horizontal_separator_bend_separation = default_horizontal_separator_bend_separation,
     horizontal_separator_cut_depth = default_horizontal_separator_cut_depth,
     horizontal_separator_positions = [],
-    lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius,spacer=default_spacer) {
+    lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius,spacer=default_spacer, box_corner_attachments_only=default_box_corner_attachments_only) {
     
 // height of partition between cells
   // cavity with removed segments so that we leave dividing walls behind
@@ -917,7 +918,7 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style,
     color(color_cupcavity)
     basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
       screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-      efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius, spacer=spacer);
+      efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius, spacer=spacer, box_corner_attachments_only = box_corner_attachments_only);
   
     sepFloorHeight = (efficient_floor ? floor_thickness : floorHeight);
     color(color_divider)
@@ -989,7 +990,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, half_pitch=default_half_pitch, 
-    lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius, spacer=default_spacer) {
+    lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius, spacer=default_spacer, box_corner_attachments_only = default_box_corner_attachments_only) {
   
   seventeen = gf_pitch/2-4;
     
@@ -1004,7 +1005,8 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   floorht = min(filledInZ,calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness));
 
   //Efficient floor
-  efloor = efficient_floor && magnet_diameter == 0 && screw_depth == 0 && fingerslide == "none";
+  //efloor = efficient_floor && magnet_diameter == 0 && screw_depth == 0 && fingerslide == "none";
+  efloor = efficient_floor;
   //Remove floor to create a vertical spacer.
   nofloor = spacer && fingerslide == "none";
   
@@ -1154,8 +1156,31 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
       gridcopy(num_x*2, num_y*2, gf_pitch/2) 
         EfficientFloor(0.5, 0.5,floor_thickness, q);
     } else {
+      magnetPosition = calculateMagnetPosition(magnet_diameter);
+      padSize =  magnet_diameter+wall_thickness*2;
+      blockSize = magnetPosition;
+      
       gridcopy(num_x, num_y) 
-        EfficientFloor(1, 1, floor_thickness, q);
+        difference(){
+          EfficientFloor(1, 1, floor_thickness, q);
+
+          cornercopy(magnetPosition, 1, 1)
+            if(!box_corner_attachments_only || 
+                ($gci.x == 0 && $gci.y == 0 && $idx.x == 0 && $idx.y == 0) ||
+                ($gci.x == num_x-1 && $gci.y == num_y-1 && $idx.x == 1 && $idx.y == 1) ||
+                ($gci.x == 0 && $gci.y == num_y-1 && $idx.x == 0 && $idx.y == 1) ||
+                ($gci.x == num_x-1 && $gci.y == 0 && $idx.x == 1 && $idx.y == 0)) 
+              rotate($idx == [1,1,0] ? [0,0,270] 
+                    : $idx == [1,0,0] ? [0,0,180] 
+                    : $idx == [0,0,0] ? [0,0,90] :[0,0,0])
+                union(){
+                  cylinder(r=padSize/2, h=floorht+fudgeFactor);
+                  translate([padSize/2-blockSize,0,0])
+                    cube([blockSize,blockSize,floorht+fudgeFactor]);
+                  translate([-blockSize,-padSize/2,0])
+                    cube([blockSize,blockSize,floorht+fudgeFactor]);
+                }
+      }
     }
   }
 }
