@@ -95,7 +95,6 @@ translate([100,30,0])
  roundedCorner(
   length = 10, 
   radius = 4, 
-  length=10, 
   height=10);
 
 h=20;

@@ -358,10 +358,8 @@ module irregular_cup(
   help) {
 
   //If efficient_floor disable the base magnets and screws
-  //center_magnet_thickness = efficient_floor ? 0 : center_magnet_thickness;
-  //center_magnet_diameter = efficient_floor ? 0 : center_magnet_diameter;
-  //magnet_diameter = efficient_floor ? 0 : magnet_diameter;
-  //screw_depth = efficient_floor ? 0 : screw_depth;
+  center_magnet_thickness = efficient_floor ? 0 : center_magnet_thickness;
+  center_magnet_diameter = efficient_floor ? 0 : center_magnet_diameter;
   fingerslide = efficient_floor ? "none" : fingerslide;
   
   //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
@@ -1119,8 +1117,9 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   
   // cut away side lips if num_x is less than 1
   if (num_x < 1) {
-    height =num_z*2.5;
     top = num_z*gf_zpitch+gf_Lip_Height;
+    height = top-lipBottomZ+fudgeFactor*2;
+    
     hull() 
     for (x=[-gf_pitch/2+1.5+0.25+wall_thickness, -gf_pitch/2+num_x*gf_pitch-1.5-0.25-wall_thickness]){
       for (y=[-10, (num_y-0.5)*gf_pitch-seventeen])
@@ -1141,6 +1140,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
       magnetPosition = calculateMagnetPosition(magnet_diameter);
       padSize =  max(magnet_diameter,gf_cupbase_screw_diameter)+wall_thickness*2;
       blockSize = gf_pitch/2-magnetPosition+wall_thickness;
+      hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
       
       efficient_floor_grid(
         num_x, num_y, 
@@ -1148,21 +1148,21 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
         flat_base=flat_base, 
         floor_thickness=floor_thickness, 
         margins=q);
-        
-       gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only){
-       echo("efloor cap");
-          //$gcci=[trans,xi,yi,xx,yy];
-          rotate( $gcci[2] == [ 1, 1] ? [0,0,270] 
-                 : $gcci[2] == [ 1,-1] ? [0,0,180] 
-                 : $gcci[2] == [-1,-1] ? [0,0,90] :[0,0,0])
-            translate([0,0,floor_thickness-fudgeFactor])
-            hull(){
-              cylinder(r=padSize/2, h=floorht-floor_thickness+fudgeFactor, $fn=32);
-              translate([padSize/2-blockSize,0,0])
-                cube([blockSize,blockSize,floorht-floor_thickness+fudgeFactor]);
-              translate([-blockSize,-padSize/2,0])
-                cube([blockSize,blockSize,floorht-floor_thickness+fudgeFactor]);
-                }
+       
+       if(hasCornerAttachments)
+         gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only){
+            //$gcci=[trans,xi,yi,xx,yy];
+            rotate( $gcci[2] == [ 1, 1] ? [0,0,270] 
+                   : $gcci[2] == [ 1,-1] ? [0,0,180] 
+                   : $gcci[2] == [-1,-1] ? [0,0,90] :[0,0,0])
+              translate([0,0,floor_thickness-fudgeFactor])
+              hull(){
+                cylinder(r=padSize/2, h=floorht-floor_thickness+fudgeFactor, $fn=32);
+                translate([padSize/2-blockSize,0,0])
+                  cube([blockSize,blockSize,floorht-floor_thickness+fudgeFactor]);
+                translate([-blockSize,-padSize/2,0])
+                  cube([blockSize,blockSize,floorht-floor_thickness+fudgeFactor]);
+                  }
       }
     }
   }

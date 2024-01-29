@@ -299,13 +299,13 @@ module grid_block(
     }
     
     color(color_basehole)
-    translate([0,0,-0.1])
+    translate([0,0,-fudgeFactor])
     gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only)
         SequentialBridgingDoubleHole(
           outerHoleRadius = magnet_diameter/2,
           outerHoleDepth = gf_magnet_thickness+0.1,
           innerHoleRadius = gf_cupbase_screw_diameter/2,
-          innerHoleDepth = screw_depth+0.1,
+          innerHoleDepth = screw_depth > 0 ? screw_depth+fudgeFactor : 0,
           overhangBridgeCount = overhang_fix,
           overhangBridgeThickness = overhang_fix_depth);
   }
@@ -416,15 +416,12 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) 
       //echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, quadrent=quadrent);
       //only copy if the cell is atleast half size
       if(quadrent.x <= num_x && quadrent.y <= num_y)
-        //echo("gridcopycorners is half", quadrent=quadrent);
         //only box corners or every cell corner
         if(!onlyBoxCorners || 
           (xi == 1 && yi == 1 && xx == -1 && yy == -1) ||
           (xi == floor(num_x) && yi == floor(num_y) && xx == 1 && yy == 1) ||
           (xi == 1 && yi == floor(num_y) && xx == -1 && yy == 1) ||
           (xi == floor(num_x) && yi == 1 && xx == 1 && yy == -1)) 
-          //translate([pitch*(xi-1), pitch*(yi-1), 0]) 
-          //translate([xx*r, yy*r, 0]) 
           translate(trans)
           children();
     }

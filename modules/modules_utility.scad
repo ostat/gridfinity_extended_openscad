@@ -230,30 +230,31 @@ module SequentialBridgingDoubleHole(
   overhangBridgeCutin =0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
   fn=64) 
 {
-  ff = 0.01;
-  overhangBridgeCount = outerHoleRadius <= 0 || innerHoleRadius <= 0 ? 0 : overhangBridgeCount;
+  hasOuter = outerHoleRadius > 0 && outerHoleDepth >0;
+  hasInner = innerHoleRadius > 0 && innerHoleDepth > 0;
+  overhangBridgeCount = hasOuter && hasInner ? overhangBridgeCount : 0;
   overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
-  outerHeightCalculated = outerHoleRadius > 0 ? outerHoleDepth + overhangBridgeHeight : 0;
-  
+  outerPlusBridgeHeight = hasOuter ? outerHoleDepth + overhangBridgeHeight : 0;
+  if(hasOuter || hasInner)
   union(){
     difference(){
-      if (outerHoleRadius > 0) {
-        cylinder(r=outerHoleRadius, h=outerHeightCalculated+ff, $fn=fn);
+      if (hasOuter) {
+        cylinder(r=outerHoleRadius, h=outerPlusBridgeHeight+fudgeFactor, $fn=fn);
       }
       
-      if (overhangBridgeCount>0) {
+      if (overhangBridgeCount > 0) {
         for(i = [0:overhangBridgeCount-1]) 
           rotate([0,0,180/overhangBridgeCount*i])
           for(x = [0:1]) 
           rotate([0,0,180]*x)
             translate([-outerHoleRadius,innerHoleRadius-overhangBridgeCutin,outerHoleDepth+overhangBridgeThickness*i])
-            cube([outerHoleRadius*2, outerHoleRadius, overhangBridgeThickness*overhangBridgeCount+ff*2]);
+            cube([outerHoleRadius*2, outerHoleRadius, overhangBridgeThickness*overhangBridgeCount+fudgeFactor*2]);
               }
       }
       
-      if (innerHoleRadius > 0) {
-        translate([0,0,outerHeightCalculated])
-        cylinder(r=innerHoleRadius, h=innerHoleDepth-outerHeightCalculated, $fn=fn);
+      if (hasInner) {
+        translate([0,0,outerPlusBridgeHeight])
+        cylinder(r=innerHoleRadius, h=innerHoleDepth-outerPlusBridgeHeight, $fn=fn);
     }
   }
 }
