@@ -9,6 +9,8 @@ default_num_y=1; //0.1
 default_num_z=3; //0.1
 default_position="default"; //["default","center","zero"]
 default_filled_in = "off"; //["off","on","notstackable"] 
+// Thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
+default_wall_thickness = 0;// 0.01
 // Include overhang for labeling
 default_label_style = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
 // Width of the label in number of units, or zero for full width
@@ -50,8 +52,6 @@ default_center_magnet_diameter = 0;
 default_center_magnet_thickness = 0;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 default_floor_thickness = 1.2;
-// Thickness of outer walls (Zack's design is 0.95 mm)
-default_wall_thickness = 0.95;
 default_cavity_floor_radius = -1;
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 default_hole_overhang_remedy = 2;
@@ -364,6 +364,12 @@ module irregular_cup(
   //screw_depth = efficient_floor ? 0 : screw_depth;
   fingerslide = efficient_floor ? "none" : fingerslide;
   
+  //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
+  wall_thickness = wall_thickness != 0 ? wall_thickness
+        : num_z < 8 ? 0.95
+        : num_z < 16 ? 1.2
+        : 1.6;
+        
   translate(cupPosition(position,num_x,num_y))
   difference() {
     grid_block(
@@ -834,6 +840,7 @@ module cutout_pattern(
   }
 }
 
+// Creates an wall clip that is used when box is split
 module attachement_clip(
   height = 8,
   width = 0,
@@ -845,7 +852,7 @@ module attachement_clip(
   translate([0,0,-height/2])
   union()
   {
-    //using hull prevents 
+    // using hull prevents shape not being closed
     hull()
     polyhedron
       (points = [
@@ -1085,7 +1092,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
             roundedr2=0, $fn=32);
     }
     
-    // rounded inside bottom
+    // fingerslide inside bottom of cutout
     if(fingerslide != "none"){
       translate([0, 
             reducedlipstyle == "reduced" ? - gf_lip_lower_taper_height
@@ -1121,64 +1128,40 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
       cylinder(d=3, h=height, $fn=24);
     }
   }
- 
-  if (efloor || nofloor) {
-    if (num_x < 1) {
-      gridcopy(1, num_y) {
-        tz(floor_thickness) intersection() {
-          hull() cornercopy(seventeen-0.5) cylinder(r=1, h=5, $fn=32);
-          translate([gf_pitch*(-1+num_x), 0, 0]) hull() cornercopy(seventeen-0.5) cylinder(r=1, h=5, $fn=32);
-        }
-      
-        // tapered top portion
-        intersection() {
-          hull() {
-            tz(3) cornercopy(seventeen-0.5) cylinder(r=1, h=1, $fn=32);
-            tz(5) cornercopy(seventeen+2.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
-          }
-          translate([gf_pitch*(-1+num_x), 0, 0]) hull() {
-            tz(3) cornercopy(seventeen-0.5) cylinder(r=1, h=1, $fn=32);
-            tz(5) cornercopy(seventeen+2.5-1.15-q) cylinder(r=1.15+q, h=4, $fn=32);
-          }
-        }
-      }
-    } else if (nofloor) {
+
+  if (nofloor) {
       tz(-fudgeFactor)
         hull()
         cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
         cylinder(r=2, h=gf_cupbase_lower_taper_height+fudgeFactor, $fn=32);
       gridcopy(1, 1) 
         EfficientFloor(num_x, num_y,-fudgeFactor, q);
-    } else if (flat_base) {
-      gridcopy(1, 1) 
-        EfficientFloor(num_x, num_y,floor_thickness, q);
-    } else if (half_pitch) {
-      gridcopy(num_x*2, num_y*2, gf_pitch/2) 
-        EfficientFloor(0.5, 0.5,floor_thickness, q);
-    } else {
+  } else if (efloor) {
+    difference(){
       magnetPosition = calculateMagnetPosition(magnet_diameter);
-      padSize =  magnet_diameter+wall_thickness*2;
-      blockSize = magnetPosition;
+      padSize =  max(magnet_diameter,gf_cupbase_screw_diameter)+wall_thickness*2;
+      blockSize = gf_pitch/2-magnetPosition+wall_thickness;
       
-      gridcopy(num_x, num_y) 
-        difference(){
-          EfficientFloor(1, 1, floor_thickness, q);
-
-          cornercopy(magnetPosition, 1, 1)
-            if(!box_corner_attachments_only || 
-                ($gci.x == 0 && $gci.y == 0 && $idx.x == 0 && $idx.y == 0) ||
-                ($gci.x == num_x-1 && $gci.y == num_y-1 && $idx.x == 1 && $idx.y == 1) ||
-                ($gci.x == 0 && $gci.y == num_y-1 && $idx.x == 0 && $idx.y == 1) ||
-                ($gci.x == num_x-1 && $gci.y == 0 && $idx.x == 1 && $idx.y == 0)) 
-              rotate($idx == [1,1,0] ? [0,0,270] 
-                    : $idx == [1,0,0] ? [0,0,180] 
-                    : $idx == [0,0,0] ? [0,0,90] :[0,0,0])
-                union(){
-                  cylinder(r=padSize/2, h=floorht+fudgeFactor);
-                  translate([padSize/2-blockSize,0,0])
-                    cube([blockSize,blockSize,floorht+fudgeFactor]);
-                  translate([-blockSize,-padSize/2,0])
-                    cube([blockSize,blockSize,floorht+fudgeFactor]);
+      efficient_floor_grid(
+        num_x, num_y, 
+        half_pitch=half_pitch, 
+        flat_base=flat_base, 
+        floor_thickness=floor_thickness, 
+        margins=q);
+        
+       gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only){
+       echo("efloor cap");
+          //$gcci=[trans,xi,yi,xx,yy];
+          rotate( $gcci[2] == [ 1, 1] ? [0,0,270] 
+                 : $gcci[2] == [ 1,-1] ? [0,0,180] 
+                 : $gcci[2] == [-1,-1] ? [0,0,90] :[0,0,0])
+            translate([0,0,floor_thickness-fudgeFactor])
+            hull(){
+              cylinder(r=padSize/2, h=floorht-floor_thickness+fudgeFactor, $fn=32);
+              translate([padSize/2-blockSize,0,0])
+                cube([blockSize,blockSize,floorht-floor_thickness+fudgeFactor]);
+              translate([-blockSize,-padSize/2,0])
+                cube([blockSize,blockSize,floorht-floor_thickness+fudgeFactor]);
                 }
       }
     }
@@ -1189,12 +1172,12 @@ function calculateSeparators(seperator_config) =
   is_string(seperator_config) ? [] : 
   is_list(seperator_config) ? seperator_config : [];
 
-  function calculateSeparatorsv2(seperator_config) = is_string(seperator_config) 
-    ? let(separators = split(seperator_config, "|")) // takes part of an array
-      [for (i = [0:len(separators)-1]) csv_parse(separators[i])]
-    : (is_list(seperator_config) && len(seperator_config) > 0) 
-    ? [for (i = [0:len(seperator_config)-1])[seperator_config[i]]]
-    : [];
+function calculateSeparatorsv2(seperator_config) = is_string(seperator_config) 
+  ? let(separators = split(seperator_config, "|")) // takes part of an array
+    [for (i = [0:len(separators)-1]) csv_parse(separators[i])]
+  : (is_list(seperator_config) && len(seperator_config) > 0) 
+  ? [for (i = [0:len(seperator_config)-1])[seperator_config[i]]]
+  : [];
 
 module separators(  
   length,
@@ -1245,10 +1228,36 @@ module separators(
   }
 }
 
+//creates the gird of efficient floor pads to be added to the cavity for removal from the overall filled in bin.
+module efficient_floor_grid(num_x, num_y, half_pitch=false, flat_base=false, floor_thickness, margins=0) {
+  if (flat_base) {
+    EfficientFloor(num_x, num_y, floor_thickness, margins);
+  }
+  else if (half_pitch) {
+    gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
+      EfficientFloor(
+        ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
+        ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5), 
+        floor_thickness, margins);
+    }
+  }
+  else {
+    gridcopy(ceil(num_x), ceil(num_y)) {
+      EfficientFloor(
+        //Calculate pad size, last cells might not be 100%
+        ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
+        ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1), 
+        floor_thickness, margins);
+    }
+  }
+}
 
+//Creates the efficient floor pad that will be removed from the floor
 module EfficientFloor(num_x=1, num_y=1, floor_thickness, margins=0){
   seventeen = gf_pitch/2-4;
-  
+  minEfficientPadSize = 0.15;
+  //Less than minEfficientPadSize is to small and glitches the cut away
+  if(num_x > minEfficientPadSize && num_y > minEfficientPadSize )
   union(){
     // establishes floor
     hull() 

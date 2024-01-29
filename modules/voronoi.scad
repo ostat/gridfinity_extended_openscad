@@ -5,20 +5,19 @@
 * @license https://opensource.org/licenses/lgpl-3.0.html
 *
 * @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_transpose.html
-*
 **/
 function m_transpose(m) =
-    let(
-        column = len(m[0]),
-        row = len(m)
-    )
+  let(
+    column = len(m[0]),
+    row = len(m)
+  )
+  [
+    for(y = 0; y < column; y = y + 1)
     [
-        for(y = 0; y < column; y = y + 1)
-        [
-            for(x = 0; x < row; x = x + 1)
-            m[x][y]
-        ]
-    ];
+      for(x = 0; x < row; x = x + 1)
+      m[x][y]
+    ]
+  ];
 
 /**
 * unit_vector.scad
@@ -30,14 +29,11 @@ function unit_vector(v) = v / norm(v);
 
 /**
 * vrn2_from.scad
-*
 * @copyright Justin Lin, 2020
 * @license https://opensource.org/licenses/lgpl-3.0.html
 *
 * @see https://openhome.cc/eGossip/OpenSCAD/lib3x-vrn2_from.html
-*
 **/
-
 module vrn2_from(points, spacing = 1, r = 0, delta = 0, chamfer = false, region_type = "square") {
     transposed = m_transpose(points);
     xs = transposed[0];
@@ -129,22 +125,3 @@ module rectangle_voronoi(
         region_type = "square");
   }
 }
-/*
-canvisSize = [200,200,10];
-cellsize=10;
-noise=0.5;
-grid=false;
-gridOffset = true;
-pointCount=[ceil(canvisSize.x/cellsize)+1,ceil(canvisSize.y/cellsize)+1];
-seed = undef;
-points=let(
-      _pointCount = pointCount,
-      seed = seed == undef ? rands(0, 100000, 2)[0] : seed,
-      seeds = rands(0, 100000, 2, seed), // you need a different seed for x and y
-      pointsx = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[0]),
-      pointsy = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[1])
-    )[for(i = [0:_pointCount.x-1], y = [0:_pointCount.y-1]) 
-        [i*cellsize + pointsx[i+y*_pointCount.y]-canvisSize.x/2 + (y % 2 == 0 && gridOffset ? cellsize/2 : 0),
-          y*cellsize + pointsy[i*_pointCount.x+y]-canvisSize.y/2]];
-rectangle_voronoi(grid=true);
-//rectangle_voronoi(canvisSize=canvisSize, points=points);*/

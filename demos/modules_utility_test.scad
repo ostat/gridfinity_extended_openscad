@@ -42,15 +42,62 @@ SequentialBridgingDoubleHole(
   overhangBridgeCount = 3,
   overhangBridgeThickness = 0.3,
   overhangBridgeCutin =0.05);
+
+translate([75,30,0])
+rotate([180,0,0])
+difference(){
+  cylinder(h=10,r=15);
+  translate([0,0,-0.01])  
+  SequentialBridgingDoubleHole(
+    outerHoleRadius = 10,
+    outerHoleDepth = 5+0.01,
+    innerHoleRadius = 5,
+    innerHoleDepth = 10,
+    overhangBridgeCount = 3,
+    overhangBridgeThickness = 0.3,
+    overhangBridgeCutin =0.05);
+}
+
+translate([75,60,0])
+SequentialBridgingDoubleHole(
+  outerHoleRadius = 0,
+  outerHoleDepth = 5,
+  innerHoleRadius = 5,
+  innerHoleDepth = 10,
+  overhangBridgeCount = 0,
+  overhangBridgeThickness = 0.3,
+  overhangBridgeCutin =0.05);
+
+translate([75,90,0])
+rotate([180,0,0])
+difference(){
+  cylinder(h=10,r=15);
+  translate([0,0,-0.01])  
+  SequentialBridgingDoubleHole(
+    outerHoleRadius = 0,
+    outerHoleDepth = 5+0.01,
+    innerHoleRadius = 5,
+    innerHoleDepth = 10,
+    overhangBridgeCount = 0,
+    overhangBridgeThickness = 0.3,
+    overhangBridgeCutin =0.05);
+}
+
   
 translate([100,0,0])
-champheredCorner(
-  champherLength = 10, 
+chamferedCorner(
+  chamferLength = 10, 
   cornerRadius = 4, 
   length=10, 
   height=10);
 
-  
+translate([100,30,0])
+ roundedCorner(
+  length = 10, 
+  radius = 4, 
+  length=10, 
+  height=10);
+
 h=20;
 r=5;
 roundedr = 3;

@@ -248,12 +248,8 @@ module grid_block(
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
 
   magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
-  
-  suppress_holes = num_x < 1 || num_y < 1;
-  emd = suppress_holes ? 0 : magnet_diameter; // effective magnet diameter after override
-  esd = suppress_holes ? 0 : screw_depth;     // effective screw depth after override
-  
-  overhang_fix = hole_overhang_remedy > 0 && emd > 0 && esd > 0 ? hole_overhang_remedy : 0;
+   
+  overhang_fix = hole_overhang_remedy > 0 && magnet_diameter > 0 && screw_depth > 0 ? hole_overhang_remedy : 0;
   overhang_fix_depth = 0.3;  // assume this is enough
   
   totalht=gf_zpitch*num_z+3.75;
@@ -304,20 +300,14 @@ module grid_block(
     
     color(color_basehole)
     translate([0,0,-0.1])
-    gridcopycorners(ceil(num_x), ceil(num_y), magnet_position, box_corner_attachments_only)
-    union(){
-      // dont include magnet holes when the block is not full sized
-      if($gcci[0].x<=(floor(num_x*2)/2-0.5)*gf_pitch && $gcci[0].y<=(floor(num_y*2)/2-0.5)*gf_pitch)
-      {
+    gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only)
         SequentialBridgingDoubleHole(
-          outerHoleRadius = emd/2,
+          outerHoleRadius = magnet_diameter/2,
           outerHoleDepth = gf_magnet_thickness+0.1,
           innerHoleRadius = gf_cupbase_screw_diameter/2,
-          innerHoleDepth = esd+0.1,
+          innerHoleDepth = screw_depth+0.1,
           overhangBridgeCount = overhang_fix,
           overhangBridgeThickness = overhang_fix_depth);
-      }
-    }
   }
  
   HelpTxt("grid_block",[
@@ -350,6 +340,7 @@ module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
   else {
     gridcopy(ceil(num_x), ceil(num_y)) {
       pad_oversize(
+        //Calculate pad size, last cells might not be 100%
         ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
         ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1));
     }
@@ -417,20 +408,26 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
 
 // similar to cornercopy, can only copy to box corners
 module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) {
-  for (xi=[1:num_x]) for (yi=[1:num_y]) 
+  for (xi=[1:ceil(num_x)]) for (yi=[1:ceil(num_y)]) 
     for (xx=[-1, 1]) for (yy=[-1, 1]) {
+      quadrent = [xi+(xx == -1 ? -0.5 : 0), yi+(yy == -1 ? -0.5 : 0)];
       trans = [pitch*(xi-1)+xx*r, pitch*(yi-1)+ yy*r, 0];
-      $gcci=[trans,xi,yi,xx,yy];
-      if(!onlyBoxCorners || 
-        (xi == 1 && yi == 1 && xx == -1 && yy == -1) ||
-        (xi == num_x && yi == num_y && xx == 1 && yy == 1) ||
-        (xi == 1 && yi == num_y && xx == -1 && yy == 1) ||
-        (xi == num_x && yi == 1 && xx == 1 && yy == -1))  
-        //translate([pitch*(xi-1), pitch*(yi-1), 0]) 
-        //translate([xx*r, yy*r, 0]) 
-        translate(trans)
-        children();
-      }
+      $gcci=[trans,[xi,yi],[xx,yy]];
+      //echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, quadrent=quadrent);
+      //only copy if the cell is atleast half size
+      if(quadrent.x <= num_x && quadrent.y <= num_y)
+        //echo("gridcopycorners is half", quadrent=quadrent);
+        //only box corners or every cell corner
+        if(!onlyBoxCorners || 
+          (xi == 1 && yi == 1 && xx == -1 && yy == -1) ||
+          (xi == floor(num_x) && yi == floor(num_y) && xx == 1 && yy == 1) ||
+          (xi == 1 && yi == floor(num_y) && xx == -1 && yy == 1) ||
+          (xi == floor(num_x) && yi == 1 && xx == 1 && yy == -1)) 
+          //translate([pitch*(xi-1), pitch*(yi-1), 0]) 
+          //translate([xx*r, yy*r, 0]) 
+          translate(trans)
+          children();
+    }
 }
 
 // similar to quadtranslate but expands to extremities of a block

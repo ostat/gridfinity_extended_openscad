@@ -25,8 +25,8 @@ filled_in = "off"; //["off","on","notstackable"]
 label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
 // Width of the label in number of units, or zero means full width
 label_width = 0;  // .01
-// Wall thickness (Zack's design is 0.95)
-wall_thickness = 0.95;  // .01
+// Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
+wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ "normal", "reduced", "none" ]
 position="default"; //["default","center","zero"]

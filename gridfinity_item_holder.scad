@@ -15,7 +15,7 @@ itemholder_known_cartridges = "custom"; // [ custom:"Custome", "atari800":"Atari
 itemholder_multi_cards = "sd;USBA;microsd";
 
 // Nest multi cards, This has a but where the last one could be cropped.
-itemholder_multi_card_compact = 0; // [0:0.1:1]
+itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 
 // Should the grid be square or hex
 itemholder_grid_style = "auto"; //["square","hex","auto"]
@@ -141,10 +141,10 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 /* [Wall Pattern] */
 // Grid wall patter
 wallpattern_enabled=false;
+// Style of the pattern
+wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi"]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
-// set the grid as hex or square
-wallpattern_hexgrid = true;
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1]; 
 // Add the pattern to the dividers
@@ -155,7 +155,10 @@ wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 wallpattern_hole_size = 5; //0.1
 // pattern fill mode
 wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
+wallpattern_voronoi_density_ratio = 50;
+wallpattern_voronoi_radius = 0.5;
 
+    
 /* [Wall Cutout] */
 wallcutout_enabled=false;
 // wall to enable on, front, back, left, right.
@@ -519,13 +522,15 @@ module gridfinity_itemholder(
     wallcutout_height=wallcutout_height,
     wallcutout_corner_radius=wallcutout_corner_radius,
     wallpattern_enabled=wallpattern_enabled,
-    wallpattern_hexgrid=wallpattern_hexgrid,
+    wallpattern_style=wallpattern_style,
     wallpattern_walls=wallpattern_walls,
     wallpattern_dividers_enabled=wallpattern_dividers_enabled,
     wallpattern_fill=wallpattern_fill,
     wallpattern_hole_sides=wallpattern_hole_sides,
     wallpattern_hole_size=wallpattern_hole_size,
     wallpattern_hole_spacing=wallpattern_hole_spacing,
+    wallpattern_voronoi_density_ratio=wallpattern_voronoi_density_ratio,
+    wallpattern_voronoi_radius=wallpattern_voronoi_radius,
     extention_enabled = [extention_x_enabled, extention_y_enabled],
     extention_tabs_enabled = extention_tabs_enabled,
     cutx=cutx,
@@ -606,13 +611,15 @@ module gridfinity_itemholder(
     tapered_corner_size = tapered_corner_size,
     tapered_setback = tapered_setback,
     wallpattern_enabled=wallpattern_enabled,
-    wallpattern_hexgrid=wallpattern_hexgrid,
+    wallpattern_style=wallpattern_style,
     wallpattern_walls=wallpattern_walls, 
     wallpattern_dividers_enabled=wallpattern_dividers_enabled,
     wallpattern_hole_sides=wallpattern_hole_sides,
     wallpattern_hole_size=wallpattern_hole_size, 
     wallpattern_hole_spacing=wallpattern_hole_spacing,
     wallpattern_fill=wallpattern_fill,
+    wallpattern_voronoi_density_ratio=wallpattern_voronoi_density_ratio,
+    wallpattern_voronoi_radius=wallpattern_voronoi_radius,
     wallcutout_enabled=wallcutout_enabled,
     wallcutout_walls=wallcutout_walls,
     wallcutout_width=wallcutout_width,

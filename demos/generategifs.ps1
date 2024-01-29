@@ -2,7 +2,9 @@
 $outputFolder = Join-Path $workingFolder 'output\gridfinity-extended'
 $script:ScadExePath = 'C:\Program Files\OpenSCAD\openscad.exe'
 $script:ImageMagickPath = 'C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe'
-  
+# used to only run a single scenario
+$script:ScenarioFilter = 'multivoronoihexgridpattern'
+
 function Create-Gifs($ParentFolderPath){ 
     Get-ChildItem -LiteralPath $ParentFolderPath -Directory | ForEach-Object{
         $folder = $_
@@ -71,11 +73,10 @@ Class Scenario{
 function Create-ImageForDemo(
     [string]$ScadScriptPath,
     [string]$outputFolder,
+    [string]$ScenarioFilter = '',
     [bool]$SetFilePath = $true
     ){
-
- 
-    $Scenarios = New-Object System.Collections.ArrayList
+   $Scenarios = New-Object System.Collections.ArrayList
 
     $scriptFile =  Get-Item -LiteralPath $scadScriptPath
 
@@ -98,7 +99,7 @@ function Create-ImageForDemo(
     }
 
     $options = @('png','text','stl');
-    $Scenarios | ForEach-Object {
+    $Scenarios | Where-Object{[string]::IsNullOrEmpty($ScenarioFilter) -or $_.ScenarioName -match $ScenarioFilter} | ForEach-Object {
       $scenario = $_
       $options | ForEach-Object {
         $option = $_
@@ -107,7 +108,7 @@ function Create-ImageForDemo(
         $scenarioOutputFolder = Join-Path $demoOutputFolder "$($option)\$($scenarioName)"
         
         CreateFolderIfNeeded $scenarioOutputFolder
-
+        write-host "Processing $scenarioName option:$($option)" -ForegroundColor Yellow
         #invoke openscad
         $cmdArgs = "" 
         
@@ -136,7 +137,7 @@ function Create-ImageForDemo(
     }
 }
 
-Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_basic_cup_demo.scad') -outputFolder $outputFolder 
-Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_baseplate_demo.scad') -outputFolder $outputFolder
-Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_item_holder_demo.scad') -outputFolder $outputFolder
-Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_tray_demo.scad') -outputFolder $outputFolder
+Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_basic_cup_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter
+Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_baseplate_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter
+Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_item_holder_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter
+Create-ImageForDemo -ScadScriptPath  (Join-Path $workingFolder 'gridfinity_tray_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter

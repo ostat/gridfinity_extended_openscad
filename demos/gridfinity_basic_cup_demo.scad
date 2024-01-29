@@ -5,7 +5,7 @@ include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
-scenario = "demo"; //["demo","multi","multicutout","multipattern","multirounded","multichamfered","basiccup","position","chambers","label", "halfpitch","lip_style","fingerslide","basecorner","sequentialbridging","wallpattern","wallpatternfill", "wallcutout","taperedcorner","floorthickness","filledin","efficient_floor", "box_corner_attachments_only","center_magnet","spacer","flatbase","split_bin","debug"]
+scenario = "demo"; //["demo","multi","multicutout","multihexpattern","multivoronoipattern","multivoronoigridpattern","multivoronoihexgridpattern","multirounded","multichamfered", "basiccup","position","chambers","draw","multidrawer", "label", "halfpitch","lip_style","fingerslide","basecorner","sequentialbridging","wallpattern","wallpatternfill", "wallcutout","taperedcorner","floorthickness","filledin","efficient_floor", "box_corner_attachments_only","center_magnet","spacer","flatbase","split_bin","debug"]
 height = -1;
 width=-1;
 depth=-1;
@@ -68,14 +68,16 @@ iwallcutout_angle=iwallcutout_width+1;
 iwallcutout_height=iwallcutout_angle+1;
 iwallcutout_corner_radius=iwallcutout_height+1;
 iwallpattern_enabled=iwallcutout_corner_radius+1;
-iwallpattern_hexgrid=iwallpattern_enabled+1;
-iwallpattern_walls=iwallpattern_hexgrid+1;
+iwallpattern_style=iwallpattern_enabled+1;
+iwallpattern_walls=iwallpattern_style+1;
 iwallpattern_dividers_enabled=iwallpattern_walls+1;
 iwallpattern_fill=iwallpattern_dividers_enabled+1;
 iwallpattern_hole_sides=iwallpattern_fill+1;
 iwallpattern_hole_size=iwallpattern_hole_sides+1;
 iwallpattern_hole_spacing=iwallpattern_hole_size+1;
-iextention_enabled = iwallpattern_hole_spacing+1;
+iwallpattern_voronoi_noise = iwallpattern_hole_spacing+1;
+iwallpattern_voronoi_radius = iwallpattern_voronoi_noise+1;
+iextention_enabled = iwallpattern_voronoi_radius+1;
 iextention_tabs_enabled = iextention_enabled+1;
 icutx=iextention_tabs_enabled+1;
 icuty=icutx+1;
@@ -129,8 +131,9 @@ defaultDemoSetting =
     "none", 10, -1,
     //wallcutout_enabled, wallcutout_walls, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius
     false, [1,0,0,0], 0, 70, 0, 5, 
-    //wallpattern_enabled, wallpattern_hexgrid, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing
-    false, true, [1,1,1,1], false, "none", 6, 5, 2, 
+    
+    //wallpattern_enabled, wallpattern_style, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing, wallpattern_voronoi_noise, wallpattern_voronoi_radius 
+    false, "hexgrid", [1,1,1,1], false, "none", 6, 5, 2, 0.6, 0.5,
     //extention_enabled, extention_tabs_enabled
     [false,false],false,
     //cutx,cuty,help,translate,rotate
@@ -150,11 +153,11 @@ function getScenario(scenario) =
   scenario == "demo" ? [["Basic Cup",16,[],[]],
       ["Demo", [
           [ivertical_chambers, 3],
-          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
+          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
           [itapered_corner, "chamfered"],[itapered_corner_size,20],[itapered_setback,-1]]],
      ["Demo", [
           [ivertical_irregular_subdivisions, true], [ivertical_separator_config, "31.5|94.5"],
-          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],
+          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]],
       ["Simple", []],
       ["Multi Chamber 3", [[ivertical_chambers, 3]]],
@@ -173,7 +176,7 @@ function getScenario(scenario) =
       ["Chamfered", [[ivertical_irregular_subdivisions, true], [ivertical_separator_config, "21|42|84"],
       [itapered_corner, "chamfered"],[itapered_corner_size,25],[itapered_setback,-1]]],
       ["Demo 3", [[ifloor_thickness, 2], [icavity_floor_radius, -1],
-          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
+          [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]
   
   
@@ -240,6 +243,37 @@ function getScenario(scenario) =
       ["relief cut walls", [[ivertical_chambers, 3], [ivertical_separator_cut_depth,-3]]],     
       ["irregular chambers", [[ivertical_irregular_subdivisions, true], [ivertical_separator_config, "30,0,0,-3|60,15,-30|90"]]]]
 
+   : scenario == "draw" ? [["draw",12,[[60,0,320],[30,30,60],500],[[imagnet_diameter,6.5],[iscrew_depth,6],[iwidth,5],[
+idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
+      ["standard w5 d5 h6", [[ivertical_chambers, 5], [ivertical_separator_bend_angle, 30], [ivertical_separator_bend_separation,10], [ivertical_separator_cut_depth,-3]]],     
+      ["straight walls w5 d5 h6", [[iwidth,5], [ivertical_chambers, 5], [ivertical_separator_cut_depth,-3]]],     
+      ["irregular chambers w5 d5 h6", [[ivertical_irregular_subdivisions, true], [ivertical_separator_config, "35,0,0,-3|70,0,0,-3|110,15,-30,-3|160,15,30,-3"]]],
+      ["standard w5 d5 h8", [[iheight,8], [ivertical_chambers, 5], [ivertical_separator_bend_angle, 30], [ivertical_separator_bend_separation,10], [ivertical_separator_cut_depth,-3]]],     
+      ["straight walls w5 d5 h8", [[iheight,8], [iwidth,5], [ivertical_chambers, 5], [ivertical_separator_cut_depth,-3]]],     
+      ["irregular chambers w5 d5 h8", [[iheight,8], [ivertical_irregular_subdivisions, true], [ivertical_separator_config, "35,0,0,-3|70,0,0,-3|110,15,-30,-3|160,15,30,-3"]]],
+      ["standard w6 d5 h6", [[iwidth,6],[ivertical_chambers, 5], [ivertical_separator_bend_angle, 30], [ivertical_separator_bend_separation,10], [ivertical_separator_cut_depth,-3]]],     
+      ["straight walls w6 d5 h6", [[iwidth,6], [ivertical_chambers, 5], [ivertical_separator_cut_depth,-3]]],     
+      ["irregular chambers w6 d5 h6", [[iwidth,6],[ivertical_irregular_subdivisions, true], [ivertical_separator_config, "35,0,0,-3|70,0,0,-3|110,15,-30,-3|160,15,30,-3|215,15,-30,-3"]]],
+      ["standard w6 d5 h8", [[iwidth,6],[iheight,8], [ivertical_chambers, 5], [ivertical_separator_bend_angle, 30], [ivertical_separator_bend_separation,10], [ivertical_separator_cut_depth,-3]]],     
+      ["straight walls w6 d5 h8", [[iwidth,6],[iheight,8], [ivertical_chambers, 5], [ivertical_separator_cut_depth,-3]]],     
+      ["irregular chambers w6 d5 h8", [[iwidth,6],[iheight,8], [ivertical_irregular_subdivisions, true], [ivertical_separator_config, "35,0,0,-3|70,0,0,-3|110,15,-30,-3|160,15,30,-3|215,15,-30,-3"]]]]
+   
+   : scenario == "multidrawer" ? [["Multi",1,[[60,0,0],[310,30,90],1700],[]],
+      ["draw",0,[0, 0, 0], 5],
+      ["draw",1,[gf_pitch*(5+multi_spacing.x), 0, 0], 5],
+      ["draw",2,[gf_pitch*(5+multi_spacing.x)*2, 0, 0], 5],
+      ["draw",9,[gf_pitch*(-1.5), gf_pitch*(6+multi_spacing.y), 0], 8],
+      ["draw",10,[gf_pitch*(4.5+multi_spacing.x), gf_pitch*(6+multi_spacing.y), 0], 8],
+      ["draw",11,[gf_pitch*(5.25+multi_spacing.x)*2, gf_pitch*(6+multi_spacing.y), 0], 8]]
+      
+    : scenario == "multidrawer" ? [["Multi",1,[[60,0,0],[180,0,90],700],[]],
+      ["draw",0,[0, 0, 0], 5],
+      ["draw",1,[gf_pitch*(5+multi_spacing.x), 0, 0], 5],
+      ["draw",2,[gf_pitch*(5+multi_spacing.x)*2, 0, 0], 5],
+      ["draw",3,[0, gf_pitch*(6+multi_spacing.y), 0], 8],
+      ["draw",4,[gf_pitch*(5+multi_spacing.x), gf_pitch*(6+multi_spacing.y), 0], 8],
+      ["draw",5,[gf_pitch*(5+multi_spacing.x)*2, gf_pitch*(6+multi_spacing.y), 0], 8]]  
+      
   : scenario == "efficient_floor" ? [["Efficient Floor",4,[],[[icutx, 0.5]]],
       ["enabled", [[iefficient_floor,true]]],
       ["disabled", [[iefficient_floor,false]]],
@@ -304,25 +338,25 @@ function getScenario(scenario) =
       ["depth 20mm", [[iwallcutout_walls,[1,0,0,0]],[iwallcutout_height,20]]]]
       
    : scenario == "wallpattern" ? [["Wall Pattern",16,[],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2], [iwallpattern_hole_size,5]]],
-      ["front", [[iwallpattern_walls,[1,0,0,0]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
-      ["back", [[iwallpattern_walls,[0,1,0,0]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
-      ["left", [[iwallpattern_walls,[0,0,1,0]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
-      ["right", [[iwallpattern_walls,[0,0,0,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
-      ["chambers", [[iwallpattern_walls,[0,0,0,0]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],[ivertical_chambers, 3],[iwallpattern_dividers_enabled,true]]],
-      ["square grid - diamond", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,false],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
-      ["square grid - hex", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,false],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
-      ["square grid - circle", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,false],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"]]],
-      ["hex grid - diamond", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
-      ["hex grid - hex", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
-      ["hex grid - hex", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
-      ["hex grid - circle", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"]]],
-      ["hex grid - hex space fill", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"space"]]],
-      ["hex grid - hex crop fill", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"crop"]]],
-      ["hex grid - corner radius 0mm", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6], [iwallpattern_fill,"crop"], [icavity_floor_radius,0]]],
-      ["hex grid - hex 7.5mm", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true], [iwallpattern_hole_size,7.5],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
-      ["hex grid - hex 9mm crop fill", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true], [iwallpattern_hole_size,9], [iwallpattern_hole_sides,6],[iwallpattern_fill,"crop"],[ivertical_chambers, 3],[iwallpattern_dividers_enabled,true]]]]
+      ["front", [[iwallpattern_walls,[1,0,0,0]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
+      ["back", [[iwallpattern_walls,[0,1,0,0]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
+      ["left", [[iwallpattern_walls,[0,0,1,0]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
+      ["right", [[iwallpattern_walls,[0,0,0,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
+      ["chambers", [[iwallpattern_walls,[0,0,0,0]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],[ivertical_chambers, 3],[iwallpattern_dividers_enabled,true]]],
+      ["square grid - diamond", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"grid"],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
+      ["square grid - hex", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"grid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
+      ["square grid - circle", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"grid"],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"]]],
+      ["hex grid - diamond", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
+      ["hex grid - hex", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
+      ["hex grid - hex", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
+      ["hex grid - circle", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"]]],
+      ["hex grid - hex space fill", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"space"]]],
+      ["hex grid - hex crop fill", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"crop"]]],
+      ["hex grid - corner radius 0mm", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6], [iwallpattern_fill,"crop"], [icavity_floor_radius,0]]],
+      ["hex grid - hex 7.5mm", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"], [iwallpattern_hole_size,7.5],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
+      ["hex grid - hex 9mm crop fill", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"], [iwallpattern_hole_size,9], [iwallpattern_hole_sides,6],[iwallpattern_fill,"crop"],[ivertical_chambers, 3],[iwallpattern_dividers_enabled,true]]]]
       
-   : scenario == "wallpatternfill" ? [["Wall Pattern fill",9,[],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2],[iwallpattern_hole_size,5],[iwallpattern_walls,[1,1,1,1]],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6]]],
+   : scenario == "wallpatternfill" ? [["Wall Pattern fill",9,[],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2],[iwallpattern_hole_size,5],[iwallpattern_walls,[1,1,1,1]],[iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6]]],
       ["none", [[iwallpattern_fill,"none"]]],
       ["space", [[iwallpattern_fill,"space"]]],
       ["crop", [[iwallpattern_fill,"crop"]]],
@@ -366,13 +400,40 @@ function getScenario(scenario) =
       ["",[[itranslate, [gf_pitch*(4+multi_spacing.x*3), 0, 0]],[iwallcutout_walls,[1,0,0,0]]]],
       ["",[[iheight,8],[itranslate, [gf_pitch*(4+multi_spacing.x*3), gf_pitch*(2+multi_spacing.y), 0]],[iwallcutout_walls,[1,1,0,0]]]]]
 
-   : scenario == "multipattern" ? [["Multi Pattern",1,[[60,0,0],[60,0,65],350],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2], [iwallpattern_hole_size,5],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"crophorizontal"],[idepth,2]]],
+   : scenario == "multihexpattern" ? [["Multi Hex Pattern",1,[[60,0,0],[60,0,65],350],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2], [iwallpattern_hole_size,5],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"crophorizontal"],[idepth,2]]],
       ["",[[iwallpattern_hole_size,5],[iwidth,0.5]]],
       ["",[[iwallpattern_hole_size,5],[iwidth,0.5],[iheight,8],[itranslate, [0, gf_pitch*(2+multi_spacing.y), 0]]]],
       ["",[[iwallpattern_hole_size,5],[iwidth,1],[itranslate, [gf_pitch*(0.5+multi_spacing.x), 0, 0]]]],
       ["",[[iwallpattern_hole_size,5],[iwidth,1],[iheight,8],[itranslate, [gf_pitch*(0.5+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0]]]],
       ["",[[iwallpattern_hole_size,5],[iwidth,2],[itranslate, [gf_pitch*(1.5+multi_spacing.x*2), 0, 0]]]],
       ["",[[iwallpattern_hole_size,5],[iwidth,2],[iheight,8],[itranslate, [gf_pitch*(1.5+multi_spacing.x*2), gf_pitch*(2+multi_spacing.y), 0]]]]      
+      ]
+
+   : scenario == "multivoronoipattern" ? [["Multi Voronoi Pattern",1,[[60,0,0],[60,0,65],350],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"voronoi"],[idepth,2]]],
+      ["",[[iwallpattern_hole_size,5],[iwidth,0.5]]],
+      ["",[[iwallpattern_hole_size,5],[iwidth,0.5],[iheight,8],[itranslate, [0, gf_pitch*(2+multi_spacing.y), 0]],[iwallpattern_hole_size,25],[iwallpattern_hole_spacing, 3]]],
+      ["",[[iwallpattern_hole_size,5],[iwidth,1],[itranslate, [gf_pitch*(0.5+multi_spacing.x), 0, 0]]]],
+      ["",[[iwallpattern_hole_size,5],[iwidth,1],[iheight,8],[itranslate, [gf_pitch*(0.5+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0]],[iwallpattern_hole_size,25],[iwallpattern_hole_spacing, 3]]],
+      ["",[[iwallpattern_hole_size,5],[iwidth,2],[itranslate, [gf_pitch*(1.5+multi_spacing.x*2), 0, 0]]]],
+      ["",[[iwallpattern_hole_size,5],[iwidth,2],[iheight,8],[itranslate, [gf_pitch*(1.5+multi_spacing.x*2), gf_pitch*(2+multi_spacing.y), 0]],[iwallpattern_hole_size,25],[iwallpattern_hole_spacing, 3]]]      
+      ]
+      
+  : scenario == "multivoronoigridpattern" ? [["Multi Voronoi Pattern",1,[[60,0,0],[60,0,65],350],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing,2],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"voronoigrid"],[idepth,2]]],
+      ["",[[iwallpattern_hole_size,6],[iwidth,0.5]]],
+      ["",[[iwallpattern_hole_size,10],[iwidth,0.5],[iheight,8],[itranslate, [0, gf_pitch*(2+multi_spacing.y), 0]],[iwallpattern_hole_spacing, 3]]],
+      ["",[[iwallpattern_hole_size,6],[iwidth,1],[itranslate, [gf_pitch*(0.5+multi_spacing.x), 0, 0]]]],
+      ["",[[iwallpattern_hole_size,10],[iwidth,1],[iheight,8],[itranslate, [gf_pitch*(0.5+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0]],[iwallpattern_hole_spacing, 3]]],
+      ["",[[iwallpattern_hole_size,6],[iwidth,2],[itranslate, [gf_pitch*(1.5+multi_spacing.x*2), 0, 0]]]],
+      ["",[[iwallpattern_hole_size,10],[iwidth,2],[iheight,8],[itranslate, [gf_pitch*(1.5+multi_spacing.x*2), gf_pitch*(2+multi_spacing.y), 0]],[iwallpattern_hole_spacing, 3]]]      
+      ]
+      
+  : scenario == "multivoronoihexgridpattern" ? [["Multi Voronoi Pattern",1,[[60,0,0],[60,0,65],350],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"voronoihexgrid"],[idepth,2]]],
+      ["",[[iwallpattern_hole_size,6],[iwidth,0.5]]],
+      ["",[[iwallpattern_hole_size,9],[iwidth,0.5],[iheight,8],[itranslate, [0, gf_pitch*(2+multi_spacing.y), 0]],[iwallpattern_hole_spacing, 3]]],
+      ["",[[iwallpattern_hole_size,6],[iwidth,1],[itranslate, [gf_pitch*(0.5+multi_spacing.x), 0, 0]]]],
+      ["",[[iwallpattern_hole_size,9],[iwidth,1],[iheight,8],[itranslate, [gf_pitch*(0.5+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0]],[iwallpattern_hole_spacing, 3]]],
+      ["",[[iwallpattern_hole_size,6],[iwidth,2],[itranslate, [gf_pitch*(1.5+multi_spacing.x*2), 0, 0]]]],
+      ["",[[iwallpattern_hole_size,8],[iwidth,2],[iheight,8],[itranslate, [gf_pitch*(1.5+multi_spacing.x*2), gf_pitch*(2+multi_spacing.y), 0]],[iwallpattern_hole_spacing, 3]]]      
       ]
 
 //, 
@@ -392,7 +453,7 @@ function getScenario(scenario) =
         
    : ["unknown scenario"];
    
-module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
+module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepOverrides=[]){
   selectedScenario = getScenario(scenario);
   scenarioDefaults = selectedScenario[0];
   stepIndex = stepIndex > -1 ? stepIndex+1 : min(round($t*(len(selectedScenario)-1))+1,len(selectedScenario)-1);
@@ -463,13 +524,15 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
       wallcutout_height=currentStepSettings[iwallcutout_height],
       wallcutout_corner_radius=currentStepSettings[iwallcutout_corner_radius],
       wallpattern_enabled=currentStepSettings[iwallpattern_enabled],
-      wallpattern_hexgrid=currentStepSettings[iwallpattern_hexgrid],
+      wallpattern_style=currentStepSettings[iwallpattern_style],
       wallpattern_walls=currentStepSettings[iwallpattern_walls],
       wallpattern_dividers_enabled=currentStepSettings[iwallpattern_dividers_enabled],
       wallpattern_fill=currentStepSettings[iwallpattern_fill],
       wallpattern_hole_sides=currentStepSettings[iwallpattern_hole_sides],
       wallpattern_hole_size=currentStepSettings[iwallpattern_hole_size],
       wallpattern_hole_spacing=currentStepSettings[iwallpattern_hole_spacing],
+      wallpattern_voronoi_noise=currentStepSettings[iwallpattern_voronoi_noise],
+      wallpattern_voronoi_radius=currentStepSettings[iwallpattern_voronoi_radius],
       extention_enabled=currentStepSettings[iextention_enabled],
       extention_tabs_enabled=currentStepSettings[iextention_tabs_enabled],
       cutx=currentStepSettings[icutx],

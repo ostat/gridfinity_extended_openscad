@@ -231,11 +231,60 @@ module SequentialBridgingDoubleHole(
   fn=64) 
 {
   ff = 0.01;
+  overhangBridgeCount = outerHoleRadius <= 0 || innerHoleRadius <= 0 ? 0 : overhangBridgeCount;
   overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
-  render() //this wont improve render time, but will use less memory in the viewer. This matters here are there can be many holes (x*y*4) on the one render.
+  outerHeightCalculated = outerHoleRadius > 0 ? outerHoleDepth + overhangBridgeHeight : 0;
+  
   union(){
+    difference(){
+      if (outerHoleRadius > 0) {
+        cylinder(r=outerHoleRadius, h=outerHeightCalculated+ff, $fn=fn);
+      }
+      
+      if (overhangBridgeCount>0) {
+        for(i = [0:overhangBridgeCount-1]) 
+          rotate([0,0,180/overhangBridgeCount*i])
+          for(x = [0:1]) 
+          rotate([0,0,180]*x)
+            translate([-outerHoleRadius,innerHoleRadius-overhangBridgeCutin,outerHoleDepth+overhangBridgeThickness*i])
+            cube([outerHoleRadius*2, outerHoleRadius, overhangBridgeThickness*overhangBridgeCount+ff*2]);
+              }
+      }
+      
+      if (innerHoleRadius > 0) {
+        translate([0,0,outerHeightCalculated])
+        cylinder(r=innerHoleRadius, h=innerHoleDepth-outerHeightCalculated, $fn=fn);
+    }
+  }
+}
+
+//sequential bridging for hanging hole. 
+//ref: https://hydraraptor.blogspot.com/2014/03/buried-nuts-and-hanging-holes.html
+//ref: https://www.youtube.com/watch?v=KBuWcT8XkhA
+module SequentialBridgingDoubleHole_v1_old(
+  outerHoleRadius = 0,
+  outerHoleDepth = 0,
+  innerHoleRadius = 0,
+  innerHoleDepth = 0,
+  overhangBridgeCount = 2,
+  overhangBridgeThickness = 0.3,
+  overhangBridgeCutin =0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
+  fn=64) 
+{
+  ff = 0.01;
+  
+  overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
+  //render() //this wont improve render time, but will use less memory in the viewer. This matters here are there can be many holes (x*y*4) on the one render.
+  union(){
+  
     if (outerHoleRadius > 0) {
-      cylinder(r=outerHoleRadius, h=outerHoleDepth, $fn=fn);
+      cylinder(r=outerHoleRadius, h=outerHoleDepth+ff, $fn=fn);
+    }
+    
+    if (innerHoleRadius > 0) {
+      //if(outerHoleRadius <=0)
+      translate([0,0,outerHoleDepth+overhangBridgeHeight-ff])
+      cylinder(r=innerHoleRadius, h=innerHoleDepth-outerHoleDepth-overhangBridgeHeight, $fn=fn);
     }
 
     if (overhangBridgeCount>0) {
@@ -245,6 +294,7 @@ module SequentialBridgingDoubleHole(
         
         for(i = [0:overhangBridgeCount-1]) {
           intersection_for(y = [0:i]) {
+              echo("intersection_for", i=i, y=y);
               rotate([0,0,180/overhangBridgeCount*y])
               translate([-outerHoleRadius, -(innerHoleRadius-overhangBridgeCutin/2), overhangBridgeThickness*i-ff]) 
                 cube([outerHoleRadius*2, innerHoleRadius*2-overhangBridgeCutin, overhangBridgeThickness+ff]);
@@ -253,10 +303,7 @@ module SequentialBridgingDoubleHole(
       }
     }
 
-    if (innerHoleRadius > 0) {
-      translate([0,0,outerHoleDepth+overhangBridgeHeight])
-      cylinder(r=innerHoleRadius, h=innerHoleDepth-outerHoleDepth-overhangBridgeHeight, $fn=fn);
-    }
+
   }
 }
 

@@ -5,7 +5,7 @@ include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
-scenario = "demo"; //["demo","grid", "hole_grid", "hole_sides", "hole_size", "hole_spacing", "hole_clearance", "hole_depth", "compartments", "compartment_spacing", "compartment_centered", "compartment_fill", "auto_bin_height", "floorheight","magnet","coaster", "multicoaster", "custom"]
+scenario = "demo"; //["demo","grid", "hole_grid", "hole_sides", "hole_size", "hole_spacing", "hole_clearance", "hole_depth", "compartments", "compartment_spacing", "compartment_centered", "compartment_fill", "auto_bin_height", "floorheight","magnet","coaster", "multicoaster", "battery", "multibattery", "custom"]
 height = -1;
 width=-1;
 depth=-1;
@@ -88,14 +88,16 @@ iwallcutout_angle=iwallcutout_width+1;
 iwallcutout_height=iwallcutout_angle+1;
 iwallcutout_corner_radius=iwallcutout_height+1;
 iwallpattern_enabled=iwallcutout_corner_radius+1;
-iwallpattern_hexgrid=iwallpattern_enabled+1;
-iwallpattern_walls=iwallpattern_hexgrid+1;
+iwallpattern_style=iwallpattern_enabled+1;
+iwallpattern_walls=iwallpattern_style+1;
 iwallpattern_dividers_enabled=iwallpattern_walls+1;
 iwallpattern_fill=iwallpattern_dividers_enabled+1;
 iwallpattern_hole_sides=iwallpattern_fill+1;
 iwallpattern_hole_size=iwallpattern_hole_sides+1;
 iwallpattern_hole_spacing=iwallpattern_hole_size+1;
-iextention_enabled = iwallpattern_hole_spacing+1;
+iwallpattern_voronoi_density_ratio = iwallpattern_hole_spacing+1;
+iwallpattern_voronoi_radius =iwallpattern_voronoi_density_ratio+1;
+iextention_enabled = iwallpattern_voronoi_radius+1;
 iextention_tabs_enabled = iextention_enabled+1;
 icutx=iextention_tabs_enabled+1;
 icuty=icutx+1;
@@ -159,8 +161,8 @@ defaultDemoSetting =
     "none", 10, -1,
     //wallcutout_enabled, wallcutout_walls, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius
     false, [1,0,0,0], 0, 70, 0, 5, 
-    //wallpattern_enabled, wallpattern_hexgrid, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing
-    false, true, [1,1,1,1], false, "none", 6, 5, 2, 
+    //wallpattern_enabled, wallpattern_style, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing, wallpattern_voronoi_density_ratio, wallpattern_voronoi_radius 
+    false, "hexgrid", [1,1,1,1], false, "none", 6, 5, 2, 50, 0.5,
     //extention_enabled, extention_tabs_enabled
     [false,false],false,
     //cutx,cuty,help,translate,rotate
@@ -184,7 +186,7 @@ function getScenario(scenario) =
       ["18650", [[iitemholder_known_item,"18650"]]],
       ["Multi Card", [[iitemholder_known_item,"multicard"],[iitemholder_hole_chamfer,1],[iitemholder_multi_card_compact,0.7],[ifilled_in, "notstackable"]]],
       ["Nintendo DS", [[iitemholder_known_item,"nintendo2ds"],[iitemholder_hole_spacing,5], [iheight,5],
-          [iwallpattern_enabled,true],[iwallpattern_walls,[0,1,1,1]], [iitemholder_auto_bin_height,false],[iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
+          [iwallpattern_enabled,true],[iwallpattern_walls,[0,1,1,1]], [iitemholder_auto_bin_height,false],[iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,90],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]//endscenario
 
   : scenario == "grid" ? [["grid",2,[],[[iitemholder_known_item,"aaa"]]],
@@ -268,29 +270,48 @@ function getScenario(scenario) =
       ["coaster",3,[gf_pitch*(2+multi_spacing.x), 0, 0], -1],
       ["coaster",2,[gf_pitch*(2+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0], -1],
       ["coaster",5,[gf_pitch*(2+multi_spacing.x)*2, 0, 0], -1],
-      ["coaster",4,[gf_pitch*(2+multi_spacing.x)*2, gf_pitch*(2+multi_spacing.y), 0], -1]]     
- 
+      ["coaster",4,[gf_pitch*(2+multi_spacing.x)*2, gf_pitch*(2+multi_spacing.y), 0], -1]]   
+
+     
+ // [ custom:"Custome", 4hexshank:"4mm Hex Shank", 1/4hexshank:"1/4 Hex Shank", 1/4hexlongshank:"1/4 Hex Long Shank", 5/16hexshank:"5/16 Hex Shank", 3/8hexshank:"3/8 Hex Shank", "aaaa":"AAAA cell", "aaa":"AAA cell", "aa":"AA cell", "c":"C cell", "d":"d cell", "7540":"7540 cell", "8570":"8570 cell", "10180":"10180 cell", "10280":"10280 cell", "10440":"10440 cell", "10850":"10850 cell", "13400":"13400 cell", "14250":"14250 cell", "14300":"14300 cell", "14430":"14430 cell", "14500":"14500 cell", "14650":"14650 cell", "15270":"15270 cell", "16340":"16340 cell", "16650":"16650 cell", "17500":"17500 cell", "17650":"17650 cell", "17670":"17670 cell", "18350":"18350 cell", "18490":"18490 cell", "18500":"18500 cell", "18650":"18650 cell", "20700":"20700 cell", "21700":"21700 cell", "25500":"25500 cell", "26500":"26500 cell", "26650":"26650 cell", "26700":"26700 cell", "26800":"26800 cell", "32600":"32600 cell", "32650":"32650 cell", "32700":"32700 cell", "38120":"38120 cell", "38140":"38140 cell", "40152":"40152 cell", "4680":"4680 cell"]
+   : scenario == "battery" ? [["Battery", 12,[],[[iitemholder_auto_bin_height,true],[ifilled_in, "on"],[iitemholder_grid_style,"auto"],[iitemholder_compartment_fill,"space"],[iwidth, 3],[idepth, 2]]],
+    ["AAAA", [[iitemholder_known_item,"aaaa"]]],
+    ["AAA", [[iitemholder_known_item,"aaa"]]],
+    ["AA", [[iitemholder_known_item,"aa"]]],
+    ["C", [[iitemholder_known_item,"c"]]],
+    ["D", [[iitemholder_known_item,"d"]]],
+    ["4680", [[iitemholder_known_item,"4680"]]],
+    ["10440", [[iitemholder_known_item,"10440"]]],
+    ["18350", [[iitemholder_known_item,"18350"]]],
+    ["18650", [[iitemholder_known_item,"18650"]]],
+    ["21700", [[iitemholder_known_item,"21700"]]],
+    ["32600", [[iitemholder_known_item,"32600"]]],
+    ["40152", [[iitemholder_known_item,"40152"]]]]//
+      
    : scenario == "multibattery" ? [["Multi",1,[[60,0,0],[120,0,60],600],[]],
-      ["battery",1,[0, 0, 0], -1],
-      ["battery",0,[0, gf_pitch*(2+multi_spacing.y), 0], -1],
-      ["battery",3,[gf_pitch*(2+multi_spacing.x), 0, 0], -1],
-      ["battery",2,[gf_pitch*(2+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0], -1],
-      ["battery",5,[gf_pitch*(2+multi_spacing.x)*2, 0, 0], -1],
-      ["battery",4,[gf_pitch*(2+multi_spacing.x)*2, gf_pitch*(2+multi_spacing.y), 0], -1]]    
+      ["battery",0,[0, 0, 0], [[iwidth, 1],[idepth, 2]]],
+      ["battery",1,[gf_pitch*(1+multi_spacing.x), 0, 0], [[iwidth, 2],[idepth, 2]]],
+      ["battery",2,[gf_pitch*(3+multi_spacing.x*2), 0, 0], [[iwidth, 3],[idepth, 2]]],
+      ["battery",3,[0, gf_pitch*(2+multi_spacing.y), 0], [[iwidth, 1],[idepth, 2]]],
+      ["battery",4,[gf_pitch*(1+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0], [[iwidth, 2],[idepth, 2]]],
+      ["battery",5,[gf_pitch*(3+multi_spacing.x*2), gf_pitch*(2+multi_spacing.y), 0], [[iwidth, 3],[idepth, 2]]]]    
       
   : scenario == "custom" ? [["Custom", 3, []]]//endscenario
 
    : [["unknown scenario",[]]];
 
-module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
+module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1, multiStepOverrides = []){
   selectedScenario = getScenario(scenario);
   scenarioDefaults = selectedScenario[0];
   stepIndex = stepIndex > -1 ? stepIndex+1 : min(round($t*(len(selectedScenario)-1))+1,len(selectedScenario)-1);
   animationStep = (len(selectedScenario) >= stepIndex ? selectedScenario[stepIndex] : selectedScenario[1]);  
-  currentStepSettings = replace_Items(concat(scenarioDefaults[iscenariokv],animationStep[istepkv]), defaultDemoSetting);
-
+  currentStepSettings = replace_Items(concat(concat(scenarioDefaults[iscenariokv],animationStep[istepkv]), multiStepOverrides), defaultDemoSetting);
   echo("🟧RenderScenario",scenario = scenario, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1), animationStep=animationStep, currentStepSettings=currentStepSettings);
 
+  
+  if(!isMulti(scenario) && len(selectedScenario)-1 != selectedScenario[0][1]){
+    echo("🟧RenderScenario - warning steps is not correct, update for PS script to function",scenarioStepsConfig = selectedScenario[0][1], steps=len(selectedScenario)-1);
+  }
   if(showtext && $preview)
   color("DimGray")
   translate($vpt)
@@ -298,7 +319,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
   translate([0,-45,60])
    linear_extrude(height = 0.1)
    text(str(scenarioDefaults[iscenarioName], " - ", animationStep[istepName]), size=5,halign="center");
-  
+
   if(scenarioDefaults[iscenarioName] != "unknown scenario")
     rotate(currentStepSettings[irotate]) 
     translate(currentStepSettings[itranslate])
@@ -369,13 +390,15 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
       wallcutout_height=currentStepSettings[iwallcutout_height],
       wallcutout_corner_radius=currentStepSettings[iwallcutout_corner_radius],
       wallpattern_enabled=currentStepSettings[iwallpattern_enabled],
-      wallpattern_hexgrid=currentStepSettings[iwallpattern_hexgrid],
+      wallpattern_style=currentStepSettings[iwallpattern_style],
       wallpattern_walls=currentStepSettings[iwallpattern_walls],
       wallpattern_dividers_enabled=currentStepSettings[iwallpattern_dividers_enabled],
       wallpattern_fill=currentStepSettings[iwallpattern_fill],
       wallpattern_hole_sides=currentStepSettings[iwallpattern_hole_sides],
       wallpattern_hole_size=currentStepSettings[iwallpattern_hole_size],
       wallpattern_hole_spacing=currentStepSettings[iwallpattern_hole_spacing],
+      wallpattern_voronoi_density_ratio=currentStepSettings[iwallpattern_voronoi_density_ratio],
+      wallpattern_voronoi_radius=currentStepSettings[iwallpattern_voronoi_radius],
       extention_enabled=currentStepSettings[iextention_enabled],
       extention_tabs_enabled=currentStepSettings[iextention_tabs_enabled],
       cutx=currentStepSettings[icutx],
@@ -390,12 +413,18 @@ union(){
     for(i =[1:len(multiScenario)-1])
     {
       multiStep = multiScenario[i];
-      if(len(multiStep) == 4)
+      if(len(multiStep) == 4 )
       {
         echo(multiStep=multiStep);
-        //["demo",1, [0, 0, 0], 5]],
+        //["demo",1, [0, 0, 0], [[],[]]]],
         translate(multiStep[2])
-        RenderScenario(scenario = multiStep[0], height = multiStep[3], stepIndex = multiStep[1], showtext = false);
+        RenderScenario(
+          scenario = multiStep[0], 
+          height = -1, 
+          stepIndex = multiStep[1], 
+          showtext = false,
+          multiStepOverrides = len(multiStep) == 4 ? multiStep[3] : [] //Used for overriding bin size for multi
+          );
       }
       else{
         RenderScenario(scenario, stepIndex=i-1, showtext = false);
