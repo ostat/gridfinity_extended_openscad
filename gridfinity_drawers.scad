@@ -2,7 +2,9 @@ use <modules/gridfinity_cup_modules.scad>
 
 width = 4;
 depth = 3;
-heightsRaw = "4 4 4";
+height = 4;
+count = 3;
+//heightsRaw = "4 4 4";
 clearance = 0.25;
 wallthicknessInner = 2;
 wallthicknessOuter = 2;
@@ -11,14 +13,27 @@ handleheight = 4;
 handlelength = 7;
 ridgedepth = 5;
 ridgethickness = 1;
+mode = "everything"; //["everything", "drawers", "holder", "onedrawer"]
 
-heights = split(heights, " ");
+//heights = str_split(heightsRaw, " ");
 InnerDrawerW = (width*42) + clearance - 0.25;
 InnerDrawerD = (depth*42) + clearance - 0.25;
+InnerDrawerH = (height*7) + clearance + 4.25;
 OuterDrawerW = InnerDrawerW + (wallthicknessInner * 2);
 OuterDrawerD = InnerDrawerD + (wallthicknessInner * 2);
+OuterDrawerH = InnerDrawerH + wallthicknessInner;
 InnerBoxW = OuterDrawerW + (clearance * 2);
 InnerBoxD = OuterDrawerD + (clearance * 2);
+InnerBoxH = OuterDrawerH + (clearance * 2);
+OuterBoxW = InnerBoxW + (wallthicknessOuter * 2);
+OuterBoxD = InnerBoxD + (wallthicknessOuter);
+
+HoleH = OuterDrawerH + (clearance * 2);
+TotalH = (HoleH * count) + (ridgethickness * (count - 1)) + (wallthicknessOuter * 2);
+IncrementH = HoleH + ridgethickness;
+StartH = wallthicknessOuter;
+OffsetW = wallthicknessOuter + clearance;
+
 
 //DRAWER STUFF
 module rounddrawerbox(w, d, h){
@@ -52,20 +67,36 @@ module drawerCutout(h){
     }
 }
 module drawers(){
-    yoffset = wallthicknessInner;
-    for(drawerheight = heights){
-        
+    for(i = [0 : count-1]){
+        vpos = clearance + StartH + IncrementH * i;
+        color("red") translate([0, OffsetW, vpos]) drawer(height);
     }
 }
 
 //HOLDER STUFF
 module holder(){
-    
+    color("green") difference(){
+        cube([OuterBoxW, OuterBoxD, TotalH]);
+        holderCutouts();
+    }
+}
+module holderCutouts(){
+    for(i = [0 : count-1]){
+        vpos = StartH + IncrementH * i;
+        translate([wallthicknessOuter, 0, vpos]) holderCutout();
+    }
+}
+module holderCutout(){
+    cube([InnerBoxW, InnerBoxD, InnerBoxH]);
 }
 
+//THE END
 module everything(){
     holder();
     drawers();
 }
 
-drawer(4);
+if(mode == "everything") everything();
+if(mode == "holder") holder();
+if(mode == "drawers") drawers();
+if(mode == "onedrawer") drawer(height);
