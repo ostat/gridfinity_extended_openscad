@@ -2,7 +2,7 @@ use <modules/gridfinity_cup_modules.scad>
 
 width = 4;
 depth = 3;
-heights = "4 4 4";
+heightsRaw = "4 4 4";
 clearance = 0.25;
 wallthicknessInner = 2;
 wallthicknessOuter = 2;
@@ -12,33 +12,60 @@ handlelength = 7;
 ridgedepth = 5;
 ridgethickness = 1;
 
-module drawer(w, d, h){
-    realInnerW = (w*42) + clearance - 0.25;
-    realInnerD = (d*42) + clearance - 0.25;
-    realInnerH = (h*7) + clearance + 4.25;
-    realOuterW = realInnerW + (wallthicknessInner * 2);
-    realOuterD = realInnerD + (wallthicknessInner * 2);
-    realOuterH = realInnerH + (wallthicknessInner);
+heights = split(heights, " ");
+InnerDrawerW = (width*42) + clearance - 0.25;
+InnerDrawerD = (depth*42) + clearance - 0.25;
+OuterDrawerW = InnerDrawerW + (wallthicknessInner * 2);
+OuterDrawerD = InnerDrawerD + (wallthicknessInner * 2);
+InnerBoxW = OuterDrawerW + (clearance * 2);
+InnerBoxD = OuterDrawerD + (clearance * 2);
+
+//DRAWER STUFF
+module rounddrawerbox(w, d, h){
+    r = 6;
+    D = r * 2;
+    linear_extrude(height = h)
+    minkowski(){
+        translate([r, r]) square([w-D, d-D]);
+        circle(r);
+    }
+}
+module drawer(h){
+    InnerH = (h*7) + clearance + 4.25;
+    OuterH = InnerH + wallthicknessInner;
     union(){
         difference(){
-            cube([realOuterW, realOuterD, realOuterH]);
-            drawerCutout(w, d, h);
+            rounddrawerbox(OuterDrawerW, OuterDrawerD, OuterH);
+            drawerCutout(h);
         };
-        translate([realOuterW / 2, 0, realOuterH / 2]) handle();
+        translate([OuterDrawerW / 2, 0, OuterH / 2]) handle();
     }
     
 }
 module handle(){
     translate(-[handlewidth / 2, handlelength, handleheight/2]) cube([handlewidth, handlelength, handleheight]);
 }
-module drawerCutout(w, d, h){
+module drawerCutout(h){
     minkowski(){
-        translate([wallthicknessInner, wallthicknessInner, wallthicknessInner]) basic_cup(w, d, h+2, position = "zero", filled_in = true, magnet_diameter = 0, screw_depth=0);
+        translate([wallthicknessInner, wallthicknessInner, wallthicknessInner]) basic_cup(width, depth, h+2, position = "zero", filled_in = true, magnet_diameter = 0, screw_depth=0);
         sphere(r = clearance);
     }
 }
-module holder(w, d, hs){
+module drawers(){
+    yoffset = wallthicknessInner;
+    for(drawerheight = heights){
+        
+    }
+}
+
+//HOLDER STUFF
+module holder(){
     
 }
 
-drawer(width, depth, 4);
+module everything(){
+    holder();
+    drawers();
+}
+
+drawer(4);

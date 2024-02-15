@@ -4,7 +4,6 @@
         "Nowy zestaw 1": {
             "clearance": "0.25",
             "depth": "4",
-            "heights": "4 4 4",
             "wallthicknessInner": "2",
             "wallthicknessOuter": "2",
             "width": "4"
