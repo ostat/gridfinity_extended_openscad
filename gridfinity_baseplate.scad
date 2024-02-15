@@ -16,7 +16,7 @@ Lid_Efficient_Floor_Thickness = 0.7;// [0.7:0.1:7]
 
 /* [Base Plate Clips - POC dont use yet]*/
 //This feature is not yet finalised, or working properly. 
-Butterfly_Clip_Enabled = true;
+Butterfly_Clip_Enabled = false;
 Butterfly_Clip_Size = [6,6,1.5];
 Butterfly_Clip_Radius = 0.1;
 Butterfly_Clip_Tollerance = 0.1;
