@@ -1,4 +1,5 @@
 use <modules/gridfinity_cup_modules.scad>
+use <modules/gridfinity_modules.scad>
 //From https://www.printables.com/pl/model/363389-gridfinity-drawer-chest-remix
 
 width = 4;
@@ -28,6 +29,7 @@ InnerBoxD = OuterDrawerD + (clearance * 2);
 InnerBoxH = OuterDrawerH + (clearance * 2);
 OuterBoxW = InnerBoxW + (wallthicknessOuter * 2);
 OuterBoxD = InnerBoxD + (wallthicknessOuter);
+BottomGridOffset = wallthicknessInner + wallthicknessOuter + clearance*2;
 
 HoleH = OuterDrawerH + (clearance * 2);
 TotalH = (HoleH * count) + (ridgethickness * (count - 1)) + (wallthicknessOuter * 2);
@@ -75,11 +77,34 @@ module drawers(){
 }
 
 //HOLDER STUFF
+module reallyHugeCube(){
+    cube([999999, 999999, 99999], center=true);
+}
+//This returned a borked bottom cup. The next function fixes it
+module bottomCup2BFixed(){
+    offset([BottomGridOffset, BottomGridOffset, -4.75])
+            basic_cup(width, depth, 2, position = "zero", filled_in = true, magnet_diameter = 0, screw_depth=0);
+}
+module bottomCup(){
+    difference(){
+        reallyHugeCube();
+        difference(){
+            reallyHugeCube();
+            bottomCup2BFixed();
+        }
+    }
+}
 module holder(){
     color("green") difference(){
-        cube([OuterBoxW, OuterBoxD, TotalH]);
+        union(){
+            cube([OuterBoxW, OuterBoxD, TotalH]);
+            //bottomCup();
+            //offset([BottomGridOffset, BottomGridOffset, -4.75]) pad_grid(width, depth);
+        }
         holderCutouts();
     }
+    echo("Bottom offset: ", BottomGridOffset);
+    
 }
 module holderCutouts(){
     for(i = [0 : count-1]){
