@@ -1,5 +1,5 @@
 use <modules/gridfinity_cup_modules.scad>
-use <modules/gridfinity_modules.scad>
+use <gridfinity_baseplate.scad>
 //From https://www.printables.com/pl/model/363389-gridfinity-drawer-chest-remix
 
 width = 4;
@@ -15,6 +15,8 @@ handleheight = 4;
 handlelength = 7;
 ridgedepth = 5;
 ridgethickness = 1;
+bottomgrid = true;
+topgrid = true;
 mode = "everything"; //["everything", "drawers", "holder", "onedrawer"]
 
 //heights = str_split(heightsRaw, " ");
@@ -30,6 +32,7 @@ InnerBoxH = OuterDrawerH + (clearance * 2);
 OuterBoxW = InnerBoxW + (wallthicknessOuter * 2);
 OuterBoxD = InnerBoxD + (wallthicknessOuter);
 BottomGridOffset = wallthicknessInner + wallthicknessOuter + clearance*2;
+TopGridOffset = BottomGridOffset - 0.25;
 
 HoleH = OuterDrawerH + (clearance * 2);
 TotalH = (HoleH * count) + (ridgethickness * (count - 1)) + (wallthicknessOuter * 2);
@@ -39,8 +42,7 @@ OffsetW = wallthicknessOuter + clearance;
 
 
 //DRAWER STUFF
-module rounddrawerbox(w, d, h){
-    r = 6;
+module rounddrawerbox(w, d, h, r=6){
     D = r * 2;
     linear_extrude(height = h)
     minkowski(){
@@ -64,10 +66,15 @@ module handle(){
     translate(-[handlewidth / 2, handlelength, handleheight/2]) cube([handlewidth, handlelength, handleheight]);
 }
 module drawerCutout(h){
-    minkowski(){
+    translate([wallthicknessInner, wallthicknessInner, wallthicknessInner]) difference(){
+        rounddrawerbox(InnerDrawerW, InnerDrawerD, 99999, 4);
+        translate([21, 21, 0]) frame_plain(width, depth);
+    }
+
+    /*minkowski(){
         translate([wallthicknessInner, wallthicknessInner, wallthicknessInner]) basic_cup(width, depth, h+2, position = "zero", filled_in = true, magnet_diameter = 0, screw_depth=0);
         sphere(r = clearance);
-    }
+    }*/
 }
 module drawers(){
     for(i = [0 : count-1]){
@@ -77,29 +84,25 @@ module drawers(){
 }
 
 //HOLDER STUFF
-module reallyHugeCube(){
-    cube([999999, 999999, 99999], center=true);
+module baseUnit(){
+    import("Bin Base - Printables model 417152.stl");
 }
-//This returned a borked bottom cup. The next function fixes it
-module bottomCup2BFixed(){
-    offset([BottomGridOffset, BottomGridOffset, -4.75])
-            basic_cup(width, depth, 2, position = "zero", filled_in = true, magnet_diameter = 0, screw_depth=0);
+module baseRaw(){
+    for(i = [0:width-1]) for(j = [0:depth - 1])
+    translate([i * 42, j * 42, 0.15]) baseUnit();
 }
-module bottomCup(){
-    difference(){
-        reallyHugeCube();
-        difference(){
-            reallyHugeCube();
-            bottomCup2BFixed();
-        }
-    }
+module base(){
+    translate([BottomGridOffset, BottomGridOffset, 0]) baseRaw();
+}
+module baseplate(){
+    translate([TopGridOffset + 21, TopGridOffset + 21, TotalH]) frame_plain(width, depth);
 }
 module holder(){
     color("green") difference(){
         union(){
             cube([OuterBoxW, OuterBoxD, TotalH]);
-            //bottomCup();
-            //offset([BottomGridOffset, BottomGridOffset, -4.75]) pad_grid(width, depth);
+            if(bottomgrid) base();
+            if(topgrid) baseplate();
         }
         holderCutouts();
     }
