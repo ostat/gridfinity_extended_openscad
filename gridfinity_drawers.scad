@@ -70,11 +70,6 @@ module drawerCutout(h){
         rounddrawerbox(InnerDrawerW, InnerDrawerD, 99999, 4);
         translate([21, 21, 0]) frame_plain(width, depth);
     }
-
-    /*minkowski(){
-        translate([wallthicknessInner, wallthicknessInner, wallthicknessInner]) basic_cup(width, depth, h+2, position = "zero", filled_in = true, magnet_diameter = 0, screw_depth=0);
-        sphere(r = clearance);
-    }*/
 }
 module drawers(){
     for(i = [0 : count-1]){
