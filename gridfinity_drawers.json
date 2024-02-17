@@ -98,7 +98,7 @@
             "handlelength": "7",
             "handlewidth": "40",
             "height": "4",
-            "mode": "onedrawer",
+            "mode": "everything",
             "ridgedepth": "5",
             "ridgethickness": "1",
             "topgrid": "true",

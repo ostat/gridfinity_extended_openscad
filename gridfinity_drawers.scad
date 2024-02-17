@@ -7,19 +7,24 @@ width = 4;
 depth = 3;
 height = 4;
 count = 3;
+
 //heightsRaw = "4 4 4";
 clearance = 0.25;
 wallthicknessInner = 2;
 wallthicknessOuter = 2;
+
 handlewidth = 40;
 handleheight = 4;
 handlelength = 7;
-ridgedepth = 5;
+
 ridgethickness = 1;
 bottomgrid = true;
 topgrid = true;
 mode = "everything"; //["everything", "drawers", "holder", "onedrawer"]
 drawergrid = true;
+
+efficientback = true;
+ridgedepth = 5;
 
 //heights = str_split(heightsRaw, " ");
 InnerDrawerW = (width*42) + clearance - 0.25;
@@ -118,6 +123,9 @@ module holderCutouts(){
 }
 module holderCutout(InnerBoxW, InnerBoxD, InnerBoxH){
     cube([InnerBoxW, InnerBoxD, InnerBoxH]);
+    if(efficientback)
+    translate([ridgedepth, 0, ridgedepth])
+    cube([InnerBoxW - 2*ridgedepth, 999999, InnerBoxH - 2*ridgedepth]);
 }
 
 //THE END
