@@ -1,5 +1,5 @@
 // Gridfinity extended basic cup
-// version 2023-11-07
+// version 2024-02-17
 //
 // Source
 // https://www.printables.com/model/630057-gridfinity-extended-openscad
@@ -24,7 +24,8 @@ filled_in = "off"; //["off","on","notstackable"]
 // Include overhang for labeling (and specify left/right/center justification)
 label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
 // Width of the label in number of units, or zero means full width
-label_width = 0;  // .01
+// Width in Gridfinity units of 42mm, Depth and Height in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+label_size = [0,14,0]; // 0.01
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 // Remove some or all of lip
@@ -142,7 +143,7 @@ module gridfinity_basic_cup(
   position=position,
   filled_in = filled_in,
   label=label,
-  label_width=label_width,
+  label_size=label_size,
   wall_thickness=wall_thickness,
   lip_style=lip_style,
   chamber_wall_thickness = chamber_wall_thickness,
@@ -205,7 +206,7 @@ module gridfinity_basic_cup(
       position=position,
       filled_in=filled_in,
       label_style=label,
-      labelWidth=label_width,
+      labelSize=label_size,
       fingerslide=fingerslide,
       fingerslide_radius=fingerslide_radius,
       magnet_diameter=magnet_diameter,

@@ -13,8 +13,8 @@ default_filled_in = "off"; //["off","on","notstackable"]
 default_wall_thickness = 0;// 0.01
 // Include overhang for labeling
 default_label_style = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
-// Width of the label in number of units, or zero for full width
-default_labelWidth = 0; // 0.01
+// Width in Gridfinity units of 42mm, Depth and Height in mm. Heigh of 0 uses Depth, height of -1 uses depth*3/4.
+default_label_size = [0,14,0]; // 0.01
 // Include larger corner fillet
 default_fingerslide = "none"; //[none, rounded, chamfered]
 // radius of the corner fillet
@@ -132,7 +132,7 @@ module basic_cup(
   horizontal_irregular_subdivisions = default_horizontal_irregular_subdivisions,
   horizontal_separator_config = default_horizontal_separator_config,
   label_style=default_label_style,
-  labelWidth=default_labelWidth,
+  label_Size=default_label_size,
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
@@ -181,7 +181,7 @@ module basic_cup(
     position=position,
     filled_in = filled_in,
     label_style=label_style,
-    labelWidth=labelWidth,
+    labelSize=label_Size,
     fingerslide=fingerslide,
     fingerslide_radius=fingerslide_radius,
     magnet_diameter=magnet_diameter,
@@ -246,7 +246,7 @@ module irregular_cup(
   position=default_position,
   filled_in = default_filled_in,
   label_style=default_label_style,
-  labelWidth=default_labelWidth,
+  labelSize=default_labelSize,
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
@@ -330,7 +330,7 @@ module irregular_cup(
       partitioned_cavity(
         num_x, num_y, num_z, 
         label_style=label_style,
-        labelWidth=labelWidth, 
+        labelSize=labelSize, 
         fingerslide=fingerslide, 
         fingerslide_radius=fingerslide_radius, 
         magnet_diameter=magnet_diameter, 
@@ -694,7 +694,7 @@ module irregular_cup(
     ,"position",position
     ,"filled_in",filled_in
     ,"label_style",label_style
-    ,"labelWidth",labelWidth
+    ,"labelSize",labelSize
     ,"fingerslide",fingerslide
     ,"fingerslide_radius",fingerslide_radius
     ,"magnet_diameter",magnet_diameter
@@ -833,7 +833,7 @@ module attachement_clip(
 
 
 module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
-    labelWidth=default_labelWidth, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
+    labelSize=default_labelSize, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, half_pitch=default_half_pitch,         chamber_wall_thickness=default_chamber_wall_thickness,
@@ -854,13 +854,7 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style,
   outer_wall_th = 1.8;  // cavity is this far away from the 42mm 'ideal' block
   floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
   
-  bar_d = 1.2;
   zpoint = gf_zpitch*num_z;
-  
-  yz = [[ (num_y-0.5)*gf_pitch-14, zpoint-bar_d/2 ],
-    [ (num_y-0.5)*gf_pitch, zpoint-bar_d/2 ],
-    [ (num_y-0.5)*gf_pitch, zpoint-bar_d/2-10.18 ]
-  ];
   
   cavity_xsize = gf_pitch*num_x-2*outer_wall_th;
 
@@ -898,9 +892,23 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style,
     
     // this is the label
     if (label_style != "disabled") {
+      labelCornerRadius = 0.6;
+      labelSize = is_num(labelSize) 
+        ? [labelSize,14,14*3/4] 
+        : is_list(labelSize) && len(labelSize) == 1 ? [labelSize.x, 14, 14*3/4] 
+        : len(labelSize) == 2 ? [labelSize.x, labelSize.y, labelSize.y]
+        : [labelSize.x, labelSize.y, 
+          (labelSize.z == -1 ? labelSize.y*3/4 : labelSize.z == 0 ? labelSize.y : labelSize.z)];
+            
+      labelPoints = [[ (num_y-0.5)*gf_pitch-labelSize.y, zpoint-labelCornerRadius],
+        [ (num_y-0.5)*gf_pitch, zpoint-labelCornerRadius ],
+        [ (num_y-0.5)*gf_pitch, zpoint-labelCornerRadius-(labelSize.z == 0 ? labelSize.y*3/4 : labelSize.z) ]
+      ];
+      
       separator_positions = calculateSeparators(vertical_separator_positions);
+        
       // calcualte list of chambers. 
-      labelWidthmm = labelWidth * gf_pitch;
+      labelWidthmm = labelSize.x * gf_pitch;
       color(color_label){
         chamberWidths = len(separator_positions) < 1 || 
           labelWidthmm == 0 ||
@@ -921,13 +929,16 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style,
                           : (label_style == "right" || label_style == "rightchamber" )? chamberWidth - label_num_x 
                           : 0 ;
       
-          hull() for (i=[0,1, 2])
-          translate([(-gf_pitch/2) + ((chamberStart + label_pos_x)), yz[i][0], yz[i][1]])
+          hull() 
+          for (i=[0, 1, 2])
+          translate([(-gf_pitch/2) + ((chamberStart + label_pos_x)), labelPoints[i][0], labelPoints[i][1]])
           rotate([0, 90, 0])
           union(){
+            //left
             tz(abs(label_num_x))
-            sphere(d=bar_d, $fn=24);
-            sphere(d=bar_d, $fn=24);
+            sphere(r=labelCornerRadius, $fn=24);
+            //Right
+            sphere(r=labelCornerRadius, $fn=24);
           }
         }
       }
