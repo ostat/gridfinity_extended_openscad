@@ -93,8 +93,9 @@ module baseUnit(){
     import("Bin Base - Printables model 417152.stl");
 }
 module baseRaw(){
-    for(i = [0:width-1]) for(j = [0:depth - 1])
-    translate([i * 42, j * 42, 0.15]) baseUnit();
+    height=0.7;
+    translate([gf_pitch/2,gf_pitch/2,-gf_zpitch*height+fudgeFactor])
+    grid_block(num_x=width, num_y=depth, num_z=height, stackable = false, magnet_diameter=6.5, screw_depth=6);
 }
 module base(){
     translate([BottomGridOffset, BottomGridOffset, 0]) baseRaw();
