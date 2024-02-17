@@ -1,0 +1,27 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Nowy zestaw 1": {
+            "Base_Plate_Options": "default",
+            "Butterfly_Clip_Enabled": "false",
+            "Butterfly_Clip_Only": "false",
+            "Butterfly_Clip_Radius": "0.10000000000000001",
+            "Butterfly_Clip_Size": "[6, 6, 1.5]",
+            "Butterfly_Clip_Tollerance": "0.10000000000000001",
+            "Custom_Grid_Enabled": "false",
+            "Depth": "1",
+            "Filament_Clip_Diameter": "2",
+            "Filament_Clip_Enabled": "true",
+            "Filament_Clip_Length": "8",
+            "Lid_Efficient_Base_Height": "0.40000000000000002",
+            "Lid_Efficient_Floor_Thickness": "0.69999999999999996",
+            "Lid_Include_Magnets": "false",
+            "Lid_Options": "default",
+            "Plate_Style": "base",
+            "Width": "2",
+            "cutx": "0",
+            "cuty": "0",
+            "help": "false"
+        }
+    }
+}
