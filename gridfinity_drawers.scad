@@ -89,9 +89,6 @@ module drawers(){
 }
 
 //HOLDER STUFF
-module baseUnit(){
-    import("Bin Base - Printables model 417152.stl");
-}
 module baseRaw(){
     height=0.7;
     translate([gf_pitch/2,gf_pitch/2,-gf_zpitch*height+fudgeFactor])
