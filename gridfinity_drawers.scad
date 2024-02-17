@@ -18,7 +18,6 @@ count = 3;
 clearance = 0.25;
 wallthicknessInner = 2;
 wallthicknessOuter = 2;
-bottomgrid = true;
 topgrid = true;
 ridgethickness = 1;
 
@@ -29,6 +28,21 @@ handlelength = 7;
 drawerbase = "default"; //["grid":Grid only, "floor":floor only, "default":"Grid and floor"]
 drawerglides = 10; //size of drawer slies in mm. 0 is full size.
 
+/* [Base] */
+bottomgrid = true;
+// (Zack's design uses magnet diameter of 6.5)
+magnet_diameter = 6.5;  // .1
+// (Zack's design uses depth of 6)
+screw_depth = 6;
+// Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
+hole_overhang_remedy = 2;
+//Only add attachments (magnets and screw) to box corners (prints faster).
+box_corner_attachments_only = true;
+// Enable to subdivide bottom pads to allow half-cell offsets
+half_pitch = false;
+// Removes the internal grid from base the shape
+flat_base = false;
+
 /* [Wall Pattern] */
 ridgedepth = 5;
 efficientback = true;
@@ -38,8 +52,6 @@ wallpattern_enabled=false;
 wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
-// wall to enable on, front, back, left, right.
-wallpattern_walls=[1,1,1,1]; 
 // Add the pattern to the dividers
 wallpattern_dividers_enabled=false; 
 //Number of sides of the hole op
@@ -132,8 +144,12 @@ module baseRaw(){
     num_y=depth, 
     num_z=height, 
     stackable=false, 
-    magnet_diameter=6.5, 
-    screw_depth=6);
+    magnet_diameter=magnet_diameter, 
+    screw_depth=screw_depth,
+    hole_overhang_remedy=hole_overhang_remedy,
+    box_corner_attachments_only=box_corner_attachments_only,
+    half_pitch = half_pitch,
+    flat_base = flat_base);
 }
 
 module base(){
