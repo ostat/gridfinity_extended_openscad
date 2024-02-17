@@ -88,6 +88,23 @@
             "wallthicknessInner": "2",
             "wallthicknessOuter": "2",
             "width": "4"
+        },
+        "Nowy zestaw 7": {
+            "bottomgrid": "true",
+            "clearance": "0.25",
+            "count": "3",
+            "depth": "3",
+            "handleheight": "4",
+            "handlelength": "7",
+            "handlewidth": "40",
+            "height": "4",
+            "mode": "onedrawer",
+            "ridgedepth": "5",
+            "ridgethickness": "1",
+            "topgrid": "true",
+            "wallthicknessInner": "2",
+            "wallthicknessOuter": "2",
+            "width": "4"
         }
     }
 }

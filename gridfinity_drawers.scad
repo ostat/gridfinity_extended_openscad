@@ -19,6 +19,7 @@ ridgethickness = 1;
 bottomgrid = true;
 topgrid = true;
 mode = "everything"; //["everything", "drawers", "holder", "onedrawer"]
+drawergrid = true;
 
 //heights = str_split(heightsRaw, " ");
 InnerDrawerW = (width*42) + clearance - 0.25;
