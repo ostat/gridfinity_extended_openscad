@@ -16,19 +16,21 @@ count = 3;
 
 //heightsRaw = "4 4 4";
 clearance = 0.25;
-wallthicknessInner = 2;
-wallthicknessOuter = 2;
-topgrid = true;
-ridgethickness = 1;
+box_wall_thickness = 2;
+box_enable_top_grid = true;
+//Thickness of drawer slies in mm. 0 is uses wall thickenss.
+box_drawer_slide_thickness = 0;
+//Width of drawer slies in mm. 0 is full box width.
+box_drawer_slide_width = 10; 
 
 /* [Drawer] */
 handlewidth = 40;
 handleheight = 4;
 handlelength = 7;
+wallthicknessInner = 2;
 drawerbase = "default"; //["grid":Grid only, "floor":floor only, "default":"Grid and floor"]
-drawerglides = 10; //size of drawer slies in mm. 0 is full size.
 
-/* [Base] */
+/* [Box Base] */
 bottomgrid = true;
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 6.5;  // .1
@@ -43,8 +45,9 @@ half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
 
-/* [Wall Pattern] */
-ridgedepth = 5;
+/* [Box Wall Pattern] */
+// wall pattern border width. -1 defaults to box_wall_thickness. less than 0 box_wall_thickness/abs(wallpattern_border_width)
+wallpattern_border_width = -1;
 efficientback = true;
 // Grid wall patter
 wallpattern_enabled=false;
@@ -64,6 +67,10 @@ wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
 //heights = str_split(heightsRaw, " ");
+
+drawerSlideThickness =box_drawer_slide_thickness == 0 ? box_wall_thickness : box_drawer_slide_thickness;
+ridgedepth = wallpattern_border_width < 0 ? box_wall_thickness/abs(wallpattern_border_width) : wallpattern_border_width;
+
 InnerDrawerW = (width*gf_pitch) + clearance - 0.25;
 InnerDrawerD = (depth*gf_pitch) + clearance - 0.25;
 InnerDrawerH = (height*gf_zpitch) + clearance + 4.25;
@@ -73,16 +80,16 @@ OuterDrawerH = InnerDrawerH + ((drawerbase == "floor" || drawerbase == "default"
 InnerBoxW = OuterDrawerW + (clearance * 2);
 InnerBoxD = OuterDrawerD + (clearance * 2);
 InnerBoxH = OuterDrawerH + (clearance * 2);
-OuterBoxW = InnerBoxW + (wallthicknessOuter * 2);
-OuterBoxD = InnerBoxD + (wallthicknessOuter);
-BottomGridOffset = wallthicknessInner + wallthicknessOuter + clearance*2;
+OuterBoxW = InnerBoxW + (box_wall_thickness * 2);
+OuterBoxD = InnerBoxD + (box_wall_thickness);
+BottomGridOffset = wallthicknessInner + box_wall_thickness + clearance*2;
 TopGridOffset = BottomGridOffset - 0.25;
 
 HoleH = OuterDrawerH + (clearance * 2);
-TotalH = (HoleH * count) + (ridgethickness * (count - 1)) + (wallthicknessOuter * 2);
-IncrementH = HoleH + ridgethickness;
-StartH = wallthicknessOuter;
-OffsetW = wallthicknessOuter + clearance;
+TotalH = (HoleH * count) + (drawerSlideThickness * (count - 1)) + (box_wall_thickness * 2);
+IncrementH = HoleH + drawerSlideThickness;
+StartH = box_wall_thickness;
+OffsetW = box_wall_thickness + clearance;
 
 $fn = 64;
 
@@ -130,7 +137,7 @@ module handle(){
 module drawers(){
   for(i = [0 : count-1]){
     vpos = clearance + StartH + IncrementH * i;
-      translate([wallthicknessOuter +clearance/2, OffsetW, vpos]) 
+      translate([box_wall_thickness +clearance/2, OffsetW, vpos]) 
       drawer(height);
   }
 }
@@ -167,7 +174,7 @@ module holder(){
     union(){
       cube([OuterBoxW, OuterBoxD, TotalH]);
       if(bottomgrid) base();
-      if(topgrid) baseplate();
+      if(box_enable_top_grid) baseplate();
     }
     holderCutouts();
   }
@@ -176,33 +183,27 @@ module holder(){
 }
 
 module holderCutouts(){
-    wallpattern_thickness = wallthicknessOuter + fudgeFactor*2;
+    wallpattern_thickness = box_wall_thickness + fudgeFactor*2;
   
     //InnerBoxW, InnerBoxD, InnerBoxH
     back = [
-      //size
-      [InnerBoxW-ridgedepth*2,InnerBoxH-ridgedepth*2],
-      //location
-      [InnerBoxW/2, OuterBoxD+fudgeFactor, InnerBoxH/2],
-      //rotation
-      [90,90,0]]; 
+      [InnerBoxW-ridgedepth*2,InnerBoxH-ridgedepth*2], //size
+      [InnerBoxW/2+box_wall_thickness, OuterBoxD+fudgeFactor, InnerBoxH/2], //location
+      [90,90,0]]; //rotation 
     left = [
-      //size
-      [InnerBoxD-ridgedepth*2,InnerBoxH-ridgedepth*2],
-      [-fudgeFactor, InnerBoxW/2-gf_pitch/2, InnerBoxH/2],
-      //rotation
-      [90,90,90]];
+      [OuterBoxD-box_wall_thickness*2-ridgedepth*2,InnerBoxH-ridgedepth*2],    //size
+      [-fudgeFactor, OuterBoxD/2, InnerBoxH/2], //location
+      [90,90,90]];//rotation
     right = [
-      [InnerBoxD-ridgedepth*2,InnerBoxH-ridgedepth*2],
-      [OuterBoxW-wallthicknessOuter-fudgeFactor, InnerBoxW/2-gf_pitch/2, InnerBoxH/2],
-      //rotation
-      [90,90,90]];
+      [OuterBoxD-box_wall_thickness*2-ridgedepth*2,InnerBoxH-ridgedepth*2],//size
+      [OuterBoxW-box_wall_thickness-fudgeFactor, OuterBoxD/2, InnerBoxH/2],//location
+      [90,90,90]];//rotation
     
   locations = [back, left, right];
         
   for(i = [0 : count-1]){
     vpos = StartH + IncrementH * i;
-    translate([wallthicknessOuter, -fudgeFactor, vpos]) 
+    translate([box_wall_thickness, -fudgeFactor, vpos]) 
     holderCutout(InnerBoxW, InnerBoxD+fudgeFactor, InnerBoxH);
   
     if(wallpattern_enabled)
@@ -229,10 +230,10 @@ module holderCutouts(){
     }
   }
   
-  if(drawerglides > 0)
+  if(box_drawer_slide_width > 0)
   {
-    translate([drawerglides, -drawerglides, StartH-fudgeFactor]) 
-     rounddrawerbox(OuterBoxW-drawerglides*2, InnerBoxD, (TotalH-(wallthicknessOuter*2)), drawerglides-fudgeFactor*2);
+    translate([box_drawer_slide_width, -box_drawer_slide_width, StartH-fudgeFactor]) 
+     rounddrawerbox(OuterBoxW-box_drawer_slide_width*2, InnerBoxD, (TotalH-(box_wall_thickness*2)), box_drawer_slide_width-fudgeFactor*2);
   }
 }
 
@@ -240,8 +241,8 @@ module holderCutout(InnerBoxW, InnerBoxD, InnerBoxH){
     cube([InnerBoxW, InnerBoxD, InnerBoxH]);
     
     if(efficientback)
-      translate([ridgedepth, OuterBoxD-wallthicknessOuter, ridgedepth])
-      cube([InnerBoxW-ridgedepth*2, wallthicknessOuter+fudgeFactor*2,InnerBoxH-ridgedepth*2]);
+      translate([ridgedepth, OuterBoxD-box_wall_thickness, ridgedepth])
+      cube([InnerBoxW-ridgedepth*2, box_wall_thickness+fudgeFactor*2,InnerBoxH-ridgedepth*2]);
 }
 
 module cutout_pattern(
