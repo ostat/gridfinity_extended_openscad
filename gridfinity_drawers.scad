@@ -108,10 +108,11 @@ module holder(){
 module holderCutouts(){
     for(i = [0 : count-1]){
         vpos = StartH + IncrementH * i;
-        translate([wallthicknessOuter, 0, vpos]) holderCutout();
+        translate([wallthicknessOuter, -fudgeFactor, vpos]) 
+        holderCutout(InnerBoxW, InnerBoxD+fudgeFactor, InnerBoxH);
     }
 }
-module holderCutout(){
+module holderCutout(InnerBoxW, InnerBoxD, InnerBoxH){
     cube([InnerBoxW, InnerBoxD, InnerBoxH]);
 }
 
