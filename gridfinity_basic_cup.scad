@@ -7,9 +7,9 @@
 // Documentation
 // https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup.html
 
+include <modules/gridfinity_constants.scad>
 use <modules/gridfinity_cup_modules.scad>
 use <modules/gridfinity_modules.scad>
-include <modules/gridfinity_constants.scad>
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -129,7 +129,7 @@ cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
 // enable loging of help messages during render.
-help = false;
+enable_help = false;
 
 module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
@@ -197,7 +197,7 @@ module gridfinity_basic_cup(
   extention_tabs_enabled=extention_tabs_enabled,
   cutx=cutx,
   cuty=cuty,
-  help=help) {
+  help=enable_help) {
 
   difference(){
     irregular_cup(

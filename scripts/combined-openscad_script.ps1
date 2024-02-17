@@ -1,7 +1,8 @@
 ﻿#Combine an Openscad scripts in to a single script
 
 #$InputFile = 'gridfinity_basic_cup.scad'
-$OutputCombinedFile= 'C:\src\ostat\gridfinity_extended_openscad\gridfinity_basic_cup_combined.scad'
+$script:SourceFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName
+$OutputFolder = (join-path $script:SourceFolder 'combined')
 
 
 $script:LinkedFiles = [ordered]@{}
@@ -71,5 +72,7 @@ function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child){
     return $combinedLines
 }
 
-$resulLines = Get-CombinedOpenScadFile -ScadFilePath 'C:\src\ostat\gridfinity_extended_openscad\gridfinity_basic_cup.scad'
-$resulLines | Out-File $OutputCombinedFile -Encoding utf8
+$inputFilePath = (join-path $script:SourceFolder 'gridfinity_basic_cup.scad')
+$file = Get-Item -LiteralPath $inputFilePath 
+$resulLines = Get-CombinedOpenScadFile -ScadFilePath $inputFilePath
+$resulLines | Out-File (Join-Path $OutputFolder $file.Name) -Encoding utf8

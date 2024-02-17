@@ -52,13 +52,14 @@ gf_baseplate_upper_taper_height = 2.15;
 // top lip height 4.4mm
 gf_Lip_Height = 4.4;//gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;
 
-// cupbase heighttop lip height 4.75mm
-function gfBaseHeight() = gf_cupbase_lower_taper_height + gf_cupbase_riser_height + gf_cupbase_upper_taper_height;
+// cupbase height 4.75mm + 0.25.
+function gfBaseHeight() = gf_cupbase_lower_taper_height + gf_cupbase_riser_height + gf_cupbase_upper_taper_height+0.25; //results in 5
+gf_min_base_height = gfBaseHeight(); 
 
 // base heighttop lip height 4.4mm
 function gfBasePlateHeight() = gf_baseplate_lower_taper_height + gf_baseplate_riser_height + gf_baseplate_upper_taper_height;
 
-gf_min_base_height = gfBaseHeight()+0.25;  //results in 5
+ 
 
 // old names, that will get replaced
 /*

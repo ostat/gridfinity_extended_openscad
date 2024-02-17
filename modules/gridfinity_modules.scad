@@ -5,16 +5,18 @@ include <gridfinity_constants.scad>
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
-function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness) = let(
+function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
-) cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
+  //efficient floor has an effective radius of 0
+) efficientFloor ? 0 
+  : cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
 
 constTopHeight = 5.7+fudgeFactor*5; //Need to confirm this
 
 //Height to clear the voids in the base
 function cupBaseClearanceHeight(magnet_diameter, screw_depth) = let (
     mag_ht = magnet_diameter > 0 ? gf_magnet_thickness : 0)
-    max(mag_ht, screw_depth, gf_min_base_height);
+    max(mag_ht, screw_depth, gfBaseHeight());
 
 function calculateMinFloorHeight(magnet_diameter,screw_depth) = 
     cupBaseClearanceHeight(magnet_diameter,screw_depth) + gf_cup_floor_thickness;
@@ -44,16 +46,20 @@ function cupPosition(position, num_x, num_y) = position == "center"
     : position == "zero" ? [gf_pitch/2, gf_pitch/2, 0] 
     : [0, 0, 0]; 
 
-module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness){
+module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor){
   num_x=size.x;
   num_y=size.y;
   num_z=size.z;
 
-  bh = gfBaseHeight();
-  cbh = cupBaseClearanceHeight(magnet_diameter, screw_depth);
-  mfh = calculateMinFloorHeight(magnet_diameter, screw_depth);
-  fh = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filled_in);
-  fd = fh - mfh;//calculateFloorDepth(filled_in, floor_thickness, num_z);
+  girdHeight= gfBaseHeight();
+  baseClearanceHeight = cupBaseClearanceHeight(magnet_diameter, screw_depth);
+  minFloorHeight  = calculateMinFloorHeight(magnet_diameter, screw_depth);
+  floorHeight = efficient_floor 
+    ? floor_thickness 
+    : calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filled_in);
+  floorDepth = efficient_floor 
+    ? floor_thickness :
+    floorHeight - baseClearanceHeight;
 
   fontSize = 3;  
   color(color_text)
@@ -105,13 +111,13 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
           l=gf_Lip_Height+num_z*gf_zpitch, 
           txt2 = str("total height"));
 
-      translate([-gf_pitch/2,0,mfh])
+      translate([-gf_pitch/2,0,baseClearanceHeight])
       rotate([90,0,0])
         Caliper(messpunkt = false, center=false,
           h = 0.1, s = fontSize,
           cx=-1, end=0, in=2,
           translate=[00,0,0],
-          l=fd, 
+          l=floorDepth, 
           txt2 = "floor thickness");
       translate([-gf_pitch/2,0,0])
       rotate([90,0,0])
@@ -119,23 +125,23 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
           h = 0.1, s = fontSize*.75,
           cx=0, end=0, in=2,
           translate=[00,0,0],
-          l=bh, 
-          txt2 = "min base height");
+          l=girdHeight, 
+          txt2 = "grid height");
       translate([-gf_pitch/2,0,0])
       rotate([90,0,0])
         Caliper(messpunkt = false, center=false,
           h = 0.1, s = fontSize*.75,
           cx=-1, end=0, in=2,
           translate=[-2,0,0],
-          l=mfh, 
+          l=baseClearanceHeight, 
           txt2 = "min floor height");
   
     rotate([90,0,0])
         Caliper(messpunkt = false, center=false,
           h = 0.1, s = fontSize,
           cx=-1, end=0, in=2,
-          translate=[0,-fh/2+2,0],
-          l=fh, 
+          translate=[0,-floorHeight/2+2,0],
+          l=floorHeight, 
           txt2 = "floor height");
     }
   }  
@@ -189,13 +195,13 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
         l=gf_Lip_Height+num_z*gf_zpitch, 
         txt2 = str("total height"));
 
-    translate([0,+gf_pitch/2,mfh])
+    translate([0,+gf_pitch/2,baseClearanceHeight])
     rotate([90,0,270])
       Caliper(messpunkt = false, center=false,
         h = 0.1, s = fontSize,
         cx=-1, end=0, in=2,
         translate=[00,0,0],
-        l=fd, 
+        l=floorDepth, 
         txt2 = "floor thickness");
     translate([0,+gf_pitch/2,0])
     rotate([90,0,270])
@@ -203,23 +209,23 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
         h = 0.1, s = fontSize*.75,
         cx=0, end=0, in=2,
         translate=[00,0,0],
-        l=bh, 
-        txt2 = "min base height");
+        l=girdHeight, 
+        txt2 = "grid height");
     translate([0,+gf_pitch/2,0])
     rotate([90,0,270])
       Caliper(messpunkt = false, center=false,
         h = 0.1, s = fontSize*.75,
         cx=-1, end=0, in=2,
         translate=[-2,0,0],
-        l=mfh, 
+        l=baseClearanceHeight, 
         txt2 = "min floor height");
     translate([0,0,0])
     rotate([90,0,270])
       Caliper(messpunkt = false, center=false,
         h = 0.1, s = fontSize,
         cx=-1, end=0, in=2,
-        translate=[0,-fh/2+2,0],
-        l=fh, 
+        translate=[0,-floorHeight/2+2,0],
+        l=floorHeight, 
         txt2 = "floor height");
     }
   }  
@@ -280,7 +286,7 @@ module grid_block(
         {
           color(color_basehole)
           translate([x*gf_pitch,y*gf_pitch,-fudgeFactor])
-            cylinder(h=center_magnet_thickness-fudgeFactor, d=center_magnet_diameter);
+            cylinder(h=center_magnet_thickness-fudgeFactor, d=center_magnet_diameter, $fn=fn);
         }
       }
     }
