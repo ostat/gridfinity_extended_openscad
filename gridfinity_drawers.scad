@@ -69,7 +69,10 @@ module handle(){
 module drawerCutout(h){
     translate([wallthicknessInner, wallthicknessInner, wallthicknessInner]) difference(){
         rounddrawerbox(InnerDrawerW, InnerDrawerD, 99999, 4);
-        translate([21, 21, 0]) frame_plain(width, depth);
+        if(drawergrid){
+          translate([gf_pitch/2,gf_pitch/2, -0.01]) 
+            frame_plain(width, depth);
+        }
     }
 }
 module drawers(){
