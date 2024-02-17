@@ -26,8 +26,8 @@ iheight=idepth+1;
 iposition=iheight+1;
 ifilled_in=iposition+1;
 ilabel=ifilled_in+1;
-ilabel_width=ilabel+1;
-iwall_thickness=ilabel_width+1;
+ilabel_size=ilabel+1;
+iwall_thickness=ilabel_size+1;
 ilip_style=iwall_thickness+1;
 ichamber_wall_thickness=ilip_style+1;
 ivertical_chambers=ichamber_wall_thickness+1;
@@ -113,8 +113,8 @@ echo("start",vp=vp, vpr = getcustomVpr(vp), vpt = getcustomVpt(vp), vpd = getcus
 
 //Basic cup default settings for demo
 defaultDemoSetting = 
-    //width, depth, height, filled_in, label, label_width
-    [3,2,5,"default","off","disabled",1.5,
+    //width, depth, height, filled_in, label, label_size
+    [3,2,5,"default","off","disabled",[1.5,14,0],
     //wall_thickness, lip_style, chamber_wall_thickness
     0.95, "normal",  1.2,
     //vertical_chambers, vertical_separator_bend_position, vertical_separator_bend_angle, vertical_separator_bend_separation,
@@ -170,12 +170,12 @@ function getScenario(scenario) =
       ["Multi Chamber custom", [[ivertical_irregular_subdivisions, true], [ivertical_separator_config, "35,0,0,-3|70,0,0,-3|110,15,-30,-3|160,15,30,-3|215,15,-30,-3"]]],
       ["Efficient Floor", [[iefficient_floor,true]]],
       ["Half Pitch with Efficient Floor", [[ihalf_pitch, true], [iefficient_floor,true]]],
-      ["Label Full", [[ilabel, "center"],[ilabel_width, 3],[ivertical_chambers, 0]]],
-      ["Label Left", [[ilabel, "left"],[ilabel_width, 1.5],[ivertical_chambers, 0]]],
-      ["Label Right", [[ilabel, "right"],[ilabel_width, 1.5],[ivertical_chambers, 0]]],
-      ["Label Center", [[ilabel, "center"],[ilabel_width, 1.5],[ivertical_chambers, 0]]],
-      ["Label Center", [[ilabel, "center"],[ilabel_width, 1.5],[ivertical_chambers, 3]]],
-      ["Label Center Chamber", [[ilabel, "centerchamber"],[ilabel_width, 0.5],[ivertical_chambers, 3]]], 
+      ["Label Full", [[ilabel, "center"],[ilabel_size, [3,14,0]],[ivertical_chambers, 0]]],
+      ["Label Left", [[ilabel, "left"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
+      ["Label Right", [[ilabel, "right"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
+      ["Label Center", [[ilabel, "center"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
+      ["Label Center", [[ilabel, "center"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 3]]],
+      ["Label Center Chamber", [[ilabel, "centerchamber"],[ilabel_size, [0.5,14,0]],[ivertical_chambers, 3]]], 
       ["Wall Cutout", [[ifloor_thickness, 1], [icavity_floor_radius, 0],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,1,0,0]],[iwallcutout_width,70],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]],
       ["Chamfered", [[ivertical_irregular_subdivisions, true], [ivertical_separator_config, "21|42|84"],
@@ -227,17 +227,20 @@ function getScenario(scenario) =
       ["10mm", [[ifloor_thickness, 10]]],
       ["20mm", [[ifloor_thickness, 20]]]]
       
-  : scenario == "label" ? [["Label",10,[],[]],
-      ["full", [[ilabel, "center"],[ilabel_width, 3],[ivertical_chambers, 0]]],
-      ["left", [[ilabel, "left"],[ilabel_width, 1.5],[ivertical_chambers, 0]]],
-      ["right", [[ilabel, "right"],[ilabel_width, 1.5],[ivertical_chambers, 0]]],
-      ["center", [[ilabel, "center"],[ilabel_width, 1.5],[ivertical_chambers, 0]]],
-      ["left", [[ilabel, "left"],[ilabel_width, 1.5],[ivertical_chambers, 3]]],
-      ["right", [[ilabel, "right"],[ilabel_width, 1.5],[ivertical_chambers, 3]]],
-      ["center", [[ilabel, "center"],[ilabel_width, 1.5],[ivertical_chambers, 3]]],
-      ["leftchamber", [[ilabel, "leftchamber"],[ilabel_width, 0.5],[ivertical_chambers, 3]]],
-      ["rightchamber", [[ilabel, "rightchamber"],[ilabel_width, 0.5],[ivertical_chambers, 3]]],
-      ["centerchamber", [[ilabel, "centerchamber"],[ilabel_width, 0.5],[ivertical_chambers, 3]]]]
+  : scenario == "label" ? [["Label",13,[],[]],
+      ["full", [[ilabel, "center"],[ilabel_size, [3,14,0]],[ivertical_chambers, 0]]],
+      ["height = 0 uses depth", [[ilabel, "center"],[ilabel_size, [3,14,0]],[ivertical_chambers, 0],[icutx,0.2]]],
+      ["height = 0 uses depth * 3/4", [[ilabel, "center"],[ilabel_size, [3,14,-1]],[ivertical_chambers, 0],[icutx,0.2]]],
+      ["depth 8mm", [[ilabel, "center"],[ilabel_size, [3,8,0]],[ivertical_chambers, 0],[icutx,0.2]]],      
+      ["left", [[ilabel, "left"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
+      ["right", [[ilabel, "right"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
+      ["center", [[ilabel, "center"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
+      ["left", [[ilabel, "left"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 3]]],
+      ["right", [[ilabel, "right"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 3]]],
+      ["center", [[ilabel, "center"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 3]]],
+      ["leftchamber", [[ilabel, "leftchamber"],[ilabel_size, [0.5,14,0]],[ivertical_chambers, 3]]],
+      ["rightchamber", [[ilabel, "rightchamber"],[ilabel_size, [0.5,14,0]],[ivertical_chambers, 3]]],
+      ["centerchamber", [[ilabel, "centerchamber"],[ilabel_size, [0.5,14,0]],[ivertical_chambers, 3]]]]
       
    : scenario == "chambers" ? [["chambers",7,[],[]],
       ["3 vertical", [[ivertical_chambers, 3]]],
@@ -561,7 +564,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
       position = currentStepSettings[iposition],
       filled_in = currentStepSettings[ifilled_in],
       label=currentStepSettings[ilabel],
-      label_width=currentStepSettings[ilabel_width],
+      label_size=currentStepSettings[ilabel_size],
       wall_thickness=currentStepSettings[iwall_thickness],
       lip_style=currentStepSettings[ilip_style],
       chamber_wall_thickness=currentStepSettings[ichamber_wall_thickness],
