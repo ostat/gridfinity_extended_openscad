@@ -1,5 +1,6 @@
 use <modules/gridfinity_cup_modules.scad>
 use <gridfinity_baseplate.scad>
+include <modules/gridfinity_constants.scad>
 //From https://www.printables.com/pl/model/363389-gridfinity-drawer-chest-remix
 
 width = 4;
