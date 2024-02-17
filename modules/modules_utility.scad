@@ -1,6 +1,5 @@
 include <ub.scad>
 
-fudgeFactor = 0.01;
 //Creates a rounded wall cutout to allow access to the items inside the gridfinity box.           
 module WallCutout2(
   lowerWidth=50,
@@ -12,6 +11,8 @@ module WallCutout2(
   topHeight = cornerRadius;
   bottomWidth = lowerWidth/2-cornerRadius;
   topWidth = lowerWidth/2;
+  
+  fudgeFactor = 0.01;
   
   rotate([90,0,0])
   translate([0,topHeight,-thickness/2])
@@ -34,7 +35,7 @@ module WallCutout2(
         l1=bottomWidth,
         l2=topWidth, $fn = fn);    
     }
-   }
+  }
 }
 
 module bentWall(
@@ -50,6 +51,8 @@ module bentWall(
   wall_cutout_width = 0,
   fn = 64) {
   bendPosition = bendPosition > 0 ?bendPosition: length/2;
+  
+  fudgeFactor = 0.01;
   
   render()
   difference()
@@ -230,6 +233,8 @@ module SequentialBridgingDoubleHole(
   overhangBridgeCutin =0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
   fn=64) 
 {
+  fudgeFactor = 0.01;
+  
   hasOuter = outerHoleRadius > 0 && outerHoleDepth >0;
   hasInner = innerHoleRadius > 0 && innerHoleDepth > 0;
   overhangBridgeCount = hasOuter && hasInner ? overhangBridgeCount : 0;

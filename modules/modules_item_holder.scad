@@ -1,7 +1,5 @@
 include <ub.scad>
 
-fudgeFactor = 0.01;
-
 module GridItemHolder(
   canvisSize = [0,0],
   hexGrid = true, //false, true, "auto"
@@ -17,6 +15,8 @@ module GridItemHolder(
   crop = true,
   help) 
 {
+  fudgeFactor = 0.01;
+  
   //Sides, 
   // 0 is circle
   // 4 is square
@@ -63,7 +63,7 @@ module GridItemHolder(
     canvisSize.x<=holeSize.x+holeSpacing.x || 
     canvisSize.y<=holeSize.y+holeSpacing.y ||
     holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
-  echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
+  //echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
   hexGridCount = let(count = eHexGrid[0]*eHexGrid[1]) eHexGrid[0] % 2 == 0 ? floor(count) : ceil(count);
   squareCount = eSquareGrid[0]*eSquareGrid[1];
   _hexGrid = hexGrid != "auto" ? hexGrid //if not auto use what was chose
@@ -179,6 +179,7 @@ module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
 }
 
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
+  fudgeFactor = 0.01;
   union(){
     minspacing = 3;
     translate([(longCenter.x)/2,side.x/2,0])
