@@ -13,8 +13,8 @@ default_filled_in = "off"; //["off","on","notstackable"]
 default_wall_thickness = 0;// 0.01
 // Include overhang for labeling
 default_label_style = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
-// Width in Gridfinity units of 42mm, Depth and Height in mm. Heigh of 0 uses Depth, height of -1 uses depth*3/4.
-default_label_size = [0,14,0]; // 0.01
+// Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+default_label_size = [0,14,0,0.6]; // 0.01
 // Include larger corner fillet
 default_fingerslide = "none"; //[none, rounded, chamfered]
 // radius of the corner fillet
@@ -892,17 +892,22 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style,
     
     // this is the label
     if (label_style != "disabled") {
-      labelCornerRadius = 0.6;
-      labelSize = is_num(labelSize) 
-        ? [labelSize,14,14*3/4] 
-        : is_list(labelSize) && len(labelSize) == 1 ? [labelSize.x, 14, 14*3/4] 
-        : len(labelSize) == 2 ? [labelSize.x, labelSize.y, labelSize.y]
-        : [labelSize.x, labelSize.y, 
-          (labelSize.z == -1 ? labelSize.y*3/4 : labelSize.z == 0 ? labelSize.y : labelSize.z)];
-            
+      labelSize = let(
+          labelxtemp = is_num(labelSize) ? labelSize : is_list(labelSize) && len(labelSize) >= 1 ? labelSize.x : 0,
+          labelx = labelxtemp <=0 ? num_x : labelxtemp,
+          labelytemp = is_list(labelSize) && len(labelSize) >= 2 ? labelSize.y : 0,
+          labely = labelytemp <= 0 ? 14 : labelytemp,
+          labelztemp = is_list(labelSize) && len(labelSize) >= 3 ? labelSize.z : 0,
+          labelz = labelztemp == -1 ? labely*3/4 : labelztemp == 0 ? labely : labelztemp,
+          labelrtemp = is_list(labelSize) && len(labelSize) >= 4 ? labelSize[3] : 0,
+          labelr = labelrtemp <= 0 ? 0.6 : labelrtemp)
+            [labelx,labely,labelz,labelr];
+          
+      labelCornerRadius = labelSize[3];
+ 
       labelPoints = [[ (num_y-0.5)*gf_pitch-labelSize.y, zpoint-labelCornerRadius],
         [ (num_y-0.5)*gf_pitch, zpoint-labelCornerRadius ],
-        [ (num_y-0.5)*gf_pitch, zpoint-labelCornerRadius-(labelSize.z == 0 ? labelSize.y*3/4 : labelSize.z) ]
+        [ (num_y-0.5)*gf_pitch, zpoint-labelCornerRadius-labelSize.z ]
       ];
       
       separator_positions = calculateSeparators(vertical_separator_positions);
