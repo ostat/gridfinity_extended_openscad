@@ -1,5 +1,6 @@
 use <modules/gridfinity_cup_modules.scad>
 use <gridfinity_baseplate.scad>
+include <modules/gridfinity_constants.scad>
 //From https://www.printables.com/pl/model/363389-gridfinity-drawer-chest-remix
 
 width = 4;
@@ -68,7 +69,10 @@ module handle(){
 module drawerCutout(h){
     translate([wallthicknessInner, wallthicknessInner, wallthicknessInner]) difference(){
         rounddrawerbox(InnerDrawerW, InnerDrawerD, 99999, 4);
-        translate([21, 21, 0]) frame_plain(width, depth);
+        if(drawergrid){
+          translate([gf_pitch/2,gf_pitch/2, -0.01]) 
+            frame_plain(width, depth);
+        }
     }
 }
 module drawers(){
@@ -107,10 +111,11 @@ module holder(){
 module holderCutouts(){
     for(i = [0 : count-1]){
         vpos = StartH + IncrementH * i;
-        translate([wallthicknessOuter, 0, vpos]) holderCutout();
+        translate([wallthicknessOuter, -fudgeFactor, vpos]) 
+        holderCutout(InnerBoxW, InnerBoxD+fudgeFactor, InnerBoxH);
     }
 }
-module holderCutout(){
+module holderCutout(InnerBoxW, InnerBoxD, InnerBoxH){
     cube([InnerBoxW, InnerBoxD, InnerBoxH]);
 }
 
