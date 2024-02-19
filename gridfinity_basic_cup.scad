@@ -25,11 +25,15 @@ filled_in = "off"; //["off","on","notstackable"]
 label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
 // Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
+// Creates space so the attached label wont interferr with stacking
+label_relief = 0; // 0.1
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ "normal", "reduced", "none" ]
 position="default"; //["default","center","zero"]
+//under size the bin top by this amount to allow for better stacking
+zClearance = 0; // 0.1
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -143,8 +147,10 @@ module gridfinity_basic_cup(
   filled_in = filled_in,
   label=label,
   label_size=label_size,
+  label_relief=label_relief,
   wall_thickness=wall_thickness,
   lip_style=lip_style,
+  zClearance=zClearance,
   chamber_wall_thickness = chamber_wall_thickness,
   vertical_chambers = vertical_chambers,
   vertical_separator_bend_position=vertical_separator_bend_position,
@@ -205,7 +211,8 @@ module gridfinity_basic_cup(
       position=position,
       filled_in=filled_in,
       label_style=label,
-      labelSize=label_size,
+      label_size=label_size,
+      label_relief=label_relief,
       fingerslide=fingerslide,
       fingerslide_radius=fingerslide_radius,
       magnet_diameter=magnet_diameter,
@@ -234,6 +241,7 @@ module gridfinity_basic_cup(
         : splitChamber(horizontal_chambers-1, depth),
       half_pitch=half_pitch,
       lip_style=lip_style,
+      zClearance=zClearance,
       box_corner_attachments_only=box_corner_attachments_only,
       flat_base = flat_base,
       spacer=spacer,

@@ -27,9 +27,11 @@ iposition=iheight+1;
 ifilled_in=iposition+1;
 ilabel=ifilled_in+1;
 ilabel_size=ilabel+1;
-iwall_thickness=ilabel_size+1;
+ilabel_relief=ilabel_size+1;
+iwall_thickness=ilabel_relief+1;
 ilip_style=iwall_thickness+1;
-ichamber_wall_thickness=ilip_style+1;
+izClearance=ilip_style+1;
+ichamber_wall_thickness=izClearance+1;
 ivertical_chambers=ichamber_wall_thickness+1;
 ivertical_separator_bend_position=ivertical_chambers+1;
 ivertical_separator_bend_angle=ivertical_separator_bend_position+1;
@@ -113,10 +115,10 @@ echo("start",vp=vp, vpr = getcustomVpr(vp), vpt = getcustomVpt(vp), vpd = getcus
 
 //Basic cup default settings for demo
 defaultDemoSetting = 
-    //width, depth, height, filled_in, label, label_size
-    [3,2,5,"default","off","disabled",[1.5,14,0],
-    //wall_thickness, lip_style, chamber_wall_thickness
-    0.95, "normal",  1.2,
+    //width, depth, height, filled_in, label, label_size, ilabel_relief
+    [3,2,5,"default","off","disabled",[1.5,14,0], 0,
+    //wall_thickness, lip_style, zClearance, chamber_wall_thickness
+    0.95, "normal", 0, 1.2,
     //vertical_chambers, vertical_separator_bend_position, vertical_separator_bend_angle, vertical_separator_bend_separation,
     1, 0,45,0,0,
     //vertical_separator_cut_depth, vertical_irregular_subdivisionsvertical_separator_config
@@ -565,8 +567,10 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
       filled_in = currentStepSettings[ifilled_in],
       label=currentStepSettings[ilabel],
       label_size=currentStepSettings[ilabel_size],
+      label_relief=currentStepSettings[ilabel_relief],
       wall_thickness=currentStepSettings[iwall_thickness],
       lip_style=currentStepSettings[ilip_style],
+      zClearance=currentStepSettings[izClearance],
       chamber_wall_thickness=currentStepSettings[ichamber_wall_thickness],
       vertical_chambers=currentStepSettings[ivertical_chambers],
       vertical_separator_bend_position=currentStepSettings[ivertical_separator_bend_position],
