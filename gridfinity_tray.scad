@@ -175,7 +175,9 @@ module tray(
         translate([spacing+x*xStep,spacing+y*yStep,baseHeight+trayZpos])
         roundedCube(
             xSize, ySize,
-            height*gf_zpitch,cornerRadius);
+            height*gf_zpitch,
+            bottomRadius = cornerRadius,
+            sideRadius = cornerRadius);
       }
     }
   }
@@ -199,7 +201,9 @@ module tray(
         roundedCube(
             min(1,xsize)*cutoutSize+max(0,xsize-1)*gf_pitch,
             min(1,ysize)*cutoutSize+max(0,ysize-1)*gf_pitch,
-            height*gf_zpitch,radius);
+            height*gf_zpitch,
+            bottomRadius = radius,
+            sideRadius = radius);
     }
   }
 }

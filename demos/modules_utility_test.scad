@@ -25,8 +25,30 @@ roundedCube(
   x=25,
   y=25,
   z=10,
-  cornerRadius=5)
+  cornerRadius=5);
 
+#translate([0,30,0])
+cube([25,25,10]);
+translate([0,30,0])
+roundedCube(
+  x=25,
+  y=25,
+  z=10,
+  topRadius = 0,
+  bottomRadius = 5,
+  sideRadius = 5);
+  
+#translate([0,60,0])
+cube([25,25,10]);
+translate([0,60,0])
+roundedCube(
+  x=25,
+  y=25,
+  z=10,
+  topRadius = 2,
+  bottomRadius = 4,
+  sideRadius = 5);
+  
 translate([50,0,0])
 roundedCorner(
   radius = 10, 

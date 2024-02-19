@@ -2,10 +2,12 @@
 
 //Gridfinity grid size
 gf_pitch = 42;
-// each bin is undersize by this much
-gf_tolerance = 0.5;
 //Gridfinity height size
 gf_zpitch = 7;
+
+// each bin is undersize by this much
+gf_tolerance = 0.5;
+
 gf_taper_angle = 45;
 
 // cup
@@ -48,6 +50,8 @@ gf_lip_height = 1.2;
 gf_baseplate_lower_taper_height = 0.7;
 gf_baseplate_riser_height = 1.8;
 gf_baseplate_upper_taper_height = 2.15;
+gf_baseplate_magnet_od = 6.5;
+gf_baseplate_magnet_thickness = 2.4;
 
 // top lip height 4.4mm
 gf_Lip_Height = 4.4;//gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;

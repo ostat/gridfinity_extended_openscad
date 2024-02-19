@@ -125,8 +125,53 @@ module WallCutout(
 //y=length in mm
 //z=height in mm
 //cornerRadius = the radius of the cube corners
+//topRadius = the radius of the top of the cube
+//bottomRadius = the radius of the top of the cube
+//sideRadius = the radius of the sides. This must be over 0.
+
 //fn = overrides the #fn function for the corners
 module roundedCube(
+  x,
+  y,
+  z,
+  cornerRadius = 0,
+  topRadius = 0,
+  bottomRadius = 0,
+  sideRadius = 0,
+  fn = 64)
+{
+  topRadius = topRadius > 0 ? topRadius : cornerRadius;
+  bottomRadius = bottomRadius > 0 ? bottomRadius : cornerRadius;
+  sideRadius = sideRadius > 0 ? sideRadius : cornerRadius;
+  
+  if(sideRadius < topRadius || sideRadius < bottomRadius)
+  {
+    echo("roundedCube", "Error, sideRadius must be >= than bottomRadius and topRadius", sideRadius=sideRadius, topRadius=topRadius, bottomRadius=bottomRadius);
+  }
+    
+  positions=[
+     [sideRadius                    ,sideRadius                   ]
+    ,[max(x-sideRadius, sideRadius) ,sideRadius                   ]
+    ,[max(x-sideRadius, sideRadius) ,max(y-sideRadius, sideRadius)]
+    ,[sideRadius                    ,max(y-sideRadius, sideRadius)]
+    ];
+
+  hull(){
+    for (i =[0:1:len(positions)-1])
+    {
+      translate(positions[i]) 
+        roundedCylinder(h=z,r=sideRadius,roundedr2=topRadius,roundedr1=bottomRadius,$fn=fn);
+    }
+  }
+}
+
+//Creates a rounded cube
+//x=width in mm
+//y=length in mm
+//z=height in mm
+//cornerRadius = the radius of the cube corners
+//fn = overrides the #fn function for the corners
+module roundedCubeV1(
   x,
   y,
   z,
@@ -308,8 +353,6 @@ module SequentialBridgingDoubleHole_v1_old(
         }
       }
     }
-
-
   }
 }
 
