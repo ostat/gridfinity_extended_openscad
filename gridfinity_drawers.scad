@@ -36,8 +36,8 @@ box_drawer_slide_thickness = 0;
 box_drawer_slide_width = 10; 
 
 /* [Drawer] */
-// Handle size width, depth, height and radius
-handle_size = [4, 10, -1, 5];
+// Handle size width, depth, height, and radius. Height, less than 0 drawerHeight/abs(height). radius, 0 = depth/2. 
+handle_size = [4, 10, -1, 0];
 
 wallthicknessInner = 2;
 drawerbase = "default"; //["grid":Grid only, "floor":floor only, "default":"Grid and floor"]
@@ -191,7 +191,7 @@ module drawer(
 }
 
 module drawerPull(width, depth, height, radius){
-  radius = min(radius, height/2,depth);
+  radius = min(radius == 0 ? depth/2 : radius, height/2,depth);
   depth = depth - radius;
   translate([-width/2,-depth,-height/2])
   hull(){
