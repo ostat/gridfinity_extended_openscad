@@ -57,10 +57,6 @@ help = false;
 
 module end_of_customizer_opts() {}
 
-/*constants */
-magnet_od = 6.5;
-magnet_thickness = 2.4;
-
 if(Butterfly_Clip_Only)
 {
   ButterFly(
@@ -188,17 +184,18 @@ module baseplate(
   plateOptions = "default",
   lidOptions = "default",
   roundedCorners = 15,
-  butterflyClipEnabled  = butterflyClipEnabled,
-  butterflyClipSize = butterflyClipSize,
-  butterflyClipRadius = butterflyClipRadius,
-  filamentClipEnabled = filamentClipEnabled,
-  filamentClipDiameter = filamentClipDiameter,
-  filamentClipLength = filamentClipLength,
-  lidIncludeMagnets = true,
-  lidEfficientFloorThickness = 0.7,
-  lidEfficientBaseHeight = 0.4,
+  butterflyClipEnabled  = Butterfly_Clip_Enabled,
+  butterflyClipSize = Butterfly_Clip_Size,
+  butterflyClipRadius = Butterfly_Clip_Radius,
+  filamentClipEnabled = Filament_Clip_Enabled,
+  filamentClipDiameter = Filament_Clip_Diameter,
+  filamentClipLength = Filament_Clip_Length,
+  lidIncludeMagnets = Lid_Include_Magnets,
+  lidEfficientFloorThickness = Lid_Efficient_Floor_Thickness,
+  lidEfficientBaseHeight = Lid_Efficient_Base_Height,
   help = false)
 {
+  
   difference(){
     union(){
       if (plateStyle == "lid") {
@@ -242,7 +239,7 @@ module base_lid(
   lidEfficientFloorThickness = 0.7,
   lidEfficientBaseHeight = 0.4) 
 {
-  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_od/2);
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-gf_baseplate_magnet_od/2);
   eps = 0.1;
   
   flat_base = lidOptions == "flat";
@@ -307,8 +304,8 @@ module base_lid(
     if(lidIncludeMagnets)
       gridcopy(num_x, num_y) 
         cornercopy(magnet_position) 
-          translate([0, 0, (gf_zpitch*height)-magnet_thickness])
-          cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=32);
+          translate([0, 0, (gf_zpitch*height)-gf_baseplate_magnet_thickness])
+          cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+eps, $fn=32);
   }
 }
 
@@ -317,7 +314,7 @@ module woodscrew_baseplate(
   num_y,  
   cornerRadius = gf_cup_corner_radius,
   roundedCorners = 15) {
-  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_od/2);
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-gf_baseplate_magnet_od/2);
   eps = 0.1;
   frameHeight = 6.4;
   
@@ -330,8 +327,8 @@ module woodscrew_baseplate(
     
     gridcopy(num_x, num_y) {
       cornercopy(magnet_position) {
-        translate([0, 0, -magnet_thickness])
-        cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=48);
+        translate([0, 0, -gf_baseplate_magnet_thickness])
+        cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+eps, $fn=48);
         
         translate([0, 0, -frameHeight]) cylinder(d=3.5, h=frameHeight, $fn=24);
         
@@ -351,7 +348,7 @@ module weighted_baseplate(
   cornerRadius = gf_cup_corner_radius,
   roundedCorners = 15) {
   
-  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_od/2);
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-gf_baseplate_magnet_od/2);
   eps = 0.1;
   frameHeight = 6.4;
 
@@ -364,8 +361,8 @@ module weighted_baseplate(
     
     gridcopy(num_x, num_y) {
       cornercopy(magnet_position) {
-        translate([0, 0, frameHeight-magnet_thickness])
-        cylinder(d=magnet_od, h=magnet_thickness+eps, $fn=48);
+        translate([0, 0, frameHeight-gf_baseplate_magnet_thickness])
+        cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+eps, $fn=48);
         
         cylinder(d=3.5, h=frameHeight, $fn=24);
         
@@ -395,8 +392,8 @@ module magnet_baseplate(
   cornerRadius = gf_cup_corner_radius,
   roundedCorners = 15) {
   
-  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_od/2);
-  frameHeight = magnet_thickness;
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-gf_baseplate_magnet_od/2);
+  frameHeight = gf_baseplate_magnet_thickness;
   magnetborder = 5;
   
   difference() {
@@ -409,25 +406,25 @@ module magnet_baseplate(
     gridcopy(num_x, num_y) {
       cornercopy(magnet_position) {
         translate([0, 0, -fudgeFactor])
-         cylinder(d=magnet_od, h=magnet_thickness+fudgeFactor*2, $fn=48);
+         cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+fudgeFactor*2, $fn=48);
       }
       
-      cubeSize = gf_pitch-magnet_position+magnet_od;
+      cubeSize = gf_pitch-magnet_position+gf_baseplate_magnet_od;
       
       difference(){
       translate([-cubeSize/2, -cubeSize/2, -fudgeFactor]) 
-        cube([cubeSize, cubeSize, magnet_thickness+fudgeFactor*2]);
+        cube([cubeSize, cubeSize, gf_baseplate_magnet_thickness+fudgeFactor*2]);
         union(){
           for(xi = [-1:2:1]){
             for(yi = [-1:2:1]){
               translate([xi*magnet_position, yi*magnet_position, -fudgeFactor*2]) 
-                cylinder(d=magnet_od+magnetborder, h=magnet_thickness+fudgeFactor*4, $fn=48);
+                cylinder(d=gf_baseplate_magnet_od+magnetborder, h=gf_baseplate_magnet_thickness+fudgeFactor*4, $fn=48);
 
-              translate([xi*(magnet_position+magnet_od/2), yi*(magnet_position-magnetborder/2+magnet_od/2), -fudgeFactor*2]) 
-                cube([magnet_od,magnet_od*2,magnet_od],center = true);
+              translate([xi*(magnet_position+gf_baseplate_magnet_od/2), yi*(magnet_position-magnetborder/2+gf_baseplate_magnet_od/2), -fudgeFactor*2]) 
+                cube([gf_baseplate_magnet_od,gf_baseplate_magnet_od*2,gf_baseplate_magnet_od],center = true);
 
-              translate([xi*(magnet_position-magnetborder/2), yi*(magnet_position+magnet_od/2), -fudgeFactor*2]) 
-                cube(magnet_od,center = true);
+              translate([xi*(magnet_position-magnetborder/2), yi*(magnet_position+gf_baseplate_magnet_od/2), -fudgeFactor*2]) 
+                cube(gf_baseplate_magnet_od,center = true);
               }
             }
           }
