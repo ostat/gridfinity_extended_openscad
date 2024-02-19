@@ -9,26 +9,38 @@ use <modules/modules_item_holder.scad>
 mode = "everything"; //["everything", "drawers", "holder", "onedrawer"]
 
 /* [Box] */
-width = 4;
-depth = 3;
-height = 4;
-count = 3;
+//Inner width of drawer in Gridfinity units
+drawer_inner_width = 4;
+//Inner depth of drawer in Gridfinity units
+drawer_inner_depth = 3;
+//Inner height of drawer in Gridfinity units
+drawer_inner_height = 4;
+//Number of drawers
+drawer_count = 3;
+drawer_enable_custom_sizes = false;
+//Inner height of drawer in Gridfinity units. Edit in script for more than 4 items.
+drawer_custom_sizes = [1,2,3,4];
 
-//heightsRaw = "4 4 4";
 clearance = 0.25;
 box_wall_thickness = 2;
-box_enable_top_grid = true;
+
 //Thickness of drawer slies in mm. 0 is uses wall thickenss.
 box_drawer_slide_thickness = 0;
 //Width of drawer slies in mm. 0 is full box width.
 box_drawer_slide_width = 10; 
 
 /* [Drawer] */
-handlewidth = 40;
-handleheight = 4;
-handlelength = 7;
+// Handle size width depth and height
+handle_size = [40, 7, 4];
+
 wallthicknessInner = 2;
 drawerbase = "default"; //["grid":Grid only, "floor":floor only, "default":"Grid and floor"]
+drawer_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
+
+/* [Top Plate] */
+box_enable_top_grid = true;
+// Plate Style
+box_top_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
 
 /* [Box Base] */
 bottomgrid = true;
@@ -66,90 +78,149 @@ wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropve
 wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
-//heights = str_split(heightsRaw, " ");
-
+function sum(list, c = 0) = 
+  c < len(list) - 1 
+    ? list[c] + sum(list, c + 1) 
+    : list[c];
+ 
+// Apply defaults
 drawerSlideThickness =box_drawer_slide_thickness == 0 ? box_wall_thickness : box_drawer_slide_thickness;
 ridgedepth = wallpattern_border_width < 0 ? box_wall_thickness/abs(wallpattern_border_width) : wallpattern_border_width;
 
-InnerDrawerW = (width*gf_pitch) + clearance - 0.25;
-InnerDrawerD = (depth*gf_pitch) + clearance - 0.25;
-InnerDrawerH = (height*gf_zpitch) + clearance + 4.25;
-OuterDrawerW = InnerDrawerW + (wallthicknessInner * 2);
-OuterDrawerD = InnerDrawerD + (wallthicknessInner * 2);
-OuterDrawerH = InnerDrawerH + ((drawerbase == "floor" || drawerbase == "default") ? wallthicknessInner : 0);
-InnerBoxW = OuterDrawerW + (clearance * 2);
-InnerBoxD = OuterDrawerD + (clearance * 2);
-InnerBoxH = OuterDrawerH + (clearance * 2);
-OuterBoxW = InnerBoxW + (box_wall_thickness * 2);
-OuterBoxD = InnerBoxD + (box_wall_thickness);
-BottomGridOffset = wallthicknessInner + box_wall_thickness + clearance*2;
-TopGridOffset = BottomGridOffset - 0.25;
+// Calculate global dimensions 
+drawerInnerHeights = drawer_enable_custom_sizes ? drawer_custom_sizes : [for([0:drawer_count-1]) drawer_inner_height];
+drawerCount = len(drawerInnerHeights);
+echo(drawerInnerHeights=drawerInnerHeights, drawerCount=drawerCount);
 
-HoleH = OuterDrawerH + (clearance * 2);
-TotalH = (HoleH * count) + (drawerSlideThickness * (count - 1)) + (box_wall_thickness * 2);
-IncrementH = HoleH + drawerSlideThickness;
+drawerInnerSizes = [for(i = [0:drawerCount-1]) [
+  (drawer_inner_width*gf_pitch) + clearance - 0.25,
+  (drawer_inner_depth*gf_pitch) + clearance - 0.25,
+  (drawerInnerHeights[i]*gf_zpitch) + clearance + 4.25 + (drawer_grid_style == "magnet" ? gf_baseplate_magnet_thickness : 0)
+]];
+
+echo(drawerInnerSizes=drawerInnerSizes);
+drawerOuterSizes = [for(i = [0:drawerCount-1]) [
+  drawerInnerSizes[i].x + (wallthicknessInner * 2),
+  drawerInnerSizes[i].y + (wallthicknessInner * 2),
+  drawerInnerSizes[i].z + ((drawerbase == "floor" || drawerbase == "default") ? wallthicknessInner : 0)
+]];
+echo(drawerOuterSizes=drawerOuterSizes);
+
+/*
+InnerBox = [
+  drawerOuterSizes[0].x + (clearance * 2),
+  drawerOuterSizes[0].y + (clearance * 2),
+  sum(drawerOuterSizes).z + (clearance * drawerCount+1)
+];
+*/
+
+function drawerPosition(index, outerSizes, clearance, sliderThickenss) = let(
+  drawersTotal = (index<1 ? 0 : sum(partial(drawerOuterSizes,0,index-1)).z),
+  clearanceTotal = clearance*2*(index+1),
+  sliderThickenss = sliderThickenss*index) drawersTotal + clearanceTotal + sliderThickenss;
+  
+OuterBox = [
+  drawerOuterSizes[0].x + (clearance * 2) + (box_wall_thickness * 2),
+  drawerOuterSizes[0].y + (clearance * 2) + (box_wall_thickness)];
+
+TotalH = sum(drawerOuterSizes).z + (clearance*2*drawerCount) + drawerSlideThickness * (drawerCount - 1) + box_wall_thickness*2;
+//HoleH = OuterDrawerH + (clearance * 2);
+//IncrementH = HoleH + drawerSlideThickness;
 StartH = box_wall_thickness;
-OffsetW = box_wall_thickness + clearance;
 
 $fn = 64;
 
 //DRAWER STUFF
-module rounddrawerbox(w, d, h, r=6){
-  D = r * 2;
-  linear_extrude(height = h)
-  minkowski(){
-    translate([r, r]) square([w-D, d-D]);
-    circle(r);
+module drawers(
+  innerSizes = drawerInnerSizes,
+  outerSizes = drawerOuterSizes
+  ){
+  offsetW = box_wall_thickness + clearance;
+  
+  for(i = [0 : drawerCount-1]){
+    //IncrementH = 0;
+    zpos = StartH + drawerPosition(i, drawerOuterSizes, clearance, ridgedepth);
+    //(clearance * i) + (i<1 ? 0 : sum(partial(drawerOuterSizes,0,i-1)).z);
+    echo("drawers", i= i, StartH=StartH, clearance=clearance, height=drawerInnerHeights[i], zpos=zpos, drawerOuterz=drawerOuterSizes.z, drawerInnerz=drawerInnerSizes.z, drawerOuterSizes.z);
+      
+    translate([box_wall_thickness+clearance/2, offsetW, zpos]) 
+      drawer(i);
   }
 }
-module drawer(h){
-  drawerFloor = (drawerbase == "default" || drawerbase == "floor");
-  drawerGrid = (drawerbase == "default" || drawerbase == "grid");
-  floorThickness = (drawerFloor ? wallthicknessInner : 0);
-  InnerH = (h*7) + clearance + 4.25;
-  OuterH = InnerH + floorThickness;
+
+/*
+drawer(
+  width = width,
+  depth = depth,
+  height = height,
+  drawerFloor = drawerFloor,
+  drawerbase = drawerbase,
+  wallthickness = wallthicknessInner,
+  handleSize = handle_size)
+*/
+module drawer(
+  drawerIndex,
+  drawerBase = drawerbase,
+  wallThickness = wallthicknessInner,
+  handleSize = handle_size){
   
   union(){
     difference(){
-      rounddrawerbox(OuterDrawerW, OuterDrawerD, OuterH);
-      drawerCutout(height,floorThickness,drawerGrid);
-    };
+      roundedCube(
+        x=drawerOuterSizes[drawerIndex].x,
+        y=drawerOuterSizes[drawerIndex].y,
+        z=drawerOuterSizes[drawerIndex].z,
+        sideRadius = 6);
+        
+      drawerCutout(
+        drawerIndex = drawerIndex,
+        wallThickness = wallThickness,
+        drawerBase = drawerBase,
+        gridStyle = drawer_grid_style);
+    }
     
-    translate([OuterDrawerW/2, 0, OuterH/2]) 
-      handle();
+    //Drawer handle
+    translate([drawerOuterSizes[drawerIndex].x/2, 0, drawerOuterSizes[drawerIndex].z/2]) 
+      translate(-[handleSize.x/2, handleSize.y, handleSize.z/2]) 
+        cube([handleSize.x, handleSize.y, handleSize.z]);
   }
 }
-module drawerCutout(height, floorThickness = 0, grid = true){
-  translate([wallthicknessInner, wallthicknessInner, floorThickness-fudgeFactor]) 
+
+module drawerCutout(
+  drawerIndex, 
+  wallThickness,
+  drawerBase,
+  gridStyle){
+  echo("drawerCutout", drawerbase=drawerbase);
+  drawerFloor = (drawerBase == "default" || drawerBase == "floor");
+  floorThickness = (drawerFloor ? wallThickness : 0);
+  
+  translate([wallThickness, wallThickness, floorThickness-fudgeFactor]) 
   difference(){
-    rounddrawerbox(InnerDrawerW, InnerDrawerD,(height+1)*gf_zpitch+fudgeFactor*2, 4);
+    roundedCube(
+      x=drawerInnerSizes[drawerIndex].x,
+      y=drawerInnerSizes[drawerIndex].y,
+      z=drawerInnerSizes[drawerIndex].z+fudgeFactor*2,
+      sideRadius = 4);
     if(drawerbase == "default" || drawerbase == "grid"){
       translate([gf_pitch/2,gf_pitch/2, -fudgeFactor]) 
-        frame_plain(width, depth);
+        baseplate(
+          width = drawer_inner_width,
+          depth = drawer_inner_depth,
+          plateStyle = "base",
+          plateOptions = gridStyle);
     }
-  }
-}
-
-module handle(){
-  translate(-[handlewidth / 2, handlelength, handleheight/2]) cube([handlewidth, handlelength, handleheight]);
-}
-
-module drawers(){
-  for(i = [0 : count-1]){
-    vpos = clearance + StartH + IncrementH * i;
-      translate([box_wall_thickness +clearance/2, OffsetW, vpos]) 
-      drawer(height);
   }
 }
 
 //HOLDER STUFF
 module baseRaw(){
-  height=0.7;
-  translate([gf_pitch/2, gf_pitch/2, -gf_zpitch*height+fudgeFactor])
+  baseHeight=0.7;
+  translate([gf_pitch/2, gf_pitch/2, -gf_zpitch*baseHeight+fudgeFactor])
   grid_block(
-    num_x=width, 
-    num_y=depth, 
-    num_z=height, 
+    num_x=drawer_inner_width, 
+    num_y=drawer_inner_depth, 
+    num_z=baseHeight, 
     stackable=false, 
     magnet_diameter=magnet_diameter, 
     screw_depth=screw_depth,
@@ -159,52 +230,63 @@ module baseRaw(){
     flat_base = flat_base);
 }
 
-module base(){
-  translate([BottomGridOffset, BottomGridOffset, 0]) 
-    baseRaw();
-}
-module baseplate(){
-  translate([TopGridOffset + 21, TopGridOffset + 21, TotalH]) 
-    frame_plain(width, depth);
-}
-
 module holder(){
+  bottomGridOffset = wallthicknessInner + box_wall_thickness + clearance*2;
+  topGridOffset = bottomGridOffset - 0.25;
+
   color("green") 
   difference(){
     union(){
-      cube([OuterBoxW, OuterBoxD, TotalH]);
-      if(bottomgrid) base();
-      if(box_enable_top_grid) baseplate();
+      cube([OuterBox.x, OuterBox.y, TotalH]);
+      if(bottomgrid) {
+        translate([bottomGridOffset, bottomGridOffset, 0]) 
+          baseRaw();
+      }
+      
+      if(box_enable_top_grid) {
+        translate([topGridOffset + gf_pitch/2, topGridOffset + gf_pitch/2, TotalH]) 
+        baseplate(
+          width = drawer_inner_width,
+          depth = drawer_inner_depth,
+          plateStyle = "base",
+          plateOptions = box_top_grid_style);
+      }
     }
     holderCutouts();
   }
   
-  echo("Bottom offset: ", BottomGridOffset);  
+  echo("Bottom offset: ", bottomGridOffset);  
 }
 
 module holderCutouts(){
-    wallpattern_thickness = box_wall_thickness + fudgeFactor*2;
-  
-    //InnerBoxW, InnerBoxD, InnerBoxH
+  wallpattern_thickness = box_wall_thickness*2;
+
+  for(i = [0 : drawerCount-1]){
+    innerbox = [
+      drawerOuterSizes[i].x + clearance*2,
+      drawerOuterSizes[i].y + clearance*2,
+      drawerOuterSizes[i].z + clearance*2];
+    echo("holderCutouts", i=i, innerbox=innerbox);
+    //positions for wall cutouts
     back = [
-      [InnerBoxW-ridgedepth*2,InnerBoxH-ridgedepth*2], //size
-      [InnerBoxW/2+box_wall_thickness, OuterBoxD+fudgeFactor, InnerBoxH/2], //location
-      [90,90,0]]; //rotation 
+      [innerbox.x-ridgedepth*2,innerbox.z-ridgedepth*2], //size
+      [innerbox.x/2+box_wall_thickness, innerbox.y+box_wall_thickness/2-wallpattern_thickness/2, innerbox.z/2], //location
+      [90,90,180]]; //rotation 
     left = [
-      [OuterBoxD-box_wall_thickness*2-ridgedepth*2,InnerBoxH-ridgedepth*2],    //size
-      [-fudgeFactor, OuterBoxD/2, InnerBoxH/2], //location
+      [innerbox.y-ridgedepth*2,innerbox.z-ridgedepth*2],    //size
+      [+box_wall_thickness/2-wallpattern_thickness/2, (innerbox.y+box_wall_thickness)/2, innerbox.z/2], //location
       [90,90,90]];//rotation
     right = [
-      [OuterBoxD-box_wall_thickness*2-ridgedepth*2,InnerBoxH-ridgedepth*2],//size
-      [OuterBoxW-box_wall_thickness-fudgeFactor, OuterBoxD/2, InnerBoxH/2],//location
+      [innerbox.y-ridgedepth*2,innerbox.z-ridgedepth*2],//size
+      [innerbox.x+box_wall_thickness*1.5-wallpattern_thickness/2, (innerbox.y+box_wall_thickness)/2, innerbox.z/2],//location
       [90,90,90]];//rotation
-    
-  locations = [back, left, right];
-        
-  for(i = [0 : count-1]){
-    vpos = StartH + IncrementH * i;
+    locations = [back, left, right];
+  
+    //vpos = StartH + IncrementH * i;
+    vpos = StartH + drawerPosition(i, drawerOuterSizes, clearance, drawerSlideThickness);
+    //(clearance*2+drawerSlideThickness)*(i-1) + (i<1 ? 0 : sum(partial(drawerOuterSizes,0,i-1)).z);
     translate([box_wall_thickness, -fudgeFactor, vpos]) 
-    holderCutout(InnerBoxW, InnerBoxD+fudgeFactor, InnerBoxH);
+    holderCutout(innerbox.x, innerbox.y+fudgeFactor, innerbox.z);
   
     if(wallpattern_enabled)
     translate([0, 0, vpos]) 
@@ -220,7 +302,7 @@ module holderCutouts(){
         circleFn = wallpattern_hole_sides,
         holeSize = [wallpattern_hole_size, wallpattern_hole_size],
         holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-        holeHeight = wallpattern_thickness+fudgeFactor*2,
+        holeHeight = wallpattern_thickness,
         center=true,
         fill=wallpattern_fill, //"none", "space", "crop"
         voronoiNoise=wallpattern_voronoi_noise,
@@ -230,19 +312,26 @@ module holderCutouts(){
     }
   }
   
-  if(box_drawer_slide_width > 0)
+  if(box_drawer_slide_width > 0 && drawerCount > 1)
   {
-    translate([box_drawer_slide_width, -box_drawer_slide_width, StartH-fudgeFactor]) 
-     rounddrawerbox(OuterBoxW-box_drawer_slide_width*2, InnerBoxD, (TotalH-(box_wall_thickness*2)), box_drawer_slide_width-fudgeFactor*2);
+    zposFirstDivider =drawerPosition(1, drawerOuterSizes, clearance, drawerSlideThickness)-drawerSlideThickness*2;
+    zposLastDivider =drawerPosition(drawerCount-1, drawerOuterSizes, clearance, drawerSlideThickness)+drawerSlideThickness;
+    translate([box_drawer_slide_width, -box_drawer_slide_width, StartH+zposFirstDivider]) 
+      roundedCube(
+        x=OuterBox.x-box_drawer_slide_width*2,
+        y=OuterBox.y, //was innerbox
+        z=zposLastDivider-zposFirstDivider,
+        sideRadius = box_drawer_slide_width-fudgeFactor*2);
   }
 }
 
-module holderCutout(InnerBoxW, InnerBoxD, InnerBoxH){
-    cube([InnerBoxW, InnerBoxD, InnerBoxH]);
+module holderCutout(width, depth, height){
+    echo("holderCutout", width=width, depth=depth, height=height);
+    cube([width, depth, height]);
     
     if(efficientback)
-      translate([ridgedepth, OuterBoxD-box_wall_thickness, ridgedepth])
-      cube([InnerBoxW-ridgedepth*2, box_wall_thickness+fudgeFactor*2,InnerBoxH-ridgedepth*2]);
+      translate([ridgedepth, OuterBox.y-box_wall_thickness, ridgedepth])
+      cube([width-ridgedepth*2, box_wall_thickness+fudgeFactor*2,height-ridgedepth*2]);
 }
 
 module cutout_pattern(
@@ -284,13 +373,14 @@ module cutout_pattern(
   }
 }
 
-//THE END
-module everything(){
+//render function
+module gridfinity_drawer(){
+  if(mode == "holder" || mode == "everything")      
     holder();
+  if(mode == "drawers" || mode == "everything")
     drawers();
+  if(mode == "onedrawer")   
+    drawer(0);
 }
 
-if(mode == "everything") everything();
-if(mode == "holder") holder();
-if(mode == "drawers") drawers();
-if(mode == "onedrawer") drawer(height);
+gridfinity_drawer();
