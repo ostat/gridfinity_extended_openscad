@@ -27,19 +27,22 @@ drawer_enable_custom_sizes = false;
 //Inner height of drawer in Gridfinity units. Edit in script for more than 4 items.
 drawer_custom_sizes = [1,2,3,4];
 
+//Distance between drawer and chest, or between contents and drawer
 clearance = 0.25;
 box_wall_thickness = 2;
 
-//Thickness of drawer slies in mm. 0 is uses wall thickenss.
+//Thickness of drawer slides in mm. 0 is uses wall thickness.
 box_drawer_slide_thickness = 0;
-//Width of drawer slies in mm. 0 is full box width.
+//Width of drawer slides in mm. 0 is full box width.
 box_drawer_slide_width = 10; 
 
 /* [Drawer] */
 // Handle size width, depth, height, and radius. Height, less than 0 drawerHeight/abs(height). radius, 0 = depth/2. 
 handle_size = [4, 10, -1, 0];
 
+//Thickness of drawer inset walls
 wallthicknessInner = 2;
+//Type of the drawer insert floor
 drawerbase = "default"; //["grid":Grid only, "floor":floor only, "default":"Grid and floor"]
 drawer_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
 
@@ -49,6 +52,7 @@ box_enable_top_grid = true;
 box_top_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
 
 /* [Chest Base] */
+//Check to enable bottom grid
 bottomgrid = true;
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 6.5;  // .1
@@ -67,7 +71,7 @@ flat_base = false;
 // wall pattern border width. -1 defaults to box_wall_thickness. less than 0 box_wall_thickness/abs(wallpattern_border_width)
 wallpattern_border_width = -1;
 efficientback = true;
-// Grid wall patter
+// Grid wall pattern
 wallpattern_enabled=false;
 // Style of the pattern
 wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
