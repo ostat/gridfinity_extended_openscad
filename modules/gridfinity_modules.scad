@@ -338,7 +338,7 @@ module grid_block(
 
 module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
   if (flat_base) {
-    pad_oversize(ceil(num_x), ceil(num_y));
+    pad_oversize(num_x, num_y);
   }
   else if (half_pitch) {
     gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
