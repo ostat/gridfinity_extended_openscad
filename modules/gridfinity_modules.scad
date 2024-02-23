@@ -230,7 +230,9 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
     }
   }  
 }
- 
+module assert_openscad_version(){
+  assert(version()[0]>2022,"This script requires a newer version of openSCAD. http://openscad.org");
+}
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(
@@ -250,6 +252,8 @@ module grid_block(
   fn = 32,
   help)
 {
+  assert_openscad_version();
+  
   outer_size = gf_pitch - gf_tolerance;  // typically 41.5
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
 
