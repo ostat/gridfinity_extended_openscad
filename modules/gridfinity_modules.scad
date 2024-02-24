@@ -23,10 +23,15 @@ function calculateMinFloorHeight(magnet_diameter,screw_depth) =
 function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off") = 
+function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off", efficient_floor = false, flat_base=false) = 
+      let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
   filledin == "on" || filledin == "notstackable" 
     ? num_z * gf_zpitch 
-    : cupBaseClearanceHeight(magnet_diameter,screw_depth) + max(floor_thickness, gf_cup_floor_thickness);
+    : efficient_floor ? floorThickness
+    : flat_base ? 
+      //The flatbase can dip in to the floor, but is limited by the corner radius. It might not be worth accounting for, as someone could just use efficient base?
+      cupBaseClearanceHeight(magnet_diameter,screw_depth) - gf_baseplate_upper_taper_height/2 
+        : cupBaseClearanceHeight(magnet_diameter,screw_depth) + max(floor_thickness, gf_cup_floor_thickness);
     
 //Usable floor depth (florr height - min floor)
 function calculateFloorThickness(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) = 

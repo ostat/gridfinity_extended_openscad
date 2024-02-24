@@ -21,12 +21,6 @@ depth = 1; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
 height = 3; //0.1
 // Fill in solid block (overrides all following options)
 filled_in = "off"; //["off","on","notstackable"]
-// Include overhang for labeling (and specify left/right/center justification)
-label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
-// Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
-label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
-label_relief = 0; // 0.1
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 // Remove some or all of lip
@@ -79,6 +73,15 @@ half_pitch = false;
 flat_base = false;
 // Remove floor to create a veritcal spacer
 spacer = false;
+
+/* [Label] */
+// Include overhang for labeling (and specify left/right/center justification)
+label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
+// Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+label_size = [0,14,0,0.6]; // 0.01
+// Creates space so the attached label wont interferr with stacking
+label_relief = 0; // 0.1
+
 /* [Finger Slide] */
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
