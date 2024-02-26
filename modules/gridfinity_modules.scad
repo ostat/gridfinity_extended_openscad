@@ -342,6 +342,9 @@ module grid_block(
 
 
 module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
+  assert(!is_undef(num_x), "num_x is undefined");
+  assert(!is_undef(num_y), "num_y is undefined");
+
   if (flat_base) {
     pad_oversize(num_x, num_y);
   }
@@ -377,6 +380,9 @@ module cylsq2(d1, d2, h) {
 // unit pad slightly oversize at the top to be trimmed or joined with other feet or the rest of the model
 // also useful as cutouts for stacking
 module pad_oversize(num_x=1, num_y=1, margins=0) {
+  assert(!is_undef(num_x), "num_x is undefined");
+  assert(!is_undef(num_y), "num_y is undefined");
+
   pad_corner_position = gf_pitch/2 - 4; // must be 17 to be compatible
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
@@ -423,6 +429,10 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
 
 // similar to cornercopy, can only copy to box corners
 module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) {
+  assert(!is_undef(r), "r is undefined");
+  assert(!is_undef(num_x), "num_x is undefined");
+  assert(!is_undef(num_y), "num_y is undefined");
+  
   for (xi=[1:ceil(num_x)]) for (yi=[1:ceil(num_y)]) 
     for (xx=[-1, 1]) for (yy=[-1, 1]) {
       quadrent = [xi+(xx == -1 ? -0.5 : 0), yi+(yy == -1 ? -0.5 : 0)];
@@ -444,6 +454,10 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) 
 
 // similar to quadtranslate but expands to extremities of a block
 module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
+  assert(!is_undef(r), "r is undefined");
+  assert(!is_undef(num_x), "num_x is undefined");
+  assert(!is_undef(num_y), "num_y is undefined");
+  
   for (xx=[0, 1]) 
     for (yy=[0, 1]) 
     {
