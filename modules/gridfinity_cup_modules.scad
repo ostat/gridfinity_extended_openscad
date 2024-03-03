@@ -11,22 +11,28 @@ default_position="default"; //["default","center","zero"]
 default_filled_in = "off"; //["off","on","notstackable"] 
 // Thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 default_wall_thickness = 0;// 0.01
-// Include overhang for labeling
-default_label_style = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
-// Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
-default_label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
-default_label_relief = 0; // 0.1
-// Include larger corner fillet
-default_fingerslide = "none"; //[none, rounded, chamfered]
-// radius of the corner fillet
-default_fingerslide_radius = 8;
+
+
 // Set magnet diameter and depth to 0 to print without magnet holes
 // (Zack's design uses magnet diameter of 6.5)
 // Might want to remove inner lip of cup
 default_lip_style = "normal"; //[normal, reduced, none]
 //under size the bin top by this amount to allow for better stacking
 default_zClearance = 0; // 0.1
+
+/* [Label] */
+// Include overhang for labeling
+default_label_style = "disabled"; //[disabled: no label, left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
+// Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+default_label_size = [0,14,0,0.6]; // 0.01
+// Creates space so the attached label wont interferr with stacking
+default_label_relief = 0; // 0.1
+
+/* [Finger Slide] */
+// Include larger corner fillet
+default_fingerslide = "none"; //[none, rounded, chamfered]
+// radius of the corner fillet
+default_fingerslide_radius = 8;
 
 /* [Subdivisions] */
 // X dimension subdivisions
@@ -313,7 +319,7 @@ module irregular_cup(
   //If efficient_floor disable the base magnets and screws
   center_magnet_thickness = efficient_floor ? 0 : center_magnet_thickness;
   center_magnet_diameter = efficient_floor ? 0 : center_magnet_diameter;
-  fingerslide = efficient_floor ? "none" : fingerslide;
+  //fingerslide = efficient_floor ? "none" : fingerslide;
   cavity_floor_radius = efficient_floor ? 0 : cavity_floor_radius;
   
   //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
@@ -986,10 +992,13 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     : lip_style;
 
   filledInZ = gf_zpitch*num_z;
-  floorht = min(filledInZ,calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness));
-
+  
   //Efficient floor
-  efficientFloor = efficient_floor && fingerslide == "none";
+  efficientFloor = efficient_floor;// && fingerslide == "none";
+  
+  floorht = min(filledInZ,calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, efficient_floor=efficient_floor,flat_base=flat_base));
+
+  //echo("basic_cavity", efficient_floor=efficient_floor, floor_thickness=floor_thickness, floorht=floorht, filledInZ=filledInZ, reducedlipstyle=reducedlipstyle);
   //Remove floor to create a vertical spacer.
   nofloor = spacer && fingerslide == "none";
   
@@ -1007,13 +1016,15 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   innerWallRadius = gf_cup_corner_radius-wall_thickness;
   
   cavityHeight= max(lipBottomZ-floorht,0);
-  cavity_floor_radius =  calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficientFloor);
+  cavity_floor_radius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficientFloor);
   
     
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
   // arount the top inside edge.
   q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
+  
+  //echo("basic_cavity", efficientFloor=efficientFloor, nofloor=nofloor, lipSupportThickness=lipSupportThickness, lipBottomZ=lipBottomZ, innerLipRadius=innerLipRadius, innerWallRadius=innerWallRadius, cavityHeight=cavityHeight, cavity_floor_radius=cavity_floor_radius);
   
   if(filledInZ>floorht) {
     difference() {
@@ -1067,7 +1078,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
             roundedr1=min(cavityHeight, cavity_floor_radius),
             roundedr2=0, $fn=32);
     }
-    
+
     // fingerslide inside bottom of cutout
     if(fingerslide != "none"){
       translate([0, 
@@ -1087,6 +1098,45 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                 chamferLength = fingerslide_radius, 
                 length=gf_pitch*num_x,
                 height = gf_zpitch*num_z);
+          }
+        }
+    }
+      
+    if (efficientFloor) {
+      difference(){
+        translate([-0.5*gf_pitch , -0.5*gf_pitch ,-fudgeFactor ])
+          cube([num_x*gf_pitch , num_y*gf_pitch ,gf_zpitch ]);
+        
+        difference(){
+          magnetPosition = calculateMagnetPosition(magnet_diameter);
+          padSize =  max(magnet_diameter,gf_cupbase_screw_diameter)+wall_thickness*4;
+          magnetCoverHeight = max(magnet_diameter > 0 ? gf_magnet_thickness : 0, screw_depth);
+          blockSize = gf_pitch/2-magnetPosition+wall_thickness;
+          hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
+          
+          efficient_floor_grid(
+            num_x, num_y, 
+            half_pitch=half_pitch, 
+            flat_base=flat_base, 
+            floor_thickness=floor_thickness, 
+            margins=q);
+           
+           if(hasCornerAttachments)
+             //Screw and magnet covers required for efficient floor
+             gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only){
+                //$gcci=[trans,xi,yi,xx,yy];
+                rotate( $gcci[2] == [ 1, 1] ? [0,0,270] 
+                       : $gcci[2] == [ 1,-1] ? [0,0,180] 
+                       : $gcci[2] == [-1,-1] ? [0,0,90] :[0,0,0])
+                  translate([0,0,floor_thickness-fudgeFactor])
+                  hull(){
+                    cylinder(r=padSize/2, h=magnetCoverHeight+fudgeFactor, $fn=32);
+                    translate([padSize/2-blockSize,0,0])
+                      cube([blockSize,blockSize,magnetCoverHeight+fudgeFactor]);
+                    translate([-blockSize,-padSize/2,0])
+                      cube([blockSize,blockSize,magnetCoverHeight+fudgeFactor]);
+                  }
+            }
           }
         }
       }
@@ -1113,38 +1163,6 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
         cylinder(r=2, h=gf_cupbase_lower_taper_height+fudgeFactor, $fn=32);
       gridcopy(1, 1) 
         EfficientFloor(num_x, num_y,-fudgeFactor, q);
-  } else if (efficientFloor) {
-    difference(){
-      magnetPosition = calculateMagnetPosition(magnet_diameter);
-      padSize =  max(magnet_diameter,gf_cupbase_screw_diameter)+wall_thickness*4;
-      magnetCoverHeight = max(magnet_diameter > 0 ? gf_magnet_thickness : 0, screw_depth);
-      blockSize = gf_pitch/2-magnetPosition+wall_thickness;
-      hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
-      
-      efficient_floor_grid(
-        num_x, num_y, 
-        half_pitch=half_pitch, 
-        flat_base=flat_base, 
-        floor_thickness=floor_thickness, 
-        margins=q);
-       
-       if(hasCornerAttachments)
-         //Screw and magnet covers required for efficient floor
-         gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only){
-            //$gcci=[trans,xi,yi,xx,yy];
-            rotate( $gcci[2] == [ 1, 1] ? [0,0,270] 
-                   : $gcci[2] == [ 1,-1] ? [0,0,180] 
-                   : $gcci[2] == [-1,-1] ? [0,0,90] :[0,0,0])
-              translate([0,0,floor_thickness-fudgeFactor])
-              hull(){
-                cylinder(r=padSize/2, h=magnetCoverHeight+fudgeFactor, $fn=32);
-                translate([padSize/2-blockSize,0,0])
-                  cube([blockSize,blockSize,magnetCoverHeight+fudgeFactor]);
-                translate([-blockSize,-padSize/2,0])
-                  cube([blockSize,blockSize,magnetCoverHeight+fudgeFactor]);
-                  }
-      }
-    }
   }
 }
 

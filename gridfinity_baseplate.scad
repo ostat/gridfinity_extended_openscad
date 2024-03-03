@@ -195,6 +195,7 @@ module baseplate(
   lidEfficientBaseHeight = Lid_Efficient_Base_Height,
   help = false)
 {
+  assert_openscad_version();
   
   difference(){
     union(){

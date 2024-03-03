@@ -23,10 +23,15 @@ function calculateMinFloorHeight(magnet_diameter,screw_depth) =
 function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off") = 
+function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off", efficient_floor = false, flat_base=false) = 
+      let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
   filledin == "on" || filledin == "notstackable" 
     ? num_z * gf_zpitch 
-    : cupBaseClearanceHeight(magnet_diameter,screw_depth) + max(floor_thickness, gf_cup_floor_thickness);
+    : efficient_floor ? floorThickness
+    : flat_base ? 
+      //The flatbase can dip in to the floor, but is limited by the corner radius. It might not be worth accounting for, as someone could just use efficient base?
+      cupBaseClearanceHeight(magnet_diameter,screw_depth) - gf_baseplate_upper_taper_height/2 
+        : cupBaseClearanceHeight(magnet_diameter,screw_depth) + max(floor_thickness, gf_cup_floor_thickness);
     
 //Usable floor depth (florr height - min floor)
 function calculateFloorThickness(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) = 
@@ -230,7 +235,9 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
     }
   }  
 }
- 
+module assert_openscad_version(){
+  assert(version()[0]>2022,"This script requires a newer version of openSCAD. http://openscad.org");
+}
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(
@@ -250,6 +257,8 @@ module grid_block(
   fn = 32,
   help)
 {
+  assert_openscad_version();
+  
   outer_size = gf_pitch - gf_tolerance;  // typically 41.5
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
 
@@ -333,8 +342,11 @@ module grid_block(
 
 
 module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
+  assert(!is_undef(num_x), "num_x is undefined");
+  assert(!is_undef(num_y), "num_y is undefined");
+
   if (flat_base) {
-    pad_oversize(ceil(num_x), ceil(num_y));
+    pad_oversize(num_x, num_y);
   }
   else if (half_pitch) {
     gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
@@ -368,6 +380,9 @@ module cylsq2(d1, d2, h) {
 // unit pad slightly oversize at the top to be trimmed or joined with other feet or the rest of the model
 // also useful as cutouts for stacking
 module pad_oversize(num_x=1, num_y=1, margins=0) {
+  assert(!is_undef(num_x), "num_x is undefined");
+  assert(!is_undef(num_y), "num_y is undefined");
+
   pad_corner_position = gf_pitch/2 - 4; // must be 17 to be compatible
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
@@ -414,6 +429,10 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
 
 // similar to cornercopy, can only copy to box corners
 module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) {
+  assert(!is_undef(r), "r is undefined");
+  assert(!is_undef(num_x), "num_x is undefined");
+  assert(!is_undef(num_y), "num_y is undefined");
+  
   for (xi=[1:ceil(num_x)]) for (yi=[1:ceil(num_y)]) 
     for (xx=[-1, 1]) for (yy=[-1, 1]) {
       quadrent = [xi+(xx == -1 ? -0.5 : 0), yi+(yy == -1 ? -0.5 : 0)];
@@ -435,6 +454,10 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) 
 
 // similar to quadtranslate but expands to extremities of a block
 module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
+  assert(!is_undef(r), "r is undefined");
+  assert(!is_undef(num_x), "num_x is undefined");
+  assert(!is_undef(num_y), "num_y is undefined");
+  
   for (xx=[0, 1]) 
     for (yy=[0, 1]) 
     {

@@ -8,9 +8,12 @@ function replace_Items(keyValueArray, arr) = !(len(keyValueArray)>0) ? arr : let
 ) concat(replace_Items(keyValueArrayNext, updatedList));
 
 //Replace a value in an array
-function replace(list,position,value) = let (
-  l1 = position > 0 ? partial(list,start=0,end=position-1) : [], 
-  l2 = position < len(list)-1 ? partial(list,start=position+1,end=len(list)-1) :[]
+function replace(list,position,value) = 
+  assert(is_list(list), "list is not a list")
+  assert(is_num(position), "position is not a number")
+  let (
+    l1 = position > 0 ? partial(list,start=0,end=position-1) : [], 
+    l2 = position < len(list)-1 ? partial(list,start=position+1,end=len(list)-1) :[]
   ) concat(l1,[value],l2);
 
 // takes part of an array
