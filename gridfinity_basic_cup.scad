@@ -14,9 +14,9 @@ use <modules/gridfinity_modules.scad>
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
 // X dimension in grid units  (multiples of 42mm)
-width = 2; // [ 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
+width = 2; //0.5
 // Y dimension in grid units (multiples of 42mm)
-depth = 1; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
+depth = 1; //0.5
 // Z dimension (multiples of 7mm)
 height = 3; //0.1
 // Fill in solid block (overrides all following options)
