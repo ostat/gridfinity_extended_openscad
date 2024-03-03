@@ -71,11 +71,7 @@ depth = 1; //0.5
 // Z dimension (multiples of 7mm)
 height = 3; //0.1
 // Fill in solid block (overrides all following options)
-filled_in = "off"; //["off","on","notstackable"]
-// Include overhang for labeling (and specify left/right/center justification)
-label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
-// Width of the label in number of units, or zero means full width
-label_width = 0;  // .01
+filled_in = "off"; //["on","notstackable"]
 // Wall thickness (Zack's design is 0.95)
 wall_thickness = 0.95;  // .01
 // Remove some or all of lip
@@ -118,19 +114,12 @@ box_corner_attachments_only = false;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
-// Efficient floor option saves material and time, but the internal floor is not flat (only applies if no magnets, screws, or finger-slide used)
-efficient_floor = false;
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
 // Remove floor to create a veritcal spacer
 spacer = false;
-/* [Finger Slide] */
-// Include larger corner fillet
-fingerslide = "none"; //[none, rounded, chamfered]
-// Radius of the corner fillet
-fingerslide_radius = 8;
 
 /* [Tapered Corner] */
 tapered_corner = "none"; //[none, rounded, chamfered]
@@ -479,8 +468,6 @@ module gridfinity_itemholder(
     height = height,
     position=position,
     filled_in = filled_in,
-    label=label,
-    label_width=label_width,
     wall_thickness=wall_thickness,
     lip_style=lip_style,
     chamber_wall_thickness = chamber_wall_thickness,
@@ -506,12 +493,9 @@ module gridfinity_itemholder(
     box_corner_attachments_only=box_corner_attachments_only,
     floor_thickness=floor_thickness,
     cavity_floor_radius=cavity_floor_radius,
-    efficient_floor=efficient_floor,
     half_pitch=half_pitch,
     flat_base=flat_base,
     spacer=spacer,
-    fingerslide=fingerslide,
-    fingerslide_radius=fingerslide_radius,
     tapered_corner=tapered_corner,
     tapered_corner_size=tapered_corner_size,
     tapered_setback=tapered_setback,
@@ -574,10 +558,10 @@ module gridfinity_itemholder(
     num_x=width, num_y=depth, num_z=height,
     position=position,
     filled_in=filled_in,
-    label_style=label,
-    labelWidth=label_width,
-    fingerslide=fingerslide,
-    fingerslide_radius=fingerslide_radius,
+    label_style="disabled",
+    labelWidth=0,
+    fingerslide=false,
+    fingerslide_radius=0,
     magnet_diameter=magnet_diameter,
     screw_depth=screw_depth,
     center_magnet_diameter=center_magnet_diameter,
@@ -586,7 +570,7 @@ module gridfinity_itemholder(
     cavity_floor_radius=cavity_floor_radius,
     wall_thickness=wall_thickness,
     hole_overhang_remedy=hole_overhang_remedy,
-    efficient_floor=efficient_floor,
+    efficient_floor=false,
     chamber_wall_thickness=chamber_wall_thickness,
     vertical_separator_bend_position=vertical_separator_bend_position,
     vertical_separator_bend_angle=vertical_separator_bend_angle,
