@@ -8,7 +8,7 @@ sharp_corners = 0;
 function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
   //efficient floor has an effective radius of 0
-) efficientFloor ? 0 
+) efficientFloor != "off" ? 0 
   : cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
 
 constTopHeight = 5.7+fudgeFactor*5; //Need to confirm this
@@ -23,11 +23,11 @@ function calculateMinFloorHeight(magnet_diameter,screw_depth) =
 function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off", efficient_floor = false, flat_base=false) = 
+function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off", efficient_floor = "off", flat_base=false) = 
       let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
   filledin == "on" || filledin == "notstackable" 
     ? num_z * gf_zpitch 
-    : efficient_floor ? floorThickness
+    : efficient_floor != "off" ? floorThickness
     : flat_base ? 
       //The flatbase can dip in to the floor, but is limited by the corner radius. It might not be worth accounting for, as someone could just use efficient base?
       cupBaseClearanceHeight(magnet_diameter,screw_depth) - gf_baseplate_upper_taper_height/2 
@@ -72,6 +72,8 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
   {
     translate([0,-gf_pitch*0.5+gf_pitch*cuty,0]) 
     {
+      
+      
       translate([-0.5*gf_pitch+gf_tolerance/2,0,num_z*gf_zpitch+gf_Lip_Height])
       rotate([90,0,0])
         Caliper(messpunkt = false, center=false,
@@ -139,7 +141,7 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
           cx=-1, end=0, in=2,
           translate=[-2,0,0],
           l=baseClearanceHeight, 
-          txt2 = "min floor height");
+          txt2 = "base clearance height");
   
     rotate([90,0,0])
         Caliper(messpunkt = false, center=false,
@@ -154,7 +156,7 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
   color(color_text)
   if(cutx > 0 && $preview)
   {
-  translate([-gf_pitch*0.5+gf_pitch*cutx,0,0]) 
+  translate([-gf_pitch*0.5+gf_pitch*cutx,-gf_pitch/2,0]) 
   {
     translate([0,(num_y-0.5)*gf_pitch-gf_tolerance/2,num_z*gf_zpitch+gf_Lip_Height])
     rotate([90,0,270])
@@ -200,7 +202,7 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
         l=gf_Lip_Height+num_z*gf_zpitch, 
         txt2 = str("total height"));
 
-    translate([0,+gf_pitch/2,baseClearanceHeight])
+    translate([0,+gf_pitch/2,floorHeight-floorDepth])
     rotate([90,0,270])
       Caliper(messpunkt = false, center=false,
         h = 0.1, s = fontSize,
@@ -223,7 +225,7 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
         cx=-1, end=0, in=2,
         translate=[-2,0,0],
         l=baseClearanceHeight, 
-        txt2 = "min floor height");
+        txt2 = "base clearance height");
     translate([0,0,0])
     rotate([90,0,270])
       Caliper(messpunkt = false, center=false,

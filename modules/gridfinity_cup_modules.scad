@@ -66,8 +66,9 @@ default_floor_thickness = 1.2;
 default_cavity_floor_radius = -1;
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 default_hole_overhang_remedy = 2;
-// Save material with thinner floor (only if no magnets, screws, or finger-slide used)
-default_efficient_floor = false;
+// Save material with thinner floor
+default_efficient_floor = "off";//["off","on","rounded","slide"] 
+
 // Remove floor to create a spacer
 default_spacer = false;
 // Half-pitch base pads for offset stacking
@@ -108,6 +109,8 @@ default_wallpattern_voronoi_radius = 0.5;
 default_extention_x_enabled = false;
 default_extention_y_enabled = false;
 default_extention_tabs_enabled = true;
+//Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
+default_extention_tab_size= [10,0,0,0]; //0.1
 
 /* [debug] */
 default_cutx = 0;//0.1
@@ -183,6 +186,7 @@ module basic_cup(
   wallcutout_corner_radius=default_wallcutout_corner_radius,
   extention_enabled=[default_extention_x_enabled,default_extention_y_enabled],
   extention_tabs_enabled=default_extention_tabs_enabled,
+  extention_tab_size=default_extention_tab_size,
   cutx=default_cutx,
   cuty=default_cuty,
   help=default_help) {
@@ -312,15 +316,16 @@ module irregular_cup(
   wallcutout_corner_radius=default_wallcutout_corner_radius,
   extention_enabled=[default_extention_x_enabled,default_extention_y_enabled],
   extention_tabs_enabled=default_extention_tabs_enabled,
+  extention_tab_size=default_extention_tab_size,
   cutx=default_cutx,
   cuty=default_cuty,
   help) {
 
   //If efficient_floor disable the base magnets and screws
-  center_magnet_thickness = efficient_floor ? 0 : center_magnet_thickness;
-  center_magnet_diameter = efficient_floor ? 0 : center_magnet_diameter;
+  center_magnet_thickness = efficient_floor != "off" ? 0 : center_magnet_thickness;
+  center_magnet_diameter = efficient_floor != "off" ? 0 : center_magnet_diameter;
   //fingerslide = efficient_floor ? "none" : fingerslide;
-  cavity_floor_radius = efficient_floor ? 0 : cavity_floor_radius;
+  cavity_floor_radius = efficient_floor != "off" ? 0 : cavity_floor_radius;
   
   //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
   wall_thickness = wall_thickness != 0 ? wall_thickness
@@ -572,7 +577,7 @@ module irregular_cup(
             }
           
             //subtract dividers from wall pattern
-            sepFloorHeight = (efficient_floor ? floor_thickness : floorHeight);
+            sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
             translate([-gf_pitch/2, -gf_pitch/2, sepFloorHeight-fudgeFactor])
             separators(  
               length=gf_pitch*num_y,
@@ -668,10 +673,63 @@ module irregular_cup(
   }
   
   if((extention_enabled.x || extention_enabled.y) && extention_tabs_enabled){
-    tabWorkingheight = (num_z-1)*gf_zpitch-gf_Lip_Height;
-    tabHeight = tabWorkingheight/2;
-    tabThickness = 2;
+    refTabHeight = extention_tab_size.x;
+    tabThickness = extention_tab_size.z == 0 ? 1.4 : extention_tab_size.z;//1.4; //This should be calculated
+    tabWidth = extention_tab_size.y;
+    tabStyle = extention_tab_size[3];
+    
+    floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
+    
+    
+    //todo need to correct this
+    lipheight = lip_style == "none" ? tabThickness
+      : lip_style == "reduced" ? gf_lip_upper_taper_height+tabThickness
+      //Add tabThickness, as the taper can bleed in to the lip
+      : gf_lip_upper_taper_height + gf_lip_lower_taper_height-tabThickness;
+    ceilingHeight = gf_zpitch*num_z-zClearance-lipheight;
+  
+    //tabWorkingheight = (num_z-1)*gf_zpitch-gf_Lip_Height;
+    tabWorkingheight = ceilingHeight-floorHeight;
+  
+    tabsCount = max(floor(tabWorkingheight/refTabHeight),1);
+    tabHeight = tabWorkingheight/tabsCount;
+    echo("tabs", binHeight =num_z, tabHeight=tabHeight, floorHeight=floorHeight, cavity_floor_radius=cavity_floor_radius, tabThickness=tabThickness);
     cut = 0.5;
+    for(i=[0:1:tabsCount-1])
+    {
+      isOdd =  i % 2;
+      echo("tabs", i=i, isOdd=isOdd)
+      if(extention_enabled.x){
+        if(!isOdd)
+        {
+          translate([0,(num_y-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
+          rotate([0,180,90])
+            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+        } else {
+           if(!extention_enabled.y){
+            translate([0,-0.5*gf_pitch+wall_thickness+gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
+              rotate([0,0,90])
+              attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+          } 
+        }
+      }
+
+      if(extention_enabled.y){     
+        if(isOdd)
+        {
+          translate([(num_x-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,0,floorHeight+(i+0.5)*tabHeight])
+          rotate([0,0,180])
+            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+        } else {
+          if(!extention_enabled.x){
+            translate([-0.5*gf_pitch+wall_thickness+gf_tolerance/2,0,floorHeight+(i+0.5)*tabHeight])
+              rotate([0,180,180])
+              attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+          }
+        }
+      }
+    }
+    /*
     if(extention_enabled.x){     
       translate([0,(num_y-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,tabWorkingheight/4*3  + 1*gf_zpitch])
       rotate([0,180,90])
@@ -692,6 +750,7 @@ module irregular_cup(
         rotate([0,180,180])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
+    */
   }  
   
   if(help)
@@ -808,47 +867,126 @@ module cutout_pattern(
 module attachement_clip(
   height = 8,
   width = 0,
-  thickness = 3)
+  thickness = gf_lip_support_taper_height,
+  tabStyle = 0)
 {
+echo("attachement_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
+  tabVersion = 0;
   width = width > 0 ? width : height/2;
   tabHeight=height-thickness*2;
-  tabDepth = min(tabHeight/2, width, 3.5);
+  tabDepth = min(tabHeight/2*0.8, width*0.8, 3.5);
+  tabStyle = floor(tabStyle);
   translate([0,0,-height/2])
+  
   union()
   {
-    // using hull prevents shape not being closed
-    hull()
-    polyhedron
-      (points = [
-         [0, 0, 0],                                           //0
-         [0, -width, 0],                                      //1
-         [0, -width, height],                                 //2
-         [0, 0, height],                                      //3
-         [thickness, 0, thickness],                           //4
-         [thickness, -width+thickness, thickness],            //5
-         [thickness, -width+thickness, height-thickness],     //6
-         [thickness, 0, height-thickness]                     //7
-         ], 
-       faces = [[0,1,2,3],[4,5,6,7]]
-    );
-    hull()
-    polyhedron
-      (points = [
-         [0, 0, thickness],                                   //0
-         [0, -width+thickness, thickness],                    //1
-         [0, -width+thickness, height-thickness],             //2
-         [0, 0, height-thickness],                            //3
-         [0, tabDepth, height-thickness-tabDepth/2],          //4
-         [0, tabDepth, thickness+tabDepth/2],                 //5
-         [thickness, 0, thickness],                           //6
-         [thickness, -width+thickness, thickness],            //7
-         [thickness, -width+thickness, height-thickness],     //8
-         [thickness, 0, height-thickness],                    //9
-         [thickness, tabDepth, height-thickness-tabDepth/2],  //10
-         [thickness, tabDepth, thickness+tabDepth/2]          //11
-         ], 
-         faces = [[0,1,2,3,4,5],[6,7,8,9,10,11]]
-    );
+    if(tabStyle == 2){
+      // using hull prevents shape not being closed
+      hull()
+      polyhedron
+        (points = [
+           [0, 0, 0],                                  //0
+           [0, -width, 0],                                      //1
+           [0, -width, height],                                 //2
+           [0, 0, height],                             //3
+           [0, thickness, height-thickness],                            //4
+           [0, thickness, thickness],                                   //5
+           [thickness, thickness, thickness],                           //6
+           [thickness, -width+thickness, thickness],            //7
+           [thickness, -width+thickness, height-thickness],     //8
+           [thickness, thickness, height-thickness]                     //9
+           ], 
+         faces = [[0,1,2,3,4,5],[6,7,8,9]]
+      );
+      hull()
+      polyhedron
+        (points = [
+           [0, thickness, thickness],                                   //0
+           [0, -width+thickness, thickness],                    //1
+           [0, -width+thickness, height-thickness],             //2
+           [0, thickness, height-thickness],                            //3
+           [0, tabDepth, height-tabDepth],          //4
+           [0, tabDepth, tabDepth],                 //5
+           [thickness, thickness, thickness],                           //6
+           [thickness, -width+thickness, thickness],            //7
+           [thickness, -width+thickness, height-thickness],     //8
+           [thickness, thickness, height-thickness],                    //9
+           [thickness, tabDepth, height-tabDepth],  //10
+           [thickness, tabDepth, tabDepth]          //11
+           ], 
+           faces = [[0,1,2,3,4,5],[6,7,8,9,10,11]]
+      );
+    } else if(tabStyle == 1){
+      // using hull prevents shape not being closed
+      hull()
+      polyhedron
+        (points = [
+           [0, -thickness, 0],                                  //0
+           [0, -width, 0],                                      //1
+           [0, -width, height],                                 //2
+           [0, -thickness, height],                             //3
+           [0, 0, height-thickness],                            //4
+           [0, 0, thickness],                                   //5
+           [thickness, 0, thickness],                           //6
+           [thickness, -width+thickness, thickness],            //7
+           [thickness, -width+thickness, height-thickness],     //8
+           [thickness, 0, height-thickness]                     //9
+           ], 
+         faces = [[0,1,2,3,4,5],[6,7,8,9]]
+      );
+      hull()
+      polyhedron
+        (points = [
+           [0, 0, thickness],                                   //0
+           [0, -width+thickness, thickness],                    //1
+           [0, -width+thickness, height-thickness],             //2
+           [0, 0, height-thickness],                            //3
+           [0, tabDepth, height-thickness-tabDepth],          //4
+           [0, tabDepth, thickness+tabDepth],                 //5
+           [thickness, 0, thickness],                           //6
+           [thickness, -width+thickness, thickness],            //7
+           [thickness, -width+thickness, height-thickness],     //8
+           [thickness, 0, height-thickness],                    //9
+           [thickness, tabDepth, height-thickness-tabDepth],  //10
+           [thickness, tabDepth, thickness+tabDepth]          //11
+           ], 
+           faces = [[0,1,2,3,4,5],[6,7,8,9,10,11]]
+      );
+    } else {
+      // using hull prevents shape not being closed
+      hull()
+      polyhedron
+        (points = [
+           [0, 0, 0],                                           //0
+           [0, -width, 0],                                      //1
+           [0, -width, height],                                 //2
+           [0, 0, height],                                      //3
+           [thickness, 0, thickness],                           //4
+           [thickness, -width+thickness, thickness],            //5
+           [thickness, -width+thickness, height-thickness],     //6
+           [thickness, 0, height-thickness]                     //7
+           ], 
+         faces = [[0,1,2,3],[4,5,6,7]]
+      );
+      hull()
+      polyhedron
+        (points = [
+           [0, 0, thickness],                                   //0
+           [0, -width+thickness, thickness],                    //1
+           [0, -width+thickness, height-thickness],             //2
+           [0, 0, height-thickness],                            //3
+           [0, tabDepth, height-thickness-tabDepth],            //4
+           [0, tabDepth, thickness+tabDepth],                   //5
+           [thickness, 0, thickness],                           //6
+           [thickness, -width+thickness, thickness],            //7
+           [thickness, -width+thickness, height-thickness],     //8
+           [thickness, 0, height-thickness],                    //9
+           [thickness, tabDepth, height-thickness-tabDepth],    //10
+           [thickness, tabDepth, thickness+tabDepth]            //11
+           ], 
+           faces = [[0,1,2,3,4,5],[6,7,8,9,10,11]]
+      );
+    }
   }
 }
 
@@ -880,7 +1018,7 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style,
       screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
       efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius, spacer=spacer, box_corner_attachments_only = box_corner_attachments_only);
   
-    sepFloorHeight = (efficient_floor ? floor_thickness : floorHeight);
+    sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
     color(color_divider)
     translate([-gf_pitch/2, -gf_pitch/2, sepFloorHeight-fudgeFactor])
     separators(  
@@ -992,10 +1130,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     : lip_style;
 
   filledInZ = gf_zpitch*num_z;
-  
-  //Efficient floor
-  efficientFloor = efficient_floor;// && fingerslide == "none";
-  
+   
   floorht = min(filledInZ,calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, efficient_floor=efficient_floor,flat_base=flat_base));
 
   //echo("basic_cavity", efficient_floor=efficient_floor, floor_thickness=floor_thickness, floorht=floorht, filledInZ=filledInZ, reducedlipstyle=reducedlipstyle);
@@ -1016,7 +1151,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   innerWallRadius = gf_cup_corner_radius-wall_thickness;
   
   cavityHeight= max(lipBottomZ-floorht,0);
-  cavity_floor_radius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficientFloor);
+  cavity_floor_radius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor);
   
     
   // I couldn't think of a good name for this ('q') but effectively it's the
@@ -1101,8 +1236,8 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
           }
         }
     }
-      
-    if (efficientFloor) {
+    echo(efficient_floor=efficient_floor);
+    if (efficient_floor != "off") {
       difference(){
         translate([-0.5*gf_pitch , -0.5*gf_pitch ,-fudgeFactor ])
           cube([num_x*gf_pitch , num_y*gf_pitch ,gf_zpitch ]);
@@ -1116,6 +1251,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
           
           efficient_floor_grid(
             num_x, num_y, 
+            floorStyle = efficient_floor,
             half_pitch=half_pitch, 
             flat_base=flat_base, 
             floor_thickness=floor_thickness, 
@@ -1227,16 +1363,29 @@ module separators(
 }
 
 //creates the gird of efficient floor pads to be added to the cavity for removal from the overall filled in bin.
-module efficient_floor_grid(num_x, num_y, half_pitch=false, flat_base=false, floor_thickness, margins=0) {
+module efficient_floor_grid(
+  num_x, num_y, 
+  floorStyle = "on", 
+  half_pitch=false, 
+  flat_base=false, 
+  floor_thickness, 
+  margins=0) {
   if (flat_base) {
-    EfficientFloor(num_x, num_y, floor_thickness, margins);
+    EfficientFloor(num_x, num_y, 
+      floor_thickness, 
+      margins, 
+      floorRadius=(floorStyle == "rounded" ? 1 : 0),
+      floorSlide=(floorStyle == "slide"));
   }
   else if (half_pitch) {
     gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
       EfficientFloor(
         ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
         ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5), 
-        floor_thickness, margins);
+        floor_thickness, 
+        margins, 
+        floorRadius=(floorStyle == "rounded" ? 1 : 0),
+        floorSlide=(floorStyle == "slide"));
     }
   }
   else {
@@ -1245,33 +1394,72 @@ module efficient_floor_grid(num_x, num_y, half_pitch=false, flat_base=false, flo
         //Calculate pad size, last cells might not be 100%
         ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
         ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1), 
-        floor_thickness, margins);
+        floor_thickness, 
+        margins, 
+        floorRadius=(floorStyle == "rounded" ? 1 : 0),
+        floorSlide=(floorStyle == "slide"));
     }
   }
 }
 
 //Creates the efficient floor pad that will be removed from the floor
-module EfficientFloor(num_x=1, num_y=1, floor_thickness, margins=0){
+module EfficientFloor(
+  num_x=1, 
+  num_y=1, 
+  floor_thickness, 
+  margins=0,
+  floorRadius=0,
+  floorSlide= true
+  ){
+  echo("EfficientFloor", floorRadius=floorRadius, floorSlide=floorSlide);
   seventeen = gf_pitch/2-4;
   minEfficientPadSize = 0.15;
   //Less than minEfficientPadSize is to small and glitches the cut away
   if(num_x > minEfficientPadSize && num_y > minEfficientPadSize )
-  union(){
-    // establishes floor
-    hull() 
-      tz(floor_thickness) 
-      cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
-      cylinder(r=1, h=5, $fn=32);
+  if(!floorSlide) {
+    union(){
+      // establishes floor
+      hull(){
+        tz(floor_thickness+floorRadius) 
+        cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
+        cylinder(r=1, h=5, $fn=32);
 
-    // tapered top portion
-    hull() {
-      tz(3) 
-      cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
-      cylinder(r=1, h=1, $fn=32);
+        if(floorRadius > 0)
+        {
+          tz(floor_thickness+floorRadius) 
+          cornercopy(num_x=num_x, num_y=num_y, r=seventeen-(floorRadius-0.5)) 
+          sphere(r=floorRadius, $fn=32);
+        }
+      }
       
-      tz(5-(+2.5-1.15-margins)) 
-      cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
-      cylinder(r=1.15+margins, h=4, $fn=32);
+      // tapered top portion
+      hull() {
+        tz(3) 
+        cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
+        //cylinder(r=1, h=1, $fn=32);
+        sphere(r=1, $fn=32);
+        
+        tz(5-(+2.5-1.15-margins)) 
+        cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+        cylinder(r=1.15+margins, h=4, $fn=32);
+      }
+    }
+  }
+  else{
+    // tapered top portion
+    cornerRadius = 1.15+margins;
+    hull() {
+      tz(floor_thickness+cornerRadius) 
+      cornercopy(num_x=num_x, num_y=num_y, r=seventeen-cornerRadius) 
+      sphere(r=cornerRadius, $fn=32);
+        
+      tz(5-(+2.5-cornerRadius)+1)
+      union(){
+        cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+        cylinder(r=cornerRadius, h=cornerRadius, $fn=32);
+        cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+        sphere(r=cornerRadius, $fn=32);
+      }
     }
   }
 }
