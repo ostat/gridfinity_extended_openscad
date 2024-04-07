@@ -1205,7 +1205,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     
       //Cavity below lip
       if(cavityHeight > 0)
-        hull() cornercopy(seventeen, num_x, num_y)
+       hull() cornercopy(seventeen, num_x, num_y)
         tz(floorht)
           roundedCylinder(
             h=cavityHeight,
@@ -1238,17 +1238,18 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     }
     echo(efficient_floor=efficient_floor);
     if (efficient_floor != "off") {
+      magnetPosition = calculateMagnetPosition(magnet_diameter);
+      padSize =  max(magnet_diameter,gf_cupbase_screw_diameter)+wall_thickness*4;
+      magnetCoverHeight = max(magnet_diameter > 0 ? gf_magnet_thickness : 0, screw_depth);
+      blockSize = gf_pitch/2-magnetPosition+wall_thickness;
+      hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
+      efficientFloorGridHeight = max(magnetCoverHeight,gfBaseHeight())+floor_thickness;
       difference(){
-        translate([-0.5*gf_pitch , -0.5*gf_pitch ,-fudgeFactor ])
-          cube([num_x*gf_pitch , num_y*gf_pitch ,gf_zpitch ]);
+        translate([-0.5*gf_pitch, -0.5*gf_pitch ,-fudgeFactor ])
+          cube([num_x*gf_pitch, num_y*gf_pitch, efficientFloorGridHeight]);
         
         difference(){
-          magnetPosition = calculateMagnetPosition(magnet_diameter);
-          padSize =  max(magnet_diameter,gf_cupbase_screw_diameter)+wall_thickness*4;
-          magnetCoverHeight = max(magnet_diameter > 0 ? gf_magnet_thickness : 0, screw_depth);
-          blockSize = gf_pitch/2-magnetPosition+wall_thickness;
-          hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
-          
+
           efficient_floor_grid(
             num_x, num_y, 
             floorStyle = efficient_floor,
