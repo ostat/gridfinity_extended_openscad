@@ -1413,7 +1413,7 @@ module EfficientFloor(
   ){
   echo("EfficientFloor", floorRadius=floorRadius, floorSlide=floorSlide);
   seventeen = gf_pitch/2-4;
-  minEfficientPadSize = 0.15;
+  minEfficientPadSize = floorSlide ? 0.3 : 0.15;
   //Less than minEfficientPadSize is to small and glitches the cut away
   if(num_x > minEfficientPadSize && num_y > minEfficientPadSize )
   if(!floorSlide) {
