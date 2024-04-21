@@ -55,6 +55,7 @@ default_vertical_separator_config = "10.5|21|42|50|60";
 default_horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 default_horizontal_separator_config = "10.5|21|42|50|60";
+
 /* [Base] */
 default_magnet_diameter = 6.5;  // .1
 // (Zack's design uses depth of 6)
@@ -68,7 +69,6 @@ default_cavity_floor_radius = -1;
 default_hole_overhang_remedy = 2;
 // Save material with thinner floor
 default_efficient_floor = "off";//["off","on","rounded","slide"] 
-
 // Remove floor to create a spacer
 default_spacer = false;
 // Half-pitch base pads for offset stacking
@@ -763,7 +763,8 @@ module irregular_cup(
     floor_thickness, 
     filled_in,
     wall_thickness,
-    efficient_floor); 
+    efficient_floor,
+    flat_base); 
       
   HelpTxt("irregular_cup",[
     "num_x",num_x
@@ -1153,6 +1154,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   cavityHeight= max(lipBottomZ-floorht,0);
   cavity_floor_radius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor);
   
+  echo("basic_cavity", floorht=floorht);
     
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
@@ -1236,7 +1238,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
           }
         }
     }
-    echo(efficient_floor=efficient_floor);
+
     if (efficient_floor != "off") {
       magnetPosition = calculateMagnetPosition(magnet_diameter);
       padSize =  max(magnet_diameter,gf_cupbase_screw_diameter)+wall_thickness*4;
@@ -1244,6 +1246,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
       blockSize = gf_pitch/2-magnetPosition+wall_thickness;
       hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
       efficientFloorGridHeight = max(magnetCoverHeight,gfBaseHeight())+floor_thickness;
+      echo("basic_cavity", efficient_floor=efficient_floor, efficientFloorGridHeight=efficientFloorGridHeight,  floor_thickness=floor_thickness);
       difference(){
         translate([-0.5*gf_pitch, -0.5*gf_pitch ,-fudgeFactor ])
           cube([num_x*gf_pitch, num_y*gf_pitch, efficientFloorGridHeight]);
@@ -1255,7 +1258,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
             floorStyle = efficient_floor,
             half_pitch=half_pitch, 
             flat_base=flat_base, 
-            floor_thickness=floor_thickness, 
+            floor_thickness=floor_thickness,
             margins=q);
            
            if(hasCornerAttachments)
@@ -1268,8 +1271,8 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                   translate([0,0,floor_thickness-fudgeFactor])
                   hull(){
                     cylinder(r=padSize/2, h=magnetCoverHeight+fudgeFactor, $fn=32);
-                    translate([padSize/2-blockSize,0,0])
-                      cube([blockSize,blockSize,magnetCoverHeight+fudgeFactor]);
+                    translate([-blockSize,0,0])
+                      cube([blockSize+padSize/2,blockSize,magnetCoverHeight+fudgeFactor]);
                     translate([-blockSize,-padSize/2,0])
                       cube([blockSize,blockSize,magnetCoverHeight+fudgeFactor]);
                   }
@@ -1449,12 +1452,12 @@ module EfficientFloor(
   else{
     // tapered top portion
     cornerRadius = 1.15+margins;
+    tz(floor_thickness+cornerRadius)
     hull() {
-      tz(floor_thickness+cornerRadius) 
       cornercopy(num_x=num_x, num_y=num_y, r=seventeen-cornerRadius) 
       sphere(r=cornerRadius, $fn=32);
         
-      tz(5-(+2.5-cornerRadius)+1)
+      tz(2.5)
       union(){
         cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
         cylinder(r=cornerRadius, h=cornerRadius, $fn=32);

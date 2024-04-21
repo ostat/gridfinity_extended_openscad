@@ -65,8 +65,8 @@ box_corner_attachments_only = true;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
-// Efficient floor option saves material and time, but the internal floor is not flat (only applies if no magnets, screws, or finger-slide used)
-efficient_floor = false;
+// Efficient floor option saves material and time, but the internal floor is not flat
+efficient_floor = "off";//["off","on","rounded","slide"] 
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
