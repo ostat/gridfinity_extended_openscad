@@ -86,7 +86,7 @@ default_tapered_corner_size = 10;
 default_tapered_setback = -1;//gf_cup_corner_radius/2;
 /* [Wall Cutout] */
 default_wallcutout_enabled=false;
-// wall to enable on, front, back, left, right. 0: disabled; Posative: GF units; Negative: ratio length/abs(value)
+// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
 default_wallcutout_walls=[1,0,0,0];  //0.1
 //default will be binwidth/2
 default_wallcutout_width=0;

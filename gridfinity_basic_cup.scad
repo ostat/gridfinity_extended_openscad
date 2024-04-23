@@ -66,7 +66,7 @@ box_corner_attachments_only = true;
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//["off","on","rounded","slide"] 
+efficient_floor = "off";//["off","on","rounded","smooth"] 
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
@@ -116,8 +116,8 @@ wallpattern_voronoi_radius = 0.5;
 
 /* [Wall Cutout] */
 wallcutout_enabled=false;
-// wall to enable on, front, back, left, right.
-wallcutout_walls=[1,0,0,0]; 
+// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_walls=[1,0,0,0];  //0.1
 //default will be binwidth/2
 wallcutout_width=0;
 wallcutout_angle=70;
