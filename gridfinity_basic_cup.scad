@@ -20,11 +20,11 @@ depth = 1; //0.5
 // Z dimension (multiples of 7mm)
 height = 3; //0.1
 // Fill in solid block (overrides all following options)
-filled_in = "off"; //["off","on","notstackable"]
+filled_in = false; 
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 // Remove some or all of lip
-lip_style = "normal";  // [ "normal", "reduced", "none" ]
+lip_style = "normal";  // [ "normal", "reduced", "minimum", none:not stackable ]
 position="default"; //["default","center","zero"]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
@@ -147,7 +147,7 @@ module gridfinity_basic_cup(
   depth = depth,
   height = height,
   position=position,
-  filled_in = filled_in,
+  filled_in=filled_in,
   label=label,
   label_size=label_size,
   label_relief=label_relief,

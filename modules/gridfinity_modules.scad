@@ -13,6 +13,13 @@ function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficie
 
 constTopHeight = 5.7+fudgeFactor*5; //Need to confirm this
 
+function wallCutoutPosition_mm(userPosition, wallLength) = 
+  (userPosition < 0 ? wallLength*gf_pitch/abs(userPosition) : gf_pitch*userPosition)-gf_pitch/2;
+
+//0.6 is needed to align the top of the cutout, need to fix this
+function calculateWallTop(num_z, lip_style) =
+  gf_zpitch * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
+  
 //Height to clear the voids in the base
 function cupBaseClearanceHeight(magnet_diameter, screw_depth, flat_base=false) = let (
     mag_ht = magnet_diameter > 0 ? gf_magnet_thickness : 0)
@@ -25,10 +32,9 @@ function calculateMinFloorHeight(magnet_diameter,screw_depth) =
 function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off", efficient_floor = "off", flat_base=false) = 
+function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
       let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
-  filledin == "on" || filledin == "notstackable" 
-    ? num_z * gf_zpitch 
+  filledin ? num_z * gf_zpitch 
     : efficient_floor != "off" 
       ? floorThickness
       : max(3.5, cupBaseClearanceHeight(magnet_diameter,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
@@ -51,13 +57,13 @@ function cupPosition(position, num_x, num_y) = position == "center"
     : position == "zero" ? [gf_pitch/2, gf_pitch/2, 0] 
     : [0, 0, 0]; 
 
-module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
+module ShowClippers(cutx, cuty, size, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
   color(color_text)
   if(cuty > 0 && $preview)
   {
     translate([-gf_pitch/2,-gf_pitch*0.5+gf_pitch*cuty,0]) 
     rotate([90,0,0])
-    showClippersForSide("width", size.x, size.z, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
+    showClippersForSide("width", size.x, size.z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
   }  
   
   color(color_text)
@@ -65,11 +71,11 @@ module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickn
   {
     translate([-gf_pitch*0.5+gf_pitch*cutx,gf_pitch*(size.y-0.5),0]) 
     rotate([90,0,270])
-    showClippersForSide("depth", size.y, size.z, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
+    showClippersForSide("depth", size.y, size.z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
   }
 }
 
-module showClippersForSide(description, gf_num, num_z, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
+module showClippersForSide(description, gf_num, num_z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
     fontSize = 5;  
     gridHeight= gfBaseHeight();
     baseClearanceHeight = cupBaseClearanceHeight(magnet_diameter, screw_depth,flat_base);
@@ -79,15 +85,17 @@ module showClippersForSide(description, gf_num, num_z, magnet_diameter, screw_de
           screw_depth=screw_depth, 
           floor_thickness=floor_thickness, 
           num_z=num_z, 
-          filled_in=filled_in,
+          filledin=filled_in,
           efficient_floor=efficient_floor,
           flat_base=flat_base);
     floorDepth = efficient_floor != "off"
       ? floor_thickness :
       floorHeight - baseClearanceHeight;
       echo("showClippersForSide",floorHeight=floorHeight,magnet_diameter=magnet_diameter,screw_depth=screw_depth,floor_thickness=floor_thickness,num_z=num_z,filled_in=filled_in,efficient_floor=efficient_floor,flat_base=flat_base);
+  wallTop = calculateWallTop(num_z, lip_style);
+      
   isCutX = description == "depth";
-  translate([gf_tolerance/2,num_z*gf_zpitch+gf_Lip_Height,0])
+  translate([gf_tolerance/2,wallTop,0])
      Caliper(messpunkt = false, center=false,
         h = 0.1, s = fontSize,
         end=0, in=1,
@@ -112,7 +120,8 @@ module showClippersForSide(description, gf_num, num_z, magnet_diameter, screw_de
         l=num_z*gf_zpitch, 
         translate=isCutX ? [1,0,0] : [-1,0,0],
         txt2 = str("height ", num_z));
-        
+    
+    if(lip_style != "none")
     translate(isCutX
       ?[(gf_num)*gf_pitch,num_z*gf_zpitch,0]
       :[0,num_z*gf_zpitch,0])
@@ -120,11 +129,12 @@ module showClippersForSide(description, gf_num, num_z, magnet_diameter, screw_de
         h = 0.1, size = fontSize,
         cx=isCutX ? 0: -1, 
         end=0, in=2,
-        l=gf_Lip_Height, 
+        l=wallTop - (num_z*gf_zpitch),//gf_Lip_Height, 
         translate=isCutX ? [1,0,0] : [-1,0,0],
         txt2 = str("lip height"));
         
-    translate(isCutX 
+     if(lip_style != "none")
+     translate(isCutX 
       ?[(gf_num)*gf_pitch,0,0]
       :[0,0,0])
      Caliper(messpunkt = false, center=false,
@@ -132,7 +142,7 @@ module showClippersForSide(description, gf_num, num_z, magnet_diameter, screw_de
         cx=isCutX ? 0: -1,
         end=0, in=2,
         translate=isCutX ? [fontSize*3,0,0] : [fontSize*-3,0,0],
-        l=gf_Lip_Height+num_z*gf_zpitch, 
+        l=wallTop, 
         txt2 = str("total height"));
     
     if(!flat_base)

@@ -5,7 +5,8 @@ include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
-scenario = "demo"; //["demo","basiccup","position","chambers","draw","label","halfpitch","lip_style","fingerslide", "basecorner","sequentialbridging","wallpattern","wallpatternstyle","wallpatternfill","wallcutout","taperedcorner","floorthickness","filledin","efficient_floor", "box_corner_attachments_only","center_magnet","spacer","flatbase","split_bin","debug", "multi","multi_cutout","multi_hexpattern","multi_voronoipattern","multi_voronoigridpattern","multi_voronoihexgridpattern","multi_rounded","multi_chamfered","multi_drawer", "multibatch_basiccup",multibatch_basiccup_magnet,multibatch_basiccup_magnetscrew,multibatch_basiccup_halfpitch,multibatch_basiccup_halfpitch_magnet, multibatch_basiccup_halfpitch_magnetscrew,multibatch_batch_flatbase,multibatch_efficientfloor,multibatch_efficientfloor_magnet,multibatch_efficientfloor_magnetscrew, multibatch_efficientfloor_halfpitch,multibatch_efficientfloor_halfpitch_magnet,multibatch_efficientfloor_halfpitch_magnetscrew,multibatch_efficientfloor_flatbase]
+scenario = "demo"; //["demo","basiccup","position","chambers","draw","label","halfpitch","lip_style","fingerslide", "basecorner","sequentialbridging","wallpattern","wallpatternstyle","wallpatternfill","wallcutout","taperedcorner","floorthickness","filledin","efficient_floor", "box_corner_attachments_only","center_magnet","spacer","flatbase","split_bin","debug", "multi","multi_cutout","multi_hexpattern","multi_voronoipattern","multi_voronoigridpattern","multi_voronoihexgridpattern","multi_rounded","multi_chamfered","multi_drawer", "multibatch_basiccup",multibatch_basiccup_magnet,multibatch_basiccup_magnetscrew,multibatch_basiccup_halfpitch,multibatch_basiccup_halfpitch_magnet, multibatch_basiccup_halfpitch_magnetscrew,multibatch_batch_flatbase,multibatch_efficientfloor,multibatch_efficientfloor_magnet,multibatch_efficientfloor_magnetscrew, multibatch_efficientfloor_halfpitch,multibatch_efficientfloor_halfpitch_magnet,multibatch_efficientfloor_halfpitch_magnetscrew,multibatch_efficientfloor_flatbase, multi_floor_demo, multi_floor_demo_ef_off, floor_demo]
+    
 height = -1;
 width=-1;
 depth=-1;
@@ -284,12 +285,16 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
       ["draw",4,[gf_pitch*(5+multi_spacing.x), gf_pitch*(6+multi_spacing.y), 0], 8],
       ["draw",5,[gf_pitch*(5+multi_spacing.x)*2, gf_pitch*(6+multi_spacing.y), 0], 8]]  
       
-  : scenario == "efficient_floor" ? [["Efficient Floor",8,[[70,0,270],[30,20,20],280],[[imagnet_diameter,6.5],[iscrew_depth,6],[icutx, 0.2]]],
-      ["on", [[iefficient_floor,"on"],[imagnet_diameter,0],[iscrew_depth,0]]],
+  : scenario == "efficient_floor" ? [["Efficient Floor",12,[],[[imagnet_diameter,6.5],[iscrew_depth,6],[icutx, 0.2]]],
+      ["enabled", [[iefficient_floor,"on"],[imagnet_diameter,0],[iscrew_depth,0]]],
       ["rounded", [[iefficient_floor,"rounded"],[imagnet_diameter,0],[iscrew_depth,0]]],
       ["slide", [[iefficient_floor,"slide"],[imagnet_diameter,0],[iscrew_depth,0]]],
       ["enabled with magnet", [[iefficient_floor,"on"],[imagnet_diameter,6.5],[iscrew_depth,0]]],
+      ["rounded with magnet", [[iefficient_floor,"rounded"],[imagnet_diameter,6.5],[iscrew_depth,0]]],
+      ["slide with magnet", [[iefficient_floor,"slide"],[imagnet_diameter,6.5],[iscrew_depth,0]]],
       ["enabled with magnet and screw", [[iefficient_floor,"on"],[imagnet_diameter,6.5],[iscrew_depth,6]]],
+      ["rounded with magnet and screw", [[iefficient_floor,"rounded"],[imagnet_diameter,6.5],[iscrew_depth,6]]],
+      ["slide with magnet and screw", [[iefficient_floor,"slide"],[imagnet_diameter,6.5],[iscrew_depth,6]]],
       ["disabled", [[iefficient_floor,"off"]]],
       ["enabled", [[itranslate_rotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]], [iefficient_floor,"on"]]],
       ["disabled", [[itranslate_rotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]], [iefficient_floor,"off"]]]]
@@ -362,7 +367,7 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
       ["square grid - diamond", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"grid"],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
       ["voronoi", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"voronoi"],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
       ["voronoi - grid", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"voronoigrid"],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
-     ["voronoi - hex grid", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"voronoihexgrid"],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
+      ["voronoi - hex grid", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"voronoihexgrid"],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
       ["square grid - hex", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"grid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
       ["square grid - circle", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"grid"],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"]]],
       ["hex grid - diamond", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,4],[iwallpattern_fill,"none"]]],
@@ -524,7 +529,7 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
       ["",[[iwidth,2],[idepth,2],[iheight,5],[icuty, 0.2],[iposition, "center"],[irotate,[170,180,90]],[itranslate, [-45,-105,35]],[itranslate_rotate, [0,-5,360-315]],[iscale, 2],[icolor,""]]],
       //["",[[iwidth,3],[idepth,2],[iheight,5],[icuty, 0.5],[itranslate, [80,-120,0]],[irotate, [75+270,0,315]],[iscale, [0.75,0.75,0.75]]]],
       ["",[[iwidth,3],[idepth,2],[iheight,5],[iposition, "center"],[irotate,[180-75,0,90]],[itranslate,[-40,120,65]],[itranslate_rotate,[0,0,360-315]],[iscale, 1.5],[icolor,""]]]]        
-        
+  
    : scenario == "multibatch_basiccup_magnet" ? [["Basic Cup Magnet",1,[],[[imagnet_diameter, 6.5]],"multibatch_basiccup"]]
    : scenario == "multibatch_basiccup_magnetscrew" ? [["Basic Cup Magnet and Screw",1,[],[[imagnet_diameter, 6.5],[iscrew_depth,6]],"multibatch_basiccup"]]
    : scenario == "multibatch_basiccup_halfpitch" ? [["Half Pitch Cup HalfPitch",1,[],[[ihalf_pitch,true]],"multibatch_basiccup"]]
@@ -538,6 +543,70 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
    : scenario == "multibatch_efficientfloor_halfpitch_magnet" ? [["Light Half Pitch Cup Magnet",1,[],[[iefficient_floor, "on"], [ihalf_pitch,true],[imagnet_diameter, 6.5]],"multibatch_basiccup"]]
    : scenario == "multibatch_efficientfloor_halfpitch_magnetscrew" ? [["Light Half Pitch Cup Magnet and Screw",1,[],[[iefficient_floor, "on"], [ihalf_pitch,true], [imagnet_diameter, 6.5],[iscrew_depth,6]],"multibatch_basiccup"]]
    : scenario == "multibatch_efficientfloor_flatbase" ? [["Light Flat Base",1,[],[[iefficient_floor, "on"], [iflat_base,true]],"multibatch_basiccup"]]
+
+   : scenario == "floor_demo" ? [["Floor",36,[[90,0,0],[0,0,60],315],[[iheight, 5], [imagnet_diameter, 6.5], [iscrew_depth,6], [ihalf_pitch, false], [ibox_corner_attachments_only,false], [iefficient_floor,"off"]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "off"]]],//0
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "off"]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "off"], [ibox_corner_attachments_only,true]]],//2
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "off"], [ibox_corner_attachments_only,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "off"], [iscrew_depth,0], [ibox_corner_attachments_only,true]]],//4
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "off"], [iscrew_depth,0], [ibox_corner_attachments_only,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "off"], [imagnet_diameter, 0], [iscrew_depth,0]]],//6
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "off"], [imagnet_diameter, 0], [iscrew_depth,0]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "off"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]]],//8
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "off"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "on"]]],//10
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "on"]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "on"], [ibox_corner_attachments_only,true]]],//12
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "on"], [ibox_corner_attachments_only,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "on"], [iscrew_depth,0], [ibox_corner_attachments_only,true]]],//14
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "on"], [iscrew_depth,0], [ibox_corner_attachments_only,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "on"], [imagnet_diameter, 0], [iscrew_depth,0]]],//16
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "on"], [imagnet_diameter, 0], [iscrew_depth,0]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "on"], [ibox_corner_attachments_only,true], [iflat_base,true]]],//18
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "on"], [ibox_corner_attachments_only,true], [iflat_base,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "on"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]]],//20
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "on"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "slide"]]],//22
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "slide"]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "slide"], [ibox_corner_attachments_only,true]]],//24
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "slide"], [ibox_corner_attachments_only,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "slide"], [iscrew_depth,0], [ibox_corner_attachments_only,true]]],//26
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "slide"], [iscrew_depth,0], [ibox_corner_attachments_only,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "slide"], [imagnet_diameter, 0], [iscrew_depth,0]]],//28
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "slide"], [imagnet_diameter, 0], [iscrew_depth,0]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "slide"], [ibox_corner_attachments_only,true], [iflat_base,true]]],//30
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "slide"], [ibox_corner_attachments_only,true], [iflat_base,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "slide"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]]],//32
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "slide"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]]],
+      ["", [[iwidth,1], [idepth,1], [iefficient_floor, "rounded"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]]],//34
+      ["", [[iwidth,2], [idepth,3], [iefficient_floor, "rounded"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]]]
+      ]
+      
+   //: scenario == "efficient_floor" ? [["Efficient Floor",8,[[70,0,270],[30,20,20],280],[[imagnet_diameter,6.5],[iscrew_depth,6],[icutx, 0.2]]],
+  : scenario == "multi_floor_demo" ? [["Floor",1,[[90,0,0],[0,0,60],315],[[imagnet_diameter, 6.5], [iscrew_depth,6], [ihalf_pitch, false], [iefficient_floor,"off"], [ibox_corner_attachments_only,false], [iflat_base,false]]],
+      ["", [[irotate, [0,0,0]],  [itranslate, [-gf_pitch,0.25*gf_pitch,0]], [iwidth,3], [idepth,2], [icuty,0.2], [ihelp, true]]],
+      ["", [[irotate, [45,0,0]],[itranslate, [-1.6*gf_pitch,3*gf_zpitch,1.75*gf_pitch]], [iwidth,2], [idepth,2], [iheight,2]]],
+      ["", [[irotate, [270-45,0,0]],[itranslate, [0.6*gf_pitch,5*gf_zpitch,2.75*gf_pitch]], [iefficient_floor, "off"],[iwidth,2], [idepth,2], [iheight,2]]]
+      ]
+
+    : scenario == "multi_floor_demo_ef_off" ? [["multi_floor_demo_ef_off",1,[],[[iefficient_floor, "off"]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_off_corner" ? [["",1,[],[[iefficient_floor, "off"], [ibox_corner_attachments_only,true]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_off_magnet_corner" ? [["",1,[],[[iefficient_floor, "off"], [iscrew_depth,0], [ibox_corner_attachments_only,true]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_off_noatt" ? [["",1,[],[[iefficient_floor, "off"], [imagnet_diameter, 0], [iscrew_depth,0]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_off_flat_noatt" ? [["",1,[],[[iefficient_floor, "off"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_on" ? [["",1,[],[[iefficient_floor, "on"]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_on_corner" ? [["",1,[],[[iefficient_floor, "on"], [ibox_corner_attachments_only,true]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_on_noatt" ? [["",1,[],[[iefficient_floor, "on"], [imagnet_diameter, 0], [iscrew_depth,0]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_on_flat_noatt" ? [["",1,[],[[iefficient_floor, "on"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_slide" ? [["",1,[],[[iefficient_floor, "slide"]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_slide_corner" ? [["",1,[],[[iefficient_floor, "slide"], [ibox_corner_attachments_only,true]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_slide_noatt" ? [["",1,[],[[iefficient_floor, "slide"], [imagnet_diameter, 0], [iscrew_depth,0]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_slide_flat_noatt" ? [["",1,[],[[iefficient_floor, "slide"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]],"multi_floor_demo"]]
+    : scenario == "multi_floor_demo_ef_rounded_flat_noatt" ? [["",1,[],[[iefficient_floor, "rounded"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]],"multi_floor_demo"]]
+
+
+    
    : ["unknown scenario"];
    
 module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepOverrides=[]){
