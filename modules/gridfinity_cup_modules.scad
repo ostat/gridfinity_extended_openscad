@@ -323,6 +323,9 @@ module irregular_cup(
   cuty=default_cuty,
   help) {
 
+  num_x = num_x > gf_pitch/2 ? num_x/gf_pitch : num_x; 
+  num_y= num_y > gf_pitch/2 ? num_y/gf_pitch : num_y; 
+  
   //If efficient_floor disable the base magnets and screws
   center_magnet_thickness = efficient_floor != "off" ? 0 : center_magnet_thickness;
   center_magnet_diameter = efficient_floor != "off" ? 0 : center_magnet_diameter;
@@ -1111,8 +1114,8 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style,
             }
             
             if(label_relief > 0){
-              translate([0,labelPoints[i][0]+labelCornerRadius,zpoint-label_relief-fudgeFactor])
-                cube([abs(label_num_x),labelPoints[i][1]-labelPoints[i][0],label_relief+fudgeFactor]);
+              translate([0,labelPoints[i][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
+                cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
             }
           }
         }
