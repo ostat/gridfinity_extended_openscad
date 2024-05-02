@@ -7,7 +7,7 @@
 
 use <modules/gridfinity_cup_modules.scad>
 use <modules/gridfinity_modules.scad>
-use <gridfinity_baseplate.scad>
+use <modules/module_baseplate.scad>
 include <modules/gridfinity_constants.scad>
 use <modules/modules_item_holder.scad>
 

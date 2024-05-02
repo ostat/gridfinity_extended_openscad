@@ -13,11 +13,11 @@ use <modules/gridfinity_modules.scad>
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
-// X dimension in grid units  (multiples of 42mm)
+// X dimension in grid units (multiples of 42mm)
 width = 2; //0.5
 // Y dimension in grid units (multiples of 42mm)
 depth = 1; //0.5
-// Z dimension (multiples of 7mm)
+// Z dimension excluding lip if enabled (multiples of 7mm)
 height = 3; //0.1
 // Fill in solid block (overrides all following options)
 filled_in = false; 
@@ -75,9 +75,10 @@ flat_base = false;
 spacer = false;
 
 /* [Label] */
+label_style = "normal"; //[disabled: no label, normal:normal, click]
 // Include overhang for labeling (and specify left/right/center justification)
-label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
-// Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+label_position = "left"; // ["left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
+// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interferr with stacking
 label_relief = 0; // 0.1
@@ -148,7 +149,8 @@ module gridfinity_basic_cup(
   height = height,
   position=position,
   filled_in=filled_in,
-  label=label,
+  label_style=label_style,
+  label_position=label_position,
   label_size=label_size,
   label_relief=label_relief,
   wall_thickness=wall_thickness,
@@ -213,7 +215,8 @@ module gridfinity_basic_cup(
       num_x=width, num_y=depth, num_z=height,
       position=position,
       filled_in=filled_in,
-      label_style=label,
+      label_style=label_style,
+      label_position=label_position,
       label_size=label_size,
       label_relief=label_relief,
       fingerslide=fingerslide,
