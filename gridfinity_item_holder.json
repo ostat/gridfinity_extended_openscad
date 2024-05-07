@@ -124,6 +124,7 @@
             "itemholder_hole_spacing": "2",
             "itemholder_known_cards": "custom",
             "itemholder_known_cartridges": "rect",
+
             "itemholder_known_item": "1\/4hexshank",
             "itemholder_multi_card_compact": "0.69999999999999996",
             "itemholder_multi_cards": "sd;USBA;microsd",

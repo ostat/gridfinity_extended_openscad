@@ -7,7 +7,7 @@
 
 use <modules/gridfinity_cup_modules.scad>
 use <modules/gridfinity_modules.scad>
-use <gridfinity_baseplate.scad>
+use <modules/module_baseplate.scad>
 include <modules/gridfinity_constants.scad>
 use <modules/modules_item_holder.scad>
 
@@ -84,6 +84,10 @@ wallpattern_fill = "crop"; //["none", "space", "crop", "crophorizontal", "cropve
 wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
+module end_of_customizer_opts() {}
+colour_drawer = "Teal";
+colour_drawer_pull = "CadetBlue";
+colour_chest = "Maroon";
 
 function drawerPosition(
   index, 
@@ -152,6 +156,7 @@ module drawer(
   floorThickness = (drawerFloor ? wallThickness : 0);
   union(){
     difference(){
+      color(colour_drawer)
       roundedCube(
         x=outerSizes[drawerIndex].x,
         y=outerSizes[drawerIndex].y,
@@ -160,6 +165,7 @@ module drawer(
         
       translate([wallThickness, wallThickness, floorThickness-fudgeFactor]) 
       difference(){
+        color(colour_drawer)
         roundedCube(
           x=innerSizes[drawerIndex].x,
           y=innerSizes[drawerIndex].y,
@@ -175,11 +181,12 @@ module drawer(
         }
       }
     }
-    
+
     handelHeight = handleSize.z == 0 ? outerSizes[drawerIndex].z/2
       : handleSize.z <0 ? outerSizes[drawerIndex].z/abs(handleSize.z) : handleSize.z;
       
     //Drawer handle
+    color(colour_drawer_pull)
     translate([outerSizes[drawerIndex].x/2, 0, outerSizes[drawerIndex].z/2]) 
       drawerPull(handleSize.x, handleSize.y, handelHeight, handleSize[3]);
   }
@@ -235,7 +242,7 @@ module chest(
 
   difference(){
     union(){
-    color("green") 
+      color(colour_chest) 
       cube([outerChest.x, outerChest.y, totalH]);
       
       if(bottomGrid) {
@@ -293,7 +300,6 @@ module chestCutouts(
 ){
   wallPattern_thickness = chestWallThickness+fudgeFactor*2;
 
-  color("green") 
   for(iDrawer = [0 : drawerCount-1]){
     innerchest = [
       drawerOuterSizes[iDrawer].x + clearance*2,
@@ -317,6 +323,7 @@ module chestCutouts(
   
     vpos = startH + drawerPosition(iDrawer, drawerOuterSizes, clearance, drawerSlideThickness);
     
+    color(colour_chest) 
     translate([chestWallThickness, -fudgeFactor, vpos]) 
       cube([innerchest.x, innerchest.y+fudgeFactor, innerchest.z]);
         
@@ -352,7 +359,7 @@ module chestCutouts(
     }
   }
   
-  color("green") 
+  color(colour_chest) 
   if(drawerSlideWidth > 0 && drawerCount > 1)
   {
     zposFirstDivider =drawerPosition(1, drawerOuterSizes, clearance, drawerSlideThickness)-drawerSlideThickness*2;

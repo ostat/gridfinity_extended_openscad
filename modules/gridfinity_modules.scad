@@ -8,30 +8,36 @@ sharp_corners = 0;
 function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
   //efficient floor has an effective radius of 0
-) efficientFloor ? 0 
+) efficientFloor != "off" ? 0 
   : cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
 
 constTopHeight = 5.7+fudgeFactor*5; //Need to confirm this
 
+function wallCutoutPosition_mm(userPosition, wallLength) = 
+  (userPosition < 0 ? wallLength*gf_pitch/abs(userPosition) : gf_pitch*userPosition)-gf_pitch/2;
+
+//0.6 is needed to align the top of the cutout, need to fix this
+function calculateWallTop(num_z, lip_style) =
+  gf_zpitch * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
+  
 //Height to clear the voids in the base
-function cupBaseClearanceHeight(magnet_diameter, screw_depth) = let (
+function cupBaseClearanceHeight(magnet_diameter, screw_depth, flat_base=false) = let (
     mag_ht = magnet_diameter > 0 ? gf_magnet_thickness : 0)
-    max(mag_ht, screw_depth, gfBaseHeight());
+    flat_base 
+      ? max(mag_ht, screw_depth) 
+      : max(mag_ht, screw_depth, gfBaseHeight());
 
 function calculateMinFloorHeight(magnet_diameter,screw_depth) = 
     cupBaseClearanceHeight(magnet_diameter,screw_depth) + gf_cup_floor_thickness;
 function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = "off", efficient_floor = false, flat_base=false) = 
+function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
       let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
-  filledin == "on" || filledin == "notstackable" 
-    ? num_z * gf_zpitch 
-    : efficient_floor ? floorThickness
-    : flat_base ? 
-      //The flatbase can dip in to the floor, but is limited by the corner radius. It might not be worth accounting for, as someone could just use efficient base?
-      cupBaseClearanceHeight(magnet_diameter,screw_depth) - gf_baseplate_upper_taper_height/2 
-        : cupBaseClearanceHeight(magnet_diameter,screw_depth) + max(floor_thickness, gf_cup_floor_thickness);
+  filledin ? num_z * gf_zpitch 
+    : efficient_floor != "off" 
+      ? floorThickness
+      : max(3.5, cupBaseClearanceHeight(magnet_diameter,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
     
 //Usable floor depth (florr height - min floor)
 function calculateFloorThickness(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) = 
@@ -51,190 +57,162 @@ function cupPosition(position, num_x, num_y) = position == "center"
     : position == "zero" ? [gf_pitch/2, gf_pitch/2, 0] 
     : [0, 0, 0]; 
 
-module ShowClippers(cutx, cuty, size, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor){
-  num_x=size.x;
-  num_y=size.y;
-  num_z=size.z;
-
-  girdHeight= gfBaseHeight();
-  baseClearanceHeight = cupBaseClearanceHeight(magnet_diameter, screw_depth);
-  minFloorHeight  = calculateMinFloorHeight(magnet_diameter, screw_depth);
-  floorHeight = efficient_floor 
-    ? floor_thickness 
-    : calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filled_in);
-  floorDepth = efficient_floor 
-    ? floor_thickness :
-    floorHeight - baseClearanceHeight;
-
-  fontSize = 3;  
+module ShowClippers(cutx, cuty, size, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
   color(color_text)
   if(cuty > 0 && $preview)
   {
-    translate([0,-gf_pitch*0.5+gf_pitch*cuty,0]) 
-    {
-      translate([-0.5*gf_pitch+gf_tolerance/2,0,num_z*gf_zpitch+gf_Lip_Height])
-      rotate([90,0,0])
-        Caliper(messpunkt = false, center=false,
-          h = 0.1, s = fontSize
-          , end=0, in=1,
-          translate=[0,5,0],
-          l=num_x*gf_pitch-gf_tolerance, 
-          txt2 = str("total width ", num_x));
-     
-      translate([-0.5*gf_pitch+gf_tolerance/2+wall_thickness,0,(1+(num_z-1)/2)*gf_zpitch])
-      rotate([90,0,0])
-        Caliper(messpunkt = false, center=false,
-          h = 0.1, s = fontSize
-          , end=0, in=1,
-          l=num_x*gf_pitch-gf_tolerance-wall_thickness*2, 
-          txt2 = "inner width"); 
-          
-      translate([(num_x-0.5)*gf_pitch,0,0])
-      rotate([90,0,0])
-        Caliper(messpunkt = false, center=false,
-          h = 0.1, size = fontSize,
-          cx=0, end=0, in=2,
-          l=num_z*gf_zpitch, 
-          translate=[1,0,0],
-          txt2 = str("height ", num_z));
-          
-      translate([(num_x-0.5)*gf_pitch,0,num_z*gf_zpitch])
-      rotate([90,0,0])
-        Caliper(messpunkt = false, center=false,
-          h = 0.1, size = fontSize,
-          cx=0, end=0, in=2,
-          l=gf_Lip_Height, 
-          translate=[1,0,0],
-          txt2 = str("lip height"));
-          
-     translate([(num_x-0.5)*gf_pitch,0,0])
-      rotate([90,0,0])
-        Caliper(messpunkt = false, center=false,
-          h = 0.1, size = fontSize,
-          cx=0, end=0, in=2,
-          translate=[fontSize*3,0,0],
-          l=gf_Lip_Height+num_z*gf_zpitch, 
-          txt2 = str("total height"));
-
-      translate([-gf_pitch/2,0,baseClearanceHeight])
-      rotate([90,0,0])
-        Caliper(messpunkt = false, center=false,
-          h = 0.1, s = fontSize,
-          cx=-1, end=0, in=2,
-          translate=[00,0,0],
-          l=floorDepth, 
-          txt2 = "floor thickness");
-      translate([-gf_pitch/2,0,0])
-      rotate([90,0,0])
-        Caliper(messpunkt = false, center=false,
-          h = 0.1, s = fontSize*.75,
-          cx=0, end=0, in=2,
-          translate=[00,0,0],
-          l=girdHeight, 
-          txt2 = "grid height");
-      translate([-gf_pitch/2,0,0])
-      rotate([90,0,0])
-        Caliper(messpunkt = false, center=false,
-          h = 0.1, s = fontSize*.75,
-          cx=-1, end=0, in=2,
-          translate=[-2,0,0],
-          l=baseClearanceHeight, 
-          txt2 = "min floor height");
-  
+    translate([-gf_pitch/2,-gf_pitch*0.5+gf_pitch*cuty,0]) 
     rotate([90,0,0])
-        Caliper(messpunkt = false, center=false,
-          h = 0.1, s = fontSize,
-          cx=-1, end=0, in=2,
-          translate=[0,-floorHeight/2+2,0],
-          l=floorHeight, 
-          txt2 = "floor height");
-    }
+    showClippersForSide("width", size.x, size.z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
   }  
   
   color(color_text)
   if(cutx > 0 && $preview)
   {
-  translate([-gf_pitch*0.5+gf_pitch*cutx,0,0]) 
-  {
-    translate([0,(num_y-0.5)*gf_pitch-gf_tolerance/2,num_z*gf_zpitch+gf_Lip_Height])
+    translate([-gf_pitch*0.5+gf_pitch*cutx,gf_pitch*(size.y-0.5),0]) 
     rotate([90,0,270])
-      Caliper(messpunkt = false, center=false,
-        h = 0.1, s = fontSize
-        , end=0, in=1,
+    showClippersForSide("depth", size.y, size.z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
+  }
+}
+
+module showClippersForSide(description, gf_num, num_z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
+    fontSize = 5;  
+    gridHeight= gfBaseHeight();
+    baseClearanceHeight = cupBaseClearanceHeight(magnet_diameter, screw_depth,flat_base);
+    minFloorHeight  = calculateMinFloorHeight(magnet_diameter, screw_depth);
+    floorHeight = calculateFloorHeight(
+          magnet_diameter=magnet_diameter, 
+          screw_depth=screw_depth, 
+          floor_thickness=floor_thickness, 
+          num_z=num_z, 
+          filledin=filled_in,
+          efficient_floor=efficient_floor,
+          flat_base=flat_base);
+    floorDepth = efficient_floor != "off"
+      ? floor_thickness :
+      floorHeight - baseClearanceHeight;
+      echo("showClippersForSide",floorHeight=floorHeight,magnet_diameter=magnet_diameter,screw_depth=screw_depth,floor_thickness=floor_thickness,num_z=num_z,filled_in=filled_in,efficient_floor=efficient_floor,flat_base=flat_base);
+  wallTop = calculateWallTop(num_z, lip_style);
+      
+  isCutX = description == "depth";
+  translate([gf_tolerance/2,wallTop,0])
+     Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize,
+        end=0, in=1,
         translate=[0,5,0],
-        l=num_y*gf_pitch-gf_tolerance, 
-        txt2 = str("total depth ", num_y));
-   
-    translate([0,(num_y-0.5)*gf_pitch-gf_tolerance/2-wall_thickness,(1+(num_z-1)/2)*gf_zpitch])
-    rotate([90,0,270])
-      Caliper(messpunkt = false, center=false,
-        h = 0.1, s = fontSize
-        , end=0, in=1,
-        l=num_y*gf_pitch-gf_tolerance-wall_thickness*2, 
-        txt2 = "inner depth"); 
+        l=gf_num*gf_pitch-gf_tolerance, 
+        txt2 = str("total ", description, " ", gf_num));
+    
+    translate([gf_tolerance/2+wall_thickness,(1+(num_z-1)/2)*gf_zpitch,0])
+     Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize,
+        end=0, in=1,
+        l=gf_num*gf_pitch-gf_tolerance-wall_thickness*2, 
+        txt2 = str("inner ", description)); 
         
-    translate([0,-gf_pitch/2,0])
-    rotate([90,0,270])
-      Caliper(messpunkt = false, center=false,
+    translate(isCutX
+      ?[(gf_num)*gf_pitch,0,0]
+      :[0,0,0])
+     Caliper(messpunkt = false, center=false,
         h = 0.1, size = fontSize,
-        cx=0, end=0, in=2,
+        cx=isCutX ? 0: -1, 
+        end=0, in=2,
         l=num_z*gf_zpitch, 
-        translate=[1,0,0],
+        translate=isCutX ? [1,0,0] : [-1,0,0],
         txt2 = str("height ", num_z));
-        
-    translate([0,-gf_pitch/2,num_z*gf_zpitch])
-    rotate([90,0,270])
-      Caliper(messpunkt = false, center=false,
+    
+    if(lip_style != "none")
+    translate(isCutX
+      ?[(gf_num)*gf_pitch,num_z*gf_zpitch,0]
+      :[0,num_z*gf_zpitch,0])
+     Caliper(messpunkt = false, center=false,
         h = 0.1, size = fontSize,
-        cx=0, end=0, in=2,
-        l=gf_Lip_Height, 
-        translate=[1,0,0],
+        cx=isCutX ? 0: -1, 
+        end=0, in=2,
+        l=wallTop - (num_z*gf_zpitch),//gf_Lip_Height, 
+        translate=isCutX ? [1,0,0] : [-1,0,0],
         txt2 = str("lip height"));
         
-   translate([0,-gf_pitch/2,0])
-    rotate([90,0,270])
-      Caliper(messpunkt = false, center=false,
+     if(lip_style != "none")
+     translate(isCutX 
+      ?[(gf_num)*gf_pitch,0,0]
+      :[0,0,0])
+     Caliper(messpunkt = false, center=false,
         h = 0.1, size = fontSize,
-        cx=0, end=0, in=2,
-        translate=[fontSize*3,0,0],
-        l=gf_Lip_Height+num_z*gf_zpitch, 
+        cx=isCutX ? 0: -1,
+        end=0, in=2,
+        translate=isCutX ? [fontSize*3,0,0] : [fontSize*-3,0,0],
+        l=wallTop, 
         txt2 = str("total height"));
-
-    translate([0,+gf_pitch/2,baseClearanceHeight])
-    rotate([90,0,270])
+    
+    if(!flat_base)
+    translate(isCutX 
+      ? gf_num < 1 ? [gf_num*gf_pitch-1,0,0] : [(floor(gf_num)-1)*gf_pitch-1,0,0]
+      : gf_num < 1 ? [1,0,0] : [gf_pitch,0,0])
       Caliper(messpunkt = false, center=false,
-        h = 0.1, s = fontSize,
-        cx=-1, end=0, in=2,
-        translate=[00,0,0],
+        h = 0.1, s = fontSize*.75,
+        cx=isCutX ? 0 : -1, 
+        end=0, in=2,
+        translate=isCutX ?[3,0,0]:[-3,0,0],
+        l=gridHeight, 
+        txt2 = "grid height");
+
+    if(baseClearanceHeight > 0)
+    translate(isCutX 
+      ? gf_num < 1 ? [1,0,0] : [+gf_pitch*(gf_num-1),0,0]
+      : gf_num < 1 ? [gf_num*gf_pitch-1,0,0] : [gf_pitch-1,0,0])
+     Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize*.7,
+        cx=isCutX ? -1 : 0, 
+        end=0, in=2,
+        translate=isCutX ?[-2,0,0]:[2,0,0],
+        l=baseClearanceHeight, 
+        txt2 = "clearance height");
+
+    if(efficient_floor == "off")
+    translate(isCutX 
+      ? gf_num < 1 ? [1,baseClearanceHeight,0] : [gf_pitch*(gf_num-1),baseClearanceHeight,0]
+      : gf_num < 1 ? [gf_num*gf_pitch-1,baseClearanceHeight,0] : [gf_pitch-1,baseClearanceHeight,0])
+     Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize*.75,
+        cx=isCutX ? -1 : 0, 
+        end=0, in=2,
+        translate=isCutX ?[-2,0,0]:[2,0,0],
         l=floorDepth, 
         txt2 = "floor thickness");
-    translate([0,+gf_pitch/2,0])
-    rotate([90,0,270])
-      Caliper(messpunkt = false, center=false,
-        h = 0.1, s = fontSize*.75,
-        cx=0, end=0, in=2,
-        translate=[00,0,0],
-        l=girdHeight, 
-        txt2 = "grid height");
-    translate([0,+gf_pitch/2,0])
-    rotate([90,0,270])
-      Caliper(messpunkt = false, center=false,
-        h = 0.1, s = fontSize*.75,
-        cx=-1, end=0, in=2,
-        translate=[-2,0,0],
-        l=baseClearanceHeight, 
-        txt2 = "min floor height");
-    translate([0,0,0])
-    rotate([90,0,270])
-      Caliper(messpunkt = false, center=false,
-        h = 0.1, s = fontSize,
-        cx=-1, end=0, in=2,
+
+    translate(isCutX
+      ? gf_num < 1 ? [gf_pitch*gf_num/2,0,0] : [gf_pitch*(gf_num-1/2),0,0]
+      : gf_num < 1 ? [gf_pitch*gf_num/2,0,0] : [gf_pitch/2,0,0])
+     Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize*0.8,
+        cx=1, end=0, in=2,
         translate=[0,-floorHeight/2+2,0],
         l=floorHeight, 
         txt2 = "floor height");
-    }
-  }  
+
+    if(screw_depth > 0)
+    translate(isCutX
+      ? [+gf_pitch*(gf_num)-6,0,0]
+      : [10,0,0])
+     Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize*.75,
+        cx=1, end=0, in=2,
+        l=screw_depth, 
+        txt2 = "screw");
+
+    if(magnet_diameter > 0)
+    translate(isCutX 
+      ? [+gf_pitch*(gf_num)-10,0,0]
+      : [6,0,0])
+     Caliper(messpunkt = false, center=false,
+        h = 0.1, s = fontSize*.75,
+        //translate=[-2,0,0],
+        cx=1, end=0, in=2,
+        l=gf_magnet_thickness, 
+        txt2 = "magnet");
 }
+
 module assert_openscad_version(){
   assert(version()[0]>2022,"This script requires a newer version of openSCAD. http://openscad.org");
 }
