@@ -516,7 +516,7 @@ module irregular_cup(
                //Add wall pattern to the separators 
                for (i=[0:len(separator_positions)-1]) {
                   union(){
-                  translate([(separator_positions[i])-wall_thickness, 0, fudgeFactor]) 
+                  translate([(separator_positions[i])-chamber_wall_thickness, 0, fudgeFactor]) 
                   translate(dividerLocation[1])
                   rotate(dividerLocation[2])
                   render(){
@@ -527,7 +527,7 @@ module irregular_cup(
                     circleFn = wallpattern_hole_sides,
                     holeSize = [wallpattern_hole_size, wallpattern_hole_size],
                     holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                    holeHeight = wallpattern_thickness,
+                    holeHeight = chamber_wall_thickness*2,
                     center=true,
                     fill=wallpattern_fill, //"none", "space", "crop"
                     voronoiNoise=wallpattern_voronoi_noise,
@@ -563,7 +563,6 @@ module irregular_cup(
               }
             }
           }
-          
           difference(){
             for(i = [0:1:len(locations)-1])
             {
