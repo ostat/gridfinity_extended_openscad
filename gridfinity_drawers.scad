@@ -26,8 +26,11 @@ drawer_count = 3;
 drawer_enable_custom_sizes = false;
 //Inner height of drawer in Gridfinity units. Edit in script for more than 4 items.
 drawer_custom_sizes = [1,2,3,4];
+//clearance inside the drawers
+drawer_clearance = [0.25,0.25,0.25];
 
-drawer_clearance = 0.25;
+//clearance inside the chest
+chest_clearance = [0.25,0.25,0.25];
 
 chest_wall_thickness = 2;
 //Thickness of drawer slies in mm. 0 is uses wall thickenss.
@@ -38,7 +41,8 @@ chest_drawer_slide_width = 10;
 /* [Drawer] */
 // Handle size width, depth, height, and radius. Height, less than 0 drawerHeight/abs(height). radius, -1 = depth/2. 
 handle_size = [4, 10, -1, -1];
-
+handle_verticle_center = false;
+handle_rotate = false;
 drawer_wall_thickness = 2;
 drawer_base = "default"; //["grid":Grid only, "floor":floor only, "default":"Grid and floor"]
 drawer_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
@@ -95,7 +99,7 @@ function drawerPosition(
   clearance, 
   sliderThickenss) = let(
   drawersTotal = (index<1 ? 0 : sum(partial(outerSizes,0,index-1)).z),
-  clearanceTotal = clearance*2*(index+1),
+  clearanceTotal = clearance.z*2*(index),
   sliderThickenss = sliderThickenss*index) drawersTotal + clearanceTotal + sliderThickenss;
   
 function sum(list, c = 0) = 
@@ -114,30 +118,38 @@ module drawers(
   drawerBase, // = drawerbase,
   wallThickness,// = wallthicknessInner,
   handleSize,
+  handleVerticleCenter,
+  handleRotate,
   ridgeDepth,
   startH,
-  clearance,
+  chestClearance,
   chestWallThickness,
-  gridStyle
-  ){
-  
-  offsetW = chestWallThickness + clearance;
+  gridStyle,
+  drawerClearance)
+{
+  assert(is_list(chestClearance) && len(chestClearance) == 3, "chestClearance must be a list of length 3");
+  assert(is_list(drawerClearance) && len(drawerClearance) == 3, "drawerClearance must be a list of length 3");
+
+  offsetW = chestWallThickness + chestClearance.x;
   
   for(i = [0 : drawerCount-1]){
     //IncrementH = 0;
-    zpos = startH + drawerPosition(i, outerSizes, clearance, ridgeDepth);
+    zpos = startH + drawerPosition(i, outerSizes, chestClearance, ridgeDepth);
     //(clearance * i) + (i<1 ? 0 : sum(partial(drawerOuterSizes,0,i-1)).z);
     //echo("drawers", i= i, StartH=StartH, clearance=clearance, height=drawerInnerHeights[i], zpos=zpos, drawerOuterz=drawerOuterSizes.z, drawerInnerz=drawerInnerSizes.z, drawerOuterSizes.z);
       
-    translate([chestWallThickness+clearance/2, offsetW, zpos]) 
+    translate([chestWallThickness+chestClearance.x, offsetW, zpos]) 
       drawer(drawerIndex=i,
         innerUnitSize=innerUnitSize,
         drawerBase=drawerBase,// = drawerbase,
         wallThickness=wallThickness,// = wallthicknessInner,
         handleSize=handleSize,
+        handleVerticleCenter=handleVerticleCenter,
+        handleRotate=handleRotate,
         innerSizes=innerSizes,
         outerSizes=outerSizes,
-        gridStyle=gridStyle);
+        gridStyle=gridStyle,
+        clearance=drawerClearance);
   }
 }
 
@@ -147,13 +159,17 @@ module drawer(
   drawerBase,// = drawerbase,
   wallThickness,// = wallthicknessInner,
   handleSize,
+  handleVerticleCenter,
+  handleRotate,
   innerSizes,// = drawerInnerSizes,
   outerSizes,// = drawerOuterSizes,
-  gridStyle
-  ){
-  
+  gridStyle,
+  clearance)
+{
+  assert(is_list(clearance) && len(clearance) == 3, "clearance must be a list of length 3");
   drawerFloor = (drawerBase == "default" || drawerBase == "floor");
-  floorThickness = (drawerFloor ? wallThickness : 0);
+  floorThickness = wallThickness;
+  
   union(){
     difference(){
       color(colour_drawer)
@@ -164,30 +180,47 @@ module drawer(
         sideRadius = 6);
         
       translate([wallThickness, wallThickness, floorThickness-fudgeFactor]) 
-      difference(){
         color(colour_drawer)
         roundedCube(
-          x=innerSizes[drawerIndex].x,
-          y=innerSizes[drawerIndex].y,
+          //remove the main grid space
+          x=innerSizes[drawerIndex].x-fudgeFactor*2,
+          y=innerSizes[drawerIndex].y-fudgeFactor*2,
           z=innerSizes[drawerIndex].z+fudgeFactor*2,
           sideRadius = 4);
-        if(drawerBase == "default" || drawerBase == "grid"){
-          translate([gf_pitch/2,gf_pitch/2, -fudgeFactor]) 
-            baseplate(
-              width = innerUnitSize.x,
-              depth = innerUnitSize.y,
-              plateStyle = "base",
-              plateOptions = gridStyle);
+          if(drawerBase == "grid"){
+            translate([wallThickness+clearance.x/2+0.25,wallThickness+clearance.y/2+0.25, -fudgeFactor]) 
+            roundedCube(
+              x=gf_pitch*innerUnitSize.x-0.5,
+              y=gf_pitch*innerUnitSize.y-0.5,
+              z=floorThickness+fudgeFactor,
+              sideRadius = 4);
         }
       }
-    }
+      
+      if(drawerBase == "default" || drawerBase == "grid"){
+        translate([
+          gf_pitch/2+wallThickness+clearance.x/2,
+          gf_pitch/2+wallThickness+clearance.y/2, 
+          (drawerFloor ? floorThickness-fudgeFactor : 0)-fudgeFactor*2]) 
+          baseplate(
+            width = innerUnitSize.x,
+            depth = innerUnitSize.y,
+            plateStyle = "base",
+            plateOptions = gridStyle);
+      }
 
     handelHeight = handleSize.z == 0 ? outerSizes[drawerIndex].z/2
       : handleSize.z <0 ? outerSizes[drawerIndex].z/abs(handleSize.z) : handleSize.z;
       
     //Drawer handle
     color(colour_drawer_pull)
-    translate([outerSizes[drawerIndex].x/2, 0, outerSizes[drawerIndex].z/2]) 
+    translate([
+        outerSizes[drawerIndex].x/2, 
+        0, 
+        handleVerticleCenter 
+          ? outerSizes[drawerIndex].z/2  
+          : handleRotate ? handleSize.x/2 : handelHeight/2])
+      rotate(handleRotate ? [0,90,0] : [0,0,0])
       drawerPull(handleSize.x, handleSize.y, handelHeight, handleSize[3]);
   }
 }
@@ -237,9 +270,13 @@ module chest(
   startH,
   clearance
 ){
-  bottomGridOffset = drawerWallThickness + chestWallThickness + clearance*2;
-  topGridOffset = bottomGridOffset - 0.25;
-
+  assert(is_list(clearance), "clearance must be a list");
+  bottomGridOffset = [
+    chestWallThickness + clearance.x + (drawerOuterSizes[0].x-drawerInnerUnitSize.x*gf_pitch)/2,
+    chestWallThickness + clearance.y + (drawerOuterSizes[0].y-drawerInnerUnitSize.y*gf_pitch)/2, 0];
+    
+  topGridOffset = [bottomGridOffset.x - 0.25, bottomGridOffset.y - 0.25,0];
+    
   difference(){
     union(){
       color(colour_chest) 
@@ -247,7 +284,7 @@ module chest(
       
       if(bottomGrid) {
         baseHeight=0.7;
-        translate([bottomGridOffset, bottomGridOffset, 0]) 
+        translate(bottomGridOffset) 
         translate([gf_pitch/2, gf_pitch/2, -gf_zpitch*baseHeight+fudgeFactor])
         grid_block(
           num_x=drawerInnerUnitSize.x, 
@@ -263,7 +300,8 @@ module chest(
       }
       
       if(enableTopGrid) {
-        translate([topGridOffset + gf_pitch/2, topGridOffset + gf_pitch/2, totalH-fudgeFactor]) 
+        translate(topGridOffset) 
+        translate([gf_pitch/2, gf_pitch/2, totalH-fudgeFactor]) 
         baseplate(
           width = drawerInnerUnitSize.x,
           depth = drawerInnerUnitSize.y,
@@ -302,9 +340,9 @@ module chestCutouts(
 
   for(iDrawer = [0 : drawerCount-1]){
     innerchest = [
-      drawerOuterSizes[iDrawer].x + clearance*2,
-      drawerOuterSizes[iDrawer].y + clearance*2,
-      drawerOuterSizes[iDrawer].z + clearance*2];
+      drawerOuterSizes[iDrawer].x + clearance.x*2,
+      drawerOuterSizes[iDrawer].y + clearance.y*2,
+      drawerOuterSizes[iDrawer].z + clearance.z*2];
  
     //positions for wall cutouts
     back = [
@@ -322,7 +360,7 @@ module chestCutouts(
     locations = [back, left, right];
   
     vpos = startH + drawerPosition(iDrawer, drawerOuterSizes, clearance, drawerSlideThickness);
-    
+    echo(startH=startH, vpos=vpos );
     color(colour_chest) 
     translate([chestWallThickness, -fudgeFactor, vpos]) 
       cube([innerchest.x, innerchest.y+fudgeFactor, innerchest.z]);
@@ -421,11 +459,14 @@ module gridfinity_drawer(
     drawerCount = drawer_count,
     drawerEnableCustomSizes = drawer_enable_custom_sizes,
     drawerCustomSizes = drawer_custom_sizes,
-    clearance = drawer_clearance,
+    drawerClearance = drawer_clearance,
+    chestClearance = chest_clearance,
     chestWallThickness = chest_wall_thickness,
     chestDrawerSlideThickness = chest_drawer_slide_thickness,
     chestDrawerSlideWidth = chest_drawer_slide_width,
     handleSize = handle_size,
+    handleVerticleCenter = handle_verticle_center,
+    handleRotate = handle_rotate,
     drawerWallThickness = drawer_wall_thickness,
     drawerBase = drawer_base,
     drawerGridStyle = drawer_grid_style,
@@ -460,11 +501,11 @@ module gridfinity_drawer(
 
   drawerInnerUnitSize = [drawerInnerWidth, drawerInnerDepth];
   drawerInnerSizes = [for(i = [0:drawerCount-1]) [
-    (drawerInnerWidth*gf_pitch) + clearance - 0.25,
-    (drawerInnerDepth*gf_pitch) + clearance - 0.25,
-    (drawerInnerHeights[i]*gf_zpitch) + clearance + 4.25 + (drawerGridStyle == "magnet" ? gf_baseplate_magnet_thickness : 0)
+    (drawerInnerWidth*gf_pitch) + drawerClearance.x,
+    (drawerInnerDepth*gf_pitch) + drawerClearance.y,
+    (drawerInnerHeights[i]*gf_zpitch) + drawerClearance.z + 4.25 + (drawerGridStyle == "magnet" ? gf_baseplate_magnet_thickness : 0)
   ]];
-
+    
   drawerOuterSizes = [for(i = [0:drawerCount-1]) [
     drawerInnerSizes[i].x + (drawerWallThickness * 2),
     drawerInnerSizes[i].y + (drawerWallThickness * 2),
@@ -472,10 +513,10 @@ module gridfinity_drawer(
   ]];
     
   outerChest = [
-    drawerOuterSizes[0].x + (clearance * 2) + (chestWallThickness * 2),
-    drawerOuterSizes[0].y + (clearance * 2) + (chestWallThickness)];
-
-  totalH = sum(drawerOuterSizes).z + (clearance*2*drawerCount) + drawerSlideThickness * (drawerCount - 1) + chestWallThickness*2;
+    drawerOuterSizes[0].x + (chestClearance.x * 2) + (chestWallThickness * 2),
+    drawerOuterSizes[0].y + (chestClearance.y * 2) + (chestWallThickness)];
+    
+  totalH = sum(drawerOuterSizes).z + (chestClearance.z*2*drawerCount) + drawerSlideThickness * (drawerCount - 1) + chestWallThickness*2;
 
   startH = chestWallThickness;
 
@@ -501,7 +542,7 @@ module gridfinity_drawer(
       drawerSlideThickness=drawerSlideThickness,
       drawerWallThickness=drawerWallThickness,
       startH=startH,
-      clearance=clearance)
+      clearance=chestClearance)
       chestCutouts(
         drawerCount=drawerCount, 
         drawerOuterSizes=drawerOuterSizes,
@@ -510,7 +551,7 @@ module gridfinity_drawer(
         drawerSlideWidth=chestDrawerSlideWidth,
         startH=startH,
         outerChest=outerChest,
-        clearance=clearance,
+        clearance=chestClearance,
         chestWallThickness=chestWallThickness,
         efficientBack=efficientBack,
         wallPatternBorderWidth=wallPatternBorderWidth,
@@ -532,11 +573,14 @@ module gridfinity_drawer(
       drawerBase=drawerBase,
       wallThickness=drawerWallThickness,
       handleSize=handleSize,
+      handleVerticleCenter=handleVerticleCenter,
+      handleRotate=handleRotate,
       ridgeDepth=ridgeDepth,
       startH=startH,
-      clearance=clearance,
+      chestClearance=chestClearance,
       chestWallThickness=chestWallThickness,
-      gridStyle=drawerGridStyle);
+      gridStyle=drawerGridStyle,
+      drawerClearance=drawerClearance);
   if(mode == "onedrawer")   
     drawer(
       drawerIndex=0,
@@ -544,45 +588,12 @@ module gridfinity_drawer(
       drawerBase= drawerBase,
       wallThickness = drawerWallThickness,
       handleSize = handleSize,
+      handleVerticleCenter=handleVerticleCenter,
+      handleRotate=handleRotate,
       innerSizes = drawerInnerSizes,
       outerSizes = drawerOuterSizes,
-      gridStyle=drawerGridStyle);
+      gridStyle=drawerGridStyle,
+      clearance=drawerClearance);
 }
 
-gridfinity_drawer(
-/*  mode = mode,
-  drawerInnerWidth = drawer_inner_width,
-  drawerInnerDepth = drawer_inner_depth,
-  drawerInnerHeight = drawer_inner_height,
-  drawerCount = drawer_count,
-  drawerEnableCustomSizes = drawer_enable_custom_sizes,
-  drawerCustomSizes = drawer_custom_sizes,
-  clearance = clearance,
-  chestWallThickness = chest_wall_thickness,
-  chestDrawerSlideThickness = chest_drawer_slide_thickness,
-  chestDrawerSlideWidth = chest_drawer_slide_width,
-  handleSize = handle_size,
-  wallThicknessInner = wallthicknessInner,
-  drawerBase = drawerbase,
-  drawerGridStyle = drawer_grid_style,
-  chestEnableTopGrid = chest_enable_top_grid,
-  chestTopGridStyle = chest_top_grid_style,
-  bottomGrid = bottomgrid,
-  magnetDiameter = magnet_diameter,
-  screwDepth = screw_depth,
-  holeOverhangRemedy = hole_overhang_remedy,
-  chestCornerAttachmentsOnly = chest_corner_attachments_only,
-  halfPitch = half_pitch,
-  flatBase = flat_base,
-  wallPatternBorderWidth = wallpattern_border_width,
-  efficientBack = efficientback,
-  wallPatternEnabled = wallpattern_enabled,
-  wallPatternStyle = wallpattern_style,
-  wallPatternHoleSpacing = wallpattern_hole_spacing,
-  wallPatternDividersEnabled = wallpattern_dividers_enabled,
-  wallPatternHoleSides = wallpattern_hole_sides,
-  wallPatternHoleSize = wallpattern_hole_size,
-  wallPatternFill = wallpattern_fill,
-  wallPatternVoronoiNoise = wallpattern_voronoi_noise,
-  wallPatternVoronoiRadius = wallpattern_voronoi_radius*/
-);
+gridfinity_drawer();
