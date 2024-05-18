@@ -9,7 +9,7 @@ use <modules/gridfinity_modules.scad>
 
 itemholder_known_item = "1/4hexshank"; // [ custom:"Custome", 4hexshank:"4mm Hex Shank", 1/4hexshank:"1/4 Hex Shank", 1/4hexlongshank:"1/4 Hex Long Shank", 5/16hexshank:"5/16 Hex Shank", 3/8hexshank:"3/8 Hex Shank", "aaaa":"AAAA cell", "aaa":"AAA cell", "aa":"AA cell", "c":"C cell", "d":"d cell", "7540":"7540 cell", "8570":"8570 cell", "10180":"10180 cell", "10280":"10280 cell", "10440":"10440 cell", "10850":"10850 cell", "13400":"13400 cell", "14250":"14250 cell", "14300":"14300 cell", "14430":"14430 cell", "14500":"14500 cell", "14650":"14650 cell", "15270":"15270 cell", "16340":"16340 cell", "16650":"16650 cell", "17500":"17500 cell", "17650":"17650 cell", "17670":"17670 cell", "18350":"18350 cell", "18490":"18490 cell", "18500":"18500 cell", "18650":"18650 cell", "20700":"20700 cell", "21700":"21700 cell", "25500":"25500 cell", "26500":"26500 cell", "26650":"26650 cell", "26700":"26700 cell", "26800":"26800 cell", "32600":"32600 cell", "32650":"32650 cell", "32700":"32700 cell", "38120":"38120 cell", "38140":"38140 cell", "40152":"40152 cell", "4680":"4680 cell"]
 itemholder_known_cards = "custom"; // [ custom:"Custome", "multicard":"Multi card slot", "compactflashi":"CompactFlash, Type I", "compactflashii":"CompactFlash, Type II", "smartmedia":"SmartMedia", "mmc":"MMC, MMCplus", "mmcmobile":"RS-MMC, MMCmobile", "mmcmicro":"MMCmicro", "sd":"SD, SDHC, SDXC, SDIO, MicroP2", "minisd":"miniSD, miniSDHC, miniSDIO", "microsd":"microSD, microSDHC, microSDXC", "memorystickstandard":"Memory Stick Standard, PRO", "memorystickduo":"Memory Stick Duo, PRO Duo, PRO-HG, XC", "memorystickmicro":"Memory Stick Micro (M2), XC", "nano":"Nano Memory", "psvita":"PS Vita Memory Card", "xqd":"XQD card", "xD":"xD", "USBA":"USB A", "USBC":"USB C"]
-itemholder_known_cartridges = "custom"; // [ custom:"Custome", "atari800":"Atari 800", "atari2600":"Atari 2600/7800/Colecovision", "atari5200":"Atari 5200", "atari7800":"Atari 7800", "commodore":"Commodore Vic20", "magnavoxodyssey":"Magnavox Odyssey", "magnavoxodysseymulticard":"Magnavox Odyssey (multicard)", "magnavoxodyssey2":"Magnavox Odyssey2", "mattelintellivision":"Mattel Intellivision I & II", "nintendofamicom":"Nintendo Famicom", "nintendofamicomdisk":"Nintendo Famicom Disk", "nintendosuperfamicom":"Nintendo Super Famicom / SNES (Pal)", "nes":"NES", "snes":"SNES", "nintendo64":"Nintendo 64", "nintendogb":"Nintendo GB", "nintendogbc":"Nintendo GBC", "nintendogba":"Nintendo GBA", "nintendods":"Nintendo DS", "nintendo2ds":"Nintendo 2DS/3DS", "nintendovb":"Nintendo Virtual Boy", "nintendoswitch":"Nintendo Switch", "segagamegear":"Sega Game Gear", "segagenesis":"Sega Genesis", "segagenesistall":"Sega Genesis (tall cart)", "segamegadrive":"Sega MegaDrive", "segamegadrivecodemasters":"Sega MegaDrive Codemasters", "segamastersystem":"Sega Master System", "sega32x":"Sega 32x", "segacard":"Sega Card/TG16", "segapico":"Sega Pico", "sonyumd":"Sony UMD", "sonypsvita":"Sony PS Vita", "sonypsvitamemcard":"Sony PS Vita (Mem Card)", "necpcehucard":"NEC PCE HuCard", "snkneogeoaes":"SNK Neo Geo AES", "snkneogeomvs":"SNK Neo Geo MVS", "bandai":"Bandai Wonderswan/Color", "msx":"MSX"]
+itemholder_known_cartridges = "custom"; // [rect:"Custom rectangle", custom:"Custome", "atari800":"Atari 800", "atari2600":"Atari 2600/7800/Colecovision", "atari5200":"Atari 5200", "atari7800":"Atari 7800", "commodore":"Commodore Vic20", "magnavoxodyssey":"Magnavox Odyssey", "magnavoxodysseymulticard":"Magnavox Odyssey (multicard)", "magnavoxodyssey2":"Magnavox Odyssey2", "mattelintellivision":"Mattel Intellivision I & II", "nintendofamicom":"Nintendo Famicom", "nintendofamicomdisk":"Nintendo Famicom Disk", "nintendosuperfamicom":"Nintendo Super Famicom / SNES (Pal)", "nes":"NES", "snes":"SNES", "nintendo64":"Nintendo 64", "nintendogb":"Nintendo GB", "nintendogbc":"Nintendo GBC", "nintendogba":"Nintendo GBA", "nintendods":"Nintendo DS", "nintendo2ds":"Nintendo 2DS/3DS", "nintendovb":"Nintendo Virtual Boy", "nintendoswitch":"Nintendo Switch", "segagamegear":"Sega Game Gear", "segagenesis":"Sega Genesis", "segagenesistall":"Sega Genesis (tall cart)", "segamegadrive":"Sega MegaDrive", "segamegadrivecodemasters":"Sega MegaDrive Codemasters", "segamastersystem":"Sega Master System", "sega32x":"Sega 32x", "segacard":"Sega Card/TG16", "segapico":"Sega Pico", "sonyumd":"Sony UMD", "sonypsvita":"Sony PS Vita", "sonypsvitamemcard":"Sony PS Vita (Mem Card)", "necpcehucard":"NEC PCE HuCard", "snkneogeoaes":"SNK Neo Geo AES", "snkneogeomvs":"SNK Neo Geo MVS", "bandai":"Bandai Wonderswan/Color", "msx":"MSX"]
 
 // cards to use when multi card is selected I.E. sd;USBA;microsd
 itemholder_multi_cards = "sd;USBA;microsd";
@@ -34,7 +34,7 @@ itemholder_hole_chamfer = 1; //0.5
 // The number of sides for the hole, when custom is selected
 itemholder_hole_sides = 4; 
 // The size the hole, when custom is selected
-itemholder_hole_size = 10; //0.1
+itemholder_hole_size = [10, 10]; //0.1
 
 // Number of holes in the x and ydimension, 0 is dynamic
 itemholder_hole_gridx = 0; //1
@@ -302,7 +302,7 @@ function LookupKnownCartridge(name="custom") =
   name == "snkneogeomvs" ? [145, 35, 46.25, 185, "square"] :
   name == "bandai" ? [41, 6, 16.5, 66, "square"] :
   name == "msx" ? [109, 16.8, 17.35, 69.4, "square"] :
-  [0,0,0,0,""];
+  name == "rect" ? [itemholder_hole_size[0], itemholder_hole_size[1],0,0, "square"] :[0,0,0,0,""];
   
 function LookupKnownShapes(name="round") = 
   name == "square" ? 4 :
@@ -361,7 +361,7 @@ module itemholder(
     : item[4] == "" ? sides : LookupKnownShapes(item[4]);
   _holeSize = knowItem == "multicard" ? [max(longCenter.x,smallCenter.x), max(longCenter.y, smallCenter.y, side.x -_multiCardCompact)]
     : item[4] != "square" ?
-    let(s = (item[0] == 0 ? holeSize : item[0])+holeClearance) [s, s]
+    [(item[0] == 0 ? holeSize[0] : item[0])+holeClearance, (item[1] == 0 ? holeSize[1] : item[1])+holeClearance]
     : [item[0],item[1]];
     
   _depth= let( 
