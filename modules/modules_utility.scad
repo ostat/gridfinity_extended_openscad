@@ -119,10 +119,6 @@ module WallCutout(
     xCenter=-1);
 }
 
-
-translate([-1.3/2,0,0.6])
-cube(size=1.3);
-
 //Creates a rounded cube
 //x=width in mm
 //y=length in mm
