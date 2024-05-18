@@ -5,7 +5,7 @@ include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
-scenario = "demo"; //["demo","basiccup","position","chambers","draw","label","halfpitch","lip_style","fingerslide", "basecorner","sequentialbridging","wallpattern","wallpatternstyle","wallpatternfill","wallcutout","taperedcorner","floorthickness","filledin","efficient_floor", "box_corner_attachments_only","center_magnet","spacer","flatbase","split_bin","debug", "multi","multi_cutout","multi_hexpattern","multi_voronoipattern","multi_voronoigridpattern","multi_voronoihexgridpattern","multi_rounded","multi_chamfered","multi_drawer", "multibatch_basiccup",multibatch_basiccup_magnet,multibatch_basiccup_magnetscrew,multibatch_basiccup_halfpitch,multibatch_basiccup_halfpitch_magnet, multibatch_basiccup_halfpitch_magnetscrew,multibatch_batch_flatbase,multibatch_efficientfloor,multibatch_efficientfloor_magnet,multibatch_efficientfloor_magnetscrew, multibatch_efficientfloor_halfpitch,multibatch_efficientfloor_halfpitch_magnet,multibatch_efficientfloor_halfpitch_magnetscrew,multibatch_efficientfloor_flatbase, multi_floor_demo, multi_floor_demo_ef_off, floor_demo]
+scenario = "demo"; //["demo","basiccup","position","chambers","draw","label","label_relief","halfpitch","lip_style","fingerslide", "basecorner","sequentialbridging","wallpattern","wallpatternstyle","wallpatternfill","wallcutout","taperedcorner","floorthickness","filledin","efficient_floor", "box_corner_attachments_only","center_magnet","spacer","flatbase","split_bin","debug", "multi","multi_cutout","multi_hexpattern","multi_voronoipattern","multi_voronoigridpattern","multi_voronoihexgridpattern","multi_rounded","multi_chamfered","multi_drawer", "multibatch_basiccup",multibatch_basiccup_magnet,multibatch_basiccup_magnetscrew,multibatch_basiccup_halfpitch,multibatch_basiccup_halfpitch_magnet, multibatch_basiccup_halfpitch_magnetscrew,multibatch_batch_flatbase,multibatch_efficientfloor,multibatch_efficientfloor_magnet,multibatch_efficientfloor_magnetscrew, multibatch_efficientfloor_halfpitch,multibatch_efficientfloor_halfpitch_magnet,multibatch_efficientfloor_halfpitch_magnetscrew,multibatch_efficientfloor_flatbase, multi_floor_demo, multi_floor_demo_ef_off, floor_demo]
     
 height = -1;
 width=-1;
@@ -116,8 +116,8 @@ echo("start",vp=vp, vpr = getcustomVpr(vp), vpt = getcustomVpt(vp), vpd = getcus
 
 //Basic cup default settings for demo
 defaultDemoSetting = 
-    //width, depth, height, filled_in, label, label_size, ilabel_relief
-    [3,2,5,"default","off","disabled",[1.5,14,0], 0,
+    //width, depth, height, position, filled_in, label, label_size, label_relief
+    [3,2,5,"default",false,"disabled",[1.5,14,0], 0,
     //wall_thickness, lip_style, zClearance, chamber_wall_thickness
     0.95, "normal", 0, 1.2,
     //vertical_chambers, vertical_separator_bend_position, vertical_separator_bend_angle, vertical_separator_bend_separation,
@@ -196,10 +196,11 @@ function getScenario(scenario) =
       ["center", [[iposition, "center"]]],
       ["zero", [[iposition, "zero"]]]]
       
-  : scenario == "lip_style" ? [["Lip Style",3,[],[[icutx, 0.5]]],
+  : scenario == "lip_style" ? [["Lip Style",4,[],[[icutx, 0.5]]],
       ["normal", [[ilip_style, "normal"]]],
       ["reduced", [[ilip_style, "reduced"]]],
-      ["none", [[ilip_style, "none"]]]]
+      ["minimum", [[ilip_style, "minimum"]]],
+      ["none, not stackable", [[ilip_style, "none"]]]]
       
   : scenario == "fingerslide" ? [["Finger Slide",9,[[70,0,270],[30,20,20],280],[[icutx, 0.5]]],
       ["rounded 5mm", [[ifingerslide, "rounded"],[ifingerslide_radius, 5]]],
@@ -219,9 +220,9 @@ function getScenario(scenario) =
       ["2mm", [[icavity_floor_radius, 2]]]]
       
    : scenario == "filledin" ? [["Filled In",3,[],[[icutx, 0.5]]],
-      ["on", [[ifilled_in, "on"]]],
-      ["on, stackable false", [[ifilled_in, "notstackable"]]],
-      ["off", [[ifilled_in, "off"]]]]
+      ["on", [[ifilled_in, true]]],
+      ["on, stackable false", [[ifilled_in, true], [ilip_style, "none"]]],
+      ["off", [[ifilled_in, false]]]]
       
    : scenario == "floorthickness" ? [["Floor Thickness",5,[],[[icutx, 0.5]]],
       ["0.7mm (default)", [[ifloor_thickness, 0.7]]],
@@ -244,6 +245,14 @@ function getScenario(scenario) =
       ["leftchamber", [[ilabel, "leftchamber"],[ilabel_size, [0.5,14,0]],[ivertical_chambers, 3]]],
       ["rightchamber", [[ilabel, "rightchamber"],[ilabel_size, [0.5,14,0]],[ivertical_chambers, 3]]],
       ["centerchamber", [[ilabel, "centerchamber"],[ilabel_size, [0.5,14,0]],[ivertical_chambers, 3]]]]
+  
+  //label_size = [0,14,0,0.6]; // 0.01
+  //label_relief = 0; // 0.1
+  : scenario == "label_relief" ? [["label Relief",4,[[80,0,280],[20,60,25],90],[[ilabel_size, [3,14,0]],[ivertical_chambers, 0],[icutx,0.2]]],
+      ["none", [[ilabel, "center"],[ilabel_relief, 0]]],
+      ["0.25", [[ilabel, "center"],[ilabel_relief, 0.25]]],
+      ["0.5", [[ilabel, "center"],[ilabel_relief, 0.5]]],
+      ["1", [[ilabel, "center"],[ilabel_relief, 1]]]]
       
    : scenario == "chambers" ? [["chambers",7,[],[]],
       ["3 vertical", [[ivertical_chambers, 3]]],
@@ -605,9 +614,7 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
     : scenario == "multi_floor_demo_ef_slide_flat_noatt" ? [["",1,[],[[iefficient_floor, "slide"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]],"multi_floor_demo"]]
     : scenario == "multi_floor_demo_ef_rounded_flat_noatt" ? [["",1,[],[[iefficient_floor, "rounded"], [imagnet_diameter, 0], [iscrew_depth,0], [iflat_base,true]],"multi_floor_demo"]]
 
-
-    
-   : ["unknown scenario"];
+    : assert(false, str("unknow scenario - '", scenario, "'")); 
    
 module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepOverrides=[]){
   selectedScenario = getDerviedScenario(scenario);

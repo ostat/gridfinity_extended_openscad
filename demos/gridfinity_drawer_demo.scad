@@ -201,7 +201,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1, mult
 
   
   if(!isMulti(scenario) && len(selectedScenario)-1 != selectedScenario[0][1]){
-    echo("🟧RenderScenario - warning steps is not correct, update for PS script to function",scenarioStepsConfig = selectedScenario[0][1], steps=len(selectedScenario)-1);
+    echo("🟥RenderScenario - warning steps is not correct, update for PS script to function",scenarioStepsConfig = selectedScenario[0][1], steps=len(selectedScenario)-1);
   }
   if(showtext && $preview)
   color("DimGray")
