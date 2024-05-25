@@ -105,7 +105,7 @@ wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1]; 
 // Add the pattern to the dividers
-wallpattern_dividers_enabled=false; 
+wallpattern_dividers_enabled="disabled"; //["disabled", "horizontal", "vertical", "both"] 
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole

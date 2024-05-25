@@ -100,7 +100,7 @@ default_wallcutout_corner_radius=5;
 /* [Wall Pattern] */
 default_wallpattern_enabled=false; 
 default_wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
-default_wallpattern_dividers_enabled=false; 
+default_wallpattern_dividers_enabled ="disabled"; //["disabled", "horizontal", "vertical", "both"] 
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0]; 
 default_wallpattern_hole_sides = 6;
@@ -328,6 +328,11 @@ module irregular_cup(
   cuty=default_cuty,
   help) {
 
+  //Correct legacy values, values that used to work one way but were then changed.
+  wallpattern_dividers_enabled = is_bool(wallpattern_dividers_enabled)
+    ? wallpattern_dividers_enabled ? "vertical" : "disabled"
+    : wallpattern_dividers_enabled;
+
   num_x = num_x > gf_pitch/2 ? num_x/gf_pitch : num_x; 
   num_y= num_y > gf_pitch/2 ? num_y/gf_pitch : num_y; 
   
@@ -505,39 +510,76 @@ module irregular_cup(
         
         locations = [front, back, left, right];
           
-        if(wallpattern_dividers_enabled){
-            dividerLocation = locations[2];
-            //TODO wall patterns only support the simple dividers
+          
+        //["disabled", "horizontal", "vertical", "both"] 
+        if(wallpattern_dividers_enabled != "disabled"){
+          //TODO wall patterns only support the simple dividers
           difference(){
-             separator_positions = calculateSeparators(vertical_separator_positions);
+            union(){
+              if(wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both"){
+                //Based on the wall positions, get the left wall           
+                dividerLocation = locations[2];
+                separator_positions = calculateSeparators(vertical_separator_positions);
 
-             if(len(separator_positions)>0)
-             {
-               //Add wall pattern to the separators 
-               for (i=[0:len(separator_positions)-1]) {
-                  union(){
-                  translate([(separator_positions[i])-chamber_wall_thickness, 0, fudgeFactor]) 
-                  translate(dividerLocation[1])
-                  rotate(dividerLocation[2])
-                  render(){
-                  cutout_pattern(
-                    patternstyle = wallpattern_style ,
-                    canvisSize = [dividerLocation[0][1],dividerLocation[0][0]], //Swap x and y and rotate so hex is easier to print
-                    customShape = false,
-                    circleFn = wallpattern_hole_sides,
-                    holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                    holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                    holeHeight = chamber_wall_thickness*2,
-                    center=true,
-                    fill=wallpattern_fill, //"none", "space", "crop"
-                    voronoiNoise=wallpattern_voronoi_noise,
-                    voronoiRadius = wallpattern_voronoi_radius,
-                    help=help);
+                if(len(separator_positions)>0)
+                {
+                  //Add wall pattern to the separators 
+                  for (i=[0:len(separator_positions)-1]) {
+                    union(){
+                    translate([(separator_positions[i])-chamber_wall_thickness, 0, fudgeFactor]) 
+                    translate(dividerLocation[1])
+                    rotate(dividerLocation[2])
+                    render(){
+                    cutout_pattern(
+                      patternstyle = wallpattern_style ,
+                      canvisSize = [dividerLocation[0][1],dividerLocation[0][0]], //Swap x and y and rotate so hex is easier to print
+                      customShape = false,
+                      circleFn = wallpattern_hole_sides,
+                      holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                      holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                      holeHeight = chamber_wall_thickness*2,
+                      center=true,
+                      fill=wallpattern_fill, //"none", "space", "crop"
+                      voronoiNoise=wallpattern_voronoi_noise,
+                      voronoiRadius = wallpattern_voronoi_radius,
+                      help=help);
+                      }
                     }
                   }
                 }
               }
-              
+              if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both"){
+                //Based on the wall positions, get the left wall           
+                dividerLocation = locations[0];
+                separator_positions = calculateSeparators(horizontal_separator_positions);
+                if(len(separator_positions)>0)
+                {
+                  //Add wall pattern to the separators 
+                  for (i=[0:len(separator_positions)-1]) {
+                    union(){
+                    translate([0, (separator_positions[i])-chamber_wall_thickness, fudgeFactor]) 
+                    translate(dividerLocation[1])
+                    rotate(dividerLocation[2])
+                    render(){
+                    cutout_pattern(
+                      patternstyle = wallpattern_style ,
+                      canvisSize = [dividerLocation[0][1],dividerLocation[0][0]], //Swap x and y and rotate so hex is easier to print
+                      customShape = false,
+                      circleFn = wallpattern_hole_sides,
+                      holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                      holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                      holeHeight = chamber_wall_thickness*2,
+                      center=true,
+                      fill=wallpattern_fill, //"none", "space", "crop"
+                      voronoiNoise=wallpattern_voronoi_noise,
+                      voronoiRadius = wallpattern_voronoi_radius,
+                      help=help);
+                      }
+                    }
+                  }
+                }
+              }
+            }
               //Subtract setback from wall pattern
               if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
                 //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
