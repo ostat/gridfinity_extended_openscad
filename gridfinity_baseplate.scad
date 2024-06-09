@@ -3,6 +3,15 @@ include <modules/gridfinity_constants.scad>
 use <modules/gridfinity_modules.scad>
 use <modules/module_baseplate.scad>
 
+/* [Size] */
+// X dimension. grid units (multiples of 42mm) or mm.
+width = [2, 0]; //0.1
+// Y dimension. grid units (multiples of 42mm) or mm.
+depth = [1, 0]; //0.1
+overscan_method = "fill"; //[crop, fill]
+//Enable custom grid, you will configure this in the (Lid not supported)
+Custom_Grid_Enabled = false;
+
 /* [Plate] */
 // Plate Style
 Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base]
@@ -28,13 +37,8 @@ Filament_Clip_Enabled = false;
 Filament_Clip_Diameter = 2;
 Filament_Clip_Length = 8;
 
-/* [Size] */
-// X dimension in grid units  (multiples of 42mm)
-Width = 2; // [ 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
-// Y dimension in grid units (multiples of 42mm)
-Depth = 1; // [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ]
-//Enable custom grid, you will configure this in the (Lid not supported)
-Custom_Grid_Enabled = false;
+
+//Custom gid sizes
 //I am not sure it this is really usefull, but its possible, so here we are.
 //0:off the cell is off
 //1:on the cell is on and all corners are rounded
@@ -57,6 +61,9 @@ help = false;
 
 module end_of_customizer_opts() {}
 
+num_x = calcDimentionWidth(width); 
+num_y = calcDimentionWidth(depth); 
+
 if(Butterfly_Clip_Only)
 {
   ButterFly(
@@ -67,9 +74,10 @@ if(Butterfly_Clip_Only)
     r=Butterfly_Clip_Radius);
 }
 else{
+  intersection(){
   gridfinity_baseplate(
-      width = Width,
-      depth = Depth,
+      width = overscan_method == "fill" ? num_x : ceil(num_x),
+      depth = overscan_method == "fill" ? num_y : ceil(num_y),
       plateStyle = Plate_Style,
       plateOptions = Base_Plate_Options,
       lidOptions = Lid_Options,
@@ -87,4 +95,9 @@ else{
       cutx = cutx,
       cuty = cuty,
       help = help);
+    if(overscan_method == "crop"){
+      translate([-gf_pitch/2, -gf_pitch/2,0])
+        cube([num_x*gf_pitch, num_y*gf_pitch,20]);
+    }
+  }
 }
