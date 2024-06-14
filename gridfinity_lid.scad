@@ -8,8 +8,24 @@
 // https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup.html
 
 include <modules/gridfinity_constants.scad>
+include <modules/module_sliding_lid.scad>
 use <modules/gridfinity_cup_modules.scad>
 use <modules/gridfinity_modules.scad>
+
+/* [Sliding Lid] */
+mode = "both";//[both, lid, cup]
+sliding_lid_enabled = true;
+// 0 = wall thickness *2
+sliding_lid_thickness = 0; //0.1
+// 0 = wall_thickness/2
+sliding_min_wall_thickness = 0;//0.1
+// 0 = default_sliding_lid_thickness/2
+sliding_min_support = 0;//0.1
+sliding_clearance = 0.1;//0.1
+sliding_lid_cutout_enabled = false; //
+sliding_lid_cutout_size = [0,0]; //0.1
+sliding_lid_cutout_radius = 10; //0.1
+sliding_lid_cutout_position = [0,0]; //0.1
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -83,16 +99,6 @@ label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interferr with stacking
 label_relief = 0; // 0.1
 
-/* [Sliding Lid] */
-sliding_lid_enabled = false;
-// 0 = wall thickness *2
-sliding_lid_thickness = 0; //0.1
-// 0 = wall_thickness/2
-sliding_min_wallThickness = 0;//0.1
-// 0 = default_sliding_lid_thickness/2
-sliding_min_support = 0;//0.1
-sliding_clearance = 0.1;//0.1
-
 /* [Finger Slide] */
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
@@ -152,72 +158,123 @@ enable_help = false;
 module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
 
-gridfinity_cup(
-  width=width, depth=depth, height=height,
-  position=position,
-  filled_in=filled_in,
-  label_style=label_style,
-  label_position=label_position,
-  label_size=label_size,
-  label_relief=label_relief,
-  fingerslide=fingerslide,
-  fingerslide_radius=fingerslide_radius,
-  magnet_diameter=magnet_diameter,
-  screw_depth=screw_depth,
-  center_magnet_diameter=center_magnet_diameter,
-  center_magnet_thickness=center_magnet_thickness,
-  floor_thickness=floor_thickness,
-  cavity_floor_radius=cavity_floor_radius,
-  wall_thickness=wall_thickness,
-  hole_overhang_remedy=hole_overhang_remedy,
-  efficient_floor=efficient_floor,
-  chamber_wall_thickness=chamber_wall_thickness,
-  vertical_chambers = vertical_chambers,
-  vertical_separator_bend_position=vertical_separator_bend_position,
-  vertical_separator_bend_angle=vertical_separator_bend_angle,
-  vertical_separator_bend_separation=vertical_separator_bend_separation,
-  vertical_separator_cut_depth=vertical_separator_cut_depth,
-  vertical_irregular_subdivisions=vertical_irregular_subdivisions,
-  vertical_separator_config=vertical_separator_config,
-  horizontal_chambers=horizontal_chambers,
-  horizontal_separator_bend_position=horizontal_separator_bend_position,
-  horizontal_separator_bend_angle=horizontal_separator_bend_angle,
-  horizontal_separator_bend_separation=horizontal_separator_bend_separation,
-  horizontal_separator_cut_depth=horizontal_separator_cut_depth,
-  horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
-  horizontal_separator_config=horizontal_separator_config, 
-  half_pitch=half_pitch,
-  lip_style=lip_style,
-  zClearance=zClearance,
-  box_corner_attachments_only=box_corner_attachments_only,
-  flat_base = flat_base,
-  spacer=spacer,
-  tapered_corner=tapered_corner,
-  tapered_corner_size = tapered_corner_size,
-  tapered_setback = tapered_setback,
-  wallpattern_enabled=wallpattern_enabled,
-  wallpattern_style=wallpattern_style,
-  wallpattern_walls=wallpattern_walls, 
-  wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-  wallpattern_hole_sides=wallpattern_hole_sides,
-  wallpattern_hole_size=wallpattern_hole_size, 
-  wallpattern_hole_spacing=wallpattern_hole_spacing,
-  wallpattern_fill=wallpattern_fill,
-  wallpattern_voronoi_noise=wallpattern_voronoi_noise,
-  wallpattern_voronoi_radius = wallpattern_voronoi_radius,
-  wallcutout_enabled=wallcutout_enabled,
-  wallcutout_walls=wallcutout_walls,
-  wallcutout_width=wallcutout_width,
-  wallcutout_angle=wallcutout_angle,
-  wallcutout_height=wallcutout_height,
-  wallcutout_corner_radius=wallcutout_corner_radius,
-  extention_enabled=[extention_x_enabled,extention_y_enabled],
-  extention_tabs_enabled = extention_tabs_enabled,
-  sliding_lid_enabled = sliding_lid_enabled, 
-  sliding_lid_thickness = sliding_lid_thickness, 
-  sliding_min_wall_thickness = sliding_min_wallThickness, 
-  sliding_min_support = sliding_min_support, 
-  sliding_clearance = sliding_clearance,
-  cutx=cutx,
-  cuty=cuty,
-  help = enable_help);
+if(mode == "both" || mode == "cup")
+{
+  gridfinity_cup(
+    width=width, depth=depth, height=height,
+    position=position,
+    filled_in=filled_in,
+    label_style=label_style,
+    label_position=label_position,
+    label_size=label_size,
+    label_relief=label_relief,
+    fingerslide=fingerslide,
+    fingerslide_radius=fingerslide_radius,
+    magnet_diameter=magnet_diameter,
+    screw_depth=screw_depth,
+    center_magnet_diameter=center_magnet_diameter,
+    center_magnet_thickness=center_magnet_thickness,
+    floor_thickness=floor_thickness,
+    cavity_floor_radius=cavity_floor_radius,
+    wall_thickness=wall_thickness,
+    hole_overhang_remedy=hole_overhang_remedy,
+    efficient_floor=efficient_floor,
+    chamber_wall_thickness=chamber_wall_thickness,
+    vertical_chambers = vertical_chambers,
+    vertical_separator_bend_position=vertical_separator_bend_position,
+    vertical_separator_bend_angle=vertical_separator_bend_angle,
+    vertical_separator_bend_separation=vertical_separator_bend_separation,
+    vertical_separator_cut_depth=vertical_separator_cut_depth,
+    vertical_irregular_subdivisions=vertical_irregular_subdivisions,
+    vertical_separator_config=vertical_separator_config,
+    horizontal_chambers=horizontal_chambers,
+    horizontal_separator_bend_position=horizontal_separator_bend_position,
+    horizontal_separator_bend_angle=horizontal_separator_bend_angle,
+    horizontal_separator_bend_separation=horizontal_separator_bend_separation,
+    horizontal_separator_cut_depth=horizontal_separator_cut_depth,
+    horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
+    horizontal_separator_config=horizontal_separator_config, 
+    half_pitch=half_pitch,
+    lip_style=lip_style,
+    zClearance=zClearance,
+    box_corner_attachments_only=box_corner_attachments_only,
+    flat_base = flat_base,
+    spacer=spacer,
+    tapered_corner=tapered_corner,
+    tapered_corner_size = tapered_corner_size,
+    tapered_setback = tapered_setback,
+    wallpattern_enabled=wallpattern_enabled,
+    wallpattern_style=wallpattern_style,
+    wallpattern_walls=wallpattern_walls, 
+    wallpattern_dividers_enabled=wallpattern_dividers_enabled,
+    wallpattern_hole_sides=wallpattern_hole_sides,
+    wallpattern_hole_size=wallpattern_hole_size, 
+    wallpattern_hole_spacing=wallpattern_hole_spacing,
+    wallpattern_fill=wallpattern_fill,
+    wallpattern_voronoi_noise=wallpattern_voronoi_noise,
+    wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+    wallcutout_enabled=wallcutout_enabled,
+    wallcutout_walls=wallcutout_walls,
+    wallcutout_width=wallcutout_width,
+    wallcutout_angle=wallcutout_angle,
+    wallcutout_height=wallcutout_height,
+    wallcutout_corner_radius=wallcutout_corner_radius,
+    extention_enabled=[extention_x_enabled,extention_y_enabled],
+    extention_tabs_enabled = extention_tabs_enabled,
+    sliding_lid_enabled = sliding_lid_enabled, 
+    sliding_lid_thickness = sliding_lid_thickness, 
+    sliding_min_wall_thickness = sliding_min_wall_thickness, 
+    sliding_min_support = sliding_min_support, 
+    sliding_clearance = sliding_clearance,
+    cutx=cutx,
+    cuty=cuty,
+    help = enable_help);
+}
+  
+if(mode == "both" || mode == "lid")
+{
+  num_x = calcDimentionWidth(width);
+  num_y = calcDimentionDepth(depth);
+  num_z = calcDimentionHeight(height);
+  wall_thickness = wallThickness(wall_thickness, num_z);
+  
+  slidingLidSettings= SlidingLidSettings(
+          sliding_lid_enabled, 
+          sliding_lid_thickness, 
+          sliding_min_wall_thickness, 
+          sliding_min_support,
+          sliding_clearance,
+          wall_thickness);
+  echo(slidingLidSettings, 
+    sliding_lid_enabled=sliding_lid_enabled, 
+    sliding_lid_thickness=sliding_lid_thickness, 
+    sliding_min_wall_thickness=sliding_min_wall_thickness, 
+    sliding_min_support=sliding_min_support, 
+    sliding_clearance=sliding_clearance, 
+    wall_thickness=wall_thickness);       
+  zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
+  
+  filledInZ = gf_zpitch*num_z;
+  zpoint = filledInZ-zClearance;
+
+  translate(cupPosition(position,num_x,num_y))
+  tz(mode == "lid"? 0 : zpoint) 
+  difference()
+  {
+    SlidingLid(
+      num_x=num_x, 
+      num_y=num_y,
+      wall_thickness,
+      clearance = slidingLidSettings[iSlidingClearance],
+      lidThickness=slidingLidSettings[iSlidingLidThickness],
+      lidMinSupport=slidingLidSettings[iSlidingLidMinSupport],
+      lidMinWallThickness=slidingLidSettings[iSlidingLidMinWallThickness],
+      limitHeight=true,
+      cutoutEnabled = true,
+      cutoutSize = sliding_lid_cutout_size,
+      cutoutRadius = sliding_lid_cutout_radius,
+      cutoutPosition = sliding_lid_cutout_position);
+  }
+}
+ 
+ 
