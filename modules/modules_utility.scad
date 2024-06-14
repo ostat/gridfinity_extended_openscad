@@ -237,19 +237,22 @@ module chamferedCorner(
   cornerRadius = 4, 
   length, 
   height,
+  width = 0,
   fn=64)
 {
+  width = width>0 ? width : chamferLength;
+ 
   difference(){
     union(){
       //main corner to be removed
-      translate([0,-1, -1])
-        cube([length, chamferLength+1,  chamferLength+1]);
+      translate([0,-width, -width])
+        cube([length, chamferLength+width,  chamferLength+width]);
       //corner extention in y
-      translate([0,0, -chamferLength])
-        cube([length, height, chamferLength]);
+      translate([0,0, -width])
+        cube([length, height, width]);
       //corner extention in x
-      translate([0,-chamferLength, 0])
-        cube([length, chamferLength, height]);
+      translate([0,-width, 0])
+        cube([length, width, height]);
 
     }
     hull(){

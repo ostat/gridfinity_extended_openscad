@@ -13,12 +13,12 @@ use <modules/gridfinity_modules.scad>
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
-// X dimension in grid units (multiples of 42mm)
-width = 2; //0.5
-// Y dimension in grid units (multiples of 42mm)
-depth = 1; //0.5
-// Z dimension excluding lip if enabled (multiples of 7mm)
-height = 3; //0.1
+// X dimension. grid units (multiples of 42mm) or mm.
+width = [2, 0]; //0.5
+// Y dimension. grid units (multiples of 42mm) or mm.
+depth = [1, 0]; //0.5
+// Z dimension excluding. grid units (multiples of 7mm) or mm.
+height = [3, 0]; //0.1
 // Fill in solid block (overrides all following options)
 filled_in = false; 
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
@@ -144,9 +144,7 @@ module end_of_customizer_opts() {}
 gridfinity_basic_cup();
 
 module gridfinity_basic_cup(
-  width = width,
-  depth = depth,
-  height = height,
+  width=width, depth=depth, height=height,
   position=position,
   filled_in=filled_in,
   label_style=label_style,

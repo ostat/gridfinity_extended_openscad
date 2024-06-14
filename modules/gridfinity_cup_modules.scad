@@ -4,9 +4,12 @@ include <voronoi.scad>
 use <gridfinity_modules.scad>
 use <modules_item_holder.scad>
 
-default_num_x=2; //0.1
-default_num_y=1; //0.1
-default_num_z=3; //0.1
+// X dimension. grid units (multiples of 42mm) or mm.
+default_width = [2, 0]; //0.1
+// Y dimension. grid units (multiples of 42mm) or mm.
+default_depth = [1, 0]; //0.1
+// Z dimension excluding. grid units (multiples of 7mm) or mm.
+default_height = [3, 0]; //0.1
 default_position="default"; //["default","center","zero"]
 default_filled_in = false; 
 // Might want to remove inner lip of cup
@@ -265,9 +268,9 @@ module basic_cup(
 
 // separator positions are defined in units from the left side
 module irregular_cup(
-  num_x,
-  num_y,
-  num_z,
+  width=default_width,
+  depth=default_depth,
+  height=default_height,
   position=default_position,
   filled_in=default_filled_in,
   label_style=default_label_style,
@@ -327,14 +330,15 @@ module irregular_cup(
   cutx=default_cutx,
   cuty=default_cuty,
   help) {
+  
+  num_x = calcDimentionWidth(width);
+  num_y = calcDimentionDepth(depth);
+  num_z = calcDimentionHeight(height);
 
   //Correct legacy values, values that used to work one way but were then changed.
   wallpattern_dividers_enabled = is_bool(wallpattern_dividers_enabled)
     ? wallpattern_dividers_enabled ? "vertical" : "disabled"
     : wallpattern_dividers_enabled;
-
-  num_x = num_x > gf_pitch/2 ? num_x/gf_pitch : num_x; 
-  num_y= num_y > gf_pitch/2 ? num_y/gf_pitch : num_y; 
   
   //If efficient_floor disable the base magnets and screws
   center_magnet_thickness = efficient_floor != "off" ? 0 : center_magnet_thickness;

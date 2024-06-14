@@ -5,6 +5,14 @@ include <gridfinity_constants.scad>
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
+function calcDimentionWidth(width) = calcDimention(width, "width", gf_pitch);
+function calcDimentionDepth(depth) = calcDimention(depth, "depth", gf_pitch);
+function calcDimentionHeight(height) = calcDimention(height, "height", gf_zpitch); 
+function calcDimention(value, name, unitSize) = 
+  is_num(value) ? value : 
+  assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
+  value[1] != 0 ? value[1]/unitSize : value[0];
+          
 function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
   //efficient floor has an effective radius of 0
@@ -57,6 +65,12 @@ function cupPosition(position, num_x, num_y) = position == "center"
     : position == "zero" ? [gf_pitch/2, gf_pitch/2, 0] 
     : [0, 0, 0]; 
 
+//wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm) 
+function wallThickness(wall_thickness, num_z) = wall_thickness != 0 ? wall_thickness
+        : num_z < 8 ? 0.95
+        : num_z < 16 ? 1.2
+        : 1.6;
+        
 module ShowClippers(cutx, cuty, size, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
   color(color_text)
   if(cuty > 0 && $preview)
