@@ -24,8 +24,8 @@ filled_in = false;
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 // Remove some or all of lip
-lip_style = "normal";  // [ "normal", "reduced", "minimum", none:not stackable ]
-position="default"; //["default","center","zero"]
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+position = "center"; //[default",center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
 
@@ -66,7 +66,7 @@ box_corner_attachments_only = true;
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//["off","on","rounded","smooth"] 
+efficient_floor = "off";//[off,on,rounded,smooth] 
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
@@ -77,7 +77,7 @@ spacer = false;
 /* [Label] */
 label_style = "normal"; //[disabled: no label, normal:normal, click]
 // Include overhang for labeling (and specify left/right/center justification)
-label_position = "left"; // ["left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
+label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interferr with stacking
@@ -99,19 +99,19 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
+wallpattern_style = "grid"; //[grid, hexgrid, voronoi,voronoigrid,voronoihexgrid]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1]; 
 // Add the pattern to the dividers
-wallpattern_dividers_enabled="disabled"; //["disabled", "horizontal", "vertical", "both"] 
+wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
 wallpattern_hole_size = 10; //0.1
 // pattern fill mode
-wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
+wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 

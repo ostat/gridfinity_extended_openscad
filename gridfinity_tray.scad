@@ -37,16 +37,16 @@ depth = 3; //0.5
 // Z dimension (multiples of 7mm)
 height = 3; //0.1
 // Fill in solid block (overrides all following options)
-filled_in = "notstackable"; //["off","on","notstackable"]
+filled_in = "notstackable"; //[off,on,notstackable]
 // Include overhang for labeling (and specify left/right/center justification)
-label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
+label = "disabled"; // [disabled, left, right, center, leftchamber, rightchamber, centerchamber]
 // Width of the label in number of units, or zero means full width
 label_width = 0;  // .01
 // Wall thickness (Zack's design is 0.95)
 wall_thickness = 0.95;  // .01
 // Remove some or all of lip
-lip_style = "normal";  // [ "normal", "reduced", "none" ]
-position="default"; //["default","center","zero"]
+lip_style = "normal";  // [normal, reduced, none]
+position="default"; //[default,center,zero]
 
 /* [Subdivisions] */
 // X dimension subdivisions
@@ -108,7 +108,7 @@ wallpattern_hexgrid = true;
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1]; 
 // pattern fill mode
-wallpattern_fill = "none"; //["none":No fill, "space":Increase Space, "crop":Over fill and crop]
+wallpattern_fill = "none"; //[none:No fill, space:Increase Space, crop:Over fill and crop]
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole

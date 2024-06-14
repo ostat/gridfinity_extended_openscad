@@ -12,7 +12,8 @@ include <modules/gridfinity_constants.scad>
 use <modules/modules_item_holder.scad>
 
 /* [Render] */
-mode = "everything"; //["everything":Everything, "onedrawer":"Single Drawer", "drawers":"All drawers", "chest":"Chest"]
+mode = "everything"; //[everything:Everything, onedrawer:Single Drawer, drawers:All drawers, chest:Chest]
+position="center"; //["center","zero"]
 
 /* [Chest] */
 //Inner width of drawer in Gridfinity units
@@ -44,7 +45,7 @@ handle_size = [4, 10, -1, -1];
 handle_verticle_center = false;
 handle_rotate = false;
 drawer_wall_thickness = 2;
-drawer_base = "default"; //["grid":Grid only, "floor":floor only, "default":"Grid and floor"]
+drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and floor]
 drawer_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
 
 /* [Chest Top Plate] */
@@ -74,7 +75,7 @@ efficient_back = true;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
+wallpattern_style = "hexgrid"; //[grid, hexgrid, voronoi,voronoigrid,voronoihexgrid]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // Add the pattern to the dividers
@@ -84,7 +85,7 @@ wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
 wallpattern_hole_size = 8; //0.1
 // pattern fill mode
-wallpattern_fill = "crop"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
+wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
@@ -453,6 +454,7 @@ module cutout_pattern(
 //render function
 module gridfinity_drawer(
     mode = mode,
+    position = position,
     drawerInnerWidth = drawer_inner_width,
     drawerInnerDepth = drawer_inner_depth,
     drawerInnerHeight = drawer_inner_height,
@@ -520,7 +522,8 @@ module gridfinity_drawer(
 
   startH = chestWallThickness;
 
-
+  translate(position == "center" ? [-outerChest.x/2,-outerChest.y/2,0] : [0,0,0])
+  union(){
   if(mode == "chest" || mode == "everything")      
     chest(
       outerChest=outerChest, 
@@ -594,6 +597,7 @@ module gridfinity_drawer(
       outerSizes = drawerOuterSizes,
       gridStyle=drawerGridStyle,
       clearance=drawerClearance);
+  }
 }
 
 gridfinity_drawer();
