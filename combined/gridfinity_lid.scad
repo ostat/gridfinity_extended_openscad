@@ -1,91 +1,158 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_drawers.scad'. Generated 2024-06-16 09:29
+//Combined version of 'gridfinity_lid.scad'. Generated 2024-06-16 09:29
 ///////////////////////////////////////
-// Gridfinity drawer system.
-// Intended for Gridfinity bins to sit in the drawers, meaning the outer chest will not fit neatly on to a gridfinity grid.
+// Gridfinity extended basic cup
+// version 2024-02-17
 //
-// Original OpenSCAD design was provided by @monniasza
-// Inspiration for their design was https://www.printables.com/pl/model/363389
-// The design has diveated sigficantly, I would not consider this compatiable with the orginal.
+// Source
+// https://www.printables.com/model/630057-gridfinity-extended-openscad
+//
+// Documentation
+// https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup.html
 
 
-/* [Render] */
-mode = "everything"; //[everything:Everything, onedrawer:Single Drawer, drawers:All drawers, chest:Chest]
-position="center"; //["center","zero"]
+/* [Sliding Lid] */
+mode = "both";//[both, lid, cup]
+sliding_lid_enabled = true;
+// 0 = wall thickness *2
+sliding_lid_thickness = 0; //0.1
+// 0 = wall_thickness/2
+sliding_min_wall_thickness = 0;//0.1
+// 0 = default_sliding_lid_thickness/2
+sliding_min_support = 0;//0.1
+sliding_clearance = 0.1;//0.1
+sliding_lid_cutout_enabled = false; //
+sliding_lid_cutout_size = [0,0]; //0.1
+sliding_lid_cutout_radius = 10; //0.1
+sliding_lid_cutout_position = [0,0]; //0.1
 
-/* [Chest] */
-//Inner width of drawer in Gridfinity units
-drawer_inner_width = 4;
-//Inner depth of drawer in Gridfinity units
-drawer_inner_depth = 3;
-//Inner height of drawer in Gridfinity units
-drawer_inner_height = 4;
-//Number of drawers
-drawer_count = 3;
-drawer_enable_custom_sizes = false;
-//Inner height of drawer in Gridfinity units. Edit in script for more than 4 items.
-drawer_custom_sizes = [1,2,3,4];
-//clearance inside the drawers
-drawer_clearance = [0.25,0.25,0.25];
+/*<!!start gridfinity_basic_cup!!>*/
+/* [General Cup] */
+// X dimension. grid units (multiples of 42mm) or mm.
+width = [2, 0]; //0.5
+// Y dimension. grid units (multiples of 42mm) or mm.
+depth = [1, 0]; //0.5
+// Z dimension excluding. grid units (multiples of 7mm) or mm.
+height = [3, 0]; //0.1
+// Fill in solid block (overrides all following options)
+filled_in = false; 
+// Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
+wall_thickness = 0;  // .01
+// Remove some or all of lip
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+position = "center"; //[default",center,zero]
+//under size the bin top by this amount to allow for better stacking
+zClearance = 0; // 0.1
 
-//clearance inside the chest
-chest_clearance = [0.25,0.25,0.25];
-
-chest_wall_thickness = 2;
-//Thickness of drawer slies in mm. 0 is uses wall thickenss.
-chest_drawer_slide_thickness = 0;
-//Width of drawer slies in mm. 0 is full chest width.
-chest_drawer_slide_width = 10; 
-
-/* [Drawer] */
-// Handle size width, depth, height, and radius. Height, less than 0 drawerHeight/abs(height). radius, -1 = depth/2. 
-handle_size = [4, 10, -1, -1];
-handle_verticle_center = false;
-handle_rotate = false;
-drawer_wall_thickness = 2;
-drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and floor]
-drawer_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
-
-/* [Chest Top Plate] */
-chest_enable_top_grid = true;
-// Plate Style
-chest_top_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
-
-/* [Chest Base] */
-chest_bottom_grid = true;
+/* [Subdivisions] */
+chamber_wall_thickness = 1.2;
+// X dimension subdivisions
+vertical_chambers = 1;
+vertical_separator_bend_position = 0;
+vertical_separator_bend_angle = 0;
+vertical_separator_bend_separation = 0;
+vertical_separator_cut_depth=0;
+horizontal_chambers = 1;
+horizontal_separator_bend_position = 0;
+horizontal_separator_bend_angle = 0;
+horizontal_separator_bend_separation = 0;
+horizontal_separator_cut_depth=0;
+// Enable irregular subdivisions
+vertical_irregular_subdivisions = false;
+// Separator positions are defined in terms of grid units from the left end
+vertical_separator_config = "10.5|21|42|50|60";
+// Enable irregular subdivisions
+horizontal_irregular_subdivisions = false;
+// Separator positions are defined in terms of grid units from the left end
+horizontal_separator_config = "10.5|21|42|50|60";
+      
+/* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
-magnet_diameter = 6.5;  // .1
+magnet_diameter = 0;  // .1
 // (Zack's design uses depth of 6)
-screw_depth = 6;
+screw_depth = 0;
+center_magnet_diameter =0;
+center_magnet_thickness = 0;
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
-//Only add attachments (magnets and screw) to chest corners (prints faster).
-chest_corner_attachments_only = true;
+//Only add attachments (magnets and screw) to box corners (prints faster).
+box_corner_attachments_only = true;
+// Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
+floor_thickness = 0.7;
+cavity_floor_radius = -1;// .1
+// Efficient floor option saves material and time, but the internal floor is not flat
+efficient_floor = "off";//[off,on,rounded,smooth] 
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
+// Remove floor to create a veritcal spacer
+spacer = false;
 
-/* [Chest Wall Pattern] */
-// wall pattern border width. -1 defaults to chest_wall_thickness. less than 0 chest_wall_thickness/abs(wallpattern_border_width)
-wallpattern_border_width = -1;
-efficient_back = true;
+/* [Label] */
+label_style = "normal"; //[disabled: no label, normal:normal, click]
+// Include overhang for labeling (and specify left/right/center justification)
+label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
+// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+label_size = [0,14,0,0.6]; // 0.01
+// Creates space so the attached label wont interferr with stacking
+label_relief = 0; // 0.1
+
+/* [Finger Slide] */
+// Include larger corner fillet
+fingerslide = "none"; //[none, rounded, chamfered]
+// Radius of the corner fillet
+fingerslide_radius = 8;
+
+/* [Tapered Corner] */
+tapered_corner = "none"; //[none, rounded, chamfered]
+tapered_corner_size = 10;
+// Set back of the tapered corner, default is the gridfinity corner radius
+tapered_setback = -1;//gridfinity_corner_radius/2;
+
+/* [Wall Pattern] */
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[grid, hexgrid, voronoi,voronoigrid,voronoihexgrid]
+wallpattern_style = "grid"; //[grid, hexgrid, voronoi,voronoigrid,voronoihexgrid]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
+// wall to enable on, front, back, left, right.
+wallpattern_walls=[1,1,1,1]; 
 // Add the pattern to the dividers
-wallpattern_dividers_enabled=false; 
+wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
-wallpattern_hole_size = 8; //0.1
+wallpattern_hole_size = 10; //0.1
 // pattern fill mode
-wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
+
+/* [Wall Cutout] */
+wallcutout_enabled=false;
+// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_walls=[1,0,0,0];  //0.1
+//default will be binwidth/2
+wallcutout_width=0;
+wallcutout_angle=70;
+//default will be binHeight
+wallcutout_height=0;
+wallcutout_corner_radius=5;
+
+/* [Extendable] */
+extention_x_enabled = false;
+extention_y_enabled = false;
+extention_tabs_enabled = true;
+
+/* [debug] */
+//Slice along the x axis
+cutx = 0; //0.1
+//Slice along the y axis
+cuty = 0; //0.1
+// enable loging of help messages during render.
+enable_help = false;
 
 module end_of_customizer_opts() {}
 //Combined from path gridfinity_constants.scad
@@ -17931,514 +17998,120 @@ module ButterFly(size,r,taper=false,half=false)
 }
 
 //CombinedEnd from path module_baseplate.scad
-colour_drawer = "Teal";
-colour_drawer_pull = "CadetBlue";
-colour_chest = "Maroon";
+/*<!!end gridfinity_basic_cup!!>*/
 
-function drawerPosition(
-  index, 
-  outerSizes, 
-  clearance, 
-  sliderThickenss) = let(
-  drawersTotal = (index<1 ? 0 : sum(partial(outerSizes,0,index-1)).z),
-  clearanceTotal = clearance.z*2*(index),
-  sliderThickenss = sliderThickenss*index) drawersTotal + clearanceTotal + sliderThickenss;
-  
-function sum(list, c = 0) = 
-  c < len(list) - 1 
-    ? list[c] + sum(list, c + 1) 
-    : list[c];
- 
-$fn = 64;
-
-//Drawer modules
-module drawers(
-  drawerCount,
-  innerUnitSize,
-  innerSizes,// = drawerInnerSizes,
-  outerSizes,// = drawerOuterSizes,
-  drawerBase, // = drawerbase,
-  wallThickness,// = wallthicknessInner,
-  handleSize,
-  handleVerticleCenter,
-  handleRotate,
-  ridgeDepth,
-  startH,
-  chestClearance,
-  chestWallThickness,
-  gridStyle,
-  drawerClearance)
+if(mode == "both" || mode == "cup")
 {
-  assert(is_list(chestClearance) && len(chestClearance) == 3, "chestClearance must be a list of length 3");
-  assert(is_list(drawerClearance) && len(drawerClearance) == 3, "drawerClearance must be a list of length 3");
-
-  offsetW = chestWallThickness + chestClearance.x;
-  
-  for(i = [0 : drawerCount-1]){
-    //IncrementH = 0;
-    zpos = startH + drawerPosition(i, outerSizes, chestClearance, ridgeDepth);
-    //(clearance * i) + (i<1 ? 0 : sum(partial(drawerOuterSizes,0,i-1)).z);
-    //echo("drawers", i= i, StartH=StartH, clearance=clearance, height=drawerInnerHeights[i], zpos=zpos, drawerOuterz=drawerOuterSizes.z, drawerInnerz=drawerInnerSizes.z, drawerOuterSizes.z);
-      
-    translate([chestWallThickness+chestClearance.x, offsetW, zpos]) 
-      drawer(drawerIndex=i,
-        innerUnitSize=innerUnitSize,
-        drawerBase=drawerBase,// = drawerbase,
-        wallThickness=wallThickness,// = wallthicknessInner,
-        handleSize=handleSize,
-        handleVerticleCenter=handleVerticleCenter,
-        handleRotate=handleRotate,
-        innerSizes=innerSizes,
-        outerSizes=outerSizes,
-        gridStyle=gridStyle,
-        clearance=drawerClearance);
-  }
+  gridfinity_cup(
+    width=width, depth=depth, height=height,
+    position=position,
+    filled_in=filled_in,
+    label_style=label_style,
+    label_position=label_position,
+    label_size=label_size,
+    label_relief=label_relief,
+    fingerslide=fingerslide,
+    fingerslide_radius=fingerslide_radius,
+    magnet_diameter=magnet_diameter,
+    screw_depth=screw_depth,
+    center_magnet_diameter=center_magnet_diameter,
+    center_magnet_thickness=center_magnet_thickness,
+    floor_thickness=floor_thickness,
+    cavity_floor_radius=cavity_floor_radius,
+    wall_thickness=wall_thickness,
+    hole_overhang_remedy=hole_overhang_remedy,
+    efficient_floor=efficient_floor,
+    chamber_wall_thickness=chamber_wall_thickness,
+    vertical_chambers = vertical_chambers,
+    vertical_separator_bend_position=vertical_separator_bend_position,
+    vertical_separator_bend_angle=vertical_separator_bend_angle,
+    vertical_separator_bend_separation=vertical_separator_bend_separation,
+    vertical_separator_cut_depth=vertical_separator_cut_depth,
+    vertical_irregular_subdivisions=vertical_irregular_subdivisions,
+    vertical_separator_config=vertical_separator_config,
+    horizontal_chambers=horizontal_chambers,
+    horizontal_separator_bend_position=horizontal_separator_bend_position,
+    horizontal_separator_bend_angle=horizontal_separator_bend_angle,
+    horizontal_separator_bend_separation=horizontal_separator_bend_separation,
+    horizontal_separator_cut_depth=horizontal_separator_cut_depth,
+    horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
+    horizontal_separator_config=horizontal_separator_config, 
+    half_pitch=half_pitch,
+    lip_style=lip_style,
+    zClearance=zClearance,
+    box_corner_attachments_only=box_corner_attachments_only,
+    flat_base = flat_base,
+    spacer=spacer,
+    tapered_corner=tapered_corner,
+    tapered_corner_size = tapered_corner_size,
+    tapered_setback = tapered_setback,
+    wallpattern_enabled=wallpattern_enabled,
+    wallpattern_style=wallpattern_style,
+    wallpattern_walls=wallpattern_walls, 
+    wallpattern_dividers_enabled=wallpattern_dividers_enabled,
+    wallpattern_hole_sides=wallpattern_hole_sides,
+    wallpattern_hole_size=wallpattern_hole_size, 
+    wallpattern_hole_spacing=wallpattern_hole_spacing,
+    wallpattern_fill=wallpattern_fill,
+    wallpattern_voronoi_noise=wallpattern_voronoi_noise,
+    wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+    wallcutout_enabled=wallcutout_enabled,
+    wallcutout_walls=wallcutout_walls,
+    wallcutout_width=wallcutout_width,
+    wallcutout_angle=wallcutout_angle,
+    wallcutout_height=wallcutout_height,
+    wallcutout_corner_radius=wallcutout_corner_radius,
+    extention_enabled=[extention_x_enabled,extention_y_enabled],
+    extention_tabs_enabled = extention_tabs_enabled,
+    sliding_lid_enabled = sliding_lid_enabled, 
+    sliding_lid_thickness = sliding_lid_thickness, 
+    sliding_min_wall_thickness = sliding_min_wall_thickness, 
+    sliding_min_support = sliding_min_support, 
+    sliding_clearance = sliding_clearance,
+    cutx=cutx,
+    cuty=cuty,
+    help = enable_help);
 }
-
-module drawer(
-  drawerIndex,
-  innerUnitSize,
-  drawerBase,// = drawerbase,
-  wallThickness,// = wallthicknessInner,
-  handleSize,
-  handleVerticleCenter,
-  handleRotate,
-  innerSizes,// = drawerInnerSizes,
-  outerSizes,// = drawerOuterSizes,
-  gridStyle,
-  clearance)
+  
+if(mode == "both" || mode == "lid")
 {
-  assert(is_list(clearance) && len(clearance) == 3, "clearance must be a list of length 3");
-  drawerFloor = (drawerBase == "default" || drawerBase == "floor");
-  floorThickness = wallThickness;
+  num_x = calcDimentionWidth(width);
+  num_y = calcDimentionDepth(depth);
+  num_z = calcDimentionHeight(height);
+  wall_thickness = wallThickness(wall_thickness, num_z);
   
-  union(){
-    difference(){
-      color(colour_drawer)
-      roundedCube(
-        x=outerSizes[drawerIndex].x,
-        y=outerSizes[drawerIndex].y,
-        z=outerSizes[drawerIndex].z,
-        sideRadius = 6);
-        
-      translate([wallThickness, wallThickness, floorThickness-fudgeFactor]) 
-        color(colour_drawer)
-        roundedCube(
-          //remove the main grid space
-          x=innerSizes[drawerIndex].x-fudgeFactor*2,
-          y=innerSizes[drawerIndex].y-fudgeFactor*2,
-          z=innerSizes[drawerIndex].z+fudgeFactor*2,
-          sideRadius = 4);
-          if(drawerBase == "grid"){
-            translate([wallThickness+clearance.x/2+0.25,wallThickness+clearance.y/2+0.25, -fudgeFactor]) 
-            roundedCube(
-              x=gf_pitch*innerUnitSize.x-0.5,
-              y=gf_pitch*innerUnitSize.y-0.5,
-              z=floorThickness+fudgeFactor,
-              sideRadius = 4);
-        }
-      }
+  slidingLidSettings= SlidingLidSettings(
+          sliding_lid_enabled, 
+          sliding_lid_thickness, 
+          sliding_min_wall_thickness, 
+          sliding_min_support,
+          sliding_clearance,
+          wall_thickness);
       
-      if(drawerBase == "default" || drawerBase == "grid"){
-        translate([
-          gf_pitch/2+wallThickness+clearance.x/2,
-          gf_pitch/2+wallThickness+clearance.y/2, 
-          (drawerFloor ? floorThickness-fudgeFactor : 0)-fudgeFactor*2]) 
-          baseplate(
-            width = innerUnitSize.x,
-            depth = innerUnitSize.y,
-            plateStyle = "base",
-            plateOptions = gridStyle);
-      }
-
-    handelHeight = handleSize.z == 0 ? outerSizes[drawerIndex].z/2
-      : handleSize.z <0 ? outerSizes[drawerIndex].z/abs(handleSize.z) : handleSize.z;
-      
-    //Drawer handle
-    color(colour_drawer_pull)
-    translate([
-        outerSizes[drawerIndex].x/2, 
-        0, 
-        handleVerticleCenter 
-          ? outerSizes[drawerIndex].z/2  
-          : handleRotate ? handleSize.x/2 : handelHeight/2])
-      rotate(handleRotate ? [0,90,0] : [0,0,0])
-      drawerPull(handleSize.x, handleSize.y, handelHeight, handleSize[3]);
-  }
-}
-
-module drawerPull(width, depth, height, radius){
-  radius = min(radius == -1 ? depth/2 : radius, height/2,depth);
-  depth = depth - radius;
-  translate([-width/2,-depth,-height/2])
-  hull(){
-    cube([width, depth, height]);
-    
-    if(radius>0){
-      for(i=[0:1]){
-      translate(i == 0 ? [0,0,radius] : [0,0,height-radius])
-      rotate([0,90,0])
-        difference(){
-          cylinder(h=width, r=radius, $fn=64);
-          //Remove inner half so we dont get error when r<roundedr*2
-          translate([-radius,0,-fudgeFactor])
-          cube([radius*2,radius*2,width+fudgeFactor*2]);
-        }
-      }
-    }
-  }
-}
-
-//Chest modules
-module chest(
-  outerChest,
-  totalH,
-  chestWallThickness,
-  enableTopGrid,
-  topGridStyle,
-  //ridgeDepth,
-  bottomGrid,
-  bottomMagnetDiameter,
-  bottomScrewDepth,
-  bottomHoleOverhangRemedy,
-  bottomCornerAttachmentsOnly,
-  bottomHalfPitch,
-  bottomFlatBase,
-  drawerCount,
-  drawerInnerUnitSize,
-  drawerOuterSizes,
-  drawerSlideThickness,
-  drawerWallThickness,
-  startH,
-  clearance
-){
-  assert(is_list(clearance), "clearance must be a list");
-  bottomGridOffset = [
-    chestWallThickness + clearance.x + (drawerOuterSizes[0].x-drawerInnerUnitSize.x*gf_pitch)/2,
-    chestWallThickness + clearance.y + (drawerOuterSizes[0].y-drawerInnerUnitSize.y*gf_pitch)/2, 0];
-    
-  topGridOffset = [bottomGridOffset.x - 0.25, bottomGridOffset.y - 0.25,0];
-    
-  difference(){
-    union(){
-      color(colour_chest) 
-      cube([outerChest.x, outerChest.y, totalH]);
-      
-      if(bottomGrid) {
-        baseHeight=0.7;
-        translate(bottomGridOffset) 
-        translate([gf_pitch/2, gf_pitch/2, -gf_zpitch*baseHeight+fudgeFactor])
-        grid_block(
-          num_x=drawerInnerUnitSize.x, 
-          num_y=drawerInnerUnitSize.y, 
-          num_z=baseHeight, 
-          stackable=false, 
-          magnet_diameter=bottomMagnetDiameter, 
-          screw_depth=bottomScrewDepth,
-          hole_overhang_remedy=bottomHoleOverhangRemedy,
-          box_corner_attachments_only=bottomCornerAttachmentsOnly,
-          half_pitch = bottomHalfPitch,
-          flat_base = bottomFlatBase);
-      }
-      
-      if(enableTopGrid) {
-        translate(topGridOffset) 
-        translate([gf_pitch/2, gf_pitch/2, totalH-fudgeFactor]) 
-        baseplate(
-          width = drawerInnerUnitSize.x,
-          depth = drawerInnerUnitSize.y,
-          plateStyle = "base",
-          plateOptions = topGridStyle);
-      }
-    }
-    children();
-  }
-}
-
-module chestCutouts(
-  drawerCount, 
-  drawerOuterSizes,
-  ridgeDepth,
-  drawerSlideThickness,
-  drawerSlideWidth,
-  startH,
-  outerChest,
-  clearance,
-  chestWallThickness,
-  efficientBack,
-  wallPatternBorderWidth,
-  wallPatternEnabled,
-  wallPatternStyle,
-  wallPatternWtyle,
-  wallPatternHoleSpacing,
-  wallPatternDividersEnabled,
-  wallPatternHoleSides,
-  wallPatternHoleSize,
-  wallPatternFill,
-  wallPatternVoronoiNoise,
-  wallPatternVoronoiRadius
-){
-  wallPattern_thickness = chestWallThickness+fudgeFactor*2;
-
-  for(iDrawer = [0 : drawerCount-1]){
-    innerchest = [
-      drawerOuterSizes[iDrawer].x + clearance.x*2,
-      drawerOuterSizes[iDrawer].y + clearance.y*2,
-      drawerOuterSizes[iDrawer].z + clearance.z*2];
- 
-    //positions for wall cutouts
-    back = [
-      [innerchest.x-ridgeDepth*2,innerchest.z-ridgeDepth*2], //size
-      [innerchest.x/2+chestWallThickness, innerchest.y+chestWallThickness/2-wallPattern_thickness/2, innerchest.z/2], //location
-      [90,90,180]]; //rotation 
-    left = [
-      [innerchest.y-ridgeDepth*2,innerchest.z-ridgeDepth*2],    //size
-      [+chestWallThickness/2-wallPattern_thickness/2, (innerchest.y+chestWallThickness)/2, innerchest.z/2], //location
-      [90,90,90]];//rotation
-    right = [
-      [innerchest.y-ridgeDepth*2,innerchest.z-ridgeDepth*2],//size
-      [innerchest.x+chestWallThickness*1.5-wallPattern_thickness/2, (innerchest.y+chestWallThickness)/2, innerchest.z/2],//location
-      [90,90,90]];//rotation
-    locations = [back, left, right];
+  zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
   
-    vpos = startH + drawerPosition(iDrawer, drawerOuterSizes, clearance, drawerSlideThickness);
-    echo(startH=startH, vpos=vpos );
-    color(colour_chest) 
-    translate([chestWallThickness, -fudgeFactor, vpos]) 
-      cube([innerchest.x, innerchest.y+fudgeFactor, innerchest.z]);
-        
-    if(efficientBack) {
-      translate(locations[0][1])
-      translate([-locations[0][0][0]/2, 0, vpos-locations[0][0][1]/2])
-      cube([locations[0][0][0], wallPattern_thickness, locations[0][0][1]]);
-    }
-    
-    if(wallPatternEnabled)
-    {
-      translate([0, 0, vpos]) 
-      for(iSide = [efficientBack ? 1 : 0:1:len(locations)-1])
-      {
-        translate(locations[iSide][1])
-        rotate(locations[iSide][2])
-        render(){
-        cutout_pattern(
-          patternstyle = wallPatternStyle,
-          canvisSize = [locations[iSide][0][1],locations[iSide][0][0]], //Swap x and y and rotate so hex is easier to print
-          customShape = false,
-          circleFn = wallPatternHoleSides,
-          holeSize = [wallPatternHoleSize, wallPatternHoleSize],
-          holeSpacing = [wallPatternHoleSpacing, wallPatternHoleSpacing],
-          holeHeight = wallPattern_thickness,
-          center=true,
-          fill=wallPatternFill, //"none", "space", "crop"
-          voronoiNoise=wallPatternVoronoiNoise,
-          voronoiRadius = wallPatternVoronoiRadius,
-          help=false);
-        }
-      }
-    }
-  }
+  filledInZ = gf_zpitch*num_z;
+  zpoint = filledInZ-zClearance;
   
-  color(colour_chest) 
-  if(drawerSlideWidth > 0 && drawerCount > 1)
+  color(color_lid)
+  translate(cupPosition(position,num_x,num_y))
+  tz(mode == "lid"? 0 : zpoint) 
+  difference()
   {
-    zposFirstDivider =drawerPosition(1, drawerOuterSizes, clearance, drawerSlideThickness)-drawerSlideThickness*2;
-    zposLastDivider =drawerPosition(drawerCount-1, drawerOuterSizes, clearance, drawerSlideThickness)+drawerSlideThickness;
-    translate([drawerSlideWidth, -drawerSlideWidth, startH+zposFirstDivider]) 
-      roundedCube(
-        x=outerChest.x-drawerSlideWidth*2,
-        y=outerChest.y, //was innerchest
-        z=zposLastDivider-zposFirstDivider,
-        sideRadius = drawerSlideWidth-fudgeFactor*2);
+    SlidingLid(
+      num_x=num_x, 
+      num_y=num_y,
+      wall_thickness,
+      clearance = slidingLidSettings[iSlidingClearance],
+      lidThickness=slidingLidSettings[iSlidingLidThickness],
+      lidMinSupport=slidingLidSettings[iSlidingLidMinSupport],
+      lidMinWallThickness=slidingLidSettings[iSlidingLidMinWallThickness],
+      limitHeight=true,
+      cutoutEnabled = true,
+      cutoutSize = sliding_lid_cutout_size,
+      cutoutRadius = sliding_lid_cutout_radius,
+      cutoutPosition = sliding_lid_cutout_position);
   }
 }
-
-
-module cutout_pattern(
-  patternstyle,
-  canvisSize,
-  customShape,
-  circleFn,
-  holeSize = [],
-  holeSpacing,
-  holeHeight,
-  center,
-  fill,
-  voronoiNoise,
-  voronoiRadius,
-  help){
-  if(patternstyle == "grid" || patternstyle == "hexgrid") {
-    GridItemHolder(
-      canvisSize = canvisSize,
-      hexGrid = patternstyle == "hexgrid",
-      customShape = customShape,
-      circleFn = circleFn,
-      holeSize = holeSize,
-      holeSpacing = holeSpacing,
-      holeHeight = holeHeight,
-      center=center,
-      fill=fill, //"none", "space", "crop"
-      help=help);
-  }
-  else if(patternstyle == "voronoi" || patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"){
-    rectangle_voronoi(
-      canvisSize = [canvisSize.x,canvisSize.y,holeHeight], 
-      spacing = holeSpacing.x, 
-      cellsize = holeSize.x,
-      grid = (patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"),
-      gridOffset = (patternstyle == "voronoihexgrid"),
-      noise=voronoiNoise,
-      radius = voronoiRadius);
-  }
-}
-
-//render function
-module gridfinity_drawer(
-    mode = mode,
-    position = position,
-    drawerInnerWidth = drawer_inner_width,
-    drawerInnerDepth = drawer_inner_depth,
-    drawerInnerHeight = drawer_inner_height,
-    drawerCount = drawer_count,
-    drawerEnableCustomSizes = drawer_enable_custom_sizes,
-    drawerCustomSizes = drawer_custom_sizes,
-    drawerClearance = drawer_clearance,
-    chestClearance = chest_clearance,
-    chestWallThickness = chest_wall_thickness,
-    chestDrawerSlideThickness = chest_drawer_slide_thickness,
-    chestDrawerSlideWidth = chest_drawer_slide_width,
-    handleSize = handle_size,
-    handleVerticleCenter = handle_verticle_center,
-    handleRotate = handle_rotate,
-    drawerWallThickness = drawer_wall_thickness,
-    drawerBase = drawer_base,
-    drawerGridStyle = drawer_grid_style,
-    chestEnableTopGrid = chest_enable_top_grid,
-    chestTopGridStyle = chest_top_grid_style,
-    bottomGrid = chest_bottom_grid,
-    bottomMagnetDiameter = magnet_diameter,
-    bottomScrewDepth = screw_depth,
-    bottomHoleOverhangRemedy = hole_overhang_remedy,
-    bottomCornerAttachmentsOnly = chest_corner_attachments_only,
-    bottomHalfPitch = half_pitch,
-    bottomFlatBase = flat_base,
-    wallPatternBorderWidth = wallpattern_border_width,
-    efficientBack = efficient_back,
-    wallPatternEnabled = wallpattern_enabled,
-    wallPatternStyle = wallpattern_style,
-    wallPatternHoleSpacing = wallpattern_hole_spacing,
-    wallPatternDividersEnabled = wallpattern_dividers_enabled,
-    wallPatternHoleSides = wallpattern_hole_sides,
-    wallPatternHoleSize = wallpattern_hole_size,
-    wallPatternFill = wallpattern_fill,
-    wallPatternVoronoiNoise = wallpattern_voronoi_noise,
-    wallPatternVoronoiRadius = wallpattern_voronoi_radius){
-
-  // Apply defaults
-  drawerSlideThickness =chestDrawerSlideThickness == 0 ? chestWallThickness : chestDrawerSlideThickness;
-  ridgeDepth = wallPatternBorderWidth < 0 ? chestWallThickness/abs(wallPatternBorderWidth) : wallPatternBorderWidth;
-
-  // Calculate global dimensions 
-  drawerInnerHeights = drawerEnableCustomSizes ? drawerCustomSizes : [for([0:drawerCount-1]) drawerInnerHeight];
-  drawerCount = len(drawerInnerHeights);
-
-  drawerInnerUnitSize = [drawerInnerWidth, drawerInnerDepth];
-  drawerInnerSizes = [for(i = [0:drawerCount-1]) [
-    (drawerInnerWidth*gf_pitch) + drawerClearance.x,
-    (drawerInnerDepth*gf_pitch) + drawerClearance.y,
-    (drawerInnerHeights[i]*gf_zpitch) + drawerClearance.z + 4.25 + (drawerGridStyle == "magnet" ? gf_baseplate_magnet_thickness : 0)
-  ]];
-    
-  drawerOuterSizes = [for(i = [0:drawerCount-1]) [
-    drawerInnerSizes[i].x + (drawerWallThickness * 2),
-    drawerInnerSizes[i].y + (drawerWallThickness * 2),
-    drawerInnerSizes[i].z + ((drawerBase == "floor" || drawerBase == "default") ? drawerWallThickness : 0)
-  ]];
-    
-  outerChest = [
-    drawerOuterSizes[0].x + (chestClearance.x * 2) + (chestWallThickness * 2),
-    drawerOuterSizes[0].y + (chestClearance.y * 2) + (chestWallThickness)];
-    
-  totalH = sum(drawerOuterSizes).z + (chestClearance.z*2*drawerCount) + drawerSlideThickness * (drawerCount - 1) + chestWallThickness*2;
-
-  startH = chestWallThickness;
-
-  translate(position == "center" ? [-outerChest.x/2,-outerChest.y/2,0] : [0,0,0])
-  union(){
-  if(mode == "chest" || mode == "everything")      
-    chest(
-      outerChest=outerChest, 
-      totalH=totalH,
-      chestWallThickness=chestWallThickness,
-      enableTopGrid=chestEnableTopGrid,
-      topGridStyle=chestTopGridStyle,
-      //ridgeDepth=ridgeDepth,
-      bottomGrid=bottomGrid,
-      bottomMagnetDiameter=bottomMagnetDiameter,
-      bottomScrewDepth=bottomScrewDepth,
-      bottomHoleOverhangRemedy=bottomHoleOverhangRemedy,
-      bottomCornerAttachmentsOnly=bottomCornerAttachmentsOnly,
-      bottomHalfPitch=bottomHalfPitch,
-      bottomFlatBase=bottomFlatBase,
-      drawerCount=drawerCount,
-      drawerInnerUnitSize=drawerInnerUnitSize,
-      drawerOuterSizes=drawerOuterSizes,
-      drawerSlideThickness=drawerSlideThickness,
-      drawerWallThickness=drawerWallThickness,
-      startH=startH,
-      clearance=chestClearance)
-      chestCutouts(
-        drawerCount=drawerCount, 
-        drawerOuterSizes=drawerOuterSizes,
-        ridgeDepth=ridgeDepth,
-        drawerSlideThickness=drawerSlideThickness,
-        drawerSlideWidth=chestDrawerSlideWidth,
-        startH=startH,
-        outerChest=outerChest,
-        clearance=chestClearance,
-        chestWallThickness=chestWallThickness,
-        efficientBack=efficientBack,
-        wallPatternBorderWidth=wallPatternBorderWidth,
-        wallPatternEnabled=wallPatternEnabled,
-        wallPatternStyle=wallPatternStyle,
-        wallPatternHoleSpacing=wallPatternHoleSpacing,
-        wallPatternDividersEnabled=wallPatternDividersEnabled,
-        wallPatternHoleSides=wallPatternHoleSides,
-        wallPatternHoleSize=wallPatternHoleSize,
-        wallPatternFill=wallPatternFill,
-        wallPatternVoronoiNoise=wallPatternVoronoiNoise,
-        wallPatternVoronoiRadius=wallPatternVoronoiNoise);
-  if(mode == "drawers" || mode == "everything")
-    drawers(
-      drawerCount=drawerCount,
-      innerUnitSize=drawerInnerUnitSize,
-      innerSizes=drawerInnerSizes,
-      outerSizes=drawerOuterSizes,
-      drawerBase=drawerBase,
-      wallThickness=drawerWallThickness,
-      handleSize=handleSize,
-      handleVerticleCenter=handleVerticleCenter,
-      handleRotate=handleRotate,
-      ridgeDepth=ridgeDepth,
-      startH=startH,
-      chestClearance=chestClearance,
-      chestWallThickness=chestWallThickness,
-      gridStyle=drawerGridStyle,
-      drawerClearance=drawerClearance);
-  if(mode == "onedrawer")   
-    drawer(
-      drawerIndex=0,
-      innerUnitSize=drawerInnerUnitSize,
-      drawerBase= drawerBase,
-      wallThickness = drawerWallThickness,
-      handleSize = handleSize,
-      handleVerticleCenter=handleVerticleCenter,
-      handleRotate=handleRotate,
-      innerSizes = drawerInnerSizes,
-      outerSizes = drawerOuterSizes,
-      gridStyle=drawerGridStyle,
-      clearance=drawerClearance);
-  }
-}
-
-gridfinity_drawer();
+ 
+ 

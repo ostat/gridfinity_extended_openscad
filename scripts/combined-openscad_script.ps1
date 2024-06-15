@@ -113,6 +113,7 @@ Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfin
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_socket_holder.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_tray.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_item_holder.scad') -OutputFolder $OutputFolder
+Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_lid.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_baseplate.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_cutlerytray.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_silverware.scad') -OutputFolder $OutputFolder
