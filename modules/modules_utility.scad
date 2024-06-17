@@ -363,8 +363,14 @@ module SequentialBridgingDoubleHole_v1_old(
 
 module roundedCylinder(h,r,roundedr=0,roundedr1=0,roundedr2=0)
 {
+  assert(is_num(h), "h must have a value");
+  assert(is_num(r), "r must have a value");
   roundedr1 = roundedr1 > 0 ? roundedr1 : roundedr;
   roundedr2 = roundedr2 > 0 ? roundedr2 : roundedr;
+  
+  assert(is_num(roundedr1), "roundedr1 or roundedr must have a value");
+  assert(is_num(roundedr2), "roundedr2 or roundedr must have a value");
+  
   if(roundedr1 > 0 || roundedr2 > 0){
     hull(){
       if(roundedr1 > 0)

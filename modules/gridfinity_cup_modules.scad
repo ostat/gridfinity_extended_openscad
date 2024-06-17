@@ -736,7 +736,7 @@ module gridfinity_cup(
     efficient_floor,
     flat_base); 
       
-  HelpTxt("irregular_cup",[
+  HelpTxt("gridfinity_cup",[
     "num_x",num_x
     ,"num_y",num_y
     ,"num_z",num_z
