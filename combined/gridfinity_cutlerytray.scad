@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_cutlerytray.scad'. Generated 2024-06-16 09:29
+//Combined version of 'gridfinity_cutlerytray.scad'. Generated 2024-06-18 08:05
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -867,7 +867,7 @@ module gridfinity_cup(
     efficient_floor,
     flat_base); 
       
-  HelpTxt("irregular_cup",[
+  HelpTxt("gridfinity_cup",[
     "num_x",num_x
     ,"num_y",num_y
     ,"num_z",num_z
@@ -2856,8 +2856,14 @@ module SequentialBridgingDoubleHole_v1_old(
 
 module roundedCylinder(h,r,roundedr=0,roundedr1=0,roundedr2=0)
 {
+  assert(is_num(h), "h must have a value");
+  assert(is_num(r), "r must have a value");
   roundedr1 = roundedr1 > 0 ? roundedr1 : roundedr;
   roundedr2 = roundedr2 > 0 ? roundedr2 : roundedr;
+  
+  assert(is_num(roundedr1), "roundedr1 or roundedr must have a value");
+  assert(is_num(roundedr2), "roundedr2 or roundedr must have a value");
+  
   if(roundedr1 > 0 || roundedr2 > 0){
     hull(){
       if(roundedr1 > 0)
