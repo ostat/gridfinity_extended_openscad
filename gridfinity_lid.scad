@@ -245,18 +245,13 @@ if(mode == "both" || mode == "lid")
           sliding_min_support,
           sliding_clearance,
           wall_thickness);
-  echo(slidingLidSettings, 
-    sliding_lid_enabled=sliding_lid_enabled, 
-    sliding_lid_thickness=sliding_lid_thickness, 
-    sliding_min_wall_thickness=sliding_min_wall_thickness, 
-    sliding_min_support=sliding_min_support, 
-    sliding_clearance=sliding_clearance, 
-    wall_thickness=wall_thickness);       
+      
   zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
   
   filledInZ = gf_zpitch*num_z;
   zpoint = filledInZ-zClearance;
-
+  
+  color(color_lid)
   translate(cupPosition(position,num_x,num_y))
   tz(mode == "lid"? 0 : zpoint) 
   difference()
