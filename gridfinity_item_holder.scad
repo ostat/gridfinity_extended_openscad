@@ -543,7 +543,7 @@ module gridfinity_itemholder(
   extention_tabs_enabled = extention_tabs_enabled,
   cutx=cutx,
   cuty=cuty,
-  help=help) {
+  help=enable_help) {
   
   difference() {
     num_x = calcDimentionWidth(width);
@@ -644,6 +644,7 @@ module gridfinity_itemholder(
     /*<!!end gridfinity_basic_cup!!>*/
 
     color(color_extention)
+    translate(cupPosition(position,num_x,num_y))
     translate([0,0,bch])
     itemholder(
       num_x=num_x, num_y=num_y, num_z=height,
