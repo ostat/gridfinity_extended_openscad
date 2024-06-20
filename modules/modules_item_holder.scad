@@ -10,11 +10,25 @@ module GridItemHolder(
   holeGrid = [0,0],
   holeHeight = 0,
   holeChamfer = 0,
+  border = 10,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   crop = true,
   help) 
 {
+  assert(is_list(canvisSize) && len(canvisSize)==2, "canvisSize must be list of len 2");
+  assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
+  assert(is_bool(customShape), "customShape must be bool");    
+  assert(is_num(circleFn), "circleFn must be number");    
+  assert(is_list(holeSize) && len(holeSize)==2, "holeSize must be list of len 2");
+  assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
+  assert(is_list(holeGrid) && len(holeGrid)==2, "canvisSize must be list of len 2");  
+  assert(is_num(holeHeight), "holeHeight must be number");    
+  assert(is_num(holeChamfer), "holeChamfer must be number");    
+  assert(is_num(holeChamfer), "holeChamfer must be number");  
+  assert(is_string(fill), "fill must be a string")
+  assert(is_bool(crop), "crop must be bool");  
+
   fudgeFactor = 0.01;
   
   //Sides, 
@@ -29,6 +43,10 @@ module GridItemHolder(
   //For hex in a hex grid we can optomise the spacing, otherwise its too hard      
   Ri = holeSize[0]/2;//(circleFn==6 && hexGrid) || (circleFn==4) ? (holeSize[0]/2) : Rc;
   
+  canvisSize = border > 0 ? 
+    [canvisSize.x-border*2,canvisSize.y-border*2] : 
+    canvisSize;
+    
   calcHoleDimentions = [
       customShape ? holeSize[0] :
       circleFn == 4 ? Rc*2 : 
