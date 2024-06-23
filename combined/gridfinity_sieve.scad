@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_sieve.scad'. Generated 2024-06-20 22:57
+//Combined version of 'gridfinity_sieve.scad'. Generated 2024-06-23 10:54
 ///////////////////////////////////////
 
 /*<!!start gridfinity_sieve!!>*/
@@ -1965,7 +1965,7 @@ function SlidingLidSettings(slidingLidEnabled, slidingLidThickness, slidingMinWa
   let(
     thickness = slidingLidThickness > 0 ? slidingLidThickness : wallThickness*2,
     minWallThickness = slidingMinWallThickness > 0 ? slidingMinWallThickness : wallThickness/2,
-    minSupport = slidingMinSupport > 0 ? slidingMinSupport : thickness/2,
+    minSupport = slidingMinSupport > 0 ? slidingMinSupport : thickness/2
   ) [slidingLidEnabled, thickness, minWallThickness, minSupport, slidingClearance];
 
 module AssertSlidingLidSettings(settings){
@@ -2018,7 +2018,7 @@ module SlidingLid(
         : cutoutSize.x, 
       cutoutSize.y<0 
       ? lidSize.y/abs(cutoutSize.y) 
-      : cutoutSize.y, 
+      : cutoutSize.y
     ];
     cRadius = min(cSize.x/2,cSize.y/2,cutoutRadius);
     positions = [

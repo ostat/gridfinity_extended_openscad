@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_drawers.scad'. Generated 2024-06-18 08:05
+//Combined version of 'gridfinity_drawers.scad'. Generated 2024-06-23 10:54
 ///////////////////////////////////////
 // Gridfinity drawer system.
 // Intended for Gridfinity bins to sit in the drawers, meaning the outer chest will not fit neatly on to a gridfinity grid.
@@ -1987,7 +1987,7 @@ function SlidingLidSettings(slidingLidEnabled, slidingLidThickness, slidingMinWa
   let(
     thickness = slidingLidThickness > 0 ? slidingLidThickness : wallThickness*2,
     minWallThickness = slidingMinWallThickness > 0 ? slidingMinWallThickness : wallThickness/2,
-    minSupport = slidingMinSupport > 0 ? slidingMinSupport : thickness/2,
+    minSupport = slidingMinSupport > 0 ? slidingMinSupport : thickness/2
   ) [slidingLidEnabled, thickness, minWallThickness, minSupport, slidingClearance];
 
 module AssertSlidingLidSettings(settings){
@@ -2040,7 +2040,7 @@ module SlidingLid(
         : cutoutSize.x, 
       cutoutSize.y<0 
       ? lidSize.y/abs(cutoutSize.y) 
-      : cutoutSize.y, 
+      : cutoutSize.y
     ];
     cRadius = min(cSize.x/2,cSize.y/2,cutoutRadius);
     positions = [
@@ -17201,11 +17201,25 @@ module GridItemHolder(
   holeGrid = [0,0],
   holeHeight = 0,
   holeChamfer = 0,
+  border = 10,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   crop = true,
   help) 
 {
+  assert(is_list(canvisSize) && len(canvisSize)==2, "canvisSize must be list of len 2");
+  assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
+  assert(is_bool(customShape), "customShape must be bool");    
+  assert(is_num(circleFn), "circleFn must be number");    
+  assert(is_list(holeSize) && len(holeSize)==2, "holeSize must be list of len 2");
+  assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
+  assert(is_list(holeGrid) && len(holeGrid)==2, "canvisSize must be list of len 2");  
+  assert(is_num(holeHeight), "holeHeight must be number");    
+  assert(is_num(holeChamfer), "holeChamfer must be number");    
+  assert(is_num(holeChamfer), "holeChamfer must be number");  
+  assert(is_string(fill), "fill must be a string")
+  assert(is_bool(crop), "crop must be bool");  
+
   fudgeFactor = 0.01;
   
   //Sides, 
@@ -17220,6 +17234,10 @@ module GridItemHolder(
   //For hex in a hex grid we can optomise the spacing, otherwise its too hard      
   Ri = holeSize[0]/2;//(circleFn==6 && hexGrid) || (circleFn==4) ? (holeSize[0]/2) : Rc;
   
+  canvisSize = border > 0 ? 
+    [canvisSize.x-border*2,canvisSize.y-border*2] : 
+    canvisSize;
+    
   calcHoleDimentions = [
       customShape ? holeSize[0] :
       circleFn == 4 ? Rc*2 : 
@@ -17260,7 +17278,8 @@ module GridItemHolder(
   _hexGrid = hexGrid != "auto" ? hexGrid //if not auto use what was chose
           : hexGridCount == squareCount ? false //if equal prefer square
           : hexGridCount > squareCount;
-    
+          
+  translate([0, 0, 0])
   intersection(){
     //Crop to ensure that we dont go outside the bounds 
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
@@ -17480,6 +17499,7 @@ Default_Filament_Clip_Enabled = false;
 Default_Filament_Clip_Diameter = 2;
 Default_Filament_Clip_Length = 8;
 
+//gridfinity_baseplate();
 
 function bitwise_and
    (v1, v2, bv = 1 ) = 
@@ -17497,10 +17517,10 @@ function decimaltobitwise
       
 module gridfinity_baseplate(
   width = 2,
-  depth = 1,
-  plateStyle = "base",
-  plateOptions = "default",
-  lidOptions = "default",
+  depth = 3,
+  plateStyle = Default_Plate_Style,
+  plateOptions = Default_Base_Plate_Options,
+  lidOptions = Default_Lid_Options,
   customGridEnabled = false,
   gridPossitions = [[1]],
   butterflyClipEnabled  = Default_Butterfly_Clip_Enabled,
@@ -17512,8 +17532,8 @@ module gridfinity_baseplate(
   lidIncludeMagnets = Default_Lid_Include_Magnets,
   lidEfficientFloorThickness =Default_Lid_Efficient_Floor_Thickness,
   lidEfficientBaseHeight = Default_Lid_Efficient_Base_Height,
-  cutx = false,
-  cuty = false,
+  cutx = 0,
+  cuty = 0,
   help = false)
 {
   _gridPossitions = customGridEnabled ? gridPossitions : [[1]];
@@ -17662,7 +17682,7 @@ module base_lid(
       half_pitch=half_pitch, 
       fn = fn);
     
-    if(lidOptions == "efficient")
+    if(efficient_base)
     {
       translate([-gf_pitch/2,-gf_pitch/2,(lidEfficientBaseHeight+0.6)*gf_zpitch])
         cube([gf_pitch*num_x,gf_pitch*num_y,gf_zpitch]);
@@ -17681,7 +17701,8 @@ module base_lid(
       upperDia = 2.3;
       lowerTaperHeight = (upperDia-lowerDia)/2;
       
-      gridcopy(num_x, num_y) 
+      //This code to make the lid more efficient is not working. It glitches the half pitch, and makes other options not work
+      *gridcopy(num_x, num_y) 
         hull(){
           cornercopy(17) {
             translate([0, 0, lidEfficientFloorThickness+lowerTaperHeight])
