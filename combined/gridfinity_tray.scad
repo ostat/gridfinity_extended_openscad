@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_tray.scad'. Generated 2024-06-23 10:54
+//Combined version of 'gridfinity_tray.scad'. Generated 2024-06-23 20:10
 ///////////////////////////////////////
 
 /*<!!start gridfinity_tray!!>*/
@@ -10,7 +10,7 @@ tray_corner_radius = 2;
 tray_zpos = 0;
 tray_magnet_radius = 5;
 tray_magnet_thickness = 5;
-tray_spacing = 3;
+tray_spacing = 2; //0.1
 tray_vertical_compartments = 1;
 tray_horizontal_compartments = 1;
 
@@ -18054,8 +18054,9 @@ module tray(
   horizontalCompartments = 1,
   customCompartments = "") 
 {
-  cutoutSize = gf_pitch - spacing*2;
 
+  cellSpacing = spacing/2;
+  
   verticalCompartments = verticalCompartments > 0 ? verticalCompartments : num_x ;
   horizontalCompartments = horizontalCompartments > 0 ? horizontalCompartments : num_y;
   //todo, this could be simplified, by to produce a single array for ether scenario.
@@ -18076,7 +18077,7 @@ module tray(
         translate([spacing+x*xStep,spacing+y*yStep,baseHeight+max(trayZpos,floorThickness)])
         roundedCube(
             xSize, ySize,
-            height*gf_zpitch,
+            num_z*gf_zpitch,
             bottomRadius = cornerRadius,
             sideRadius = cornerRadius);
       }
@@ -18085,26 +18086,35 @@ module tray(
   else
   {
     echo(customCompartments = splitCustomConfig(customCompartments));
-    //Non custom components
+    //custom components
     compartments = split(customCompartments, "|");
-    for (x =[0:1:len(compartments)-1])
-    {
-        comp =csv_parse(compartments[x]);
-        //echo(comp=comp);
-        xpos = comp[ixpos];
-        ypos = comp[iypos];
-        xsize = comp[ixsize];
-        ysize = comp[iysize];
-        radius = len(comp) >= 5 ? comp[icornerradius] : cornerRadius;
-        depth = baseHeight+(len(comp) >= 6 ? comp[idepth] : max(trayZpos,floorThickness));
-      
-        translate([spacing+xpos*gf_pitch,spacing+ypos*gf_pitch,depth])
-        roundedCube(
-            min(1,xsize)*cutoutSize+max(0,xsize-1)*gf_pitch,
-            min(1,ysize)*cutoutSize+max(0,ysize-1)*gf_pitch,
-            num_z*gf_zpitch,
-            bottomRadius = radius,
-            sideRadius = radius);
+
+    
+    scl = [
+      (num_x*gf_pitch-cellSpacing*2)/(num_x*gf_pitch),
+      (num_y*gf_pitch-cellSpacing*2)/(num_y*gf_pitch),1];
+    translate([cellSpacing,cellSpacing,0])
+    scale(scl)
+    union()
+      for (x =[0:1:len(compartments)-1])
+      {
+          comp =csv_parse(compartments[x]);
+          //echo(comp=comp);
+          xpos = comp[ixpos];
+          ypos = comp[iypos];
+          xsize = comp[ixsize];
+          ysize = comp[iysize];
+          radius = len(comp) >= 5 ? comp[icornerradius] : cornerRadius;
+          depth = baseHeight+(len(comp) >= 6 ? comp[idepth] : max(trayZpos,floorThickness));
+        
+          translate([cellSpacing+xpos*gf_pitch,cellSpacing+ypos*gf_pitch,depth])
+          roundedCube(
+              xsize*gf_pitch-cellSpacing*2,
+              ysize*gf_pitch-cellSpacing*2,
+              //Added 5, as I need to deal with the lip overhang
+              num_z*gf_zpitch-depth+fudgeFactor+5,
+              bottomRadius = radius,
+              sideRadius = radius);
     }
   }
 }
