@@ -9,7 +9,7 @@ use <modules/gridfinity_modules.scad>
 // Should the grid be square or hex
 sieve_grid_style = "hex"; //["square","hex","auto"]
 //Spacing around the holes
-sieve_hole_spacing = 2; //0.1
+sieve_hole_spacing = 3; //0.1
 // 45 deg chamfer added to the top of the hole (mm)
 sieve_hole_chamfer = 0; //0.5
 // The number of sides for the hole, when custom is selected
@@ -42,7 +42,7 @@ zClearance = 0; // 0.1
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
-floor_thickness = 0.7;
+floor_thickness = 2;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "smooth";//[off,on,rounded,smooth] 
@@ -108,10 +108,7 @@ module gridfinity_sieve(
     num_y = calcDimentionDepth(depth);
     num_z = calcDimentionHeight(height);
     
-    // min floor height
-    bch = cupBaseClearanceHeight(0, 0);
-    mfh = calculateMinFloorHeight(0, 0);
-
+    holeSize = is_list(sieve_hole_size) ? sieve_hole_size : [sieve_hole_size,sieve_hole_size];
     /*<!!start gridfinity_basic_cup!!>*/
     gridfinity_cup(
       width=width, depth=depth, height=height,
@@ -141,7 +138,7 @@ module gridfinity_sieve(
         hexGrid = sieve_grid_style == "hex",
         //customShape = item[4] == "square",
         circleFn = sieve_hole_sides,
-        holeSize = sieve_hole_size,
+        holeSize = holeSize,
         holeSpacing = [sieve_hole_spacing,sieve_hole_spacing],
         holeGrid = [0,0],
         holeHeight = floor_thickness+fudgeFactor*6,//_depth+fudgeFactor,
