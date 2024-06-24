@@ -1,122 +1,38 @@
-include <ub.scad>
-
-//Creates a rounded wall cutout to allow access to the items inside the gridfinity box.           
-module WallCutout2(
-  lowerWidth=50,
-  wallAngle=70,
-  height=21,
-  thickness=10,
-  cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  fudgeFactor = 0.01;
-  
-  rotate([90,0,0])
-  translate([0,topHeight,-thickness/2])
-  union(){
-  mirrors = [[0,0,0],[1,0,0]];
-  colours = ["red","blue"];
-  for(i = [0:1:len(mirrors)-1])
-  {
-    mirror(mirrors[i])
-      color(colours[i])
-      rotate([0,00,90])
-      translate([0,bottomWidth-fudgeFactor,0])
-      linear_extrude(thickness)
-      SBogen(
-        grad=wallAngle,
-        extrude=-(height/2+topHeight),
-        dist=height,
-        r1=cornerRadius,
-        r2=cornerRadius,
-        l1=bottomWidth,
-        l2=topWidth, $fn = fn);    
-    }
-  }
-}
-
-module bentWall(
-  length=100,
-  bendPosition=0,
-  bendAngle=45,
-  separation=10,
-  lowerBendRadius=0,
-  upperBendRadius=0,
-  height=30,
-  thickness=10,
-  wall_cutout_depth = 0,
-  wall_cutout_width = 0,
-  fn = 64) {
-  bendPosition = bendPosition > 0 ?bendPosition: length/2;
-  
-  fudgeFactor = 0.01;
-  
-  render()
-  difference()
-  {
-    union(){
-      if(separation != 0) { 
-        translate([thickness/2,bendPosition,0])
-        linear_extrude(height)
-        SBogen(
-          2D=thickness,
-          dist=separation,
-          //x0=true,
-          grad=bendAngle,
-          r1=lowerBendRadius <= 0 ? separation : lowerBendRadius,
-          r2=upperBendRadius <= 0 ? separation : upperBendRadius,
-          l1=bendPosition,
-          l2=length-bendPosition, $fn = fn);   
-      } else {
-        cube([thickness, length, height]);
-      }
-    }
-
-    cutoutHeight = 
-      wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
-        : wall_cutout_depth;
-    cutoutLength = 
-      wall_cutout_width <= -1 ? length/abs(wall_cutout_depth)
-        : wall_cutout_width == 0 ? length/2
-        : wall_cutout_width;
-    if(wall_cutout_depth != 0){
-      translate([0,length/2,height])
-      rotate([0,0,90])
-      WallCutout(
-        height = cutoutHeight,
-        lowerWidth = cutoutLength,
-        cornerRadius = cutoutHeight,
-        thickness = (separation+thickness*2+fudgeFactor*2));
-    }
-  }
-}
-
 module WallCutout(
   lowerWidth=50,
   wallAngle=70,
   height=21,
   thickness=10,
   cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  translate([0,thickness/2,thickness])
-  rotate([90,90,0])
-  linear_extrude(thickness)
-  Vollwelle(
-    r=[cornerRadius,cornerRadius],
-    mitte=lowerWidth-cornerRadius*2,
-    g2End=[1,1],
-    grad=wallAngle,
-    h=height,
-    extrude=thickness,
-    x0=-1,
-    xCenter=-1);
+  $fn = 64) {
+ 
+  topHeight = cornerRadius*4;
+  bottomWidth = lowerWidth;
+  topWidth = lowerWidth+(height/tan(wallAngle))*2;
+
+  rotate([90,0,0])
+  translate([0,0,-thickness/2])
+  linear_extrude(height=thickness)
+  intersection(){
+    translate([0,-height/2+cornerRadius,0])
+    square([topWidth+cornerRadius*2,height+cornerRadius*2], true);
+    
+    //Use tripple offset to fillet corners
+    //https://www.reddit.com/r/openscad/comments/ut1n7t/quick_tip_simple_fillet_for_2d_shapes/
+    offset(r=-cornerRadius)
+    offset(r=2 * cornerRadius)
+    offset(r=-cornerRadius)
+    union(){
+      translate([0,topHeight/2])
+      square([topWidth*2,topHeight], true);
+      hull(){
+        translate([0,topHeight/2])
+        square([topWidth,topHeight], true);
+        translate([0,-height/2])
+        square([bottomWidth,height], true);
+      }
+    }
+  }
 }
 
 //Creates a rounded cube

@@ -1,16 +1,8 @@
 include <../modules/modules_utility.scad>
        
-translate([175,0,0])
-WallCutout2(
-  lowerWidth=50,
-  wallAngle=70,
-  height=21,
-  thickness=10,
-  cornerRadius=5);
-
-#translate([175-40,50,-21])
+#translate([175-40,0,-21])
 cube([80,10,21]);
-translate([175,50,0])
+translate([175,0,0])
 WallCutout(
   lowerWidth=50,
   wallAngle=70,
