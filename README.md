@@ -3,7 +3,7 @@ This is a recreation of Zack Freedman's gridfinity system in OpenSCAD.
 The Model attempts to accurately re-produce in OpenSCAD the Gridfinity bins as designed by Zack Freedman. It also adds extra features to the base model, and an extension pattern for further customisation.
 
 ## Official documentation
-Official detailed documentation can be fund here [gridfinity-extended](https://docs.ostat.com/docs/openscad/gridfinity-extended)
+Official detailed documentation can be found here [gridfinity-extended](https://docs.ostat.com/docs/openscad/gridfinity-extended)
 
 Scripts included are:
 ## Gridfinity Basic Cup
@@ -19,7 +19,7 @@ Customisable Grid based item holder. Has built in dimensions of many common Memo
 [<img src="./Images/gridfinity_item_holder-demo_text.gif" alt="" width="300">](./Images/gridfinity_item_holder-demo_text.gif)
 
 ## Gridfinity Extension Tray
-Catch all tray for holing small items.<br>
+Catch all tray for holding small items.<br>
 [<img src="./Images/gridfinity_tray-demo_text.gif" alt="" width="300">](./Images/gridfinity_tray-demo_text.gif)
 
 Some other models are also included and are also parametric. 
@@ -28,4 +28,4 @@ Some other models are also included and are also parametric.
 * Gridfinity base for Flsun Q5
 * Silverware drawer
 
-This project is based on work by Zack Freedman's of [voidstarlab](https://www.voidstarlab.com/) and vector76's [Gridfinity library](https://github.com/vector76/)gridfinity_openscad
+This project is based on work by Zack Freedman's of [voidstarlab](https://www.voidstarlab.com/) and [vector76](https://github.com/vector76/)'s [gridfinity_openscad](https://github.com/vector76/gridfinity_openscad)
