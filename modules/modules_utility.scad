@@ -1,3 +1,5 @@
+include <ub.scad>
+
 module WallCutout(
   lowerWidth=50,
   wallAngle=70,
@@ -34,6 +36,63 @@ module WallCutout(
     }
   }
 }
+
+module bentWall(
+  length=100,
+  bendPosition=0,
+  bendAngle=45,
+  separation=10,
+  lowerBendRadius=0,
+  upperBendRadius=0,
+  height=30,
+  thickness=10,
+  wall_cutout_depth = 0,
+  wall_cutout_width = 0,
+  fn = 64) {
+  bendPosition = bendPosition > 0 ?bendPosition: length/2;
+  
+  fudgeFactor = 0.01;
+  
+  render()
+  difference()
+  {
+     union(){
+      if(separation != 0) { 
+        translate([thickness/2,bendPosition,0])
+        linear_extrude(height)
+        SBogen(
+          2D=thickness,
+          dist=separation,
+          //x0=true,
+          grad=bendAngle,
+          r1=lowerBendRadius <= 0 ? separation : lowerBendRadius,
+          r2=upperBendRadius <= 0 ? separation : upperBendRadius,
+          l1=bendPosition,
+          l2=length-bendPosition, $fn = fn);   
+      } else {
+        cube([thickness, length, height]);
+       }
+     }
+
+    cutoutHeight = 
+      wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
+        : wall_cutout_depth;
+    cutoutLength = 
+      wall_cutout_width <= -1 ? length/abs(wall_cutout_depth)
+        : wall_cutout_width == 0 ? length/2
+        : wall_cutout_width;
+    if(wall_cutout_depth != 0){
+      translate([0,length/2,height])
+      rotate([0,0,90])
+      WallCutout(
+        height = cutoutHeight,
+        lowerWidth = cutoutLength,
+        cornerRadius = cutoutHeight,
+        thickness = (separation+thickness*2+fudgeFactor*2));
+    }
+   }
+ }
+ 
 
 //Creates a rounded cube
 //x=width in mm

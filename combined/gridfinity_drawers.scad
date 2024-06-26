@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_drawers.scad'. Generated 2024-06-23 10:54
+//Combined version of 'gridfinity_drawers.scad'. Generated 2024-06-27 07:35
 ///////////////////////////////////////
 // Gridfinity drawer system.
 // Intended for Gridfinity bins to sit in the drawers, meaning the outer chest will not fit neatly on to a gridfinity grid.
@@ -2541,40 +2541,39 @@ module gridcopy(num_x, num_y, pitch=gf_pitch) {
 //CombinedEnd from path gridfinity_modules.scad
 //Combined from path modules_utility.scad
 
-//Creates a rounded wall cutout to allow access to the items inside the gridfinity box.           
-module WallCutout2(
+module WallCutout(
   lowerWidth=50,
   wallAngle=70,
   height=21,
   thickness=10,
   cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  fudgeFactor = 0.01;
-  
+  $fn = 64) {
+ 
+  topHeight = cornerRadius*4;
+  bottomWidth = lowerWidth;
+  topWidth = lowerWidth+(height/tan(wallAngle))*2;
+
   rotate([90,0,0])
-  translate([0,topHeight,-thickness/2])
-  union(){
-  mirrors = [[0,0,0],[1,0,0]];
-  colours = ["red","blue"];
-  for(i = [0:1:len(mirrors)-1])
-  {
-    mirror(mirrors[i])
-      color(colours[i])
-      rotate([0,00,90])
-      translate([0,bottomWidth-fudgeFactor,0])
-      linear_extrude(thickness)
-      SBogen(
-        grad=wallAngle,
-        extrude=-(height/2+topHeight),
-        dist=height,
-        r1=cornerRadius,
-        r2=cornerRadius,
-        l1=bottomWidth,
-        l2=topWidth, $fn = fn);    
+  translate([0,0,-thickness/2])
+  linear_extrude(height=thickness)
+  intersection(){
+    translate([0,-height/2+cornerRadius,0])
+    square([topWidth+cornerRadius*2,height+cornerRadius*2], true);
+    
+    //Use tripple offset to fillet corners
+    //https://www.reddit.com/r/openscad/comments/ut1n7t/quick_tip_simple_fillet_for_2d_shapes/
+    offset(r=-cornerRadius)
+    offset(r=2 * cornerRadius)
+    offset(r=-cornerRadius)
+    union(){
+      translate([0,topHeight/2])
+      square([topWidth*2,topHeight], true);
+      hull(){
+        translate([0,topHeight/2])
+        square([topWidth,topHeight], true);
+        translate([0,-height/2])
+        square([bottomWidth,height], true);
+      }
     }
   }
 }
@@ -2598,7 +2597,7 @@ module bentWall(
   render()
   difference()
   {
-    union(){
+     union(){
       if(separation != 0) { 
         translate([thickness/2,bendPosition,0])
         linear_extrude(height)
@@ -2613,8 +2612,8 @@ module bentWall(
           l2=length-bendPosition, $fn = fn);   
       } else {
         cube([thickness, length, height]);
-      }
-    }
+       }
+     }
 
     cutoutHeight = 
       wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
@@ -2632,33 +2631,9 @@ module bentWall(
         cornerRadius = cutoutHeight,
         thickness = (separation+thickness*2+fudgeFactor*2));
     }
-  }
-}
-
-module WallCutout(
-  lowerWidth=50,
-  wallAngle=70,
-  height=21,
-  thickness=10,
-  cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  translate([0,thickness/2,thickness])
-  rotate([90,90,0])
-  linear_extrude(thickness)
-  Vollwelle(
-    r=[cornerRadius,cornerRadius],
-    mitte=lowerWidth-cornerRadius*2,
-    g2End=[1,1],
-    grad=wallAngle,
-    h=height,
-    extrude=thickness,
-    x0=-1,
-    xCenter=-1);
-}
+   }
+ }
+ 
 
 //Creates a rounded cube
 //x=width in mm
@@ -17201,7 +17176,7 @@ module GridItemHolder(
   holeGrid = [0,0],
   holeHeight = 0,
   holeChamfer = 0,
-  border = 10,
+  border = 0,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   crop = true,
@@ -17279,7 +17254,7 @@ module GridItemHolder(
           : hexGridCount == squareCount ? false //if equal prefer square
           : hexGridCount > squareCount;
           
-  translate([0, 0, 0])
+  translate(center ? [0, 0, 0] : [border, border, 0])
   intersection(){
     //Crop to ensure that we dont go outside the bounds 
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")

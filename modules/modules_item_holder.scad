@@ -10,7 +10,7 @@ module GridItemHolder(
   holeGrid = [0,0],
   holeHeight = 0,
   holeChamfer = 0,
-  border = 10,
+  border = 0,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   crop = true,
@@ -87,7 +87,8 @@ module GridItemHolder(
   _hexGrid = hexGrid != "auto" ? hexGrid //if not auto use what was chose
           : hexGridCount == squareCount ? false //if equal prefer square
           : hexGridCount > squareCount;
-    
+          
+  translate(center ? [0, 0, 0] : [border, border, 0])
   intersection(){
     //Crop to ensure that we dont go outside the bounds 
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
