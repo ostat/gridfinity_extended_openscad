@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate.scad'. Generated 2024-06-18 08:05
+//Combined version of 'gridfinity_baseplate.scad'. Generated 2024-06-27 22:21
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -15,7 +15,7 @@ Custom_Grid_Enabled = false;
 /* [Plate] */
 // Plate Style
 Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base]
-Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew]
+Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew, cnc:CNC or Laser cut, cncmagnet:CNC cut with Magnets]
 Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch: halfpitch base, efficient]
 
 Lid_Include_Magnets = true;
@@ -1959,7 +1959,7 @@ function SlidingLidSettings(slidingLidEnabled, slidingLidThickness, slidingMinWa
   let(
     thickness = slidingLidThickness > 0 ? slidingLidThickness : wallThickness*2,
     minWallThickness = slidingMinWallThickness > 0 ? slidingMinWallThickness : wallThickness/2,
-    minSupport = slidingMinSupport > 0 ? slidingMinSupport : thickness/2,
+    minSupport = slidingMinSupport > 0 ? slidingMinSupport : thickness/2
   ) [slidingLidEnabled, thickness, minWallThickness, minSupport, slidingClearance];
 
 module AssertSlidingLidSettings(settings){
@@ -2012,7 +2012,7 @@ module SlidingLid(
         : cutoutSize.x, 
       cutoutSize.y<0 
       ? lidSize.y/abs(cutoutSize.y) 
-      : cutoutSize.y, 
+      : cutoutSize.y
     ];
     cRadius = min(cSize.x/2,cSize.y/2,cutoutRadius);
     positions = [
@@ -2513,40 +2513,39 @@ module gridcopy(num_x, num_y, pitch=gf_pitch) {
 //CombinedEnd from path gridfinity_modules.scad
 //Combined from path modules_utility.scad
 
-//Creates a rounded wall cutout to allow access to the items inside the gridfinity box.           
-module WallCutout2(
+module WallCutout(
   lowerWidth=50,
   wallAngle=70,
   height=21,
   thickness=10,
   cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  fudgeFactor = 0.01;
-  
+  $fn = 64) {
+ 
+  topHeight = cornerRadius*4;
+  bottomWidth = lowerWidth;
+  topWidth = lowerWidth+(height/tan(wallAngle))*2;
+
   rotate([90,0,0])
-  translate([0,topHeight,-thickness/2])
-  union(){
-  mirrors = [[0,0,0],[1,0,0]];
-  colours = ["red","blue"];
-  for(i = [0:1:len(mirrors)-1])
-  {
-    mirror(mirrors[i])
-      color(colours[i])
-      rotate([0,00,90])
-      translate([0,bottomWidth-fudgeFactor,0])
-      linear_extrude(thickness)
-      SBogen(
-        grad=wallAngle,
-        extrude=-(height/2+topHeight),
-        dist=height,
-        r1=cornerRadius,
-        r2=cornerRadius,
-        l1=bottomWidth,
-        l2=topWidth, $fn = fn);    
+  translate([0,0,-thickness/2])
+  linear_extrude(height=thickness)
+  intersection(){
+    translate([0,-height/2+cornerRadius,0])
+    square([topWidth+cornerRadius*2,height+cornerRadius*2], true);
+    
+    //Use tripple offset to fillet corners
+    //https://www.reddit.com/r/openscad/comments/ut1n7t/quick_tip_simple_fillet_for_2d_shapes/
+    offset(r=-cornerRadius)
+    offset(r=2 * cornerRadius)
+    offset(r=-cornerRadius)
+    union(){
+      translate([0,topHeight/2])
+      square([topWidth*2,topHeight], true);
+      hull(){
+        translate([0,topHeight/2])
+        square([topWidth,topHeight], true);
+        translate([0,-height/2])
+        square([bottomWidth,height], true);
+      }
     }
   }
 }
@@ -2570,7 +2569,7 @@ module bentWall(
   render()
   difference()
   {
-    union(){
+     union(){
       if(separation != 0) { 
         translate([thickness/2,bendPosition,0])
         linear_extrude(height)
@@ -2585,8 +2584,8 @@ module bentWall(
           l2=length-bendPosition, $fn = fn);   
       } else {
         cube([thickness, length, height]);
-      }
-    }
+       }
+     }
 
     cutoutHeight = 
       wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
@@ -2604,33 +2603,9 @@ module bentWall(
         cornerRadius = cutoutHeight,
         thickness = (separation+thickness*2+fudgeFactor*2));
     }
-  }
-}
-
-module WallCutout(
-  lowerWidth=50,
-  wallAngle=70,
-  height=21,
-  thickness=10,
-  cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  translate([0,thickness/2,thickness])
-  rotate([90,90,0])
-  linear_extrude(thickness)
-  Vollwelle(
-    r=[cornerRadius,cornerRadius],
-    mitte=lowerWidth-cornerRadius*2,
-    g2End=[1,1],
-    grad=wallAngle,
-    h=height,
-    extrude=thickness,
-    x0=-1,
-    xCenter=-1);
-}
+   }
+ }
+ 
 
 //Creates a rounded cube
 //x=width in mm
@@ -17173,11 +17148,25 @@ module GridItemHolder(
   holeGrid = [0,0],
   holeHeight = 0,
   holeChamfer = 0,
+  border = 0,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   crop = true,
   help) 
 {
+  assert(is_list(canvisSize) && len(canvisSize)==2, "canvisSize must be list of len 2");
+  assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
+  assert(is_bool(customShape), "customShape must be bool");    
+  assert(is_num(circleFn), "circleFn must be number");    
+  assert(is_list(holeSize) && len(holeSize)==2, "holeSize must be list of len 2");
+  assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
+  assert(is_list(holeGrid) && len(holeGrid)==2, "canvisSize must be list of len 2");  
+  assert(is_num(holeHeight), "holeHeight must be number");    
+  assert(is_num(holeChamfer), "holeChamfer must be number");    
+  assert(is_num(holeChamfer), "holeChamfer must be number");  
+  assert(is_string(fill), "fill must be a string")
+  assert(is_bool(crop), "crop must be bool");  
+
   fudgeFactor = 0.01;
   
   //Sides, 
@@ -17192,6 +17181,10 @@ module GridItemHolder(
   //For hex in a hex grid we can optomise the spacing, otherwise its too hard      
   Ri = holeSize[0]/2;//(circleFn==6 && hexGrid) || (circleFn==4) ? (holeSize[0]/2) : Rc;
   
+  canvisSize = border > 0 ? 
+    [canvisSize.x-border*2,canvisSize.y-border*2] : 
+    canvisSize;
+    
   calcHoleDimentions = [
       customShape ? holeSize[0] :
       circleFn == 4 ? Rc*2 : 
@@ -17232,7 +17225,8 @@ module GridItemHolder(
   _hexGrid = hexGrid != "auto" ? hexGrid //if not auto use what was chose
           : hexGridCount == squareCount ? false //if equal prefer square
           : hexGridCount > squareCount;
-    
+          
+  translate(center ? [0, 0, 0] : [border, border, 0])
   intersection(){
     //Crop to ensure that we dont go outside the bounds 
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
@@ -17430,7 +17424,7 @@ module slotCutout(size, chamfer = 1)
 /* [Plate] */
 // Plate Style
 Default_Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base]
-Default_Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew]
+Default_Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew, cnc:CNC or Laser, cncmagnet:CNC with Magnets]
 Default_Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch: halfpitch base, efficient]
 
 Default_Lid_Include_Magnets = true;
@@ -17452,6 +17446,7 @@ Default_Filament_Clip_Enabled = false;
 Default_Filament_Clip_Diameter = 2;
 Default_Filament_Clip_Length = 8;
 
+//gridfinity_baseplate();
 
 function bitwise_and
    (v1, v2, bv = 1 ) = 
@@ -17469,10 +17464,10 @@ function decimaltobitwise
       
 module gridfinity_baseplate(
   width = 2,
-  depth = 1,
-  plateStyle = "base",
-  plateOptions = "default",
-  lidOptions = "default",
+  depth = 3,
+  plateStyle = Default_Plate_Style,
+  plateOptions = Default_Base_Plate_Options,
+  lidOptions = Default_Lid_Options,
   customGridEnabled = false,
   gridPossitions = [[1]],
   butterflyClipEnabled  = Default_Butterfly_Clip_Enabled,
@@ -17484,8 +17479,8 @@ module gridfinity_baseplate(
   lidIncludeMagnets = Default_Lid_Include_Magnets,
   lidEfficientFloorThickness =Default_Lid_Efficient_Floor_Thickness,
   lidEfficientBaseHeight = Default_Lid_Efficient_Base_Height,
-  cutx = false,
-  cuty = false,
+  cutx = 0,
+  cuty = 0,
   help = false)
 {
   _gridPossitions = customGridEnabled ? gridPossitions : [[1]];
@@ -17578,6 +17573,12 @@ module baseplate(
       else if (plateOptions == "magnet"){
         magnet_baseplate(width, depth, roundedCorners=roundedCorners);
       }
+      else if (plateOptions == "cnc"){
+        cnc_baseplate(width, depth, roundedCorners=roundedCorners);
+      }
+      else if (plateOptions == "cncmagnet"){
+        cncmagnet_baseplate(width, depth, roundedCorners=roundedCorners);
+      }      
       else {
         frame_plain(width, depth, trim=0, roundedCorners=roundedCorners);
       }
@@ -17634,7 +17635,7 @@ module base_lid(
       half_pitch=half_pitch, 
       fn = fn);
     
-    if(lidOptions == "efficient")
+    if(efficient_base)
     {
       translate([-gf_pitch/2,-gf_pitch/2,(lidEfficientBaseHeight+0.6)*gf_zpitch])
         cube([gf_pitch*num_x,gf_pitch*num_y,gf_zpitch]);
@@ -17653,7 +17654,8 @@ module base_lid(
       upperDia = 2.3;
       lowerTaperHeight = (upperDia-lowerDia)/2;
       
-      gridcopy(num_x, num_y) 
+      //This code to make the lid more efficient is not working. It glitches the half pitch, and makes other options not work
+      *gridcopy(num_x, num_y) 
         hull(){
           cornercopy(17) {
             translate([0, 0, lidEfficientFloorThickness+lowerTaperHeight])
@@ -17795,6 +17797,67 @@ module magnet_baseplate(
           }
         }
     }
+  }
+}
+
+module cncmagnet_baseplate(
+  num_x, 
+  num_y,
+  cornerRadius = gf_cup_corner_radius,
+  roundedCorners = 15) {
+  
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-gf_baseplate_magnet_od/2);
+  frameHeight = gf_baseplate_magnet_thickness;
+  magnetborder = 5;
+  
+  difference() {
+    translate([0, 0, frameHeight])
+      cnc_baseplate(num_x, num_y, 
+        extra_down=frameHeight,
+        cornerRadius = cornerRadius,
+        roundedCorners = roundedCorners);
+    
+    gridcopy(num_x, num_y) {
+      cornercopy(magnet_position) {
+        translate([0, 0, -fudgeFactor])
+         cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+fudgeFactor*2, $fn=48);
+      }
+
+    }
+  }
+}
+
+module cnc_baseplate(
+    num_x, 
+    num_y, 
+    extra_down=0, 
+    height = 4,
+    cornerRadius = gf_cup_corner_radius,
+    roundedCorners = 15,
+    $fn = 44) {
+
+  corner_position = gf_pitch/2-cornerRadius;
+  
+  difference() {
+    color(color_cup)
+    hull() 
+      //render()
+      cornercopy(corner_position, num_x, num_y) {
+        radius = bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? cornerRadius : 0.01;// 0.01 is almost zero....
+        ctrn = [
+          ($idx[0] == 0 ? -1 : 1)*(cornerRadius-radius), 
+          ($idx[1] == 0 ? -1 : 1)*(cornerRadius-radius), -extra_down];
+        translate(ctrn)
+        cylinder(r=radius, h=height+extra_down, $fn=$fn);
+      }
+      
+    color(color_topcavity)
+    translate([0, 0, -fudgeFactor]) 
+      gridcopy(num_x, num_y)
+      hull() 
+        cornercopy(corner_position, 1, 1)
+        cylinder(r=2,h=height+fudgeFactor*2, $fn=$fn);
+
   }
 }
 

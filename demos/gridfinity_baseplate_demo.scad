@@ -1,7 +1,7 @@
 // include instead of use, so we get the pitch
 include <../modules/gridfinity_constants.scad>
 include <../modules/functions_general.scad>
-use <../gridfinity_baseplate.scad>
+use <../modules/module_baseplate.scad>
 
 scenario = "demo"; //["demo","baseplate","magnet","weighted", "lid","lid_flat_base","lid_half_pitch","customsize"]
 showtext = true;
@@ -32,13 +32,16 @@ defaultDemoSetting =
     //width, depth, iplateStyle, iplateOptions, ilidOptions, 
     [3,2,"base","default","",
     //icustomGridEnabled,igridPossitions,cutx,cuty
-    false,"",false,false];
-      
+    false,"",0,0];
+     
 selectedScenario = 
-  scenario == "demo" ? [["Base Plate", 7,[]],
+  scenario == "demo" ? [["Base Plate", 10,[]],
       ["Simple", false,[[iplateStyle, "base"], [iplateOptions, ""]]],
       ["Efficient Magnet", false,[[iplateStyle, "base"], [iplateOptions, "magnet"]]],
       ["Weighted", false,[[iplateStyle, "base"], [iplateOptions, "weighted"]]],
+      ["Woodscrew", false,[[iplateStyle, "base"], [iplateOptions, "woodscrew"]]],
+      ["CNC or Laser cut", false,[[iplateStyle, "base"], [iplateOptions, "cnc"]]],
+      ["CNC cut with Magnet", false,[[iplateStyle, "base"], [iplateOptions, "cncmagnet"]]],
       ["Lid", false,[[iplateStyle, "lid"], [iplateOptions, ""]]],
       ["Lid Flat Base", false,[[iplateStyle, "lid"], [ilidOptions,"flat"]]],
       ["Lid Half Pitch", false,[[iplateStyle, "lid"], [ilidOptions,"halfpitch"]]],

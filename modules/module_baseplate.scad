@@ -5,7 +5,7 @@ use <gridfinity_modules.scad>
 /* [Plate] */
 // Plate Style
 Default_Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base]
-Default_Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew]
+Default_Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew, cnc:CNC or Laser, cncmagnet:CNC with Magnets]
 Default_Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch: halfpitch base, efficient]
 
 Default_Lid_Include_Magnets = true;
@@ -27,7 +27,6 @@ Default_Filament_Clip_Enabled = false;
 Default_Filament_Clip_Diameter = 2;
 Default_Filament_Clip_Length = 8;
 
-
 function bitwise_and
    (v1, v2, bv = 1 ) = 
       ((v1 + v2) == 0) ? 0
@@ -44,10 +43,10 @@ function decimaltobitwise
       
 module gridfinity_baseplate(
   width = 2,
-  depth = 1,
-  plateStyle = "base",
-  plateOptions = "default",
-  lidOptions = "default",
+  depth = 3,
+  plateStyle = Default_Plate_Style,
+  plateOptions = Default_Base_Plate_Options,
+  lidOptions = Default_Lid_Options,
   customGridEnabled = false,
   gridPossitions = [[1]],
   butterflyClipEnabled  = Default_Butterfly_Clip_Enabled,
@@ -59,8 +58,8 @@ module gridfinity_baseplate(
   lidIncludeMagnets = Default_Lid_Include_Magnets,
   lidEfficientFloorThickness =Default_Lid_Efficient_Floor_Thickness,
   lidEfficientBaseHeight = Default_Lid_Efficient_Base_Height,
-  cutx = false,
-  cuty = false,
+  cutx = 0,
+  cuty = 0,
   help = false)
 {
   _gridPossitions = customGridEnabled ? gridPossitions : [[1]];
@@ -153,6 +152,12 @@ module baseplate(
       else if (plateOptions == "magnet"){
         magnet_baseplate(width, depth, roundedCorners=roundedCorners);
       }
+      else if (plateOptions == "cnc"){
+        cnc_baseplate(width, depth, roundedCorners=roundedCorners);
+      }
+      else if (plateOptions == "cncmagnet"){
+        cncmagnet_baseplate(width, depth, roundedCorners=roundedCorners);
+      }      
       else {
         frame_plain(width, depth, trim=0, roundedCorners=roundedCorners);
       }
@@ -209,7 +214,7 @@ module base_lid(
       half_pitch=half_pitch, 
       fn = fn);
     
-    if(lidOptions == "efficient")
+    if(efficient_base)
     {
       translate([-gf_pitch/2,-gf_pitch/2,(lidEfficientBaseHeight+0.6)*gf_zpitch])
         cube([gf_pitch*num_x,gf_pitch*num_y,gf_zpitch]);
@@ -228,7 +233,8 @@ module base_lid(
       upperDia = 2.3;
       lowerTaperHeight = (upperDia-lowerDia)/2;
       
-      gridcopy(num_x, num_y) 
+      //This code to make the lid more efficient is not working. It glitches the half pitch, and makes other options not work
+      *gridcopy(num_x, num_y) 
         hull(){
           cornercopy(17) {
             translate([0, 0, lidEfficientFloorThickness+lowerTaperHeight])
@@ -370,6 +376,67 @@ module magnet_baseplate(
           }
         }
     }
+  }
+}
+
+module cncmagnet_baseplate(
+  num_x, 
+  num_y,
+  cornerRadius = gf_cup_corner_radius,
+  roundedCorners = 15) {
+  
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-gf_baseplate_magnet_od/2);
+  frameHeight = gf_baseplate_magnet_thickness;
+  magnetborder = 5;
+  
+  difference() {
+    translate([0, 0, frameHeight])
+      cnc_baseplate(num_x, num_y, 
+        extra_down=frameHeight,
+        cornerRadius = cornerRadius,
+        roundedCorners = roundedCorners);
+    
+    gridcopy(num_x, num_y) {
+      cornercopy(magnet_position) {
+        translate([0, 0, -fudgeFactor])
+         cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+fudgeFactor*2, $fn=48);
+      }
+
+    }
+  }
+}
+
+module cnc_baseplate(
+    num_x, 
+    num_y, 
+    extra_down=0, 
+    height = 4,
+    cornerRadius = gf_cup_corner_radius,
+    roundedCorners = 15,
+    $fn = 44) {
+
+  corner_position = gf_pitch/2-cornerRadius;
+  
+  difference() {
+    color(color_cup)
+    hull() 
+      //render()
+      cornercopy(corner_position, num_x, num_y) {
+        radius = bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? cornerRadius : 0.01;// 0.01 is almost zero....
+        ctrn = [
+          ($idx[0] == 0 ? -1 : 1)*(cornerRadius-radius), 
+          ($idx[1] == 0 ? -1 : 1)*(cornerRadius-radius), -extra_down];
+        translate(ctrn)
+        cylinder(r=radius, h=height+extra_down, $fn=$fn);
+      }
+      
+    color(color_topcavity)
+    translate([0, 0, -fudgeFactor]) 
+      gridcopy(num_x, num_y)
+      hull() 
+        cornercopy(corner_position, 1, 1)
+        cylinder(r=2,h=height+fudgeFactor*2, $fn=$fn);
+
   }
 }
 
