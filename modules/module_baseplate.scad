@@ -7,6 +7,7 @@ use <gridfinity_modules.scad>
 Default_Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base]
 Default_Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew, cnc:CNC or Laser, cncmagnet:CNC with Magnets]
 Default_Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch: halfpitch base, efficient]
+Default_Oversize_method = "fill"; //[crop, fill]
 
 Default_Lid_Include_Magnets = true;
 // Base height, when the bin on top will sit, in GF units
@@ -42,8 +43,9 @@ function decimaltobitwise
       v1==1 && v2 == 1 ? 8 : 0;  
       
 module gridfinity_baseplate(
-  width = 2,
-  depth = 3,
+  num_x = 2,
+  num_y = 3,
+  oversizeMethod = Default_Oversize_method,
   plateStyle = Default_Plate_Style,
   plateOptions = Default_Base_Plate_Options,
   lidOptions = Default_Lid_Options,
@@ -63,35 +65,43 @@ module gridfinity_baseplate(
   help = false)
 {
   _gridPossitions = customGridEnabled ? gridPossitions : [[1]];
-  
+  width = oversizeMethod == "fill" ? num_x : ceil(num_x);
+  depth = oversizeMethod == "fill" ? num_y : ceil(num_y);
+
   difference() {
-    union() {
-      for(xi = [0:len(_gridPossitions)-1])
-        for(yi = [0:len(_gridPossitions[xi])-1])
-        {
-          if(_gridPossitions[xi][yi])
+    intersection(){
+      union() {
+        for(xi = [0:len(_gridPossitions)-1])
+          for(yi = [0:len(_gridPossitions[xi])-1])
           {
-            translate([gf_pitch*xi,gf_pitch*yi,0])
-            baseplate(
-              width = customGridEnabled ? 1 : width,
-              depth = customGridEnabled ? 1 : depth,
-              plateStyle = plateStyle,
-              plateOptions= plateOptions,
-              lidOptions = lidOptions,
-              butterflyClipEnabled  = butterflyClipEnabled,
-              butterflyClipSize = butterflyClipSize,
-              butterflyClipRadius = butterflyClipRadius,
-              filamentClipEnabled = filamentClipEnabled,
-              filamentClipDiameter = filamentClipDiameter,
-              filamentClipLength = filamentClipLength,
-              roundedCorners = _gridPossitions[xi][yi] == 1 ? 15 : _gridPossitions[xi][yi] - 2,
-              lidIncludeMagnets = lidIncludeMagnets,
-              lidEfficientFloorThickness = lidEfficientFloorThickness,
-              lidEfficientBaseHeight = lidEfficientBaseHeight,
-              help = help);
+            if(_gridPossitions[xi][yi])
+            {
+              translate([gf_pitch*xi,gf_pitch*yi,0])
+              baseplate(
+                width = customGridEnabled ? 1 : width,
+                depth = customGridEnabled ? 1 : depth,
+                plateStyle = plateStyle,
+                plateOptions= plateOptions,
+                lidOptions = lidOptions,
+                butterflyClipEnabled  = butterflyClipEnabled,
+                butterflyClipSize = butterflyClipSize,
+                butterflyClipRadius = butterflyClipRadius,
+                filamentClipEnabled = filamentClipEnabled,
+                filamentClipDiameter = filamentClipDiameter,
+                filamentClipLength = filamentClipLength,
+                roundedCorners = _gridPossitions[xi][yi] == 1 ? 15 : _gridPossitions[xi][yi] - 2,
+                lidIncludeMagnets = lidIncludeMagnets,
+                lidEfficientFloorThickness = lidEfficientFloorThickness,
+                lidEfficientBaseHeight = lidEfficientBaseHeight,
+                help = help);
+            }
           }
         }
-      }
+        if(oversizeMethod == "crop"){
+          translate([-gf_pitch/2, -gf_pitch/2,0])
+            cube([num_x*gf_pitch, num_y*gf_pitch,20]);
+        }
+    }
     /*
     if(cutx && $preview){
       translate([-gf_pitch,-gf_pitch,-fudgeFactor])

@@ -8,7 +8,7 @@ use <modules/module_baseplate.scad>
 width = [2, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
 depth = [1, 0]; //0.1
-overscan_method = "fill"; //[crop, fill]
+oversize_method = "fill"; //[crop, fill]
 //Enable custom grid, you will configure this in the (Lid not supported)
 Custom_Grid_Enabled = false;
 
@@ -59,6 +59,7 @@ cuty = 0; //0.1
 // enable loging of help messages during render.
 help = false;
 
+/* [Hidden] */
 module end_of_customizer_opts() {}
 
 num_x = calcDimentionWidth(width); 
@@ -74,10 +75,10 @@ if(Butterfly_Clip_Only)
     r=Butterfly_Clip_Radius);
 }
 else{
-  intersection(){
   gridfinity_baseplate(
-      width = overscan_method == "fill" ? num_x : ceil(num_x),
-      depth = overscan_method == "fill" ? num_y : ceil(num_y),
+      num_x = num_x,
+      num_y = num_y,
+      oversizeMethod=oversize_method,
       plateStyle = Plate_Style,
       plateOptions = Base_Plate_Options,
       lidOptions = Lid_Options,
@@ -95,9 +96,4 @@ else{
       cutx = cutx,
       cuty = cuty,
       help = help);
-    if(overscan_method == "crop"){
-      translate([-gf_pitch/2, -gf_pitch/2,0])
-        cube([num_x*gf_pitch, num_y*gf_pitch,20]);
-    }
-  }
 }
