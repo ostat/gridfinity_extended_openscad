@@ -157,8 +157,8 @@ cuty = 0; //0.1
 enable_help = false;
 /*<!!end gridfinity_basic_cup!!>*/
 
-module end_of_customizer_opts() {}
 /* [Hidden] */
+module end_of_customizer_opts() {}
 
 //Index for custom config arrays
 ixpos = 0;

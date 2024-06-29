@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_chess.scad'. Generated 2024-05-18 17:15
+//Combined version of 'gridfinity_chess.scad'. Generated 2024-06-29 00:55
 ///////////////////////////////////////
 
 // Select model

@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_cutlerytray.scad'. Generated 2024-06-23 10:54
+//Combined version of 'gridfinity_cutlerytray.scad'. Generated 2024-06-29 00:55
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -157,7 +157,7 @@ default_wall_thickness = 0;// 0.01
 //under size the bin top by this amount to allow for better stacking
 default_zClearance = 0; // 0.1
 
-/* [Label] */
+/* Label */
 // Include overhang for labeling
 default_label_style = "normal"; //[disabled: no label, normal:normal, click]
 
@@ -167,7 +167,7 @@ default_label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interferr with stacking
 default_label_relief = 0; // 0.1
 
-/* [Sliding Lid] */
+/* Sliding Lid */
 default_sliding_lid_enabled = false;
 // 0 = wall thickness *2
 default_sliding_lid_thickness = 0; //0.1
@@ -177,13 +177,13 @@ default_sliding_min_wallThickness = 0;//0.1
 default_sliding_min_support = 0;//0.1
 default_sliding_clearance = 0.1;//0.1
 
-/* [Finger Slide] */
+/* Finger Slide */
 // Include larger corner fillet
 default_fingerslide = "none"; //[none, rounded, chamfered]
 // radius of the corner fillet
 default_fingerslide_radius = 8;
 
-/* [Subdivisions] */
+/* Subdivisions */
 // X dimension subdivisions
 default_chamber_wall_thickness = 1.2;//0.1
 default_chamber_wall_zClearance = 0;//0.1
@@ -206,7 +206,7 @@ default_horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 default_horizontal_separator_config = "10.5|21|42|50|60";
 
-/* [Base] */
+/* Base */
 default_magnet_diameter = 6.5;  // .1
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
@@ -228,12 +228,12 @@ default_half_pitch = false;
 default_box_corner_attachments_only = true;
 // Removes the base grid from inside the shape
 default_flat_base = false;
-/* [Tapered Corner] */
+/* Tapered Corner */
 default_tapered_corner = "none"; //[none, rounded, chamfered]
 default_tapered_corner_size = 10;
 // Set back of the tapered corner, default is the gridfinity corner radius
 default_tapered_setback = -1;//gf_cup_corner_radius/2;
-/* [Wall Cutout] */
+/* Wall Cutout */
 default_wallcutout_enabled=false;
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
 default_wallcutout_walls=[1,0,0,0];  //0.1
@@ -244,7 +244,7 @@ default_wallcutout_angle=70;
 default_wallcutout_height=0; //0.1
 default_wallcutout_corner_radius=5;
 
-/* [Wall Pattern] */
+/* Wall Pattern */
 default_wallpattern_enabled=false; 
 default_wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
 default_wallpattern_dividers_enabled ="disabled"; //["disabled", "horizontal", "vertical", "both"] 
@@ -256,14 +256,14 @@ default_wallpattern_hole_spacing = 2; //0.1
 default_wallpattern_voronoi_noise = 0.75;
 default_wallpattern_voronoi_radius = 0.5;
 
-/* [Extendable] */
+/* Extendable */
 default_extention_x_enabled = false;
 default_extention_y_enabled = false;
 default_extention_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 default_extention_tab_size= [10,0,0,0]; //0.1
 
-/* [debug] */
+/* debug */
 default_cutx = 0;//0.1
 default_cuty = 0;//0.1
 default_help = false;
@@ -390,6 +390,7 @@ module gridfinity_cup(
   zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
   
   translate(cupPosition(position,num_x,num_y))
+  union(){
   difference() {
     grid_block(
       num_x, num_y, num_z, 
@@ -828,6 +829,7 @@ module gridfinity_cup(
           }
         }
       }
+      }
     }
     /*
     if(extention_enabled.x){     
@@ -962,7 +964,8 @@ module cutout_pattern(
       grid = (patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"),
       gridOffset = (patternstyle == "voronoihexgrid"),
       noise=voronoiNoise,
-      radius = voronoiRadius);
+      radius = voronoiRadius,
+      center=center);
   }
 }
 
@@ -1887,7 +1890,8 @@ module rectangle_voronoi(
    gridOffset = false,
    spacing = 2, 
    radius = 0.5,
-   seed = undef, 
+   seed = undef,
+   center=true, 
    fn = 32)
 {
   $fn=fn;
@@ -1912,6 +1916,7 @@ module rectangle_voronoi(
       pointsy = rands(-canvisSize.y/2, canvisSize.y/2, _pointCount, seeds[1])
     )[for(i = [0:_pointCount-1]) [pointsx[i],pointsy[i]]];
   
+  translate(center ? [0, 0, 0] : [canvisSize.x/2, canvisSize.y/2, 0])
   intersection() {
     translate([0,0,canvisSize.z/2])
       cube(size = [canvisSize.x,canvisSize.y,canvisSize.z*2], center=true);
@@ -2493,40 +2498,39 @@ module gridcopy(num_x, num_y, pitch=gf_pitch) {
 //CombinedEnd from path gridfinity_modules.scad
 //Combined from path modules_utility.scad
 
-//Creates a rounded wall cutout to allow access to the items inside the gridfinity box.           
-module WallCutout2(
+module WallCutout(
   lowerWidth=50,
   wallAngle=70,
   height=21,
   thickness=10,
   cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  fudgeFactor = 0.01;
-  
+  $fn = 64) {
+ 
+  topHeight = cornerRadius*4;
+  bottomWidth = lowerWidth;
+  topWidth = lowerWidth+(height/tan(wallAngle))*2;
+
   rotate([90,0,0])
-  translate([0,topHeight,-thickness/2])
-  union(){
-  mirrors = [[0,0,0],[1,0,0]];
-  colours = ["red","blue"];
-  for(i = [0:1:len(mirrors)-1])
-  {
-    mirror(mirrors[i])
-      color(colours[i])
-      rotate([0,00,90])
-      translate([0,bottomWidth-fudgeFactor,0])
-      linear_extrude(thickness)
-      SBogen(
-        grad=wallAngle,
-        extrude=-(height/2+topHeight),
-        dist=height,
-        r1=cornerRadius,
-        r2=cornerRadius,
-        l1=bottomWidth,
-        l2=topWidth, $fn = fn);    
+  translate([0,0,-thickness/2])
+  linear_extrude(height=thickness)
+  intersection(){
+    translate([0,-height/2+cornerRadius,0])
+    square([topWidth+cornerRadius*2,height+cornerRadius*2], true);
+    
+    //Use tripple offset to fillet corners
+    //https://www.reddit.com/r/openscad/comments/ut1n7t/quick_tip_simple_fillet_for_2d_shapes/
+    offset(r=-cornerRadius)
+    offset(r=2 * cornerRadius)
+    offset(r=-cornerRadius)
+    union(){
+      translate([0,topHeight/2])
+      square([topWidth*2,topHeight], true);
+      hull(){
+        translate([0,topHeight/2])
+        square([topWidth,topHeight], true);
+        translate([0,-height/2])
+        square([bottomWidth,height], true);
+      }
     }
   }
 }
@@ -2550,7 +2554,7 @@ module bentWall(
   render()
   difference()
   {
-    union(){
+     union(){
       if(separation != 0) { 
         translate([thickness/2,bendPosition,0])
         linear_extrude(height)
@@ -2565,8 +2569,8 @@ module bentWall(
           l2=length-bendPosition, $fn = fn);   
       } else {
         cube([thickness, length, height]);
-      }
-    }
+       }
+     }
 
     cutoutHeight = 
       wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
@@ -2584,33 +2588,9 @@ module bentWall(
         cornerRadius = cutoutHeight,
         thickness = (separation+thickness*2+fudgeFactor*2));
     }
-  }
-}
-
-module WallCutout(
-  lowerWidth=50,
-  wallAngle=70,
-  height=21,
-  thickness=10,
-  cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  translate([0,thickness/2,thickness])
-  rotate([90,90,0])
-  linear_extrude(thickness)
-  Vollwelle(
-    r=[cornerRadius,cornerRadius],
-    mitte=lowerWidth-cornerRadius*2,
-    g2End=[1,1],
-    grad=wallAngle,
-    h=height,
-    extrude=thickness,
-    x0=-1,
-    xCenter=-1);
-}
+   }
+ }
+ 
 
 //Creates a rounded cube
 //x=width in mm
@@ -2995,10 +2975,10 @@ Changelog (archive at the very bottom)
 
 
 // libraries direkt (program folder\oscad\libaries) !
-/*[UB lib]*/
+/*UB lib*/
 test=42;
 designVersion=0;
-/*[Global]*/
+/*Global*/
 
 /// activates help in console window
 helpsw=false; 
@@ -3077,8 +3057,8 @@ texton=name!=undef&&name!=""?$preview?true:false:false;
 /// Colors (version 2019)
 helpMColor="";//"#5500aa";
 
-/*[Constant]*/
-/*[Hidden]*/
+/*Constant*/
+/*Hidden*/
 Version=23.305;//                <<< ---   VERSION  VERSION VERSION ••••••••••••••••
 useVersion=undef;
 UB=true;
@@ -15038,7 +15018,7 @@ R(180)VarioFill(dia=0,spiel=[.5,0],l=.5,fn=7);
 
 
 module PCBcase(
-pcb=[20,40,1],/*[breite×länge×höhe]*/
+pcb=[20,40,1],/*breite×länge×höhe*/
 h=20,/*höhe*/
 wand,/*Wandstärke */
 r2=3,/*Innenradius*/
@@ -17153,7 +17133,7 @@ module GridItemHolder(
   holeGrid = [0,0],
   holeHeight = 0,
   holeChamfer = 0,
-  border = 10,
+  border = 0,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   crop = true,
@@ -17231,7 +17211,7 @@ module GridItemHolder(
           : hexGridCount == squareCount ? false //if equal prefer square
           : hexGridCount > squareCount;
           
-  translate([0, 0, 0])
+  translate(center ? [0, 0, 0] : [border, border, 0])
   intersection(){
     //Crop to ensure that we dont go outside the bounds 
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
@@ -17426,10 +17406,10 @@ module slotCutout(size, chamfer = 1)
 //Combined from path module_baseplate.scad
 // include instead of use, so we get the pitch
 
-/* [Plate] */
+/* Plate */
 // Plate Style
 Default_Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base]
-Default_Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew]
+Default_Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew, cnc:CNC or Laser, cncmagnet:CNC with Magnets]
 Default_Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch: halfpitch base, efficient]
 
 Default_Lid_Include_Magnets = true;
@@ -17438,7 +17418,7 @@ Default_Lid_Efficient_Base_Height = 0.4;// [0.4:0.1:1]
 // Thickness of the efficient floor
 Default_Lid_Efficient_Floor_Thickness = 0.7;// [0.7:0.1:7]
 
-/* [Base Plate Clips - POC dont use yet]*/
+/* Base Plate Clips - POC dont use yet*/
 //This feature is not yet finalised, or working properly. 
 Default_Butterfly_Clip_Enabled = false;
 Default_Butterfly_Clip_Size = [6,6,1.5];
@@ -17450,8 +17430,6 @@ Default_Butterfly_Clip_Only = false;
 Default_Filament_Clip_Enabled = false;
 Default_Filament_Clip_Diameter = 2;
 Default_Filament_Clip_Length = 8;
-
-//gridfinity_baseplate();
 
 function bitwise_and
    (v1, v2, bv = 1 ) = 
@@ -17578,6 +17556,12 @@ module baseplate(
       else if (plateOptions == "magnet"){
         magnet_baseplate(width, depth, roundedCorners=roundedCorners);
       }
+      else if (plateOptions == "cnc"){
+        cnc_baseplate(width, depth, roundedCorners=roundedCorners);
+      }
+      else if (plateOptions == "cncmagnet"){
+        cncmagnet_baseplate(width, depth, roundedCorners=roundedCorners);
+      }      
       else {
         frame_plain(width, depth, trim=0, roundedCorners=roundedCorners);
       }
@@ -17796,6 +17780,67 @@ module magnet_baseplate(
           }
         }
     }
+  }
+}
+
+module cncmagnet_baseplate(
+  num_x, 
+  num_y,
+  cornerRadius = gf_cup_corner_radius,
+  roundedCorners = 15) {
+  
+  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-gf_baseplate_magnet_od/2);
+  frameHeight = gf_baseplate_magnet_thickness;
+  magnetborder = 5;
+  
+  difference() {
+    translate([0, 0, frameHeight])
+      cnc_baseplate(num_x, num_y, 
+        extra_down=frameHeight,
+        cornerRadius = cornerRadius,
+        roundedCorners = roundedCorners);
+    
+    gridcopy(num_x, num_y) {
+      cornercopy(magnet_position) {
+        translate([0, 0, -fudgeFactor])
+         cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+fudgeFactor*2, $fn=48);
+      }
+
+    }
+  }
+}
+
+module cnc_baseplate(
+    num_x, 
+    num_y, 
+    extra_down=0, 
+    height = 4,
+    cornerRadius = gf_cup_corner_radius,
+    roundedCorners = 15,
+    $fn = 44) {
+
+  corner_position = gf_pitch/2-cornerRadius;
+  
+  difference() {
+    color(color_cup)
+    hull() 
+      //render()
+      cornercopy(corner_position, num_x, num_y) {
+        radius = bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? cornerRadius : 0.01;// 0.01 is almost zero....
+        ctrn = [
+          ($idx[0] == 0 ? -1 : 1)*(cornerRadius-radius), 
+          ($idx[1] == 0 ? -1 : 1)*(cornerRadius-radius), -extra_down];
+        translate(ctrn)
+        cylinder(r=radius, h=height+extra_down, $fn=$fn);
+      }
+      
+    color(color_topcavity)
+    translate([0, 0, -fudgeFactor]) 
+      gridcopy(num_x, num_y)
+      hull() 
+        cornercopy(corner_position, 1, 1)
+        cylinder(r=2,h=height+fudgeFactor*2, $fn=$fn);
+
   }
 }
 

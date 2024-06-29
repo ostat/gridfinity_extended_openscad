@@ -149,6 +149,7 @@ cuty = 0; //0.1
 // enable loging of help messages during render.
 enable_help = false;
 
+/* [Hidden] */
 module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
 

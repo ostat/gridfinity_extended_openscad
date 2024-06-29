@@ -19,23 +19,24 @@ $vpd = setViewPort ? 280 : $vpd;//shows the camera distance [Note: Requires vers
 //Array index
 iwidth = 0;
 idepth = 1;
-iplateStyle = 2;
-iplateOptions = 3;
-ilidOptions = 4;
-icustomGridEnabled = 5;
-igridPossitions=6;
-icutx = 7;
-icuty = 8;
+ioversizeMethod=2;
+iplateStyle = 3;
+iplateOptions = 4;
+ilidOptions = 5;
+icustomGridEnabled = 6;
+igridPossitions=7;
+icutx = 8;
+icuty = 9;
   
   //Basic cup default settings for demo
 defaultDemoSetting = 
     //width, depth, iplateStyle, iplateOptions, ilidOptions, 
-    [3,2,"base","default","",
+    [3,2,"fill","base","default","",
     //icustomGridEnabled,igridPossitions,cutx,cuty
     false,"",0,0];
      
 selectedScenario = 
-  scenario == "demo" ? [["Base Plate", 10,[]],
+  scenario == "demo" ? [["Base Plate", 12,[]],
       ["Simple", false,[[iplateStyle, "base"], [iplateOptions, ""]]],
       ["Efficient Magnet", false,[[iplateStyle, "base"], [iplateOptions, "magnet"]]],
       ["Weighted", false,[[iplateStyle, "base"], [iplateOptions, "weighted"]]],
@@ -45,6 +46,8 @@ selectedScenario =
       ["Lid", false,[[iplateStyle, "lid"], [iplateOptions, ""]]],
       ["Lid Flat Base", false,[[iplateStyle, "lid"], [ilidOptions,"flat"]]],
       ["Lid Half Pitch", false,[[iplateStyle, "lid"], [ilidOptions,"halfpitch"]]],
+      ["Simple - fill", false,[[iwidth,3.5], [idepth,2.2], [iplateStyle, "base"], [iplateOptions, ""]]],
+      ["CNC - crop", false,[[iwidth,3.5], [idepth,2.2], [iplateStyle, "base"], [iplateOptions, "cnc"], [ioversizeMethod,"crop"]]],
       ["Custom",false,[[iplateOptions,"default"],[icustomGridEnabled,true],
           [igridPossitions,"3,4,0,0|2,2,0,0|2,2,2,0|6,2,2,0"]]]]
       
@@ -114,8 +117,9 @@ if(scenarioDefaults[0] != "unknown scenario")
 rotate(animationStep[1] ? [180,0,0] : [0,0,0]) 
 translate(animationStep[1] ? [0,-gf_pitch,0] : [0,0,0])
 gridfinity_baseplate(
-  width = currentStepSettings[iwidth],
-  depth = currentStepSettings[idepth],
+  num_x = currentStepSettings[iwidth],
+  num_y = currentStepSettings[idepth],
+  oversizeMethod = currentStepSettings[ioversizeMethod],
   plateStyle = currentStepSettings[iplateStyle],
   plateOptions = currentStepSettings[iplateOptions],
   lidOptions = currentStepSettings[ilidOptions],

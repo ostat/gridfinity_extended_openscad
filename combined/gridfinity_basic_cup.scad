@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_basic_cup.scad'. Generated 2024-06-27 07:35
+//Combined version of 'gridfinity_basic_cup.scad'. Generated 2024-06-29 00:55
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -149,6 +149,7 @@ cuty = 0; //0.1
 // enable loging of help messages during render.
 enable_help = false;
 
+/* [Hidden] */
 module end_of_customizer_opts() {}
 //Combined from path gridfinity_constants.scad
 // Dimentions as declared on https://gridfinity.xyz/specification/
@@ -267,7 +268,7 @@ default_wall_thickness = 0;// 0.01
 //under size the bin top by this amount to allow for better stacking
 default_zClearance = 0; // 0.1
 
-/* [Label] */
+/* Label */
 // Include overhang for labeling
 default_label_style = "normal"; //[disabled: no label, normal:normal, click]
 
@@ -277,7 +278,7 @@ default_label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interferr with stacking
 default_label_relief = 0; // 0.1
 
-/* [Sliding Lid] */
+/* Sliding Lid */
 default_sliding_lid_enabled = false;
 // 0 = wall thickness *2
 default_sliding_lid_thickness = 0; //0.1
@@ -287,13 +288,13 @@ default_sliding_min_wallThickness = 0;//0.1
 default_sliding_min_support = 0;//0.1
 default_sliding_clearance = 0.1;//0.1
 
-/* [Finger Slide] */
+/* Finger Slide */
 // Include larger corner fillet
 default_fingerslide = "none"; //[none, rounded, chamfered]
 // radius of the corner fillet
 default_fingerslide_radius = 8;
 
-/* [Subdivisions] */
+/* Subdivisions */
 // X dimension subdivisions
 default_chamber_wall_thickness = 1.2;//0.1
 default_chamber_wall_zClearance = 0;//0.1
@@ -316,7 +317,7 @@ default_horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 default_horizontal_separator_config = "10.5|21|42|50|60";
 
-/* [Base] */
+/* Base */
 default_magnet_diameter = 6.5;  // .1
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
@@ -338,12 +339,12 @@ default_half_pitch = false;
 default_box_corner_attachments_only = true;
 // Removes the base grid from inside the shape
 default_flat_base = false;
-/* [Tapered Corner] */
+/* Tapered Corner */
 default_tapered_corner = "none"; //[none, rounded, chamfered]
 default_tapered_corner_size = 10;
 // Set back of the tapered corner, default is the gridfinity corner radius
 default_tapered_setback = -1;//gf_cup_corner_radius/2;
-/* [Wall Cutout] */
+/* Wall Cutout */
 default_wallcutout_enabled=false;
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
 default_wallcutout_walls=[1,0,0,0];  //0.1
@@ -354,7 +355,7 @@ default_wallcutout_angle=70;
 default_wallcutout_height=0; //0.1
 default_wallcutout_corner_radius=5;
 
-/* [Wall Pattern] */
+/* Wall Pattern */
 default_wallpattern_enabled=false; 
 default_wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
 default_wallpattern_dividers_enabled ="disabled"; //["disabled", "horizontal", "vertical", "both"] 
@@ -366,14 +367,14 @@ default_wallpattern_hole_spacing = 2; //0.1
 default_wallpattern_voronoi_noise = 0.75;
 default_wallpattern_voronoi_radius = 0.5;
 
-/* [Extendable] */
+/* Extendable */
 default_extention_x_enabled = false;
 default_extention_y_enabled = false;
 default_extention_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 default_extention_tab_size= [10,0,0,0]; //0.1
 
-/* [debug] */
+/* debug */
 default_cutx = 0;//0.1
 default_cuty = 0;//0.1
 default_help = false;
@@ -500,6 +501,7 @@ module gridfinity_cup(
   zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
   
   translate(cupPosition(position,num_x,num_y))
+  union(){
   difference() {
     grid_block(
       num_x, num_y, num_z, 
@@ -938,6 +940,7 @@ module gridfinity_cup(
           }
         }
       }
+      }
     }
     /*
     if(extention_enabled.x){     
@@ -1072,7 +1075,8 @@ module cutout_pattern(
       grid = (patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"),
       gridOffset = (patternstyle == "voronoihexgrid"),
       noise=voronoiNoise,
-      radius = voronoiRadius);
+      radius = voronoiRadius,
+      center=center);
   }
 }
 
@@ -1997,7 +2001,8 @@ module rectangle_voronoi(
    gridOffset = false,
    spacing = 2, 
    radius = 0.5,
-   seed = undef, 
+   seed = undef,
+   center=true, 
    fn = 32)
 {
   $fn=fn;
@@ -2022,6 +2027,7 @@ module rectangle_voronoi(
       pointsy = rands(-canvisSize.y/2, canvisSize.y/2, _pointCount, seeds[1])
     )[for(i = [0:_pointCount-1]) [pointsx[i],pointsy[i]]];
   
+  translate(center ? [0, 0, 0] : [canvisSize.x/2, canvisSize.y/2, 0])
   intersection() {
     translate([0,0,canvisSize.z/2])
       cube(size = [canvisSize.x,canvisSize.y,canvisSize.z*2], center=true);
@@ -3080,10 +3086,10 @@ Changelog (archive at the very bottom)
 
 
 // libraries direkt (program folder\oscad\libaries) !
-/*[UB lib]*/
+/*UB lib*/
 test=42;
 designVersion=0;
-/*[Global]*/
+/*Global*/
 
 /// activates help in console window
 helpsw=false; 
@@ -3162,8 +3168,8 @@ texton=name!=undef&&name!=""?$preview?true:false:false;
 /// Colors (version 2019)
 helpMColor="";//"#5500aa";
 
-/*[Constant]*/
-/*[Hidden]*/
+/*Constant*/
+/*Hidden*/
 Version=23.305;//                <<< ---   VERSION  VERSION VERSION ••••••••••••••••
 useVersion=undef;
 UB=true;
@@ -15123,7 +15129,7 @@ R(180)VarioFill(dia=0,spiel=[.5,0],l=.5,fn=7);
 
 
 module PCBcase(
-pcb=[20,40,1],/*[breite×länge×höhe]*/
+pcb=[20,40,1],/*breite×länge×höhe*/
 h=20,/*höhe*/
 wand,/*Wandstärke */
 r2=3,/*Innenradius*/

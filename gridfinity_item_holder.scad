@@ -191,6 +191,7 @@ cuty = 0; //0.1
 enable_help = false;
 /*<!!end gridfinity_basic_cup!!>*/
 
+/* [Hidden] */
 module end_of_customizer_opts() {}
 
 iitemx =0;

@@ -89,6 +89,7 @@ wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, c
 wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
+/* [Hidden] */
 module end_of_customizer_opts() {}
 colour_drawer = "Teal";
 colour_drawer_pull = "CadetBlue";
