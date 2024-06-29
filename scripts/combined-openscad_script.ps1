@@ -40,6 +40,7 @@ function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child){
             } else {
                 $script:LinkedFiles[$childPath] = (Get-CombinedOpenScadFile -ScadFilePath $childPath -Child)
                 
+                #clean up lines
                 if($includeType -ieq 'use'){
                     #by pulling all files in to one, we are essentually treating use like an Include. This can and will break things.
                     write-warning "for 'use' files prevent execution call within the file. $($childPath)"
@@ -113,6 +114,7 @@ Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfin
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_socket_holder.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_tray.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_item_holder.scad') -OutputFolder $OutputFolder
+Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_sieve.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_lid.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_baseplate.scad') -OutputFolder $OutputFolder
 Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_cutlerytray.scad') -OutputFolder $OutputFolder

@@ -259,6 +259,7 @@ module gridfinity_cup(
   zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
   
   translate(cupPosition(position,num_x,num_y))
+  union(){
   difference() {
     grid_block(
       num_x, num_y, num_z, 
@@ -697,6 +698,7 @@ module gridfinity_cup(
           }
         }
       }
+      }
     }
     /*
     if(extention_enabled.x){     
@@ -831,7 +833,8 @@ module cutout_pattern(
       grid = (patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"),
       gridOffset = (patternstyle == "voronoihexgrid"),
       noise=voronoiNoise,
-      radius = voronoiRadius);
+      radius = voronoiRadius,
+      center=center);
   }
 }
 

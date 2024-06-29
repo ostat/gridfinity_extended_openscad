@@ -86,7 +86,8 @@ module rectangle_voronoi(
    gridOffset = false,
    spacing = 2, 
    radius = 0.5,
-   seed = undef, 
+   seed = undef,
+   center=true, 
    fn = 32)
 {
   $fn=fn;
@@ -111,6 +112,7 @@ module rectangle_voronoi(
       pointsy = rands(-canvisSize.y/2, canvisSize.y/2, _pointCount, seeds[1])
     )[for(i = [0:_pointCount-1]) [pointsx[i],pointsy[i]]];
   
+  translate(center ? [0, 0, 0] : [canvisSize.x/2, canvisSize.y/2, 0])
   intersection() {
     translate([0,0,canvisSize.z/2])
       cube(size = [canvisSize.x,canvisSize.y,canvisSize.z*2], center=true);
