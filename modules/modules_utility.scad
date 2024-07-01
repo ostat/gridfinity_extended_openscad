@@ -194,7 +194,6 @@ module roundedCorner(
       //corner extention in x
       translate([0,-radius, 0])
         cube([length, radius, height]);
-
     }
     translate([-1,radius, radius])
       rotate([90, 0, 90])
@@ -289,51 +288,57 @@ module SequentialBridgingDoubleHole(
   }
 }
 
-//sequential bridging for hanging hole. 
-//ref: https://hydraraptor.blogspot.com/2014/03/buried-nuts-and-hanging-holes.html
-//ref: https://www.youtube.com/watch?v=KBuWcT8XkhA
-module SequentialBridgingDoubleHole_v1_old(
-  outerHoleRadius = 0,
-  outerHoleDepth = 0,
-  innerHoleRadius = 0,
-  innerHoleDepth = 0,
-  overhangBridgeCount = 2,
-  overhangBridgeThickness = 0.3,
-  overhangBridgeCutin =0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
-  fn=64) 
-{
-  ff = 0.01;
-  
-  overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
-  //render() //this wont improve render time, but will use less memory in the viewer. This matters here are there can be many holes (x*y*4) on the one render.
-  union(){
-  
-    if (outerHoleRadius > 0) {
-      cylinder(r=outerHoleRadius, h=outerHoleDepth+ff, $fn=fn);
-    }
+module MagentAndScrewRecess(
+  magnetDiameter = 10,
+  magnetThickness = 2,
+  screwDiameter = 2,
+  screwDepth = 6,
+  overhangFixLayers = 3,
+  overhangFixDepth = 0.2,
+  easyMagentRelease = true,
+  $fn = 64){
+    fudgeFactor = 0.01;
     
-    if (innerHoleRadius > 0) {
-      //if(outerHoleRadius <=0)
-      translate([0,0,outerHoleDepth+overhangBridgeHeight-ff])
-      cylinder(r=innerHoleRadius, h=innerHoleDepth-outerHoleDepth-overhangBridgeHeight, $fn=fn);
-    }
-
-    if (overhangBridgeCount>0) {
-      translate([0,0,outerHoleDepth])
-      intersection(){
-        cylinder(r=outerHoleRadius, h=(overhangBridgeCount * overhangBridgeThickness), $fn=fn);
-        
-        for(i = [0:overhangBridgeCount-1]) {
-          intersection_for(y = [0:i]) {
-              echo("intersection_for", i=i, y=y);
-              rotate([0,0,180/overhangBridgeCount*y])
-              translate([-outerHoleRadius, -(innerHoleRadius-overhangBridgeCutin/2), overhangBridgeThickness*i-ff]) 
-                cube([outerHoleRadius*2, innerHoleRadius*2-overhangBridgeCutin, overhangBridgeThickness+ff]);
-          }
+    releaseWidth = 1.3;
+    releaseLength = 1.5;
+    
+    union(){
+      SequentialBridgingDoubleHole(
+        outerHoleRadius = magnetDiameter/2,
+        outerHoleDepth = magnetThickness,
+        innerHoleRadius = screwDiameter/2,
+        innerHoleDepth = screwDepth > 0 ? screwDepth+fudgeFactor : 0,
+        overhangBridgeCount = overhangFixLayers,
+        overhangBridgeThickness = overhangFixDepth);
+      
+      if(easyMagentRelease)
+      difference(){
+        hull(){
+          translate([0,-releaseWidth/2,0])  
+            cube([magnetDiameter/2+releaseLength,releaseWidth,magnetThickness]);
+          translate([magnetDiameter/2+releaseLength,0,0])  
+            cylinder(d=releaseWidth, h=magnetThickness);
         }
+        champherRadius = min(magnetThickness, releaseLength+releaseWidth/2);
+        
+        totalReleaseLength = magnetDiameter/2+releaseLength+releaseWidth/2;
+        
+        /*
+        union(){
+          cube([totalReleaseLength-champherRadius,releaseWidth,magnetThickness]);
+          translate([totalReleaseLength-champherRadius,releaseWidth/2,magnetThickness-champherRadius])
+          rotate([90,0,0])
+          cylinder(r=champherRadius, h=releaseWidth);
+        }*/
+        translate([totalReleaseLength,-releaseWidth/2-fudgeFactor,magnetThickness])
+        rotate([270,0,90])
+        roundedCorner(
+          radius = champherRadius, 
+          length = releaseWidth+2*fudgeFactor, 
+          height = totalReleaseLength,
+          fn=64);
       }
-    }
-  }
+    };
 }
 
 module roundedCylinder(h,r,roundedr=0,roundedr1=0,roundedr2=0)

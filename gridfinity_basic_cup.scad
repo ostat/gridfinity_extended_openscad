@@ -54,6 +54,8 @@ horizontal_separator_config = "10.5|21|42|50|60";
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
+//create relief for manget removal
+magent_easy_release = true;
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
@@ -164,6 +166,7 @@ gridfinity_cup(
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   magnet_diameter=magnet_diameter,
+  magent_easy_release=magent_easy_release,
   screw_depth=screw_depth,
   center_magnet_diameter=center_magnet_diameter,
   center_magnet_thickness=center_magnet_thickness,

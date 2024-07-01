@@ -246,7 +246,8 @@ module grid_block(
   stackable = true,
   center_magnet_diameter = 0,
   center_magnet_thickness = 0,
-  fn = 32,
+  magent_easy_release = true,
+  $fn = 32,
   help)
 {
   assert_openscad_version();
@@ -276,7 +277,7 @@ module grid_block(
       translate([0, 0, -fudgeFactor])
       hull() 
       cornercopy(block_corner_position, num_x, num_y) 
-      cylinder(r=gf_cup_corner_radius, h=totalht+fudgeFactor*2, $fn=fn);
+      cylinder(r=gf_cup_corner_radius, h=totalht+fudgeFactor*2, $fn=$fn);
     }
     
     if(center_magnet_diameter> 0 && center_magnet_thickness>0){
@@ -287,7 +288,7 @@ module grid_block(
         {
           color(color_basehole)
           translate([x*gf_pitch,y*gf_pitch,-fudgeFactor])
-            cylinder(h=center_magnet_thickness-fudgeFactor, d=center_magnet_diameter, $fn=fn);
+            cylinder(h=center_magnet_thickness-fudgeFactor, d=center_magnet_diameter, $fn=$fn);
         }
       }
     }
@@ -307,14 +308,23 @@ module grid_block(
     
     color(color_basehole)
     translate([0,0,-fudgeFactor])
-    gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only)
-        SequentialBridgingDoubleHole(
-          outerHoleRadius = magnet_diameter/2,
-          outerHoleDepth = gf_magnet_thickness+0.1,
-          innerHoleRadius = gf_cupbase_screw_diameter/2,
-          innerHoleDepth = screw_depth > 0 ? screw_depth+fudgeFactor : 0,
-          overhangBridgeCount = overhang_fix,
-          overhangBridgeThickness = overhang_fix_depth);
+    gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only){
+        echo("magnet_position",magnet_position=magnet_position);
+        rdeg =
+          $gcci[2] == [ 1, 1] ? 90 :
+          $gcci[2] == [-1, 1] ? 180 :
+          $gcci[2] == [-1,-1] ? -90 :
+          $gcci[2] == [ 1,-1] ? 0 : 0;
+        rotate([0,0,rdeg-45])
+        MagentAndScrewRecess(
+          magnetDiameter = magnet_diameter,
+          magnetThickness = gf_magnet_thickness+0.1,
+          screwDiameter = gf_cupbase_screw_diameter,
+          screwDepth = screw_depth,
+          overhangFixLayers = overhang_fix,
+          overhangFixDepth = overhang_fix_depth,
+          easyMagentRelease = magent_easy_release);
+    }
   }
  
   HelpTxt("grid_block",[

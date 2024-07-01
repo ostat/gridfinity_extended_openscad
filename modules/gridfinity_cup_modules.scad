@@ -76,6 +76,8 @@ default_horizontal_separator_config = "10.5|21|42|50|60";
 
 /* [Base] */
 default_magnet_diameter = 6.5;  // .1
+//create relief for manget removal
+default_magent_easy_release = true;
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
 default_center_magnet_diameter = 0;
@@ -159,6 +161,7 @@ module gridfinity_cup(
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
+  magent_easy_release=default_magent_easy_release,
   screw_depth=default_screw_depth,
   center_magnet_diameter = default_center_magnet_diameter,
   center_magnet_thickness = default_center_magnet_thickness,
@@ -271,7 +274,8 @@ module gridfinity_cup(
       half_pitch=half_pitch,
       box_corner_attachments_only=box_corner_attachments_only, 
       stackable = lip_style != "none",
-      flat_base=flat_base);
+      flat_base=flat_base,
+      magent_easy_release = magent_easy_release);
       
     if(!filled_in) 
     union(){
