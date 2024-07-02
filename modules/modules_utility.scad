@@ -288,6 +288,56 @@ module SequentialBridgingDoubleHole(
   }
 }
 
+//Creates a cube with a single rounded corner.
+//Centered around the counded corner
+module CubeWithRoundedCorner(
+  size=[10,10,10], 
+  cornerRadius = 2, 
+  edgeRadius = 0,
+  center=false,
+  $fn=64){
+  assert(is_list(size) && len(size)==3, "size should be a list of size 3");
+  assert(is_num(cornerRadius) && cornerRadius >= 0, "cornerRadius should be a number greater than 0");
+  assert(is_num(edgeRadius), "edgeRadius should be a number");
+  
+  echo("CubeWithRoundedCorner",size=size, cornerRadius=cornerRadius, edgeRadius=edgeRadius, center=center);
+  fudgeFactor = 0.01;
+  
+  translate(center ? -size/2 : [0,0,0])
+  if(edgeRadius <=0) {
+    hull(){
+      translate([cornerRadius,cornerRadius,0])
+      cylinder(r=cornerRadius, h=size.z+fudgeFactor);
+      translate([cornerRadius,0,0])
+        cube([size.x-cornerRadius,size.y,size.z+fudgeFactor]);
+      translate([0,cornerRadius,0])
+        cube([size.x,size.y-cornerRadius,size.z+fudgeFactor]);
+    }
+  }
+  else{
+    hull(){
+      translate([cornerRadius,cornerRadius,0])
+      roundedCylinder(h=size.z+fudgeFactor,r=cornerRadius,roundedr2=edgeRadius);
+      
+      translate([(size.x+cornerRadius)/2,size.y/2,size.z/2])
+      rotate([0,90,0])
+      CubeWithRoundedCorner(
+        size=[size.z,size.y,size.x-cornerRadius], 
+        cornerRadius = edgeRadius,
+        edgeRadius=0,
+        center=true);
+        
+      translate([size.x/2,(size.y+cornerRadius)/2,size.z/2])
+      rotate([0,90,270])
+      CubeWithRoundedCorner(
+        size=[size.z,size.y,size.x-cornerRadius], 
+        cornerRadius = edgeRadius,
+        edgeRadius=0,
+        center=true);        
+    }
+  }
+}
+
 module MagentAndScrewRecess(
   magnetDiameter = 10,
   magnetThickness = 2,
@@ -311,7 +361,7 @@ module MagentAndScrewRecess(
         overhangBridgeCount = overhangFixLayers,
         overhangBridgeThickness = overhangFixDepth);
       
-      if(easyMagentRelease)
+      if(easyMagentRelease && magnetDiameter > 0)
       difference(){
         hull(){
           translate([0,-releaseWidth/2,0])  

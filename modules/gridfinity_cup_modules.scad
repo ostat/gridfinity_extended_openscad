@@ -1322,15 +1322,29 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                 //$gcci=[trans,xi,yi,xx,yy];
                 rotate( $gcci[2] == [ 1, 1] ? [0,0,270] 
                        : $gcci[2] == [ 1,-1] ? [0,0,180] 
-                       : $gcci[2] == [-1,-1] ? [0,0,90] :[0,0,0])
+                       : $gcci[2] == [-1,-1] ? [0,0,90] 
+                       : [0,0,0])
                   translate([0,0,floor_thickness-fudgeFactor])
                   hull(){
-                    cylinder(r=padSize/2, h=magnetCoverHeight+fudgeFactor, $fn=32);
-                    translate([-blockSize,0,0])
-                      cube([blockSize+padSize/2,blockSize,magnetCoverHeight+fudgeFactor]);
-                    translate([-blockSize,-padSize/2,0])
-                      cube([blockSize,blockSize,magnetCoverHeight+fudgeFactor]);
-                  }
+                    if(screw_depth > 0){
+                      cornerRadius = gf_cupbase_screw_diameter/2+wall_thickness*2;
+                      rotate([0,0,90])
+                        translate([-cornerRadius,-cornerRadius,0])
+                        CubeWithRoundedCorner(
+                          size=[blockSize+cornerRadius,blockSize+cornerRadius,screw_depth], 
+                          cornerRadius = cornerRadius,
+                          edgeRadius = wall_thickness);
+                    }
+                    if(magnet_diameter > 0){
+                      cornerRadius = magnet_diameter/2+wall_thickness*2;
+                      rotate([0,0,90])
+                      translate([-cornerRadius,-cornerRadius,0])
+                      CubeWithRoundedCorner(
+                        size=[blockSize+cornerRadius,blockSize+cornerRadius,gf_magnet_thickness], 
+                        cornerRadius = cornerRadius,
+                        edgeRadius = wall_thickness);
+                      }
+                }
             }
           }
         }

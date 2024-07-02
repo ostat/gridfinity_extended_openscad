@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_lid.scad'. Generated 2024-06-29 00:55
+//Combined version of 'gridfinity_lid.scad'. Generated 2024-07-02 19:58
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -323,6 +323,8 @@ default_horizontal_separator_config = "10.5|21|42|50|60";
 
 /* Base */
 default_magnet_diameter = 6.5;  // .1
+//create relief for manget removal
+default_magent_easy_release = true;
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
 default_center_magnet_diameter = 0;
@@ -405,6 +407,7 @@ module gridfinity_cup(
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
+  magent_easy_release=default_magent_easy_release,
   screw_depth=default_screw_depth,
   center_magnet_diameter = default_center_magnet_diameter,
   center_magnet_thickness = default_center_magnet_thickness,
@@ -517,7 +520,8 @@ module gridfinity_cup(
       half_pitch=half_pitch,
       box_corner_attachments_only=box_corner_attachments_only, 
       stackable = lip_style != "none",
-      flat_base=flat_base);
+      flat_base=flat_base,
+      magent_easy_release = magent_easy_release);
       
     if(!filled_in) 
     union(){
@@ -1564,15 +1568,29 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                 //$gcci=[trans,xi,yi,xx,yy];
                 rotate( $gcci[2] == [ 1, 1] ? [0,0,270] 
                        : $gcci[2] == [ 1,-1] ? [0,0,180] 
-                       : $gcci[2] == [-1,-1] ? [0,0,90] :[0,0,0])
+                       : $gcci[2] == [-1,-1] ? [0,0,90] 
+                       : [0,0,0])
                   translate([0,0,floor_thickness-fudgeFactor])
                   hull(){
-                    cylinder(r=padSize/2, h=magnetCoverHeight+fudgeFactor, $fn=32);
-                    translate([-blockSize,0,0])
-                      cube([blockSize+padSize/2,blockSize,magnetCoverHeight+fudgeFactor]);
-                    translate([-blockSize,-padSize/2,0])
-                      cube([blockSize,blockSize,magnetCoverHeight+fudgeFactor]);
-                  }
+                    if(screw_depth > 0){
+                      cornerRadius = gf_cupbase_screw_diameter/2+wall_thickness*2;
+                      rotate([0,0,90])
+                        translate([-cornerRadius,-cornerRadius,0])
+                        CubeWithRoundedCorner(
+                          size=[blockSize+cornerRadius,blockSize+cornerRadius,screw_depth], 
+                          cornerRadius = cornerRadius,
+                          edgeRadius = wall_thickness*2);
+                    }
+                    if(magnet_diameter > 0){
+                      cornerRadius = magnet_diameter/2+wall_thickness*2;
+                      rotate([0,0,90])
+                      translate([-cornerRadius,-cornerRadius,0])
+                      CubeWithRoundedCorner(
+                        size=[blockSize+cornerRadius,blockSize+cornerRadius,gf_magnet_thickness], 
+                        cornerRadius = cornerRadius,
+                        edgeRadius = wall_thickness*2);
+                      }
+                }
             }
           }
         }
@@ -2384,7 +2402,8 @@ module grid_block(
   stackable = true,
   center_magnet_diameter = 0,
   center_magnet_thickness = 0,
-  fn = 32,
+  magent_easy_release = true,
+  $fn = 32,
   help)
 {
   assert_openscad_version();
@@ -2414,7 +2433,7 @@ module grid_block(
       translate([0, 0, -fudgeFactor])
       hull() 
       cornercopy(block_corner_position, num_x, num_y) 
-      cylinder(r=gf_cup_corner_radius, h=totalht+fudgeFactor*2, $fn=fn);
+      cylinder(r=gf_cup_corner_radius, h=totalht+fudgeFactor*2, $fn=$fn);
     }
     
     if(center_magnet_diameter> 0 && center_magnet_thickness>0){
@@ -2425,7 +2444,7 @@ module grid_block(
         {
           color(color_basehole)
           translate([x*gf_pitch,y*gf_pitch,-fudgeFactor])
-            cylinder(h=center_magnet_thickness-fudgeFactor, d=center_magnet_diameter, $fn=fn);
+            cylinder(h=center_magnet_thickness-fudgeFactor, d=center_magnet_diameter, $fn=$fn);
         }
       }
     }
@@ -2445,14 +2464,23 @@ module grid_block(
     
     color(color_basehole)
     translate([0,0,-fudgeFactor])
-    gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only)
-        SequentialBridgingDoubleHole(
-          outerHoleRadius = magnet_diameter/2,
-          outerHoleDepth = gf_magnet_thickness+0.1,
-          innerHoleRadius = gf_cupbase_screw_diameter/2,
-          innerHoleDepth = screw_depth > 0 ? screw_depth+fudgeFactor : 0,
-          overhangBridgeCount = overhang_fix,
-          overhangBridgeThickness = overhang_fix_depth);
+    gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only){
+        echo("magnet_position",magnet_position=magnet_position);
+        rdeg =
+          $gcci[2] == [ 1, 1] ? 90 :
+          $gcci[2] == [-1, 1] ? 180 :
+          $gcci[2] == [-1,-1] ? -90 :
+          $gcci[2] == [ 1,-1] ? 0 : 0;
+        rotate([0,0,rdeg-45])
+        MagentAndScrewRecess(
+          magnetDiameter = magnet_diameter,
+          magnetThickness = gf_magnet_thickness+0.1,
+          screwDiameter = gf_cupbase_screw_diameter,
+          screwDepth = screw_depth,
+          overhangFixLayers = overhang_fix,
+          overhangFixDepth = overhang_fix_depth,
+          easyMagentRelease = magent_easy_release);
+    }
   }
  
   HelpTxt("grid_block",[
@@ -2807,7 +2835,6 @@ module roundedCorner(
       //corner extention in x
       translate([0,-radius, 0])
         cube([length, radius, height]);
-
     }
     translate([-1,radius, radius])
       rotate([90, 0, 90])
@@ -2902,51 +2929,107 @@ module SequentialBridgingDoubleHole(
   }
 }
 
-//sequential bridging for hanging hole. 
-//ref: https://hydraraptor.blogspot.com/2014/03/buried-nuts-and-hanging-holes.html
-//ref: https://www.youtube.com/watch?v=KBuWcT8XkhA
-module SequentialBridgingDoubleHole_v1_old(
-  outerHoleRadius = 0,
-  outerHoleDepth = 0,
-  innerHoleRadius = 0,
-  innerHoleDepth = 0,
-  overhangBridgeCount = 2,
-  overhangBridgeThickness = 0.3,
-  overhangBridgeCutin =0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
-  fn=64) 
-{
-  ff = 0.01;
+//Creates a cube with a single rounded corner.
+//Centered around the counded corner
+module CubeWithRoundedCorner(
+  size=[10,10,10], 
+  cornerRadius = 2, 
+  edgeRadius = 0,
+  center=false,
+  $fn=64){
+  assert(is_list(size) && len(size)==3, "size should be a list of size 3");
+  assert(is_num(cornerRadius) && cornerRadius >= 0, "cornerRadius should be a number greater than 0");
+  assert(is_num(edgeRadius), "edgeRadius should be a number");
   
-  overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
-  //render() //this wont improve render time, but will use less memory in the viewer. This matters here are there can be many holes (x*y*4) on the one render.
-  union(){
+  echo("CubeWithRoundedCorner",size=size, cornerRadius=cornerRadius, edgeRadius=edgeRadius, center=center);
+  fudgeFactor = 0.01;
   
-    if (outerHoleRadius > 0) {
-      cylinder(r=outerHoleRadius, h=outerHoleDepth+ff, $fn=fn);
-    }
-    
-    if (innerHoleRadius > 0) {
-      //if(outerHoleRadius <=0)
-      translate([0,0,outerHoleDepth+overhangBridgeHeight-ff])
-      cylinder(r=innerHoleRadius, h=innerHoleDepth-outerHoleDepth-overhangBridgeHeight, $fn=fn);
-    }
-
-    if (overhangBridgeCount>0) {
-      translate([0,0,outerHoleDepth])
-      intersection(){
-        cylinder(r=outerHoleRadius, h=(overhangBridgeCount * overhangBridgeThickness), $fn=fn);
-        
-        for(i = [0:overhangBridgeCount-1]) {
-          intersection_for(y = [0:i]) {
-              echo("intersection_for", i=i, y=y);
-              rotate([0,0,180/overhangBridgeCount*y])
-              translate([-outerHoleRadius, -(innerHoleRadius-overhangBridgeCutin/2), overhangBridgeThickness*i-ff]) 
-                cube([outerHoleRadius*2, innerHoleRadius*2-overhangBridgeCutin, overhangBridgeThickness+ff]);
-          }
-        }
-      }
+  translate(center ? -size/2 : [0,0,0])
+  if(edgeRadius <=0) {
+    hull(){
+      translate([cornerRadius,cornerRadius,0])
+      cylinder(r=cornerRadius, h=size.z+fudgeFactor);
+      translate([cornerRadius,0,0])
+        cube([size.x-cornerRadius,size.y,size.z+fudgeFactor]);
+      translate([0,cornerRadius,0])
+        cube([size.x,size.y-cornerRadius,size.z+fudgeFactor]);
     }
   }
+  else{
+    hull(){
+      translate([cornerRadius,cornerRadius,0])
+      roundedCylinder(h=size.z+fudgeFactor,r=cornerRadius,roundedr2=edgeRadius);
+      
+      translate([(size.x+cornerRadius)/2,size.y/2,size.z/2])
+      rotate([0,90,0])
+      CubeWithRoundedCorner(
+        size=[size.z,size.y,size.x-cornerRadius], 
+        cornerRadius = edgeRadius,
+        edgeRadius=0,
+        center=true);
+        
+      translate([size.x/2,(size.y+cornerRadius)/2,size.z/2])
+      rotate([0,90,270])
+      CubeWithRoundedCorner(
+        size=[size.z,size.y,size.x-cornerRadius], 
+        cornerRadius = edgeRadius,
+        edgeRadius=0,
+        center=true);        
+    }
+  }
+}
+
+module MagentAndScrewRecess(
+  magnetDiameter = 10,
+  magnetThickness = 2,
+  screwDiameter = 2,
+  screwDepth = 6,
+  overhangFixLayers = 3,
+  overhangFixDepth = 0.2,
+  easyMagentRelease = true,
+  $fn = 64){
+    fudgeFactor = 0.01;
+    
+    releaseWidth = 1.3;
+    releaseLength = 1.5;
+    
+    union(){
+      SequentialBridgingDoubleHole(
+        outerHoleRadius = magnetDiameter/2,
+        outerHoleDepth = magnetThickness,
+        innerHoleRadius = screwDiameter/2,
+        innerHoleDepth = screwDepth > 0 ? screwDepth+fudgeFactor : 0,
+        overhangBridgeCount = overhangFixLayers,
+        overhangBridgeThickness = overhangFixDepth);
+      
+      if(easyMagentRelease && magnetDiameter > 0)
+      difference(){
+        hull(){
+          translate([0,-releaseWidth/2,0])  
+            cube([magnetDiameter/2+releaseLength,releaseWidth,magnetThickness]);
+          translate([magnetDiameter/2+releaseLength,0,0])  
+            cylinder(d=releaseWidth, h=magnetThickness);
+        }
+        champherRadius = min(magnetThickness, releaseLength+releaseWidth/2);
+        
+        totalReleaseLength = magnetDiameter/2+releaseLength+releaseWidth/2;
+        
+        /*
+        union(){
+          cube([totalReleaseLength-champherRadius,releaseWidth,magnetThickness]);
+          translate([totalReleaseLength-champherRadius,releaseWidth/2,magnetThickness-champherRadius])
+          rotate([90,0,0])
+          cylinder(r=champherRadius, h=releaseWidth);
+        }*/
+        translate([totalReleaseLength,-releaseWidth/2-fudgeFactor,magnetThickness])
+        rotate([270,0,90])
+        roundedCorner(
+          radius = champherRadius, 
+          length = releaseWidth+2*fudgeFactor, 
+          height = totalReleaseLength,
+          fn=64);
+      }
+    };
 }
 
 module roundedCylinder(h,r,roundedr=0,roundedr1=0,roundedr2=0)
@@ -17526,6 +17609,7 @@ module slotCutout(size, chamfer = 1)
 Default_Plate_Style = "base"; //[base:Base plate, lid:Lid that is also a gridfinity base]
 Default_Base_Plate_Options = "default";//[default:Default, magnet:Efficient magnet base, weighted:Weighted base, woodscrew:Woodscrew, cnc:CNC or Laser, cncmagnet:CNC with Magnets]
 Default_Lid_Options = "default";//[default, flat:Flat Removes the internal grid from base, halfpitch: halfpitch base, efficient]
+Default_Oversize_method = "fill"; //[crop, fill]
 
 Default_Lid_Include_Magnets = true;
 // Base height, when the bin on top will sit, in GF units
@@ -17561,8 +17645,9 @@ function decimaltobitwise
       v1==1 && v2 == 1 ? 8 : 0;  
       
 module gridfinity_baseplate(
-  width = 2,
-  depth = 3,
+  num_x = 2,
+  num_y = 3,
+  oversizeMethod = Default_Oversize_method,
   plateStyle = Default_Plate_Style,
   plateOptions = Default_Base_Plate_Options,
   lidOptions = Default_Lid_Options,
@@ -17582,35 +17667,43 @@ module gridfinity_baseplate(
   help = false)
 {
   _gridPossitions = customGridEnabled ? gridPossitions : [[1]];
-  
+  width = oversizeMethod == "fill" ? num_x : ceil(num_x);
+  depth = oversizeMethod == "fill" ? num_y : ceil(num_y);
+
   difference() {
-    union() {
-      for(xi = [0:len(_gridPossitions)-1])
-        for(yi = [0:len(_gridPossitions[xi])-1])
-        {
-          if(_gridPossitions[xi][yi])
+    intersection(){
+      union() {
+        for(xi = [0:len(_gridPossitions)-1])
+          for(yi = [0:len(_gridPossitions[xi])-1])
           {
-            translate([gf_pitch*xi,gf_pitch*yi,0])
-            baseplate(
-              width = customGridEnabled ? 1 : width,
-              depth = customGridEnabled ? 1 : depth,
-              plateStyle = plateStyle,
-              plateOptions= plateOptions,
-              lidOptions = lidOptions,
-              butterflyClipEnabled  = butterflyClipEnabled,
-              butterflyClipSize = butterflyClipSize,
-              butterflyClipRadius = butterflyClipRadius,
-              filamentClipEnabled = filamentClipEnabled,
-              filamentClipDiameter = filamentClipDiameter,
-              filamentClipLength = filamentClipLength,
-              roundedCorners = _gridPossitions[xi][yi] == 1 ? 15 : _gridPossitions[xi][yi] - 2,
-              lidIncludeMagnets = lidIncludeMagnets,
-              lidEfficientFloorThickness = lidEfficientFloorThickness,
-              lidEfficientBaseHeight = lidEfficientBaseHeight,
-              help = help);
+            if(_gridPossitions[xi][yi])
+            {
+              translate([gf_pitch*xi,gf_pitch*yi,0])
+              baseplate(
+                width = customGridEnabled ? 1 : width,
+                depth = customGridEnabled ? 1 : depth,
+                plateStyle = plateStyle,
+                plateOptions= plateOptions,
+                lidOptions = lidOptions,
+                butterflyClipEnabled  = butterflyClipEnabled,
+                butterflyClipSize = butterflyClipSize,
+                butterflyClipRadius = butterflyClipRadius,
+                filamentClipEnabled = filamentClipEnabled,
+                filamentClipDiameter = filamentClipDiameter,
+                filamentClipLength = filamentClipLength,
+                roundedCorners = _gridPossitions[xi][yi] == 1 ? 15 : _gridPossitions[xi][yi] - 2,
+                lidIncludeMagnets = lidIncludeMagnets,
+                lidEfficientFloorThickness = lidEfficientFloorThickness,
+                lidEfficientBaseHeight = lidEfficientBaseHeight,
+                help = help);
+            }
           }
         }
-      }
+        if(oversizeMethod == "crop"){
+          translate([-gf_pitch/2, -gf_pitch/2,0])
+            cube([num_x*gf_pitch, num_y*gf_pitch,20]);
+        }
+    }
     /*
     if(cutx && $preview){
       translate([-gf_pitch,-gf_pitch,-fudgeFactor])
