@@ -70,6 +70,8 @@ horizontal_separator_config = "10.5|21|42|50|60";
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
+// Create relief for magnet removal 
+magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
@@ -87,7 +89,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
-// Remove floor to create a veritcal spacer
+// Remove floor to create a vertical spacer
 spacer = false;
 
 /* [Label] */
@@ -96,7 +98,7 @@ label_style = "normal"; //[disabled: no label, normal:normal, click]
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
+// Creates space so the attached label wont interfere with stacking
 label_relief = 0; // 0.1
 
 /* [Finger Slide] */
@@ -143,9 +145,9 @@ wallcutout_height=0;
 wallcutout_corner_radius=5;
 
 /* [Extendable] */
-extention_x_enabled = false;
-extention_y_enabled = false;
-extention_tabs_enabled = true;
+extension_x_enabled = false;
+extension_y_enabled = false;
+extension_tabs_enabled = true;
 
 /* [debug] */
 //Slice along the x axis
@@ -171,6 +173,7 @@ if(mode == "both" || mode == "cup")
     fingerslide=fingerslide,
     fingerslide_radius=fingerslide_radius,
     magnet_diameter=magnet_diameter,
+    magnet_easy_release=magnet_easy_release,
     screw_depth=screw_depth,
     center_magnet_diameter=center_magnet_diameter,
     center_magnet_thickness=center_magnet_thickness,
@@ -219,8 +222,8 @@ if(mode == "both" || mode == "cup")
     wallcutout_angle=wallcutout_angle,
     wallcutout_height=wallcutout_height,
     wallcutout_corner_radius=wallcutout_corner_radius,
-    extention_enabled=[extention_x_enabled,extention_y_enabled],
-    extention_tabs_enabled = extention_tabs_enabled,
+    extension_enabled=[extension_x_enabled,extension_y_enabled],
+    extension_tabs_enabled = extension_tabs_enabled,
     sliding_lid_enabled = sliding_lid_enabled, 
     sliding_lid_thickness = sliding_lid_thickness, 
     sliding_min_wall_thickness = sliding_min_wall_thickness, 
@@ -233,9 +236,9 @@ if(mode == "both" || mode == "cup")
   
 if(mode == "both" || mode == "lid")
 {
-  num_x = calcDimentionWidth(width);
-  num_y = calcDimentionDepth(depth);
-  num_z = calcDimentionHeight(height);
+  num_x = calcDimensionWidth(width);
+  num_y = calcDimensionDepth(depth);
+  num_z = calcDimensionHeight(height);
   wall_thickness = wallThickness(wall_thickness, num_z);
   
   slidingLidSettings= SlidingLidSettings(

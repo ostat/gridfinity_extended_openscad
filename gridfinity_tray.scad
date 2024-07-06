@@ -18,13 +18,13 @@ tray_horizontal_compartments = 1;
 /*
 xpos,ypos,xsize,ysize,radius,depth. 
 dimensions of the tray cutout, a string with comma separated values, and pipe (|) separated trays.
- - xpos, ypos, the x/y position in gridinity units.
- - xsize, ysize. the x/y size in gridinity units. 
+ - xpos, ypos, the x/y position in gridfinity units.
+ - xsize, ysize. the x/y size in gridfinity units. 
  - radius, [optional] corner radius in mm.
  - depth, [optional] depth in mm
  - example "0,0,2,1|2,0,2,1,2,5"
 */
-//[[xpos,ypos,xsize,ysize,radius,depth]]. xpos, ypos, the x/y position in gridinity units.xsize, ysize. the x/y size in gridinity units. radius, [optional] corner radius in mm.depth, [optional] depth in mm\nexample "0,0,2,1|2,0,2,1,2,5"
+//[[xpos,ypos,xsize,ysize,radius,depth]]. xpos, ypos, the x/y position in gridfinity units.xsize, ysize. the x/y size in gridfinity units. radius, [optional] corner radius in mm.depth, [optional] depth in mm\nexample "0,0,2,1|2,0,2,1,2,5"
 tray_custom_compartments = "0, 0, 0.5, 3, 2, 6|0.5, 0, 0.5, 3,2, 6|1, 0, 3, 1.5|1, 1.5, 3, 1.5";
 /*<!!end gridfinity_tray!!>*/
 
@@ -71,6 +71,8 @@ horizontal_separator_config = "10.5|21|42|50|60";
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
+// Create relief for magnet removal 
+magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
@@ -88,7 +90,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
-// Remove floor to create a veritcal spacer
+// Remove floor to create a vertical spacer
 spacer = false;
 
 /* [Label] */
@@ -97,7 +99,7 @@ label_style = "disabled"; //[disabled: no label, normal:normal, click]
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
+// Creates space so the attached label wont interfere with stacking
 label_relief = 0; // 0.1
 
 /* [Finger Slide] */
@@ -144,9 +146,9 @@ wallcutout_height=0;
 wallcutout_corner_radius=5;
 
 /* [Extendable] */
-extention_x_enabled = false;
-extention_y_enabled = false;
-extention_tabs_enabled = true;
+extension_x_enabled = false;
+extension_y_enabled = false;
+extension_tabs_enabled = true;
 
 /* [debug] */
 //Slice along the x axis
@@ -272,6 +274,7 @@ module gridfinity_tray(
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   magnet_diameter=magnet_diameter,
+  magnet_easy_release=magnet_easy_release,
   screw_depth=screw_depth,
   center_magnet_diameter=center_magnet_diameter,
   center_magnet_thickness=center_magnet_thickness,
@@ -320,15 +323,15 @@ module gridfinity_tray(
   wallcutout_angle=wallcutout_angle,
   wallcutout_height=wallcutout_height,
   wallcutout_corner_radius=wallcutout_corner_radius,
-  extention_enabled=[extention_x_enabled,extention_y_enabled],
-  extention_tabs_enabled = extention_tabs_enabled,
+  extension_enabled=[extension_x_enabled,extension_y_enabled],
+  extension_tabs_enabled = extension_tabs_enabled,
   cutx=cutx,
   cuty=cuty,
   help=enable_help) {
   
-  num_x = calcDimentionWidth(width);
-  num_y = calcDimentionDepth(depth);
-  num_z = calcDimentionHeight(height);
+  num_x = calcDimensionWidth(width);
+  num_y = calcDimensionDepth(depth);
+  num_z = calcDimensionHeight(height);
   
   echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
   
@@ -345,6 +348,7 @@ module gridfinity_tray(
       fingerslide=fingerslide,
       fingerslide_radius=fingerslide_radius,
       magnet_diameter=magnet_diameter,
+      magnet_easy_release=magnet_easy_release,
       screw_depth=screw_depth,
       center_magnet_diameter=center_magnet_diameter,
       center_magnet_thickness=center_magnet_thickness,
@@ -393,8 +397,8 @@ module gridfinity_tray(
       wallcutout_angle=wallcutout_angle,
       wallcutout_height=wallcutout_height,
       wallcutout_corner_radius=wallcutout_corner_radius,
-      extention_enabled=[extention_x_enabled,extention_y_enabled],
-      extention_tabs_enabled = extention_tabs_enabled,
+      extension_enabled=[extension_x_enabled,extension_y_enabled],
+      extension_tabs_enabled = extension_tabs_enabled,
       cutx=cutx,
       cuty=cuty,
       help = help);

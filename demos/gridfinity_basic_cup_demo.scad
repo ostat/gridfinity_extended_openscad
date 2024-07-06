@@ -80,9 +80,9 @@ iwallpattern_hole_size=iwallpattern_hole_sides+1;
 iwallpattern_hole_spacing=iwallpattern_hole_size+1;
 iwallpattern_voronoi_noise = iwallpattern_hole_spacing+1;
 iwallpattern_voronoi_radius = iwallpattern_voronoi_noise+1;
-iextention_enabled = iwallpattern_voronoi_radius+1;
-iextention_tabs_enabled = iextention_enabled+1;
-icutx=iextention_tabs_enabled+1;
+iextension_enabled = iwallpattern_voronoi_radius+1;
+iextension_tabs_enabled = iextension_enabled+1;
+icutx=iextension_tabs_enabled+1;
 icuty=icutx+1;
 ihelp=icuty+1;
 itranslate=ihelp+1;
@@ -141,7 +141,7 @@ defaultDemoSetting =
     
     //wallpattern_enabled, wallpattern_style, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing, wallpattern_voronoi_noise, wallpattern_voronoi_radius 
     false, "hexgrid", [1,1,1,1], false, "none", 6, 5, 2, 0.6, 0.5,
-    //extention_enabled, extention_tabs_enabled
+    //extension_enabled, extension_tabs_enabled
     [false,false],false,
     //cutx,cuty,help,translate,rotate,scale,colour
     0, 0,false,[0,0,0],[0,0,0],[0,0,0],[1,1,1],""];
@@ -319,10 +319,10 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
       ["disabled", [[itranslate_rotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]], [iflat_base,false]]]]
 
   : scenario == "split_bin" ? [["split bin",5,[],[]],
-      ["x with tabs", [[iextention_enabled,[true,false]],[iextention_tabs_enabled, true]]],
-      ["x", [[iextention_enabled,[true,false]],[iextention_tabs_enabled, false]]],
-      ["x and y with tabs", [[iextention_enabled,[true,true]],[iextention_tabs_enabled, true]]],
-      ["x and y", [[iextention_enabled,[true,true]],[iextention_tabs_enabled, false]]],
+      ["x with tabs", [[iextension_enabled,[true,false]],[iextension_tabs_enabled, true]]],
+      ["x", [[iextension_enabled,[true,false]],[iextension_tabs_enabled, false]]],
+      ["x and y with tabs", [[iextension_enabled,[true,true]],[iextension_tabs_enabled, true]]],
+      ["x and y", [[iextension_enabled,[true,true]],[iextension_tabs_enabled, false]]],
       ["disabled", []]]
       
   : scenario == "box_corner_attachments_only" ? [["Corner Attachments only",2,[],[[imagnet_diameter,6.5],[iscrew_depth,6]]],
@@ -700,8 +700,8 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
       wallpattern_hole_spacing=currentStepSettings[iwallpattern_hole_spacing],
       wallpattern_voronoi_noise=currentStepSettings[iwallpattern_voronoi_noise],
       wallpattern_voronoi_radius=currentStepSettings[iwallpattern_voronoi_radius],
-      extention_enabled=currentStepSettings[iextention_enabled],
-      extention_tabs_enabled=currentStepSettings[iextention_tabs_enabled],
+      extension_enabled=currentStepSettings[iextension_enabled],
+      extension_tabs_enabled=currentStepSettings[iextension_tabs_enabled],
       cutx=currentStepSettings[icutx],
       cuty=currentStepSettings[icuty],
       help=help || currentStepSettings[ihelp]);

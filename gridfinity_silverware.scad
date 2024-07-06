@@ -32,6 +32,8 @@ height_in_mm = 35;
 /* [Gridfinity features] */
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
+// Create relief for magnet removal 
+magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)

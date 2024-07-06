@@ -24,7 +24,7 @@ iplateStyle = 3;
 iplateOptions = 4;
 ilidOptions = 5;
 icustomGridEnabled = 6;
-igridPossitions=7;
+igridPositions=7;
 icutx = 8;
 icuty = 9;
   
@@ -32,7 +32,7 @@ icuty = 9;
 defaultDemoSetting = 
     //width, depth, iplateStyle, iplateOptions, ilidOptions, 
     [3,2,"fill","base","default","",
-    //icustomGridEnabled,igridPossitions,cutx,cuty
+    //icustomGridEnabled,igridPositions,cutx,cuty
     false,"",0,0];
      
 selectedScenario = 
@@ -49,7 +49,7 @@ selectedScenario =
       ["Simple - fill", false,[[iwidth,3.5], [idepth,2.2], [iplateStyle, "base"], [iplateOptions, ""]]],
       ["CNC - crop", false,[[iwidth,3.5], [idepth,2.2], [iplateStyle, "base"], [iplateOptions, "cnc"], [ioversizeMethod,"crop"]]],
       ["Custom",false,[[iplateOptions,"default"],[icustomGridEnabled,true],
-          [igridPossitions,"3,4,0,0|2,2,0,0|2,2,2,0|6,2,2,0"]]]]
+          [igridPositions,"3,4,0,0|2,2,0,0|2,2,2,0|6,2,2,0"]]]]
       
   : scenario == "baseplate" ? [["", 1,[[iplateStyle, "base"]]],
       ["Base Plate", false,[[iplateStyle, "default"],[iplateOptions,""]]]]
@@ -86,11 +86,11 @@ selectedScenario =
 
   : scenario == "customsize" ? [["Custom Size",3,[[iplateStyle, "base"], [ilidOptions,"halfpitch"]]],
       ["Base",false,[[iplateOptions,"default"],[icustomGridEnabled,true],
-          [igridPossitions,"3,4,0,0|2,2,0,0|2,2,2,0|6,2,2,0"]]],
+          [igridPositions,"3,4,0,0|2,2,0,0|2,2,2,0|6,2,2,0"]]],
       ["Magnet",false,[[iplateOptions,"magnet"],[icustomGridEnabled,true],
-          [igridPossitions,"3,4,0,0|2,2,0,0|6,2,2,2|0,6,2,2"]]],
+          [igridPositions,"3,4,0,0|2,2,0,0|6,2,2,2|0,6,2,2"]]],
       ["Weighted",false,[[iplateOptions,"weighted"],[icustomGridEnabled,true],
-          [igridPossitions,"3,4,0,0|2,2,0,5|6,2,2,2|0,6,2,2|0,0,6,10"]]]]
+          [igridPositions,"3,4,0,0|2,2,0,5|6,2,2,2|0,6,2,2|0,0,6,10"]]]]
       : []; //
       
 //animation = len(options) >= round($t*(len(options))) ? options[round($t*(len(options)))] : options[0];
@@ -124,6 +124,6 @@ gridfinity_baseplate(
   plateOptions = currentStepSettings[iplateOptions],
   lidOptions = currentStepSettings[ilidOptions],
   customGridEnabled = currentStepSettings[icustomGridEnabled],
-  gridPossitions=currentStepSettings[icustomGridEnabled] ? splitCustomConfig(currentStepSettings[igridPossitions]) : [],
+  gridPositions=currentStepSettings[icustomGridEnabled] ? splitCustomConfig(currentStepSettings[igridPositions]) : [],
   cutx = currentStepSettings[icutx],
   cuty = currentStepSettings[icuty]);

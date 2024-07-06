@@ -55,7 +55,7 @@ label_style = "disabled"; //[disabled: no label, normal:normal, click]
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
+// Creates space so the attached label wont interfere with stacking
 label_relief = 0; // 0.1
 
 /* [debug] */
@@ -104,9 +104,9 @@ module gridfinity_sieve(
   help=help) {
   
   difference() {
-    num_x = calcDimentionWidth(width);
-    num_y = calcDimentionDepth(depth);
-    num_z = calcDimentionHeight(height);
+    num_x = calcDimensionWidth(width);
+    num_y = calcDimensionDepth(depth);
+    num_z = calcDimensionHeight(height);
     
     holeSize = is_list(sieve_hole_size) ? sieve_hole_size : [sieve_hole_size,sieve_hole_size];
     /*<!!start gridfinity_basic_cup!!>*/
@@ -131,7 +131,7 @@ module gridfinity_sieve(
       help = enable_help);
     /*<!!end gridfinity_basic_cup!!>*/
 
-    color(color_extention)
+    color(color_extension)
     translate([0,0,-fudgeFactor])
       GridItemHolder(
         canvisSize = [num_x*gf_pitch,num_y*gf_pitch],

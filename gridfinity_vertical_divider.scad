@@ -49,6 +49,8 @@ position = "center"; //[default,center,zero]
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
+// Create relief for magnet removal 
+magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
@@ -185,6 +187,7 @@ module Gridfinity_Divider(
   position=position,
   filled_in=filled_in,
   magnet_diameter=magnet_diameter,
+  magnet_easy_release=magnet_easy_release,
   screw_depth=screw_depth,
   floor_thickness=floor_thickness,
   wall_thickness=wall_thickness,
@@ -213,9 +216,9 @@ module Gridfinity_Divider(
   wallpatternVoronoiRadius=wallpattern_voronoi_radius
 ){
 
-  num_x = calcDimentionWidth(width);
-  num_y = calcDimentionDepth(depth);
-  num_z = calcDimentionHeight(height);
+  num_x = calcDimensionWidth(width);
+  num_y = calcDimensionDepth(depth);
+  num_z = calcDimensionHeight(height);
   floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
   
   gridfinity_cup(
@@ -223,6 +226,7 @@ module Gridfinity_Divider(
     position=position,
     filled_in=filled_in,
     magnet_diameter=magnet_diameter,
+    magnet_easy_release=magnet_easy_release,
     screw_depth=screw_depth,
     floor_thickness=floor_thickness,
     cavity_floor_radius=cavity_floor_radius,

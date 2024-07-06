@@ -97,9 +97,9 @@ iwallpattern_hole_size=iwallpattern_hole_sides+1;
 iwallpattern_hole_spacing=iwallpattern_hole_size+1;
 iwallpattern_voronoi_density_ratio = iwallpattern_hole_spacing+1;
 iwallpattern_voronoi_radius =iwallpattern_voronoi_density_ratio+1;
-iextention_enabled = iwallpattern_voronoi_radius+1;
-iextention_tabs_enabled = iextention_enabled+1;
-icutx=iextention_tabs_enabled+1;
+iextension_enabled = iwallpattern_voronoi_radius+1;
+iextension_tabs_enabled = iextension_enabled+1;
+icutx=iextension_tabs_enabled+1;
 icuty=icutx+1;
 ihelp=icuty+1;
 itranslate=ihelp+1;
@@ -163,7 +163,7 @@ defaultDemoSetting =
     false, [1,0,0,0], 0, 70, 0, 5, 
     //wallpattern_enabled, wallpattern_style, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing, wallpattern_voronoi_density_ratio, wallpattern_voronoi_radius 
     false, "hexgrid", [1,1,1,1], false, "none", 6, 5, 2, 50, 0.5,
-    //extention_enabled, extention_tabs_enabled
+    //extension_enabled, extension_tabs_enabled
     [false,false],false,
     //cutx,cuty,help,translate,rotate
     0, 0,false,[0,0,0],[0,0,0]];
@@ -399,8 +399,8 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1, mult
       wallpattern_hole_spacing=currentStepSettings[iwallpattern_hole_spacing],
       wallpattern_voronoi_density_ratio=currentStepSettings[iwallpattern_voronoi_density_ratio],
       wallpattern_voronoi_radius=currentStepSettings[iwallpattern_voronoi_radius],
-      extention_enabled=currentStepSettings[iextention_enabled],
-      extention_tabs_enabled=currentStepSettings[iextention_tabs_enabled],
+      extension_enabled=currentStepSettings[iextension_enabled],
+      extension_tabs_enabled=currentStepSettings[iextension_tabs_enabled],
       cutx=currentStepSettings[icutx],
       cuty=currentStepSettings[icuty],
       help=help || currentStepSettings[ihelp]);

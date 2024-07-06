@@ -20,7 +20,7 @@ Default_Lid_Efficient_Floor_Thickness = 0.7;// [0.7:0.1:7]
 Default_Butterfly_Clip_Enabled = false;
 Default_Butterfly_Clip_Size = [6,6,1.5];
 Default_Butterfly_Clip_Radius = 0.1;
-Default_Butterfly_Clip_Tollerance = 0.1;
+Default_Butterfly_Clip_Tolerance = 0.1;
 Default_Butterfly_Clip_Only = false;
 
 //This feature is not yet finalised, or working properly. 
@@ -50,7 +50,7 @@ module gridfinity_baseplate(
   plateOptions = Default_Base_Plate_Options,
   lidOptions = Default_Lid_Options,
   customGridEnabled = false,
-  gridPossitions = [[1]],
+  gridPositions = [[1]],
   butterflyClipEnabled  = Default_Butterfly_Clip_Enabled,
   butterflyClipSize = Default_Butterfly_Clip_Size,
   butterflyClipRadius = Default_Butterfly_Clip_Radius,
@@ -64,17 +64,17 @@ module gridfinity_baseplate(
   cuty = 0,
   help = false)
 {
-  _gridPossitions = customGridEnabled ? gridPossitions : [[1]];
+  _gridPositions = customGridEnabled ? gridPositions : [[1]];
   width = oversizeMethod == "fill" ? num_x : ceil(num_x);
   depth = oversizeMethod == "fill" ? num_y : ceil(num_y);
 
   difference() {
     intersection(){
       union() {
-        for(xi = [0:len(_gridPossitions)-1])
-          for(yi = [0:len(_gridPossitions[xi])-1])
+        for(xi = [0:len(_gridPositions)-1])
+          for(yi = [0:len(_gridPositions[xi])-1])
           {
-            if(_gridPossitions[xi][yi])
+            if(_gridPositions[xi][yi])
             {
               translate([gf_pitch*xi,gf_pitch*yi,0])
               baseplate(
@@ -89,7 +89,7 @@ module gridfinity_baseplate(
                 filamentClipEnabled = filamentClipEnabled,
                 filamentClipDiameter = filamentClipDiameter,
                 filamentClipLength = filamentClipLength,
-                roundedCorners = _gridPossitions[xi][yi] == 1 ? 15 : _gridPossitions[xi][yi] - 2,
+                roundedCorners = _gridPositions[xi][yi] == 1 ? 15 : _gridPositions[xi][yi] - 2,
                 lidIncludeMagnets = lidIncludeMagnets,
                 lidEfficientFloorThickness = lidEfficientFloorThickness,
                 lidEfficientBaseHeight = lidEfficientBaseHeight,

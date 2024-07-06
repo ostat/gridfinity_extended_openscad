@@ -47,7 +47,7 @@ module GridItemHolder(
     [canvisSize.x-border*2,canvisSize.y-border*2] : 
     canvisSize;
     
-  calcHoleDimentions = [
+  calcHoledimensions = [
       customShape ? holeSize[0] :
       circleFn == 4 ? Rc*2 : 
       circleFn == 6 ? Rc*2 : Rc*2,
@@ -57,24 +57,24 @@ module GridItemHolder(
 
         //x spacing for hex, center to center 
   hexxSpacing = 
-    circleFn == 4 ? holeSpacing[1]/2 + calcHoleDimentions[1]/2
+    circleFn == 4 ? holeSpacing[1]/2 + calcHoledimensions[1]/2
     : customShape ? holeSize[0]+holeSpacing[0]
-    : sqrt((Ri*2+holeSpacing[0])^2-((calcHoleDimentions[1]+holeSpacing[1])/2)^2);
+    : sqrt((Ri*2+holeSpacing[0])^2-((calcHoledimensions[1]+holeSpacing[1])/2)^2);
     
   //Calcualte the x and y items count for hexgrid
   eHexGrid = [
       holeGrid[0] !=0 ? holeGrid[0]
-        : floor((canvisSize[0]-calcHoleDimentions[0])/hexxSpacing+1), 
+        : floor((canvisSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
       holeGrid[1] !=0 ? holeGrid[1]
-        : floor(((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1])-0.5)*2)/2
+        : floor(((canvisSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
       ];
 
   //Calcualte the x and y hex items count for squaregrid
   eSquareGrid = [
       holeGrid[0]!=0 ? holeGrid[0]
-        : floor((canvisSize[0]+holeSpacing[0])/(calcHoleDimentions[0]+holeSpacing[0])),
+        : floor((canvisSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
       holeGrid[1]!=0 ? holeGrid[1]
-        : floor((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1]))];
+        : floor((canvisSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1]))];
 
   //Single lines should not be hex
   hexGrid = 
@@ -99,11 +99,11 @@ module GridItemHolder(
       //x and y spacing including the item size.
       es = [
         fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
-          ? calcHoleDimentions[0]+(eHexGrid[0]<=1?0:((canvisSize[0]-eHexGrid[0]*calcHoleDimentions[0])/(eHexGrid[0]-1))) 
+          ? calcHoledimensions[0]+(eHexGrid[0]<=1?0:((canvisSize[0]-eHexGrid[0]*calcHoledimensions[0])/(eHexGrid[0]-1))) 
           : hexxSpacing,
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoleDimentions[1]+(eHexGrid[1]<=0.5?0:((canvisSize[1]-(eHexGrid[1]+0.5)*calcHoleDimentions[1])/(eHexGrid[1]-0.5))) 
-          : holeSpacing[1] + calcHoleDimentions[1]];
+          ? calcHoledimensions[1]+(eHexGrid[1]<=0.5?0:((canvisSize[1]-(eHexGrid[1]+0.5)*calcHoledimensions[1])/(eHexGrid[1]-0.5))) 
+          : holeSpacing[1] + calcHoledimensions[1]];
       
       eFill=[
         fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
@@ -126,21 +126,21 @@ module GridItemHolder(
 
       HexGrid(e=eFill, es=es, center=center, help=help)
         if(customShape){
-          translate(center ? [-calcHoleDimentions[0]/2,-calcHoleDimentions[1]/2,0] : [0,0,0])
+          translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
             children();
         } else {
-          translate(!center ? [calcHoleDimentions[0]/2,calcHoleDimentions[1]/2,0] : [0,0,0])
+          translate(!center ? [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0] : [0,0,0])
             chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
         }
     }
     else {
       es = [
         fill == "space" || fill == "spacevertical" || fill == "crophorizontal_spacevertical"
-          ? calcHoleDimentions[0]+(eSquareGrid[0]<=1?0:((canvisSize[0]-eSquareGrid[0]*calcHoleDimentions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
-          : calcHoleDimentions[0]+holeSpacing[0],
+          ? calcHoledimensions[0]+(eSquareGrid[0]<=1?0:((canvisSize[0]-eSquareGrid[0]*calcHoledimensions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
+          : calcHoledimensions[0]+holeSpacing[0],
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoleDimentions[1]+(eSquareGrid[1]<=1?0:((canvisSize[1]-eSquareGrid[1]*calcHoleDimentions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
-          : calcHoleDimentions[1]+holeSpacing[1]];
+          ? calcHoledimensions[1]+(eSquareGrid[1]<=1?0:((canvisSize[1]-eSquareGrid[1]*calcHoledimensions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
+          : calcHoledimensions[1]+holeSpacing[1]];
       
       eFill=[
         fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
@@ -158,10 +158,10 @@ module GridItemHolder(
       
       Grid(e=eFill, es=es, center=center, help=help)
         if(customShape){
-          translate(center ? [-calcHoleDimentions[0]/2,-calcHoleDimentions[1]/2,0] : [0,0,0])
+          translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
           children();
         } else {
-          translate(center ? [0,0,0] : [calcHoleDimentions[0]/2,calcHoleDimentions[1]/2,0])
+          translate(center ? [0,0,0] : [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0])
             chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
         }
     }
@@ -178,7 +178,7 @@ module GridItemHolder(
     ,"fill",fill
     ,"customShape",customShape
     ,"hexxSpacing",hexxSpacing
-    ,"calcHoleDimentions",calcHoleDimentions
+    ,"calcHoledimensions",calcHoledimensions
     ,"eHexGrid",eHexGrid
     ,"eSquareGrid",eSquareGrid  
     ,"hexGridCount",hexGridCount  
@@ -197,8 +197,16 @@ module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
     }
 }
 
+//multiCard([24, 2.1, 18, 32, "square"],[12, 4.5, 13, 13, "square"],[20, 1.4, 10, 21.5, "square"]);
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   fudgeFactor = 0.01;
+  
+  assert(is_list(longCenter) && len(longCenter) >= 3, "longCenter should be a list of length 5");
+  assert(is_list(smallCenter) && len(smallCenter) >= 3, "longCenter should be a list of length 5");
+  assert(is_list(side) && len(side) >= 3, "longCenter should be a list of length 5");
+
+  //echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
+  render()
   union(){
     minspacing = 3;
     translate([(longCenter.x)/2,side.x/2,0])
@@ -208,8 +216,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
     
     translate([-smallCenter.x/2,-smallCenter.y/2,(longCenter.z-smallCenter.z)])
     slotCutout([smallCenter.x, smallCenter.y, smallCenter.z+fudgeFactor], chamfer);
-    
-    
+
     if(alternate){
       pos = let(targetPos = (longCenter.x)/4-(side.y)/2) max(targetPos, smallCenter.y+minspacing);
       translate([-pos-side.y/2, 0, 0])
@@ -249,6 +256,9 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
 //chamfer = chamfer size
 module slotCutout(size, chamfer = 1)
 {
+  assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
+
+  fudgeFactor = 0.01;
   chamfer = min(size.z, chamfer);
   
   translate([size.x/2,size.y/2,0])

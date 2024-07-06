@@ -32,7 +32,7 @@ default_label_style = "normal"; //[disabled: no label, normal:normal, click]
 default_label_position = "disabled"; //[left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
 // Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 default_label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
+// Creates space so the attached label wont interfere with stacking
 default_label_relief = 0; // 0.1
 
 /* [Sliding Lid] */
@@ -76,8 +76,8 @@ default_horizontal_separator_config = "10.5|21|42|50|60";
 
 /* [Base] */
 default_magnet_diameter = 6.5;  // .1
-//create relief for manget removal
-default_magent_easy_release = true;
+//create relief for magnet removal
+default_magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
 default_center_magnet_diameter = 0;
@@ -127,11 +127,11 @@ default_wallpattern_voronoi_noise = 0.75;
 default_wallpattern_voronoi_radius = 0.5;
 
 /* [Extendable] */
-default_extention_x_enabled = false;
-default_extention_y_enabled = false;
-default_extention_tabs_enabled = true;
+default_extension_x_enabled = false;
+default_extension_y_enabled = false;
+default_extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
-default_extention_tab_size= [10,0,0,0]; //0.1
+default_extension_tab_size= [10,0,0,0]; //0.1
 
 /* [debug] */
 default_cutx = 0;//0.1
@@ -161,7 +161,7 @@ module gridfinity_cup(
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
-  magent_easy_release=default_magent_easy_release,
+  magnet_easy_release=default_magnet_easy_release,
   screw_depth=default_screw_depth,
   center_magnet_diameter = default_center_magnet_diameter,
   center_magnet_thickness = default_center_magnet_thickness,
@@ -211,9 +211,9 @@ module gridfinity_cup(
   wallcutout_angle=default_wallcutout_angle,
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
-  extention_enabled=[default_extention_x_enabled,default_extention_y_enabled],
-  extention_tabs_enabled=default_extention_tabs_enabled,
-  extention_tab_size=default_extention_tab_size,
+  extension_enabled=[default_extension_x_enabled,default_extension_y_enabled],
+  extension_tabs_enabled=default_extension_tabs_enabled,
+  extension_tab_size=default_extension_tab_size,
   sliding_lid_enabled = default_sliding_lid_enabled, 
   sliding_lid_thickness = default_sliding_lid_thickness, 
   sliding_min_wall_thickness = default_sliding_min_wallThickness, 
@@ -223,9 +223,9 @@ module gridfinity_cup(
   cuty=default_cuty,
   help) {
   
-  num_x = calcDimentionWidth(width);
-  num_y = calcDimentionDepth(depth);
-  num_z = calcDimentionHeight(height);
+  num_x = calcDimensionWidth(width);
+  num_y = calcDimensionDepth(depth);
+  num_z = calcDimensionHeight(height);
 
   vertical_separator_positions = vertical_irregular_subdivisions 
     ? vertical_separator_config 
@@ -275,7 +275,7 @@ module gridfinity_cup(
       box_corner_attachments_only=box_corner_attachments_only, 
       stackable = lip_style != "none",
       flat_base=flat_base,
-      magent_easy_release = magent_easy_release);
+      magnet_easy_release = magnet_easy_release);
       
     if(!filled_in) 
     union(){
@@ -287,7 +287,7 @@ module gridfinity_cup(
         label_relief=label_relief,
         fingerslide=fingerslide, 
         fingerslide_radius=fingerslide_radius, 
-        magnet_diameter=magnet_diameter, 
+        magnet_diameter=magnet_diameter,
         screw_depth=screw_depth, 
         floor_thickness=floor_thickness, 
         wall_thickness=wall_thickness,
@@ -621,13 +621,13 @@ module gridfinity_cup(
       }
     }
    
-    if(extention_enabled.x){
+    if(extension_enabled.x){
      cutx = 0.5;
      color(color_wallcutout)
       translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
         cube([gf_pitch*cutx,num_y*gf_pitch,(num_z+1)*gf_zpitch]);
     }
-    if(extention_enabled.y){
+    if(extension_enabled.y){
      cuty = 0.5;
      color(color_wallcutout)
       translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
@@ -646,11 +646,11 @@ module gridfinity_cup(
     }
   }
   
-  if((extention_enabled.x || extention_enabled.y) && extention_tabs_enabled){
-    refTabHeight = extention_tab_size.x;
-    tabThickness = extention_tab_size.z == 0 ? 1.4 : extention_tab_size.z;//1.4; //This should be calculated
-    tabWidth = extention_tab_size.y;
-    tabStyle = extention_tab_size[3];
+  if((extension_enabled.x || extension_enabled.y) && extension_tabs_enabled){
+    refTabHeight = extension_tab_size.x;
+    tabThickness = extension_tab_size.z == 0 ? 1.4 : extension_tab_size.z;//1.4; //This should be calculated
+    tabWidth = extension_tab_size.y;
+    tabStyle = extension_tab_size[3];
     
     floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
     
@@ -673,14 +673,14 @@ module gridfinity_cup(
     {
       isOdd =  i % 2;
       echo("tabs", i=i, isOdd=isOdd)
-      if(extention_enabled.x){
+      if(extension_enabled.x){
         if(!isOdd)
         {
           translate([0,(num_y-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
           rotate([0,180,90])
             attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else {
-           if(!extention_enabled.y){
+           if(!extension_enabled.y){
             translate([0,-0.5*gf_pitch+wall_thickness+gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
               rotate([0,0,90])
               attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
@@ -688,14 +688,14 @@ module gridfinity_cup(
         }
       }
 
-      if(extention_enabled.y){     
+      if(extension_enabled.y){     
         if(isOdd)
         {
           translate([(num_x-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,0,floorHeight+(i+0.5)*tabHeight])
           rotate([0,0,180])
             attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else {
-          if(!extention_enabled.x){
+          if(!extension_enabled.x){
             translate([-0.5*gf_pitch+wall_thickness+gf_tolerance/2,0,floorHeight+(i+0.5)*tabHeight])
               rotate([0,180,180])
               attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
@@ -705,22 +705,22 @@ module gridfinity_cup(
       }
     }
     /*
-    if(extention_enabled.x){     
+    if(extension_enabled.x){     
       translate([0,(num_y-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,tabWorkingheight/4*3  + 1*gf_zpitch])
       rotate([0,180,90])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
-    if(extention_enabled.x && !extention_enabled.y){
+    if(extension_enabled.x && !extension_enabled.y){
       translate([0,-0.5*gf_pitch+wall_thickness+gf_tolerance/2,tabWorkingheight/4 + 1*gf_zpitch])
         rotate([0,0,90])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
-    if(extention_enabled.y){     
+    if(extension_enabled.y){     
       translate([(num_x-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,0,tabWorkingheight/4  + 1*gf_zpitch])
       rotate([0,0,180])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
-    if(extention_enabled.y && !extention_enabled.x){
+    if(extension_enabled.y && !extension_enabled.x){
       translate([-0.5*gf_pitch+wall_thickness+gf_tolerance/2,0,tabWorkingheight/4*3 + 1*gf_zpitch])
         rotate([0,180,180])
         attachement_clip(height=tabHeight,thickness=tabThickness);
@@ -795,8 +795,8 @@ module gridfinity_cup(
     ,"wallcutout_angle",wallcutout_angle
     ,"wallcutout_height",wallcutout_height
     ,"wallcutout_corner_radius",wallcutout_corner_radius
-    ,"extention_enabled",extention_enabled
-    ,"extention_tabs_enabled",extention_tabs_enabled
+    ,"extension_enabled",extension_enabled
+    ,"extension_tabs_enabled",extension_tabs_enabled
     ,"cutx",cutx
     ,"cuty",cuty]
     ,help);  

@@ -7,14 +7,14 @@ use <modules/gridfinity_modules.scad>
 /*<!!start gridfinity_itemholder!!>*/
 /* [Item Holder] */
 
-itemholder_known_item = "1/4hexshank"; // [ custom:"Custome", "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "c":C cell, "d":d cell, "7540":7540 cell, "8570":8570 cell, "10180":10180 cell, "10280":10280 cell, "10440":10440 cell, "10850":10850 cell, "13400":13400 cell, "14250":14250 cell, "14300":14300 cell, "14430":14430 cell, "14500":14500 cell, "14650":14650 cell, "15270":15270 cell, "16340":16340 cell, "16650":16650 cell, "17500":17500 cell, "17650":17650 cell, "17670":17670 cell, "18350":18350 cell, "18490":18490 cell, "18500":18500 cell, "18650":18650 cell, "20700":20700 cell, "21700":21700 cell, "25500":25500 cell, "26500":26500 cell, "26650":26650 cell, "26700":26700 cell, "26800":26800 cell, "32600":32600 cell, "32650":32650 cell, "32700":32700 cell, "38120":38120 cell, "38140":38140 cell, "40152":40152 cell, "4680":4680 cell]
-itemholder_known_cards = "custom"; // [ custom:"Custome", "multicard":Multi card slot, "compactflashi":CompactFlash, Type I, "compactflashii":CompactFlash, Type II, "smartmedia":SmartMedia, "mmc":MMC, MMCplus, "mmcmobile":RS-MMC, MMCmobile, "mmcmicro":MMCmicro, "sd":SD, SDHC, SDXC, SDIO, MicroP2, "minisd":miniSD, miniSDHC, miniSDIO, "microsd":microSD, microSDHC, microSDXC, "memorystickstandard":Memory Stick Standard, PRO, "memorystickduo":Memory Stick Duo, PRO Duo, PRO-HG, XC, "memorystickmicro":Memory Stick Micro (M2), XC, "nano":Nano Memory, "psvita":PS Vita Memory Card, "xqd":XQD card, "xD":xD, "USB A":USB A, "USB C":USB C]
-itemholder_known_cartridges = "custom"; // [ custom:"Custome", "atari800":Atari 800, "atari2600":Atari 2600/7800/Colecovision, "atari5200":Atari 5200, "atari7800":Atari 7800, "commodore":Commodore Vic20, "magnavoxodyssey":Magnavox Odyssey, "magnavoxodysseymulticard":Magnavox Odyssey (multicard), "magnavoxodyssey2":Magnavox Odyssey2, "mattelintellivision":Mattel Intellivision I & II, "nintendofamicom":Nintendo Famicom, "nintendofamicomdisk":Nintendo Famicom Disk, "nintendosuperfamicom":Nintendo Super Famicom / SNES (Pal), "nes":NES, "snes":SNES, "nintendo64":Nintendo 64, "nintendogb":Nintendo GB, "nintendogbc":Nintendo GBC, "nintendogba":Nintendo GBA, "nintendods":Nintendo DS, "nintendo2ds":Nintendo 2DS/3DS, "nintendovb":Nintendo Virtual Boy, "nintendoswitch":Nintendo Switch, "segagamegear":Sega Game Gear, "segagenesis":Sega Genesis, "segagenesistall":Sega Genesis (tall cart), "segamegadrive":Sega MegaDrive, "segamegadrivecodemasters":Sega MegaDrive Codemasters, "segamastersystem":Sega Master System, "sega32x":Sega 32x, "segacard":Sega Card/TG16, "segapico":Sega Pico, "sonyumd":Sony UMD, "sonypsvita":Sony PS Vita, "sonypsvitamemcard":Sony PS Vita (Mem Card), "necpcehucard":NEC PCE HuCard, "snkneogeoaes":SNK Neo Geo AES, "snkneogeomvs":SNK Neo Geo MVS, "bandai":Bandai Wonderswan/Color, "msx":MSX]
+itemholder_known_item = "1/4hexshank"; // [ "custom":Custome, "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "c":C cell, "d":d cell, "7540":7540 cell, "8570":8570 cell, "10180":10180 cell, "10280":10280 cell, "10440":10440 cell, "10850":10850 cell, "13400":13400 cell, "14250":14250 cell, "14300":14300 cell, "14430":14430 cell, "14500":14500 cell, "14650":14650 cell, "15270":15270 cell, "16340":16340 cell, "16650":16650 cell, "17500":17500 cell, "17650":17650 cell, "17670":17670 cell, "18350":18350 cell, "18490":18490 cell, "18500":18500 cell, "18650":18650 cell, "20700":20700 cell, "21700":21700 cell, "25500":25500 cell, "26500":26500 cell, "26650":26650 cell, "26700":26700 cell, "26800":26800 cell, "32600":32600 cell, "32650":32650 cell, "32700":32700 cell, "38120":38120 cell, "38140":38140 cell, "40152":40152 cell, "4680":4680 cell]
+itemholder_known_cards = "custom"; // [ "custom":Custome, "multicard":Multi card slot, "compactflashi":CompactFlash, Type I, "compactflashii":CompactFlash, Type II, "smartmedia":SmartMedia, "mmc":MMC, MMCplus, "mmcmobile":RS-MMC, MMCmobile, "mmcmicro":MMCmicro, "sd":SD, SDHC, SDXC, SDIO, MicroP2, "minisd":miniSD, miniSDHC, miniSDIO, "microsd":microSD, microSDHC, microSDXC, "memorystickstandard":Memory Stick Standard, PRO, "memorystickduo":Memory Stick Duo, PRO Duo, PRO-HG, XC, "memorystickmicro":Memory Stick Micro (M2), XC, "nano":Nano Memory, "psvita":PS Vita Memory Card, "xqd":XQD card, "xD":xD, "USB A":USB A, "USB C":USB C]
+itemholder_known_cartridges = "custom"; // [ "custom":Custome, "atari800":Atari 800, "atari2600":Atari 2600/7800/Colecovision, "atari5200":Atari 5200, "atari7800":Atari 7800, "commodore":Commodore Vic20, "magnavoxodyssey":Magnavox Odyssey, "magnavoxodysseymulticard":Magnavox Odyssey (multicard), "magnavoxodyssey2":Magnavox Odyssey2, "mattelintellivision":Mattel Intellivision I & II, "nintendofamicom":Nintendo Famicom, "nintendofamicomdisk":Nintendo Famicom Disk, "nintendosuperfamicom":Nintendo Super Famicom / SNES (Pal), "nes":NES, "snes":SNES, "nintendo64":Nintendo 64, "nintendogb":Nintendo GB, "nintendogbc":Nintendo GBC, "nintendogba":Nintendo GBA, "nintendods":Nintendo DS, "nintendo2ds":Nintendo 2DS/3DS, "nintendovb":Nintendo Virtual Boy, "nintendoswitch":Nintendo Switch, "segagamegear":Sega Game Gear, "segagenesis":Sega Genesis, "segagenesistall":Sega Genesis (tall cart), "segamegadrive":Sega MegaDrive, "segamegadrivecodemasters":Sega MegaDrive Codemasters, "segamastersystem":Sega Master System, "sega32x":Sega 32x, "segacard":Sega Card/TG16, "segapico":Sega Pico, "sonyumd":Sony UMD, "sonypsvita":Sony PS Vita, "sonypsvitamemcard":Sony PS Vita (Mem Card), "necpcehucard":NEC PCE HuCard, "snkneogeoaes":SNK Neo Geo AES, "snkneogeomvs":SNK Neo Geo MVS, "bandai":Bandai Wonderswan/Color, "msx":MSX]
 
 // cards to use when multi card is selected I.E. sd;USBA;microsd
-itemholder_multi_cards = "sd;USBA;microsd";
+itemholder_multi_cards = "sd,USBA,microsd";
 
-// Nest multi cards, This has a but where the last one could be cropped.
+// Force nesting of multi cards, This has an issue where the last item could be cropped.
 itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 
 // Should the grid be square or hex
@@ -36,7 +36,7 @@ itemholder_hole_sides = 4;
 // The size the hole, when custom is selected
 itemholder_hole_size = [10, 10]; //0.1
 
-// Number of holes in the x and ydimension, 0 is dynamic
+// Number of holes in the x and y dimension, 0 is dynamic
 itemholder_hole_gridx = 0; //1
 // Number of holes in the y dimension, 0 is dynamic, y.5, is only valid for hex.
 itemholder_hole_gridy = 0; //0.5
@@ -51,14 +51,14 @@ itemholder_compartment_fill = "none"; //["none", "space", "crop"]
 
 /*
 xpos,ypos,xsize,ysize,radius,depth. 
-dimentions of the tray cutout, a string with comma separated values, and pipe (|) separated trays.
- - xpos, ypos, the x/y position in gridinity units.
- - xsize, ysize. the x/y size in gridinity units. 
+dimensions of the tray cutout, a string with comma separated values, and pipe (|) separated trays.
+ - xpos, ypos, the x/y position in gridfinity units.
+ - xsize, ysize. the x/y size in gridfinity units. 
  - radius, [optional] corner radius in mm.
  - depth, [optional] depth in mm
  - example "0,0,2,1|2,0,2,1,2,5"
 */
-//[[xpos,ypos,xsize,ysize,radius,depth]]. xpos, ypos, the x/y position in gridinity units.xsize, ysize. the x/y size in gridinity units. radius, [optional] corner radius in mm.depth, [optional] depth in mm\nexample "0,0,2,1|2,0,2,1,2,5"
+//[[xpos,ypos,xsize,ysize,radius,depth]]. xpos, ypos, the x/y position in gridfinity units.xsize, ysize. the x/y size in gridfinity units. radius, [optional] corner radius in mm.depth, [optional] depth in mm\nexample "0,0,2,1|2,0,2,1,2,5"
 itemholder_customcompartments = "";
 /*<!!end gridfinity_itemholder!!>*/
 
@@ -105,13 +105,15 @@ horizontal_separator_config = "10.5|21|42|50|60";
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
+// Create relief for magnet removal 
+magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
 center_magnet_thickness = 0;
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
-//Only add attachments (magnets and screw) to box corners (prints faster).
+// Only add attachments (magnets and screw) to box corners (prints faster).
 box_corner_attachments_only = true;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
@@ -122,7 +124,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
-// Remove floor to create a veritcal spacer
+// Remove floor to create a vertical spacer
 spacer = false;
 
 /* [Label] */
@@ -131,7 +133,7 @@ label_style = "disabled"; //[disabled: no label, normal:normal, click]
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
+// Creates space so the attached label wont interfere with stacking
 label_relief = 0; // 0.1
 
 /* [Finger Slide] */
@@ -178,9 +180,9 @@ wallcutout_height=0;
 wallcutout_corner_radius=5;
 
 /* [Extendable] */
-extention_x_enabled = false;
-extention_y_enabled = false;
-extention_tabs_enabled = true;
+extension_x_enabled = false;
+extension_y_enabled = false;
+extension_tabs_enabled = true;
 
 /* [debug] */
 //Slice along the x axis
@@ -200,7 +202,7 @@ idepthneeded =2;
 iitemHeight =3;
 ishape =4;
 
-// result is dimentions for commnly know items
+// result is dimensions for commnly know items
 //[x, y, z, item height, shape]
 //x=width (diameter on round, flat to flat on hex)
 //y=length (not used in round or hex)
@@ -256,7 +258,7 @@ function LookupKnownItem(name="custom") =
   name == "4680" ? [46, 0, 20, 80, "round"] :
   [0,0,0,0,""];
 
- // result is dimentions for commnly know items
+ // result is dimensions for commnly know items
 //[width, thickness, depthneeded, itemHeight, shape]
 function LookupKnownCard(name="custom") = 
   name == "multicard" ? [0, 0, 0, 0, "square"] :
@@ -366,9 +368,11 @@ module itemholder(
   customcompartments = "",
   help = false)
 {
+  gridStyle = knowItem == "multicard" ? "square" : gridStyle;
+  
   //Non custom components
   item = LookupKnown(knowItem);
-  mc = split(multiCards, ";");
+  mc = split(multiCards, ",");
   
   longCenter = addClearance(LookupKnown(mc[0]), holeClearance);
   smallCenter = addClearance(LookupKnown(mc[1]), holeClearance);
@@ -393,6 +397,8 @@ module itemholder(
   ySize = (num_y*gf_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
   yStep = ySize + compartment_spacing;
   
+  echo("itemholder", item=item, mc=mc,longCenter=longCenter,smallCenter=smallCenter,side=side, _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
+  echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
   for(x =[0:1:compartments.x-1])
   {
     for(y =[0:1:compartments.y-1])
@@ -492,6 +498,7 @@ module gridfinity_itemholder(
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   magnet_diameter=magnet_diameter,
+  magnet_easy_release=magnet_easy_release,
   screw_depth=screw_depth,
   center_magnet_diameter=center_magnet_diameter,
   center_magnet_thickness=center_magnet_thickness,
@@ -540,21 +547,21 @@ module gridfinity_itemholder(
   wallcutout_angle=wallcutout_angle,
   wallcutout_height=wallcutout_height,
   wallcutout_corner_radius=wallcutout_corner_radius,
-  extention_enabled=[extention_x_enabled,extention_y_enabled],
-  extention_tabs_enabled = extention_tabs_enabled,
+  extension_enabled=[extension_x_enabled,extension_y_enabled],
+  extension_tabs_enabled = extension_tabs_enabled,
   cutx=cutx,
   cuty=cuty,
   help=enable_help) {
   
   difference() {
-    num_x = calcDimentionWidth(width);
-    num_y = calcDimentionDepth(depth);
-    num_z = calcDimentionHeight(height);
+    num_x = calcDimensionWidth(width);
+    num_y = calcDimensionDepth(depth);
+    num_z = calcDimensionHeight(height);
     
    //calcualte height if needed.
    knowItemDepth = itemholder_known_item == "multicard" ? 
     let (
-      mc = split(itemholder_multi_cards, ";"), 
+      mc = split(itemholder_multi_cards, ","), 
       longCenter = LookupKnown(mc[0]),
       smallCenter = LookupKnown(mc[1]),
       side = LookupKnown(mc[2])) max(longCenter.z,smallCenter.z,side.z)
@@ -575,7 +582,6 @@ module gridfinity_itemholder(
     // calculate floor thickness
     ft = calculateFloorThickness(magnet_diameter, screw_depth, itemholder_hole_depth+gf_cup_floor_thickness, height, filled_in);  
  
-    echo(num_x=num_x, num_y=num_y, num_z=num_z, ft=ft, itemholder_auto_bin_height=itemholder_auto_bin_height, itemholder_hole_depth=itemholder_hole_depth, height=height, itemZpos=itemZpos);
     /*<!!start gridfinity_basic_cup!!>*/
 
     gridfinity_cup(
@@ -589,6 +595,7 @@ module gridfinity_itemholder(
     fingerslide=fingerslide,
     fingerslide_radius=fingerslide_radius,
     magnet_diameter=magnet_diameter,
+    magnet_easy_release=magnet_easy_release,
     screw_depth=screw_depth,
     center_magnet_diameter=center_magnet_diameter,
     center_magnet_thickness=center_magnet_thickness,
@@ -637,14 +644,14 @@ module gridfinity_itemholder(
     wallcutout_angle=wallcutout_angle,
     wallcutout_height=wallcutout_height,
     wallcutout_corner_radius=wallcutout_corner_radius,
-    extention_enabled=[extention_x_enabled,extention_y_enabled],
-    extention_tabs_enabled = extention_tabs_enabled,
+    extension_enabled=[extension_x_enabled,extension_y_enabled],
+    extension_tabs_enabled = extension_tabs_enabled,
     cutx=cutx,
     cuty=cuty,
     help = enable_help);
     /*<!!end gridfinity_basic_cup!!>*/
 
-    color(color_extention)
+    color(color_extension)
     translate(cupPosition(position,num_x,num_y))
     translate([0,0,bch])
     itemholder(

@@ -1,18 +1,18 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_item_holder.scad'. Generated 2024-07-02 19:58
+//Combined version of 'gridfinity_item_holder.scad'. Generated 2024-07-06 17:14
 ///////////////////////////////////////
 
 /*<!!start gridfinity_itemholder!!>*/
 /* [Item Holder] */
 
-itemholder_known_item = "1/4hexshank"; // [ custom:"Custome", "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "c":C cell, "d":d cell, "7540":7540 cell, "8570":8570 cell, "10180":10180 cell, "10280":10280 cell, "10440":10440 cell, "10850":10850 cell, "13400":13400 cell, "14250":14250 cell, "14300":14300 cell, "14430":14430 cell, "14500":14500 cell, "14650":14650 cell, "15270":15270 cell, "16340":16340 cell, "16650":16650 cell, "17500":17500 cell, "17650":17650 cell, "17670":17670 cell, "18350":18350 cell, "18490":18490 cell, "18500":18500 cell, "18650":18650 cell, "20700":20700 cell, "21700":21700 cell, "25500":25500 cell, "26500":26500 cell, "26650":26650 cell, "26700":26700 cell, "26800":26800 cell, "32600":32600 cell, "32650":32650 cell, "32700":32700 cell, "38120":38120 cell, "38140":38140 cell, "40152":40152 cell, "4680":4680 cell]
-itemholder_known_cards = "custom"; // [ custom:"Custome", "multicard":Multi card slot, "compactflashi":CompactFlash, Type I, "compactflashii":CompactFlash, Type II, "smartmedia":SmartMedia, "mmc":MMC, MMCplus, "mmcmobile":RS-MMC, MMCmobile, "mmcmicro":MMCmicro, "sd":SD, SDHC, SDXC, SDIO, MicroP2, "minisd":miniSD, miniSDHC, miniSDIO, "microsd":microSD, microSDHC, microSDXC, "memorystickstandard":Memory Stick Standard, PRO, "memorystickduo":Memory Stick Duo, PRO Duo, PRO-HG, XC, "memorystickmicro":Memory Stick Micro (M2), XC, "nano":Nano Memory, "psvita":PS Vita Memory Card, "xqd":XQD card, "xD":xD, "USB A":USB A, "USB C":USB C]
-itemholder_known_cartridges = "custom"; // [ custom:"Custome", "atari800":Atari 800, "atari2600":Atari 2600/7800/Colecovision, "atari5200":Atari 5200, "atari7800":Atari 7800, "commodore":Commodore Vic20, "magnavoxodyssey":Magnavox Odyssey, "magnavoxodysseymulticard":Magnavox Odyssey (multicard), "magnavoxodyssey2":Magnavox Odyssey2, "mattelintellivision":Mattel Intellivision I & II, "nintendofamicom":Nintendo Famicom, "nintendofamicomdisk":Nintendo Famicom Disk, "nintendosuperfamicom":Nintendo Super Famicom / SNES (Pal), "nes":NES, "snes":SNES, "nintendo64":Nintendo 64, "nintendogb":Nintendo GB, "nintendogbc":Nintendo GBC, "nintendogba":Nintendo GBA, "nintendods":Nintendo DS, "nintendo2ds":Nintendo 2DS/3DS, "nintendovb":Nintendo Virtual Boy, "nintendoswitch":Nintendo Switch, "segagamegear":Sega Game Gear, "segagenesis":Sega Genesis, "segagenesistall":Sega Genesis (tall cart), "segamegadrive":Sega MegaDrive, "segamegadrivecodemasters":Sega MegaDrive Codemasters, "segamastersystem":Sega Master System, "sega32x":Sega 32x, "segacard":Sega Card/TG16, "segapico":Sega Pico, "sonyumd":Sony UMD, "sonypsvita":Sony PS Vita, "sonypsvitamemcard":Sony PS Vita (Mem Card), "necpcehucard":NEC PCE HuCard, "snkneogeoaes":SNK Neo Geo AES, "snkneogeomvs":SNK Neo Geo MVS, "bandai":Bandai Wonderswan/Color, "msx":MSX]
+itemholder_known_item = "1/4hexshank"; // [ "custom":Custome, "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "c":C cell, "d":d cell, "7540":7540 cell, "8570":8570 cell, "10180":10180 cell, "10280":10280 cell, "10440":10440 cell, "10850":10850 cell, "13400":13400 cell, "14250":14250 cell, "14300":14300 cell, "14430":14430 cell, "14500":14500 cell, "14650":14650 cell, "15270":15270 cell, "16340":16340 cell, "16650":16650 cell, "17500":17500 cell, "17650":17650 cell, "17670":17670 cell, "18350":18350 cell, "18490":18490 cell, "18500":18500 cell, "18650":18650 cell, "20700":20700 cell, "21700":21700 cell, "25500":25500 cell, "26500":26500 cell, "26650":26650 cell, "26700":26700 cell, "26800":26800 cell, "32600":32600 cell, "32650":32650 cell, "32700":32700 cell, "38120":38120 cell, "38140":38140 cell, "40152":40152 cell, "4680":4680 cell]
+itemholder_known_cards = "custom"; // [ "custom":Custome, "multicard":Multi card slot, "compactflashi":CompactFlash, Type I, "compactflashii":CompactFlash, Type II, "smartmedia":SmartMedia, "mmc":MMC, MMCplus, "mmcmobile":RS-MMC, MMCmobile, "mmcmicro":MMCmicro, "sd":SD, SDHC, SDXC, SDIO, MicroP2, "minisd":miniSD, miniSDHC, miniSDIO, "microsd":microSD, microSDHC, microSDXC, "memorystickstandard":Memory Stick Standard, PRO, "memorystickduo":Memory Stick Duo, PRO Duo, PRO-HG, XC, "memorystickmicro":Memory Stick Micro (M2), XC, "nano":Nano Memory, "psvita":PS Vita Memory Card, "xqd":XQD card, "xD":xD, "USB A":USB A, "USB C":USB C]
+itemholder_known_cartridges = "custom"; // [ "custom":Custome, "atari800":Atari 800, "atari2600":Atari 2600/7800/Colecovision, "atari5200":Atari 5200, "atari7800":Atari 7800, "commodore":Commodore Vic20, "magnavoxodyssey":Magnavox Odyssey, "magnavoxodysseymulticard":Magnavox Odyssey (multicard), "magnavoxodyssey2":Magnavox Odyssey2, "mattelintellivision":Mattel Intellivision I & II, "nintendofamicom":Nintendo Famicom, "nintendofamicomdisk":Nintendo Famicom Disk, "nintendosuperfamicom":Nintendo Super Famicom / SNES (Pal), "nes":NES, "snes":SNES, "nintendo64":Nintendo 64, "nintendogb":Nintendo GB, "nintendogbc":Nintendo GBC, "nintendogba":Nintendo GBA, "nintendods":Nintendo DS, "nintendo2ds":Nintendo 2DS/3DS, "nintendovb":Nintendo Virtual Boy, "nintendoswitch":Nintendo Switch, "segagamegear":Sega Game Gear, "segagenesis":Sega Genesis, "segagenesistall":Sega Genesis (tall cart), "segamegadrive":Sega MegaDrive, "segamegadrivecodemasters":Sega MegaDrive Codemasters, "segamastersystem":Sega Master System, "sega32x":Sega 32x, "segacard":Sega Card/TG16, "segapico":Sega Pico, "sonyumd":Sony UMD, "sonypsvita":Sony PS Vita, "sonypsvitamemcard":Sony PS Vita (Mem Card), "necpcehucard":NEC PCE HuCard, "snkneogeoaes":SNK Neo Geo AES, "snkneogeomvs":SNK Neo Geo MVS, "bandai":Bandai Wonderswan/Color, "msx":MSX]
 
 // cards to use when multi card is selected I.E. sd;USBA;microsd
-itemholder_multi_cards = "sd;USBA;microsd";
+itemholder_multi_cards = "sd,USBA,microsd";
 
-// Nest multi cards, This has a but where the last one could be cropped.
+// Force nesting of multi cards, This has an issue where the last item could be cropped.
 itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 
 // Should the grid be square or hex
@@ -34,7 +34,7 @@ itemholder_hole_sides = 4;
 // The size the hole, when custom is selected
 itemholder_hole_size = [10, 10]; //0.1
 
-// Number of holes in the x and ydimension, 0 is dynamic
+// Number of holes in the x and y dimension, 0 is dynamic
 itemholder_hole_gridx = 0; //1
 // Number of holes in the y dimension, 0 is dynamic, y.5, is only valid for hex.
 itemholder_hole_gridy = 0; //0.5
@@ -49,14 +49,14 @@ itemholder_compartment_fill = "none"; //["none", "space", "crop"]
 
 /*
 xpos,ypos,xsize,ysize,radius,depth. 
-dimentions of the tray cutout, a string with comma separated values, and pipe (|) separated trays.
- - xpos, ypos, the x/y position in gridinity units.
- - xsize, ysize. the x/y size in gridinity units. 
+dimensions of the tray cutout, a string with comma separated values, and pipe (|) separated trays.
+ - xpos, ypos, the x/y position in gridfinity units.
+ - xsize, ysize. the x/y size in gridfinity units. 
  - radius, [optional] corner radius in mm.
  - depth, [optional] depth in mm
  - example "0,0,2,1|2,0,2,1,2,5"
 */
-//[[xpos,ypos,xsize,ysize,radius,depth]]. xpos, ypos, the x/y position in gridinity units.xsize, ysize. the x/y size in gridinity units. radius, [optional] corner radius in mm.depth, [optional] depth in mm\nexample "0,0,2,1|2,0,2,1,2,5"
+//[[xpos,ypos,xsize,ysize,radius,depth]]. xpos, ypos, the x/y position in gridfinity units.xsize, ysize. the x/y size in gridfinity units. radius, [optional] corner radius in mm.depth, [optional] depth in mm\nexample "0,0,2,1|2,0,2,1,2,5"
 itemholder_customcompartments = "";
 /*<!!end gridfinity_itemholder!!>*/
 
@@ -103,13 +103,15 @@ horizontal_separator_config = "10.5|21|42|50|60";
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
+// Create relief for magnet removal 
+magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
 center_magnet_thickness = 0;
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
-//Only add attachments (magnets and screw) to box corners (prints faster).
+// Only add attachments (magnets and screw) to box corners (prints faster).
 box_corner_attachments_only = true;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
@@ -120,7 +122,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
-// Remove floor to create a veritcal spacer
+// Remove floor to create a vertical spacer
 spacer = false;
 
 /* [Label] */
@@ -129,7 +131,7 @@ label_style = "disabled"; //[disabled: no label, normal:normal, click]
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
+// Creates space so the attached label wont interfere with stacking
 label_relief = 0; // 0.1
 
 /* [Finger Slide] */
@@ -176,9 +178,9 @@ wallcutout_height=0;
 wallcutout_corner_radius=5;
 
 /* [Extendable] */
-extention_x_enabled = false;
-extention_y_enabled = false;
-extention_tabs_enabled = true;
+extension_x_enabled = false;
+extension_y_enabled = false;
+extension_tabs_enabled = true;
 
 /* [debug] */
 //Slice along the x axis
@@ -192,7 +194,7 @@ enable_help = false;
 /* [Hidden] */
 module end_of_customizer_opts() {}
 //Combined from path gridfinity_constants.scad
-// Dimentions as declared on https://gridfinity.xyz/specification/
+// dimensions as declared on https://gridfinity.xyz/specification/
 
 //Gridfinity grid size
 gf_pitch = 42;
@@ -281,7 +283,7 @@ color_cupcavity = "IndianRed";
 color_wallcutout = "SandyBrown";
 color_basehole = "DarkSlateGray";
 color_base = "DimGray";
-color_extention = "lightpink";
+color_extension = "lightpink";
 color_text = "Gold";
 color_cut = "Gray";
 color_lid = "MediumAquamarine";
@@ -315,7 +317,7 @@ default_label_style = "normal"; //[disabled: no label, normal:normal, click]
 default_label_position = "disabled"; //[left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
 // Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 default_label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
+// Creates space so the attached label wont interfere with stacking
 default_label_relief = 0; // 0.1
 
 /* Sliding Lid */
@@ -359,8 +361,8 @@ default_horizontal_separator_config = "10.5|21|42|50|60";
 
 /* Base */
 default_magnet_diameter = 6.5;  // .1
-//create relief for manget removal
-default_magent_easy_release = true;
+//create relief for magnet removal
+default_magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
 default_center_magnet_diameter = 0;
@@ -410,11 +412,11 @@ default_wallpattern_voronoi_noise = 0.75;
 default_wallpattern_voronoi_radius = 0.5;
 
 /* Extendable */
-default_extention_x_enabled = false;
-default_extention_y_enabled = false;
-default_extention_tabs_enabled = true;
+default_extension_x_enabled = false;
+default_extension_y_enabled = false;
+default_extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
-default_extention_tab_size= [10,0,0,0]; //0.1
+default_extension_tab_size= [10,0,0,0]; //0.1
 
 /* debug */
 default_cutx = 0;//0.1
@@ -443,7 +445,7 @@ module gridfinity_cup(
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
-  magent_easy_release=default_magent_easy_release,
+  magnet_easy_release=default_magnet_easy_release,
   screw_depth=default_screw_depth,
   center_magnet_diameter = default_center_magnet_diameter,
   center_magnet_thickness = default_center_magnet_thickness,
@@ -493,9 +495,9 @@ module gridfinity_cup(
   wallcutout_angle=default_wallcutout_angle,
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
-  extention_enabled=[default_extention_x_enabled,default_extention_y_enabled],
-  extention_tabs_enabled=default_extention_tabs_enabled,
-  extention_tab_size=default_extention_tab_size,
+  extension_enabled=[default_extension_x_enabled,default_extension_y_enabled],
+  extension_tabs_enabled=default_extension_tabs_enabled,
+  extension_tab_size=default_extension_tab_size,
   sliding_lid_enabled = default_sliding_lid_enabled, 
   sliding_lid_thickness = default_sliding_lid_thickness, 
   sliding_min_wall_thickness = default_sliding_min_wallThickness, 
@@ -505,9 +507,9 @@ module gridfinity_cup(
   cuty=default_cuty,
   help) {
   
-  num_x = calcDimentionWidth(width);
-  num_y = calcDimentionDepth(depth);
-  num_z = calcDimentionHeight(height);
+  num_x = calcDimensionWidth(width);
+  num_y = calcDimensionDepth(depth);
+  num_z = calcDimensionHeight(height);
 
   vertical_separator_positions = vertical_irregular_subdivisions 
     ? vertical_separator_config 
@@ -557,7 +559,7 @@ module gridfinity_cup(
       box_corner_attachments_only=box_corner_attachments_only, 
       stackable = lip_style != "none",
       flat_base=flat_base,
-      magent_easy_release = magent_easy_release);
+      magnet_easy_release = magnet_easy_release);
       
     if(!filled_in) 
     union(){
@@ -569,7 +571,7 @@ module gridfinity_cup(
         label_relief=label_relief,
         fingerslide=fingerslide, 
         fingerslide_radius=fingerslide_radius, 
-        magnet_diameter=magnet_diameter, 
+        magnet_diameter=magnet_diameter,
         screw_depth=screw_depth, 
         floor_thickness=floor_thickness, 
         wall_thickness=wall_thickness,
@@ -903,13 +905,13 @@ module gridfinity_cup(
       }
     }
    
-    if(extention_enabled.x){
+    if(extension_enabled.x){
      cutx = 0.5;
      color(color_wallcutout)
       translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
         cube([gf_pitch*cutx,num_y*gf_pitch,(num_z+1)*gf_zpitch]);
     }
-    if(extention_enabled.y){
+    if(extension_enabled.y){
      cuty = 0.5;
      color(color_wallcutout)
       translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
@@ -928,11 +930,11 @@ module gridfinity_cup(
     }
   }
   
-  if((extention_enabled.x || extention_enabled.y) && extention_tabs_enabled){
-    refTabHeight = extention_tab_size.x;
-    tabThickness = extention_tab_size.z == 0 ? 1.4 : extention_tab_size.z;//1.4; //This should be calculated
-    tabWidth = extention_tab_size.y;
-    tabStyle = extention_tab_size[3];
+  if((extension_enabled.x || extension_enabled.y) && extension_tabs_enabled){
+    refTabHeight = extension_tab_size.x;
+    tabThickness = extension_tab_size.z == 0 ? 1.4 : extension_tab_size.z;//1.4; //This should be calculated
+    tabWidth = extension_tab_size.y;
+    tabStyle = extension_tab_size[3];
     
     floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
     
@@ -955,14 +957,14 @@ module gridfinity_cup(
     {
       isOdd =  i % 2;
       echo("tabs", i=i, isOdd=isOdd)
-      if(extention_enabled.x){
+      if(extension_enabled.x){
         if(!isOdd)
         {
           translate([0,(num_y-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
           rotate([0,180,90])
             attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else {
-           if(!extention_enabled.y){
+           if(!extension_enabled.y){
             translate([0,-0.5*gf_pitch+wall_thickness+gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
               rotate([0,0,90])
               attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
@@ -970,14 +972,14 @@ module gridfinity_cup(
         }
       }
 
-      if(extention_enabled.y){     
+      if(extension_enabled.y){     
         if(isOdd)
         {
           translate([(num_x-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,0,floorHeight+(i+0.5)*tabHeight])
           rotate([0,0,180])
             attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else {
-          if(!extention_enabled.x){
+          if(!extension_enabled.x){
             translate([-0.5*gf_pitch+wall_thickness+gf_tolerance/2,0,floorHeight+(i+0.5)*tabHeight])
               rotate([0,180,180])
               attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
@@ -987,22 +989,22 @@ module gridfinity_cup(
       }
     }
     /*
-    if(extention_enabled.x){     
+    if(extension_enabled.x){     
       translate([0,(num_y-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,tabWorkingheight/4*3  + 1*gf_zpitch])
       rotate([0,180,90])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
-    if(extention_enabled.x && !extention_enabled.y){
+    if(extension_enabled.x && !extension_enabled.y){
       translate([0,-0.5*gf_pitch+wall_thickness+gf_tolerance/2,tabWorkingheight/4 + 1*gf_zpitch])
         rotate([0,0,90])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
-    if(extention_enabled.y){     
+    if(extension_enabled.y){     
       translate([(num_x-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,0,tabWorkingheight/4  + 1*gf_zpitch])
       rotate([0,0,180])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
-    if(extention_enabled.y && !extention_enabled.x){
+    if(extension_enabled.y && !extension_enabled.x){
       translate([-0.5*gf_pitch+wall_thickness+gf_tolerance/2,0,tabWorkingheight/4*3 + 1*gf_zpitch])
         rotate([0,180,180])
         attachement_clip(height=tabHeight,thickness=tabThickness);
@@ -1077,8 +1079,8 @@ module gridfinity_cup(
     ,"wallcutout_angle",wallcutout_angle
     ,"wallcutout_height",wallcutout_height
     ,"wallcutout_corner_radius",wallcutout_corner_radius
-    ,"extention_enabled",extention_enabled
-    ,"extention_tabs_enabled",extention_tabs_enabled
+    ,"extension_enabled",extension_enabled
+    ,"extension_tabs_enabled",extension_tabs_enabled
     ,"cutx",cutx
     ,"cuty",cuty]
     ,help);  
@@ -1615,7 +1617,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                         CubeWithRoundedCorner(
                           size=[blockSize+cornerRadius,blockSize+cornerRadius,screw_depth], 
                           cornerRadius = cornerRadius,
-                          edgeRadius = wall_thickness*2);
+                          edgeRadius = wall_thickness);
                     }
                     if(magnet_diameter > 0){
                       cornerRadius = magnet_diameter/2+wall_thickness*2;
@@ -1624,7 +1626,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                       CubeWithRoundedCorner(
                         size=[blockSize+cornerRadius,blockSize+cornerRadius,gf_magnet_thickness], 
                         cornerRadius = cornerRadius,
-                        edgeRadius = wall_thickness*2);
+                        edgeRadius = wall_thickness);
                       }
                 }
             }
@@ -2197,10 +2199,10 @@ module SlidingLid(
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
-function calcDimentionWidth(width) = calcDimention(width, "width", gf_pitch);
-function calcDimentionDepth(depth) = calcDimention(depth, "depth", gf_pitch);
-function calcDimentionHeight(height) = calcDimention(height, "height", gf_zpitch); 
-function calcDimention(value, name, unitSize) = 
+function calcDimensionWidth(width) = calcDimension(width, "width", gf_pitch);
+function calcDimensionDepth(depth) = calcDimension(depth, "depth", gf_pitch);
+function calcDimensionHeight(height) = calcDimension(height, "height", gf_zpitch); 
+function calcDimension(value, name, unitSize) = 
   is_num(value) ? value : 
   assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
   value[1] != 0 ? value[1]/unitSize : value[0];
@@ -2438,7 +2440,7 @@ module grid_block(
   stackable = true,
   center_magnet_diameter = 0,
   center_magnet_thickness = 0,
-  magent_easy_release = true,
+  magnet_easy_release = true,
   $fn = 32,
   help)
 {
@@ -2515,7 +2517,7 @@ module grid_block(
           screwDepth = screw_depth,
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagentRelease = magent_easy_release);
+          easyMagentRelease = magnet_easy_release);
     }
   }
  
@@ -2865,10 +2867,10 @@ module roundedCorner(
       //main corner to be removed
       translate([0,-radius, -radius])
         cube([length, radius*2,  radius*2]);
-      //corner extention in y
+      //corner extension in y
       translate([0,0, -radius])
         cube([length, height, radius]);
-      //corner extention in x
+      //corner extension in x
       translate([0,-radius, 0])
         cube([length, radius, height]);
     }
@@ -2898,10 +2900,10 @@ module chamferedCorner(
       //main corner to be removed
       translate([0,-width, -width])
         cube([length, chamferLength+width,  chamferLength+width]);
-      //corner extention in y
+      //corner extension in y
       translate([0,0, -width])
         cube([length, height, width]);
-      //corner extention in x
+      //corner extension in x
       translate([0,-width, 0])
         cube([length, width, height]);
 
@@ -17404,7 +17406,7 @@ module GridItemHolder(
     [canvisSize.x-border*2,canvisSize.y-border*2] : 
     canvisSize;
     
-  calcHoleDimentions = [
+  calcHoledimensions = [
       customShape ? holeSize[0] :
       circleFn == 4 ? Rc*2 : 
       circleFn == 6 ? Rc*2 : Rc*2,
@@ -17414,24 +17416,24 @@ module GridItemHolder(
 
         //x spacing for hex, center to center 
   hexxSpacing = 
-    circleFn == 4 ? holeSpacing[1]/2 + calcHoleDimentions[1]/2
+    circleFn == 4 ? holeSpacing[1]/2 + calcHoledimensions[1]/2
     : customShape ? holeSize[0]+holeSpacing[0]
-    : sqrt((Ri*2+holeSpacing[0])^2-((calcHoleDimentions[1]+holeSpacing[1])/2)^2);
+    : sqrt((Ri*2+holeSpacing[0])^2-((calcHoledimensions[1]+holeSpacing[1])/2)^2);
     
   //Calcualte the x and y items count for hexgrid
   eHexGrid = [
       holeGrid[0] !=0 ? holeGrid[0]
-        : floor((canvisSize[0]-calcHoleDimentions[0])/hexxSpacing+1), 
+        : floor((canvisSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
       holeGrid[1] !=0 ? holeGrid[1]
-        : floor(((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1])-0.5)*2)/2
+        : floor(((canvisSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
       ];
 
   //Calcualte the x and y hex items count for squaregrid
   eSquareGrid = [
       holeGrid[0]!=0 ? holeGrid[0]
-        : floor((canvisSize[0]+holeSpacing[0])/(calcHoleDimentions[0]+holeSpacing[0])),
+        : floor((canvisSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
       holeGrid[1]!=0 ? holeGrid[1]
-        : floor((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1]))];
+        : floor((canvisSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1]))];
 
   //Single lines should not be hex
   hexGrid = 
@@ -17456,11 +17458,11 @@ module GridItemHolder(
       //x and y spacing including the item size.
       es = [
         fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
-          ? calcHoleDimentions[0]+(eHexGrid[0]<=1?0:((canvisSize[0]-eHexGrid[0]*calcHoleDimentions[0])/(eHexGrid[0]-1))) 
+          ? calcHoledimensions[0]+(eHexGrid[0]<=1?0:((canvisSize[0]-eHexGrid[0]*calcHoledimensions[0])/(eHexGrid[0]-1))) 
           : hexxSpacing,
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoleDimentions[1]+(eHexGrid[1]<=0.5?0:((canvisSize[1]-(eHexGrid[1]+0.5)*calcHoleDimentions[1])/(eHexGrid[1]-0.5))) 
-          : holeSpacing[1] + calcHoleDimentions[1]];
+          ? calcHoledimensions[1]+(eHexGrid[1]<=0.5?0:((canvisSize[1]-(eHexGrid[1]+0.5)*calcHoledimensions[1])/(eHexGrid[1]-0.5))) 
+          : holeSpacing[1] + calcHoledimensions[1]];
       
       eFill=[
         fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
@@ -17483,21 +17485,21 @@ module GridItemHolder(
 
       HexGrid(e=eFill, es=es, center=center, help=help)
         if(customShape){
-          translate(center ? [-calcHoleDimentions[0]/2,-calcHoleDimentions[1]/2,0] : [0,0,0])
+          translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
             children();
         } else {
-          translate(!center ? [calcHoleDimentions[0]/2,calcHoleDimentions[1]/2,0] : [0,0,0])
+          translate(!center ? [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0] : [0,0,0])
             chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
         }
     }
     else {
       es = [
         fill == "space" || fill == "spacevertical" || fill == "crophorizontal_spacevertical"
-          ? calcHoleDimentions[0]+(eSquareGrid[0]<=1?0:((canvisSize[0]-eSquareGrid[0]*calcHoleDimentions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
-          : calcHoleDimentions[0]+holeSpacing[0],
+          ? calcHoledimensions[0]+(eSquareGrid[0]<=1?0:((canvisSize[0]-eSquareGrid[0]*calcHoledimensions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
+          : calcHoledimensions[0]+holeSpacing[0],
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoleDimentions[1]+(eSquareGrid[1]<=1?0:((canvisSize[1]-eSquareGrid[1]*calcHoleDimentions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
-          : calcHoleDimentions[1]+holeSpacing[1]];
+          ? calcHoledimensions[1]+(eSquareGrid[1]<=1?0:((canvisSize[1]-eSquareGrid[1]*calcHoledimensions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
+          : calcHoledimensions[1]+holeSpacing[1]];
       
       eFill=[
         fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
@@ -17515,10 +17517,10 @@ module GridItemHolder(
       
       Grid(e=eFill, es=es, center=center, help=help)
         if(customShape){
-          translate(center ? [-calcHoleDimentions[0]/2,-calcHoleDimentions[1]/2,0] : [0,0,0])
+          translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
           children();
         } else {
-          translate(center ? [0,0,0] : [calcHoleDimentions[0]/2,calcHoleDimentions[1]/2,0])
+          translate(center ? [0,0,0] : [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0])
             chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
         }
     }
@@ -17535,7 +17537,7 @@ module GridItemHolder(
     ,"fill",fill
     ,"customShape",customShape
     ,"hexxSpacing",hexxSpacing
-    ,"calcHoleDimentions",calcHoleDimentions
+    ,"calcHoledimensions",calcHoledimensions
     ,"eHexGrid",eHexGrid
     ,"eSquareGrid",eSquareGrid  
     ,"hexGridCount",hexGridCount  
@@ -17554,8 +17556,16 @@ module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
     }
 }
 
+//multiCard([24, 2.1, 18, 32, "square"],[12, 4.5, 13, 13, "square"],[20, 1.4, 10, 21.5, "square"]);
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   fudgeFactor = 0.01;
+  
+  assert(is_list(longCenter) && len(longCenter) >= 3, "longCenter should be a list of length 5");
+  assert(is_list(smallCenter) && len(smallCenter) >= 3, "longCenter should be a list of length 5");
+  assert(is_list(side) && len(side) >= 3, "longCenter should be a list of length 5");
+
+  //echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
+  render()
   union(){
     minspacing = 3;
     translate([(longCenter.x)/2,side.x/2,0])
@@ -17565,8 +17575,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
     
     translate([-smallCenter.x/2,-smallCenter.y/2,(longCenter.z-smallCenter.z)])
     slotCutout([smallCenter.x, smallCenter.y, smallCenter.z+fudgeFactor], chamfer);
-    
-    
+
     if(alternate){
       pos = let(targetPos = (longCenter.x)/4-(side.y)/2) max(targetPos, smallCenter.y+minspacing);
       translate([-pos-side.y/2, 0, 0])
@@ -17606,6 +17615,9 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
 //chamfer = chamfer size
 module slotCutout(size, chamfer = 1)
 {
+  assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
+
+  fudgeFactor = 0.01;
   chamfer = min(size.z, chamfer);
   
   translate([size.x/2,size.y/2,0])
@@ -17658,7 +17670,7 @@ Default_Lid_Efficient_Floor_Thickness = 0.7;// [0.7:0.1:7]
 Default_Butterfly_Clip_Enabled = false;
 Default_Butterfly_Clip_Size = [6,6,1.5];
 Default_Butterfly_Clip_Radius = 0.1;
-Default_Butterfly_Clip_Tollerance = 0.1;
+Default_Butterfly_Clip_Tolerance = 0.1;
 Default_Butterfly_Clip_Only = false;
 
 //This feature is not yet finalised, or working properly. 
@@ -17688,7 +17700,7 @@ module gridfinity_baseplate(
   plateOptions = Default_Base_Plate_Options,
   lidOptions = Default_Lid_Options,
   customGridEnabled = false,
-  gridPossitions = [[1]],
+  gridPositions = [[1]],
   butterflyClipEnabled  = Default_Butterfly_Clip_Enabled,
   butterflyClipSize = Default_Butterfly_Clip_Size,
   butterflyClipRadius = Default_Butterfly_Clip_Radius,
@@ -17702,17 +17714,17 @@ module gridfinity_baseplate(
   cuty = 0,
   help = false)
 {
-  _gridPossitions = customGridEnabled ? gridPossitions : [[1]];
+  _gridPositions = customGridEnabled ? gridPositions : [[1]];
   width = oversizeMethod == "fill" ? num_x : ceil(num_x);
   depth = oversizeMethod == "fill" ? num_y : ceil(num_y);
 
   difference() {
     intersection(){
       union() {
-        for(xi = [0:len(_gridPossitions)-1])
-          for(yi = [0:len(_gridPossitions[xi])-1])
+        for(xi = [0:len(_gridPositions)-1])
+          for(yi = [0:len(_gridPositions[xi])-1])
           {
-            if(_gridPossitions[xi][yi])
+            if(_gridPositions[xi][yi])
             {
               translate([gf_pitch*xi,gf_pitch*yi,0])
               baseplate(
@@ -17727,7 +17739,7 @@ module gridfinity_baseplate(
                 filamentClipEnabled = filamentClipEnabled,
                 filamentClipDiameter = filamentClipDiameter,
                 filamentClipLength = filamentClipLength,
-                roundedCorners = _gridPossitions[xi][yi] == 1 ? 15 : _gridPossitions[xi][yi] - 2,
+                roundedCorners = _gridPositions[xi][yi] == 1 ? 15 : _gridPositions[xi][yi] - 2,
                 lidIncludeMagnets = lidIncludeMagnets,
                 lidEfficientFloorThickness = lidEfficientFloorThickness,
                 lidEfficientBaseHeight = lidEfficientBaseHeight,
@@ -18206,7 +18218,7 @@ idepthneeded =2;
 iitemHeight =3;
 ishape =4;
 
-// result is dimentions for commnly know items
+// result is dimensions for commnly know items
 //[x, y, z, item height, shape]
 //x=width (diameter on round, flat to flat on hex)
 //y=length (not used in round or hex)
@@ -18262,7 +18274,7 @@ function LookupKnownItem(name="custom") =
   name == "4680" ? [46, 0, 20, 80, "round"] :
   [0,0,0,0,""];
 
- // result is dimentions for commnly know items
+ // result is dimensions for commnly know items
 //[width, thickness, depthneeded, itemHeight, shape]
 function LookupKnownCard(name="custom") = 
   name == "multicard" ? [0, 0, 0, 0, "square"] :
@@ -18372,9 +18384,11 @@ module itemholder(
   customcompartments = "",
   help = false)
 {
+  gridStyle = knowItem == "multicard" ? "square" : gridStyle;
+  
   //Non custom components
   item = LookupKnown(knowItem);
-  mc = split(multiCards, ";");
+  mc = split(multiCards, ",");
   
   longCenter = addClearance(LookupKnown(mc[0]), holeClearance);
   smallCenter = addClearance(LookupKnown(mc[1]), holeClearance);
@@ -18399,6 +18413,8 @@ module itemholder(
   ySize = (num_y*gf_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
   yStep = ySize + compartment_spacing;
   
+  echo("itemholder", item=item, mc=mc,longCenter=longCenter,smallCenter=smallCenter,side=side, _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
+  echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
   for(x =[0:1:compartments.x-1])
   {
     for(y =[0:1:compartments.y-1])
@@ -18498,6 +18514,7 @@ module gridfinity_itemholder(
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   magnet_diameter=magnet_diameter,
+  magnet_easy_release=magnet_easy_release,
   screw_depth=screw_depth,
   center_magnet_diameter=center_magnet_diameter,
   center_magnet_thickness=center_magnet_thickness,
@@ -18546,21 +18563,21 @@ module gridfinity_itemholder(
   wallcutout_angle=wallcutout_angle,
   wallcutout_height=wallcutout_height,
   wallcutout_corner_radius=wallcutout_corner_radius,
-  extention_enabled=[extention_x_enabled,extention_y_enabled],
-  extention_tabs_enabled = extention_tabs_enabled,
+  extension_enabled=[extension_x_enabled,extension_y_enabled],
+  extension_tabs_enabled = extension_tabs_enabled,
   cutx=cutx,
   cuty=cuty,
   help=enable_help) {
   
   difference() {
-    num_x = calcDimentionWidth(width);
-    num_y = calcDimentionDepth(depth);
-    num_z = calcDimentionHeight(height);
+    num_x = calcDimensionWidth(width);
+    num_y = calcDimensionDepth(depth);
+    num_z = calcDimensionHeight(height);
     
    //calcualte height if needed.
    knowItemDepth = itemholder_known_item == "multicard" ? 
     let (
-      mc = split(itemholder_multi_cards, ";"), 
+      mc = split(itemholder_multi_cards, ","), 
       longCenter = LookupKnown(mc[0]),
       smallCenter = LookupKnown(mc[1]),
       side = LookupKnown(mc[2])) max(longCenter.z,smallCenter.z,side.z)
@@ -18581,7 +18598,6 @@ module gridfinity_itemholder(
     // calculate floor thickness
     ft = calculateFloorThickness(magnet_diameter, screw_depth, itemholder_hole_depth+gf_cup_floor_thickness, height, filled_in);  
  
-    echo(num_x=num_x, num_y=num_y, num_z=num_z, ft=ft, itemholder_auto_bin_height=itemholder_auto_bin_height, itemholder_hole_depth=itemholder_hole_depth, height=height, itemZpos=itemZpos);
     /*<!!start gridfinity_basic_cup!!>*/
 
     gridfinity_cup(
@@ -18595,6 +18611,7 @@ module gridfinity_itemholder(
     fingerslide=fingerslide,
     fingerslide_radius=fingerslide_radius,
     magnet_diameter=magnet_diameter,
+    magnet_easy_release=magnet_easy_release,
     screw_depth=screw_depth,
     center_magnet_diameter=center_magnet_diameter,
     center_magnet_thickness=center_magnet_thickness,
@@ -18643,14 +18660,14 @@ module gridfinity_itemholder(
     wallcutout_angle=wallcutout_angle,
     wallcutout_height=wallcutout_height,
     wallcutout_corner_radius=wallcutout_corner_radius,
-    extention_enabled=[extention_x_enabled,extention_y_enabled],
-    extention_tabs_enabled = extention_tabs_enabled,
+    extension_enabled=[extension_x_enabled,extension_y_enabled],
+    extension_tabs_enabled = extension_tabs_enabled,
     cutx=cutx,
     cuty=cuty,
     help = enable_help);
     /*<!!end gridfinity_basic_cup!!>*/
 
-    color(color_extention)
+    color(color_extension)
     translate(cupPosition(position,num_x,num_y))
     translate([0,0,bch])
     itemholder(

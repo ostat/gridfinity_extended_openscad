@@ -5,10 +5,10 @@ include <gridfinity_constants.scad>
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
-function calcDimentionWidth(width) = calcDimention(width, "width", gf_pitch);
-function calcDimentionDepth(depth) = calcDimention(depth, "depth", gf_pitch);
-function calcDimentionHeight(height) = calcDimention(height, "height", gf_zpitch); 
-function calcDimention(value, name, unitSize) = 
+function calcDimensionWidth(width) = calcDimension(width, "width", gf_pitch);
+function calcDimensionDepth(depth) = calcDimension(depth, "depth", gf_pitch);
+function calcDimensionHeight(height) = calcDimension(height, "height", gf_zpitch); 
+function calcDimension(value, name, unitSize) = 
   is_num(value) ? value : 
   assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
   value[1] != 0 ? value[1]/unitSize : value[0];
@@ -246,7 +246,7 @@ module grid_block(
   stackable = true,
   center_magnet_diameter = 0,
   center_magnet_thickness = 0,
-  magent_easy_release = true,
+  magnet_easy_release = true,
   $fn = 32,
   help)
 {
@@ -323,7 +323,7 @@ module grid_block(
           screwDepth = screw_depth,
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagentRelease = magent_easy_release);
+          easyMagentRelease = magnet_easy_release);
     }
   }
  

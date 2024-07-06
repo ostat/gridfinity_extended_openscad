@@ -29,7 +29,7 @@ Lid_Efficient_Floor_Thickness = 0.7;// [0.7:0.1:7]
 Butterfly_Clip_Enabled = false;
 Butterfly_Clip_Size = [6,6,1.5];
 Butterfly_Clip_Radius = 0.1;
-Butterfly_Clip_Tollerance = 0.1;
+Butterfly_Clip_Tolerance = 0.1;
 Butterfly_Clip_Only = false;
 
 //This feature is not yet finalised, or working properly. 
@@ -39,7 +39,7 @@ Filament_Clip_Length = 8;
 
 
 //Custom gid sizes
-//I am not sure it this is really usefull, but its possible, so here we are.
+//I am not sure it this is really useful, but its possible, so here we are.
 //0:off the cell is off
 //1:on the cell is on and all corners are rounded
 //2-16, are bitwise values used to calculate what corners should be rounded, you need to subtract 2 from the value for the bitwise logic (so it does not clash with 0 and 1).
@@ -62,15 +62,15 @@ help = false;
 /* [Hidden] */
 module end_of_customizer_opts() {}
 
-num_x = calcDimentionWidth(width); 
-num_y = calcDimentionWidth(depth); 
+num_x = calcDimensionWidth(width); 
+num_y = calcDimensionWidth(depth); 
 
 if(Butterfly_Clip_Only)
 {
   ButterFly(
     size=[
-      Butterfly_Clip_Size.x+Butterfly_Clip_Tollerance,
-      Butterfly_Clip_Size.y+Butterfly_Clip_Tollerance,
+      Butterfly_Clip_Size.x+Butterfly_Clip_Tolerance,
+      Butterfly_Clip_Size.y+Butterfly_Clip_Tolerance,
       Butterfly_Clip_Size.z],
     r=Butterfly_Clip_Radius);
 }
@@ -83,7 +83,7 @@ else{
       plateOptions = Base_Plate_Options,
       lidOptions = Lid_Options,
       customGridEnabled = Custom_Grid_Enabled,
-      gridPossitions=[xpos1,xpos2,xpos3,xpos4,xpos5,xpos6,xpos7],
+      gridPositions=[xpos1,xpos2,xpos3,xpos4,xpos5,xpos6,xpos7],
       butterflyClipEnabled  = Butterfly_Clip_Enabled,
       butterflyClipSize = Butterfly_Clip_Size,
       butterflyClipRadius = Butterfly_Clip_Radius,

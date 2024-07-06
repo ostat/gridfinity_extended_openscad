@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_drawers.scad'. Generated 2024-07-02 19:58
+//Combined version of 'gridfinity_drawers.scad'. Generated 2024-07-06 17:14
 ///////////////////////////////////////
 // Gridfinity drawer system.
 // Intended for Gridfinity bins to sit in the drawers, meaning the outer chest will not fit neatly on to a gridfinity grid.
@@ -90,7 +90,7 @@ wallpattern_voronoi_radius = 0.5;
 /* [Hidden] */
 module end_of_customizer_opts() {}
 //Combined from path gridfinity_constants.scad
-// Dimentions as declared on https://gridfinity.xyz/specification/
+// dimensions as declared on https://gridfinity.xyz/specification/
 
 //Gridfinity grid size
 gf_pitch = 42;
@@ -179,7 +179,7 @@ color_cupcavity = "IndianRed";
 color_wallcutout = "SandyBrown";
 color_basehole = "DarkSlateGray";
 color_base = "DimGray";
-color_extention = "lightpink";
+color_extension = "lightpink";
 color_text = "Gold";
 color_cut = "Gray";
 color_lid = "MediumAquamarine";
@@ -213,7 +213,7 @@ default_label_style = "normal"; //[disabled: no label, normal:normal, click]
 default_label_position = "disabled"; //[left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
 // Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 default_label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interferr with stacking
+// Creates space so the attached label wont interfere with stacking
 default_label_relief = 0; // 0.1
 
 /* Sliding Lid */
@@ -257,8 +257,8 @@ default_horizontal_separator_config = "10.5|21|42|50|60";
 
 /* Base */
 default_magnet_diameter = 6.5;  // .1
-//create relief for manget removal
-default_magent_easy_release = true;
+//create relief for magnet removal
+default_magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
 default_center_magnet_diameter = 0;
@@ -308,11 +308,11 @@ default_wallpattern_voronoi_noise = 0.75;
 default_wallpattern_voronoi_radius = 0.5;
 
 /* Extendable */
-default_extention_x_enabled = false;
-default_extention_y_enabled = false;
-default_extention_tabs_enabled = true;
+default_extension_x_enabled = false;
+default_extension_y_enabled = false;
+default_extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
-default_extention_tab_size= [10,0,0,0]; //0.1
+default_extension_tab_size= [10,0,0,0]; //0.1
 
 /* debug */
 default_cutx = 0;//0.1
@@ -341,7 +341,7 @@ module gridfinity_cup(
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   magnet_diameter=default_magnet_diameter,
-  magent_easy_release=default_magent_easy_release,
+  magnet_easy_release=default_magnet_easy_release,
   screw_depth=default_screw_depth,
   center_magnet_diameter = default_center_magnet_diameter,
   center_magnet_thickness = default_center_magnet_thickness,
@@ -391,9 +391,9 @@ module gridfinity_cup(
   wallcutout_angle=default_wallcutout_angle,
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
-  extention_enabled=[default_extention_x_enabled,default_extention_y_enabled],
-  extention_tabs_enabled=default_extention_tabs_enabled,
-  extention_tab_size=default_extention_tab_size,
+  extension_enabled=[default_extension_x_enabled,default_extension_y_enabled],
+  extension_tabs_enabled=default_extension_tabs_enabled,
+  extension_tab_size=default_extension_tab_size,
   sliding_lid_enabled = default_sliding_lid_enabled, 
   sliding_lid_thickness = default_sliding_lid_thickness, 
   sliding_min_wall_thickness = default_sliding_min_wallThickness, 
@@ -403,9 +403,9 @@ module gridfinity_cup(
   cuty=default_cuty,
   help) {
   
-  num_x = calcDimentionWidth(width);
-  num_y = calcDimentionDepth(depth);
-  num_z = calcDimentionHeight(height);
+  num_x = calcDimensionWidth(width);
+  num_y = calcDimensionDepth(depth);
+  num_z = calcDimensionHeight(height);
 
   vertical_separator_positions = vertical_irregular_subdivisions 
     ? vertical_separator_config 
@@ -455,7 +455,7 @@ module gridfinity_cup(
       box_corner_attachments_only=box_corner_attachments_only, 
       stackable = lip_style != "none",
       flat_base=flat_base,
-      magent_easy_release = magent_easy_release);
+      magnet_easy_release = magnet_easy_release);
       
     if(!filled_in) 
     union(){
@@ -467,7 +467,7 @@ module gridfinity_cup(
         label_relief=label_relief,
         fingerslide=fingerslide, 
         fingerslide_radius=fingerslide_radius, 
-        magnet_diameter=magnet_diameter, 
+        magnet_diameter=magnet_diameter,
         screw_depth=screw_depth, 
         floor_thickness=floor_thickness, 
         wall_thickness=wall_thickness,
@@ -801,13 +801,13 @@ module gridfinity_cup(
       }
     }
    
-    if(extention_enabled.x){
+    if(extension_enabled.x){
      cutx = 0.5;
      color(color_wallcutout)
       translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
         cube([gf_pitch*cutx,num_y*gf_pitch,(num_z+1)*gf_zpitch]);
     }
-    if(extention_enabled.y){
+    if(extension_enabled.y){
      cuty = 0.5;
      color(color_wallcutout)
       translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
@@ -826,11 +826,11 @@ module gridfinity_cup(
     }
   }
   
-  if((extention_enabled.x || extention_enabled.y) && extention_tabs_enabled){
-    refTabHeight = extention_tab_size.x;
-    tabThickness = extention_tab_size.z == 0 ? 1.4 : extention_tab_size.z;//1.4; //This should be calculated
-    tabWidth = extention_tab_size.y;
-    tabStyle = extention_tab_size[3];
+  if((extension_enabled.x || extension_enabled.y) && extension_tabs_enabled){
+    refTabHeight = extension_tab_size.x;
+    tabThickness = extension_tab_size.z == 0 ? 1.4 : extension_tab_size.z;//1.4; //This should be calculated
+    tabWidth = extension_tab_size.y;
+    tabStyle = extension_tab_size[3];
     
     floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
     
@@ -853,14 +853,14 @@ module gridfinity_cup(
     {
       isOdd =  i % 2;
       echo("tabs", i=i, isOdd=isOdd)
-      if(extention_enabled.x){
+      if(extension_enabled.x){
         if(!isOdd)
         {
           translate([0,(num_y-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
           rotate([0,180,90])
             attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else {
-           if(!extention_enabled.y){
+           if(!extension_enabled.y){
             translate([0,-0.5*gf_pitch+wall_thickness+gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
               rotate([0,0,90])
               attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
@@ -868,14 +868,14 @@ module gridfinity_cup(
         }
       }
 
-      if(extention_enabled.y){     
+      if(extension_enabled.y){     
         if(isOdd)
         {
           translate([(num_x-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,0,floorHeight+(i+0.5)*tabHeight])
           rotate([0,0,180])
             attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else {
-          if(!extention_enabled.x){
+          if(!extension_enabled.x){
             translate([-0.5*gf_pitch+wall_thickness+gf_tolerance/2,0,floorHeight+(i+0.5)*tabHeight])
               rotate([0,180,180])
               attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
@@ -885,22 +885,22 @@ module gridfinity_cup(
       }
     }
     /*
-    if(extention_enabled.x){     
+    if(extension_enabled.x){     
       translate([0,(num_y-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,tabWorkingheight/4*3  + 1*gf_zpitch])
       rotate([0,180,90])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
-    if(extention_enabled.x && !extention_enabled.y){
+    if(extension_enabled.x && !extension_enabled.y){
       translate([0,-0.5*gf_pitch+wall_thickness+gf_tolerance/2,tabWorkingheight/4 + 1*gf_zpitch])
         rotate([0,0,90])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
-    if(extention_enabled.y){     
+    if(extension_enabled.y){     
       translate([(num_x-0.5)*gf_pitch-wall_thickness-gf_tolerance/2,0,tabWorkingheight/4  + 1*gf_zpitch])
       rotate([0,0,180])
         attachement_clip(height=tabHeight,thickness=tabThickness);
     }
-    if(extention_enabled.y && !extention_enabled.x){
+    if(extension_enabled.y && !extension_enabled.x){
       translate([-0.5*gf_pitch+wall_thickness+gf_tolerance/2,0,tabWorkingheight/4*3 + 1*gf_zpitch])
         rotate([0,180,180])
         attachement_clip(height=tabHeight,thickness=tabThickness);
@@ -975,8 +975,8 @@ module gridfinity_cup(
     ,"wallcutout_angle",wallcutout_angle
     ,"wallcutout_height",wallcutout_height
     ,"wallcutout_corner_radius",wallcutout_corner_radius
-    ,"extention_enabled",extention_enabled
-    ,"extention_tabs_enabled",extention_tabs_enabled
+    ,"extension_enabled",extension_enabled
+    ,"extension_tabs_enabled",extension_tabs_enabled
     ,"cutx",cutx
     ,"cuty",cuty]
     ,help);  
@@ -1513,7 +1513,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                         CubeWithRoundedCorner(
                           size=[blockSize+cornerRadius,blockSize+cornerRadius,screw_depth], 
                           cornerRadius = cornerRadius,
-                          edgeRadius = wall_thickness*2);
+                          edgeRadius = wall_thickness);
                     }
                     if(magnet_diameter > 0){
                       cornerRadius = magnet_diameter/2+wall_thickness*2;
@@ -1522,7 +1522,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                       CubeWithRoundedCorner(
                         size=[blockSize+cornerRadius,blockSize+cornerRadius,gf_magnet_thickness], 
                         cornerRadius = cornerRadius,
-                        edgeRadius = wall_thickness*2);
+                        edgeRadius = wall_thickness);
                       }
                 }
             }
@@ -2095,10 +2095,10 @@ module SlidingLid(
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
-function calcDimentionWidth(width) = calcDimention(width, "width", gf_pitch);
-function calcDimentionDepth(depth) = calcDimention(depth, "depth", gf_pitch);
-function calcDimentionHeight(height) = calcDimention(height, "height", gf_zpitch); 
-function calcDimention(value, name, unitSize) = 
+function calcDimensionWidth(width) = calcDimension(width, "width", gf_pitch);
+function calcDimensionDepth(depth) = calcDimension(depth, "depth", gf_pitch);
+function calcDimensionHeight(height) = calcDimension(height, "height", gf_zpitch); 
+function calcDimension(value, name, unitSize) = 
   is_num(value) ? value : 
   assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
   value[1] != 0 ? value[1]/unitSize : value[0];
@@ -2336,7 +2336,7 @@ module grid_block(
   stackable = true,
   center_magnet_diameter = 0,
   center_magnet_thickness = 0,
-  magent_easy_release = true,
+  magnet_easy_release = true,
   $fn = 32,
   help)
 {
@@ -2413,7 +2413,7 @@ module grid_block(
           screwDepth = screw_depth,
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagentRelease = magent_easy_release);
+          easyMagentRelease = magnet_easy_release);
     }
   }
  
@@ -2763,10 +2763,10 @@ module roundedCorner(
       //main corner to be removed
       translate([0,-radius, -radius])
         cube([length, radius*2,  radius*2]);
-      //corner extention in y
+      //corner extension in y
       translate([0,0, -radius])
         cube([length, height, radius]);
-      //corner extention in x
+      //corner extension in x
       translate([0,-radius, 0])
         cube([length, radius, height]);
     }
@@ -2796,10 +2796,10 @@ module chamferedCorner(
       //main corner to be removed
       translate([0,-width, -width])
         cube([length, chamferLength+width,  chamferLength+width]);
-      //corner extention in y
+      //corner extension in y
       translate([0,0, -width])
         cube([length, height, width]);
-      //corner extention in x
+      //corner extension in x
       translate([0,-width, 0])
         cube([length, width, height]);
 
@@ -17302,7 +17302,7 @@ module GridItemHolder(
     [canvisSize.x-border*2,canvisSize.y-border*2] : 
     canvisSize;
     
-  calcHoleDimentions = [
+  calcHoledimensions = [
       customShape ? holeSize[0] :
       circleFn == 4 ? Rc*2 : 
       circleFn == 6 ? Rc*2 : Rc*2,
@@ -17312,24 +17312,24 @@ module GridItemHolder(
 
         //x spacing for hex, center to center 
   hexxSpacing = 
-    circleFn == 4 ? holeSpacing[1]/2 + calcHoleDimentions[1]/2
+    circleFn == 4 ? holeSpacing[1]/2 + calcHoledimensions[1]/2
     : customShape ? holeSize[0]+holeSpacing[0]
-    : sqrt((Ri*2+holeSpacing[0])^2-((calcHoleDimentions[1]+holeSpacing[1])/2)^2);
+    : sqrt((Ri*2+holeSpacing[0])^2-((calcHoledimensions[1]+holeSpacing[1])/2)^2);
     
   //Calcualte the x and y items count for hexgrid
   eHexGrid = [
       holeGrid[0] !=0 ? holeGrid[0]
-        : floor((canvisSize[0]-calcHoleDimentions[0])/hexxSpacing+1), 
+        : floor((canvisSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
       holeGrid[1] !=0 ? holeGrid[1]
-        : floor(((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1])-0.5)*2)/2
+        : floor(((canvisSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
       ];
 
   //Calcualte the x and y hex items count for squaregrid
   eSquareGrid = [
       holeGrid[0]!=0 ? holeGrid[0]
-        : floor((canvisSize[0]+holeSpacing[0])/(calcHoleDimentions[0]+holeSpacing[0])),
+        : floor((canvisSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
       holeGrid[1]!=0 ? holeGrid[1]
-        : floor((canvisSize[1]+holeSpacing[1])/(calcHoleDimentions[1]+holeSpacing[1]))];
+        : floor((canvisSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1]))];
 
   //Single lines should not be hex
   hexGrid = 
@@ -17354,11 +17354,11 @@ module GridItemHolder(
       //x and y spacing including the item size.
       es = [
         fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
-          ? calcHoleDimentions[0]+(eHexGrid[0]<=1?0:((canvisSize[0]-eHexGrid[0]*calcHoleDimentions[0])/(eHexGrid[0]-1))) 
+          ? calcHoledimensions[0]+(eHexGrid[0]<=1?0:((canvisSize[0]-eHexGrid[0]*calcHoledimensions[0])/(eHexGrid[0]-1))) 
           : hexxSpacing,
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoleDimentions[1]+(eHexGrid[1]<=0.5?0:((canvisSize[1]-(eHexGrid[1]+0.5)*calcHoleDimentions[1])/(eHexGrid[1]-0.5))) 
-          : holeSpacing[1] + calcHoleDimentions[1]];
+          ? calcHoledimensions[1]+(eHexGrid[1]<=0.5?0:((canvisSize[1]-(eHexGrid[1]+0.5)*calcHoledimensions[1])/(eHexGrid[1]-0.5))) 
+          : holeSpacing[1] + calcHoledimensions[1]];
       
       eFill=[
         fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
@@ -17381,21 +17381,21 @@ module GridItemHolder(
 
       HexGrid(e=eFill, es=es, center=center, help=help)
         if(customShape){
-          translate(center ? [-calcHoleDimentions[0]/2,-calcHoleDimentions[1]/2,0] : [0,0,0])
+          translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
             children();
         } else {
-          translate(!center ? [calcHoleDimentions[0]/2,calcHoleDimentions[1]/2,0] : [0,0,0])
+          translate(!center ? [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0] : [0,0,0])
             chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
         }
     }
     else {
       es = [
         fill == "space" || fill == "spacevertical" || fill == "crophorizontal_spacevertical"
-          ? calcHoleDimentions[0]+(eSquareGrid[0]<=1?0:((canvisSize[0]-eSquareGrid[0]*calcHoleDimentions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
-          : calcHoleDimentions[0]+holeSpacing[0],
+          ? calcHoledimensions[0]+(eSquareGrid[0]<=1?0:((canvisSize[0]-eSquareGrid[0]*calcHoledimensions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
+          : calcHoledimensions[0]+holeSpacing[0],
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoleDimentions[1]+(eSquareGrid[1]<=1?0:((canvisSize[1]-eSquareGrid[1]*calcHoleDimentions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
-          : calcHoleDimentions[1]+holeSpacing[1]];
+          ? calcHoledimensions[1]+(eSquareGrid[1]<=1?0:((canvisSize[1]-eSquareGrid[1]*calcHoledimensions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
+          : calcHoledimensions[1]+holeSpacing[1]];
       
       eFill=[
         fill == "crop" || fill == "cropvertical" || fill == "cropvertical_spacehorizontal"
@@ -17413,10 +17413,10 @@ module GridItemHolder(
       
       Grid(e=eFill, es=es, center=center, help=help)
         if(customShape){
-          translate(center ? [-calcHoleDimentions[0]/2,-calcHoleDimentions[1]/2,0] : [0,0,0])
+          translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
           children();
         } else {
-          translate(center ? [0,0,0] : [calcHoleDimentions[0]/2,calcHoleDimentions[1]/2,0])
+          translate(center ? [0,0,0] : [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0])
             chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
         }
     }
@@ -17433,7 +17433,7 @@ module GridItemHolder(
     ,"fill",fill
     ,"customShape",customShape
     ,"hexxSpacing",hexxSpacing
-    ,"calcHoleDimentions",calcHoleDimentions
+    ,"calcHoledimensions",calcHoledimensions
     ,"eHexGrid",eHexGrid
     ,"eSquareGrid",eSquareGrid  
     ,"hexGridCount",hexGridCount  
@@ -17452,8 +17452,16 @@ module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
     }
 }
 
+//multiCard([24, 2.1, 18, 32, "square"],[12, 4.5, 13, 13, "square"],[20, 1.4, 10, 21.5, "square"]);
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   fudgeFactor = 0.01;
+  
+  assert(is_list(longCenter) && len(longCenter) >= 3, "longCenter should be a list of length 5");
+  assert(is_list(smallCenter) && len(smallCenter) >= 3, "longCenter should be a list of length 5");
+  assert(is_list(side) && len(side) >= 3, "longCenter should be a list of length 5");
+
+  //echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
+  render()
   union(){
     minspacing = 3;
     translate([(longCenter.x)/2,side.x/2,0])
@@ -17463,8 +17471,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
     
     translate([-smallCenter.x/2,-smallCenter.y/2,(longCenter.z-smallCenter.z)])
     slotCutout([smallCenter.x, smallCenter.y, smallCenter.z+fudgeFactor], chamfer);
-    
-    
+
     if(alternate){
       pos = let(targetPos = (longCenter.x)/4-(side.y)/2) max(targetPos, smallCenter.y+minspacing);
       translate([-pos-side.y/2, 0, 0])
@@ -17504,6 +17511,9 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
 //chamfer = chamfer size
 module slotCutout(size, chamfer = 1)
 {
+  assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
+
+  fudgeFactor = 0.01;
   chamfer = min(size.z, chamfer);
   
   translate([size.x/2,size.y/2,0])
@@ -17556,7 +17566,7 @@ Default_Lid_Efficient_Floor_Thickness = 0.7;// [0.7:0.1:7]
 Default_Butterfly_Clip_Enabled = false;
 Default_Butterfly_Clip_Size = [6,6,1.5];
 Default_Butterfly_Clip_Radius = 0.1;
-Default_Butterfly_Clip_Tollerance = 0.1;
+Default_Butterfly_Clip_Tolerance = 0.1;
 Default_Butterfly_Clip_Only = false;
 
 //This feature is not yet finalised, or working properly. 
@@ -17586,7 +17596,7 @@ module gridfinity_baseplate(
   plateOptions = Default_Base_Plate_Options,
   lidOptions = Default_Lid_Options,
   customGridEnabled = false,
-  gridPossitions = [[1]],
+  gridPositions = [[1]],
   butterflyClipEnabled  = Default_Butterfly_Clip_Enabled,
   butterflyClipSize = Default_Butterfly_Clip_Size,
   butterflyClipRadius = Default_Butterfly_Clip_Radius,
@@ -17600,17 +17610,17 @@ module gridfinity_baseplate(
   cuty = 0,
   help = false)
 {
-  _gridPossitions = customGridEnabled ? gridPossitions : [[1]];
+  _gridPositions = customGridEnabled ? gridPositions : [[1]];
   width = oversizeMethod == "fill" ? num_x : ceil(num_x);
   depth = oversizeMethod == "fill" ? num_y : ceil(num_y);
 
   difference() {
     intersection(){
       union() {
-        for(xi = [0:len(_gridPossitions)-1])
-          for(yi = [0:len(_gridPossitions[xi])-1])
+        for(xi = [0:len(_gridPositions)-1])
+          for(yi = [0:len(_gridPositions[xi])-1])
           {
-            if(_gridPossitions[xi][yi])
+            if(_gridPositions[xi][yi])
             {
               translate([gf_pitch*xi,gf_pitch*yi,0])
               baseplate(
@@ -17625,7 +17635,7 @@ module gridfinity_baseplate(
                 filamentClipEnabled = filamentClipEnabled,
                 filamentClipDiameter = filamentClipDiameter,
                 filamentClipLength = filamentClipLength,
-                roundedCorners = _gridPossitions[xi][yi] == 1 ? 15 : _gridPossitions[xi][yi] - 2,
+                roundedCorners = _gridPositions[xi][yi] == 1 ? 15 : _gridPositions[xi][yi] - 2,
                 lidIncludeMagnets = lidIncludeMagnets,
                 lidEfficientFloorThickness = lidEfficientFloorThickness,
                 lidEfficientBaseHeight = lidEfficientBaseHeight,

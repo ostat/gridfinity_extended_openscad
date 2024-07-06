@@ -188,10 +188,10 @@ module roundedCorner(
       //main corner to be removed
       translate([0,-radius, -radius])
         cube([length, radius*2,  radius*2]);
-      //corner extention in y
+      //corner extension in y
       translate([0,0, -radius])
         cube([length, height, radius]);
-      //corner extention in x
+      //corner extension in x
       translate([0,-radius, 0])
         cube([length, radius, height]);
     }
@@ -221,10 +221,10 @@ module chamferedCorner(
       //main corner to be removed
       translate([0,-width, -width])
         cube([length, chamferLength+width,  chamferLength+width]);
-      //corner extention in y
+      //corner extension in y
       translate([0,0, -width])
         cube([length, height, width]);
-      //corner extention in x
+      //corner extension in x
       translate([0,-width, 0])
         cube([length, width, height]);
 

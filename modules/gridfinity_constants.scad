@@ -1,4 +1,4 @@
-// Dimentions as declared on https://gridfinity.xyz/specification/
+// dimensions as declared on https://gridfinity.xyz/specification/
 
 //Gridfinity grid size
 gf_pitch = 42;
@@ -87,7 +87,7 @@ color_cupcavity = "IndianRed";
 color_wallcutout = "SandyBrown";
 color_basehole = "DarkSlateGray";
 color_base = "DimGray";
-color_extention = "lightpink";
+color_extension = "lightpink";
 color_text = "Gold";
 color_cut = "Gray";
 color_lid = "MediumAquamarine";
