@@ -35,7 +35,7 @@ height = [3, 0]; //0.1
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-position = "center"; //[default",center,zero]
+position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
       
