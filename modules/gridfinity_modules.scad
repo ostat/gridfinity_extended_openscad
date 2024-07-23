@@ -67,11 +67,12 @@ function cupPosition(position, num_x, num_y) = position == "center"
 
 //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm) 
 function wallThickness(wall_thickness, num_z) = wall_thickness != 0 ? wall_thickness
-        : num_z < 8 ? 0.95
-        : num_z < 16 ? 1.2
+        : num_z < 6 ? 0.95
+        : num_z < 12 ? 1.2
         : 1.6;
         
 module ShowClippers(cutx, cuty, size, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
+
   color(color_text)
   if(cuty > 0 && $preview)
   {
