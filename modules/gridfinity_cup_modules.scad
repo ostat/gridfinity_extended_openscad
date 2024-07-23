@@ -2,8 +2,10 @@ include <gridfinity_constants.scad>
 include <functions_general.scad>
 include <voronoi.scad>
 include <module_sliding_lid.scad>
+include <roundedNegativeChampher.scad>
 use <gridfinity_modules.scad>
 use <modules_item_holder.scad>
+
 
 // X dimension. grid units (multiples of 42mm) or mm.
 default_width = [2, 0]; //0.1
@@ -134,8 +136,8 @@ default_extension_tabs_enabled = true;
 default_extension_tab_size= [10,0,0,0]; //0.1
 
 /* [debug] */
-default_cutx = 0;//0.1
-default_cuty = 0;//0.1
+default_cutx = 0;//0.01
+default_cuty = 0;//0.01
 default_help = false;
 
 module end_of_customizer_opts() {}
@@ -729,6 +731,7 @@ module gridfinity_cup(
   }  
   
   if(help)
+  translate(cupPosition(position,num_x,num_y))
   ShowClippers(
     cutx, 
     cuty, 
@@ -1314,6 +1317,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
             half_pitch=half_pitch, 
             flat_base=flat_base, 
             floor_thickness=floor_thickness,
+            efficientFloorGridHeight=efficientFloorGridHeight,
             margins=q);
            
            if(hasCornerAttachments)
@@ -1470,13 +1474,15 @@ module efficient_floor_grid(
   half_pitch=false, 
   flat_base=false, 
   floor_thickness, 
+  efficientFloorGridHeight=efficientFloorGridHeight,
   margins=0) {
   if (flat_base) {
     EfficientFloor(num_x, num_y, 
       floor_thickness, 
       margins, 
-      floorRadius=(floorStyle == "rounded" ? 1 : 0),
-      floorSmooth=(floorStyle == "smooth"));
+      floorRounded=(floorStyle == "rounded"),
+      floorSmooth=(floorStyle == "smooth" ? 2 : 0),
+        efficientFloorGridHeight=efficientFloorGridHeight);
   }
   else if (half_pitch) {
     gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
@@ -1485,8 +1491,9 @@ module efficient_floor_grid(
         ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5), 
         floor_thickness, 
         margins, 
-        floorRadius=(floorStyle == "rounded" ? 1 : 0),
-        floorSmooth=(floorStyle == "smooth"));
+        floorRounded=(floorStyle == "rounded"),
+        floorSmooth=(floorStyle == "smooth" ? 1 : 0),
+        efficientFloorGridHeight=efficientFloorGridHeight);
     }
   }
   else {
@@ -1497,8 +1504,9 @@ module efficient_floor_grid(
         ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1), 
         floor_thickness, 
         margins, 
-        floorRadius=(floorStyle == "rounded" ? 1 : 0),
-        floorSmooth=(floorStyle == "smooth"));
+        floorRounded=(floorStyle == "rounded"),
+        floorSmooth=(floorStyle == "smooth" ? 1 :0),
+        efficientFloorGridHeight=efficientFloorGridHeight);
     }
   }
 }
@@ -1509,64 +1517,127 @@ module EfficientFloor(
   num_y=1, 
   floor_thickness, 
   margins=0,
-  floorRadius=0,
-  floorSmooth = true
-  ){
+  floorRounded = true,
+  floorSmooth = 0,
+  efficientFloorGridHeight=efficientFloorGridHeight,
+  $fn=64){
+  floorRadius=floorRounded ? 1 : 0;
+
   seventeen = gf_pitch/2-4;
   minEfficientPadSize = floorSmooth ? 0.3 : 0.15;
-  smothVersion=2;
-  //Less than minEfficientPadSize is to small and glitches the cut away
-  if(num_x > minEfficientPadSize && num_y > minEfficientPadSize )
-  if(!floorSmooth) {
-    union(){
-      // establishes floor
-      hull(){
-        tz(floor_thickness+floorRadius) 
-        cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
-        cylinder(r=1, h=5, $fn=32);
 
-        if(floorRadius > 0)
-        {
-          tz(floor_thickness+floorRadius) 
-          cornercopy(num_x=num_x, num_y=num_y, r=seventeen-(floorRadius-0.5)) 
-          sphere(r=floorRadius, $fn=32);
-        }
-      }
-      
-      // tapered top portion
-     hull() {
-        tz(3) 
-        cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
-        //cylinder(r=1, h=1, $fn=32);
-        sphere(r=1, $fn=32);
+  cornerRadius = 1.15+margins;
         
-        tz(5-(+2.5-1.15-margins)) 
-        cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
-        cylinder(r=1.15+margins, h=4, $fn=32);
-      }
-    }
-  }
-  else{
+  smoothVersion=2;
+  //Less than minEfficientPadSize is to small and glitches the cut away
+  if
+  (num_x > minEfficientPadSize && num_y > minEfficientPadSize )
+  if(floorSmooth == 2) {
+    //Smooth floor that does not round over the divider walls
+    
     // tapered top portion
-    hull() {
+    union() {
       tz(5+floor_thickness-fudgeFactor) 
       cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
-      cylinder(r=1.15+margins, h=4, $fn=32);
-   
+      cylinder(r=cornerRadius, h=4);
+      
       // tapered top portion
-      cornerRadius = 1.15+margins;
       tz(floor_thickness+cornerRadius)
       hull() {
         cornercopy(num_x=num_x, num_y=num_y, r=seventeen-cornerRadius) 
-        sphere(r=cornerRadius, $fn=32);
+        sphere(r=cornerRadius);
           
         tz(2.5)
         union(){
           cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
-          cylinder(r=cornerRadius, h=cornerRadius, $fn=32);
+            cylinder(r=cornerRadius, h=cornerRadius);
           cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
-          sphere(r=cornerRadius, $fn=32);
+            sphere(r=cornerRadius);
         }
+      }
+    }
+  } else if(floorSmooth == 1) {
+    //Smooth floor that rounds over the divider walls
+      union() {
+      wallStartHeight = 5;
+      topSmoothTransition = efficientFloorGridHeight-wallStartHeight;
+      wallTaper = topSmoothTransition/2;
+      
+    // tapered top portion
+      topChampherRadius = topSmoothTransition/2;
+      topChampherCornerRadius = cornerRadius;
+      topChampherZBottom = wallStartHeight+wallTaper;
+    gridcopy(num_x, num_y, pitch=gf_pitch)
+      //tz(efficientFloorGridHeight-topChampherRadius) 
+      tz(topChampherZBottom) 
+      roundedNegativeChampher(
+        champherRadius = topChampherRadius, 
+        size=[
+          seventeen*2+(topChampherCornerRadius)*2,
+          seventeen*2+(topChampherCornerRadius)*2], 
+        cornerRadius = topChampherCornerRadius, 
+        champher = true,
+        height = 4);
+      
+      // tapered top portion
+      //wallTaper;
+     hull() {
+        //Bottom layer
+        tz(floor_thickness+cornerRadius)
+        cornercopy(num_x=num_x, num_y=num_y, r=seventeen-cornerRadius) 
+        sphere(r=cornerRadius);
+          
+        //Top Layer
+        tz(wallStartHeight)
+          cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+          roundedCylinder(
+            h=cornerRadius,
+            r=cornerRadius,
+            roundedr1=wallTaper);
+      }
+    }
+  } else {
+    //Efficient floor
+    taperTopPos = 5-(+2.5-1.15-margins);
+    union(){
+      // establishes floor
+      tz(floor_thickness) 
+      hull(){
+        cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
+        roundedCylinder(
+          h=2,
+          r=1,
+          roundedr1=floorRadius);
+      }
+      
+      // tapered top portion
+     hull() {
+        /*tz(3) 
+        cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
+        cylinder(r=1, h=1);*/
+        
+        //Not sure why this was changed to a sphere
+        tz(3+1/2) 
+          cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
+          sphere(r=1); 
+
+        tz(taperTopPos) 
+          cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+          cylinder(r=cornerRadius, h=4);
+      }          
+
+      tz(taperTopPos) 
+      if(floorRounded){
+        maxRoundOver = 1.25;
+        champherRadius = min(efficientFloorGridHeight-taperTopPos,maxRoundOver);
+        tz(efficientFloorGridHeight-taperTopPos > maxRoundOver ? efficientFloorGridHeight-taperTopPos-champherRadius : 0)
+        roundedNegativeChampher(
+          champherRadius = champherRadius, 
+          size=[
+            seventeen*2+(cornerRadius)*2,
+            seventeen*2+(cornerRadius)*2], 
+          cornerRadius = cornerRadius, 
+          height = 4);
       }
     }
   }
