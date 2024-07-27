@@ -6,9 +6,9 @@ use <modules/gridfinity_modules.scad>
 
 /*<!!start gridfinity_itemholder!!>*/
 /* [Item Holder] */
-
-itemholder_known_item = "1/4hexshank"; // [ "custom":Custome, "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "c":C cell, "d":d cell, "7540":7540 cell, "8570":8570 cell, "10180":10180 cell, "10280":10280 cell, "10440":10440 cell, "10850":10850 cell, "13400":13400 cell, "14250":14250 cell, "14300":14300 cell, "14430":14430 cell, "14500":14500 cell, "14650":14650 cell, "15270":15270 cell, "16340":16340 cell, "16650":16650 cell, "17500":17500 cell, "17650":17650 cell, "17670":17670 cell, "18350":18350 cell, "18490":18490 cell, "18500":18500 cell, "18650":18650 cell, "20700":20700 cell, "21700":21700 cell, "25500":25500 cell, "26500":26500 cell, "26650":26650 cell, "26700":26700 cell, "26800":26800 cell, "32600":32600 cell, "32650":32650 cell, "32700":32700 cell, "38120":38120 cell, "38140":38140 cell, "40152":40152 cell, "4680":4680 cell]
-itemholder_known_cards = "custom"; // [ "custom":Custome, "multicard":Multi card slot, "compactflashi":CompactFlash, Type I, "compactflashii":CompactFlash, Type II, "smartmedia":SmartMedia, "mmc":MMC, MMCplus, "mmcmobile":RS-MMC, MMCmobile, "mmcmicro":MMCmicro, "sd":SD, SDHC, SDXC, SDIO, MicroP2, "minisd":miniSD, miniSDHC, miniSDIO, "microsd":microSD, microSDHC, microSDXC, "memorystickstandard":Memory Stick Standard, PRO, "memorystickduo":Memory Stick Duo, PRO Duo, PRO-HG, XC, "memorystickmicro":Memory Stick Micro (M2), XC, "nano":Nano Memory, "psvita":PS Vita Memory Card, "xqd":XQD card, "xD":xD, "USB A":USB A, "USB C":USB C]
+itemholder_known_tools = "1/4hexshank"; // [ "custom":Custome, "4hexshank":4mm Hex Shank, "1/4hexshank":1/4 Hex Shank, "1/4hexshanklong":1/4 Hex Long Shank, "5/16hexshank":5/16 Hex Shank, "3/8hexshank":3/8 Hex Shank, "1/2shank":1/2 inch router bit, "12shank":12mm router bit, "10shank":10mm router bit, "3/8shank":3/8 inch router bit, "8shank":8mm router bit, "1/4shank":1/4 inch router bit, "6shank":6mm router bit, "1/8shank":1/8 inch Dremel router bit]
+itemholder_known_batteries = "custom"; // [ "custom":Custome, "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "c":C cell, "d":d cell, "7540":7540 cell, "8570":8570 cell, "10180":10180 cell, "10280":10280 cell, "10440":10440 cell, "10850":10850 cell, "13400":13400 cell, "14250":14250 cell, "14300":14300 cell, "14430":14430 cell, "14500":14500 cell, "14650":14650 cell, "15270":15270 cell, "16340":16340 cell, "16650":16650 cell, "17500":17500 cell, "17650":17650 cell, "17670":17670 cell, "18350":18350 cell, "18490":18490 cell, "18500":18500 cell, "18650":18650 cell, "20700":20700 cell, "21700":21700 cell, "25500":25500 cell, "26500":26500 cell, "26650":26650 cell, "26700":26700 cell, "26800":26800 cell, "32600":32600 cell, "32650":32650 cell, "32700":32700 cell, "38120":38120 cell, "38140":38140 cell, "40152":40152 cell, "4680":4680 cell]
+itemholder_known_cards = "custom"; // [ "custom":Custome, "multicard":Multi card slot, "compactflashi":CompactFlash. Type I, "compactflashii":CompactFlash. Type II, "smartmedia":SmartMedia, "mmc":MMC. MMCplus, "mmcmobile":RS-MMC. MMCmobile, "mmcmicro":MMCmicro, "sd":SD. SDHC. SDXC. SDIO. MicroP2, "minisd":miniSD. miniSDHC. miniSDIO, "microsd":microSD. microSDHC. microSDXC, "memorystickstandard":Memory Stick Standard. PRO, "memorystickduo":Memory Stick Duo. PRO Duo. PRO-HG. XC, "memorystickmicro":Memory Stick Micro (M2). XC, "nano":Nano Memory, "psvita":PS Vita Memory Card, "xqd":XQD card, "xD":xD, "USB A":USB A, "USB C":USB C]
 itemholder_known_cartridges = "custom"; // [ "custom":Custome, "atari800":Atari 800, "atari2600":Atari 2600/7800/Colecovision, "atari5200":Atari 5200, "atari7800":Atari 7800, "commodore":Commodore Vic20, "magnavoxodyssey":Magnavox Odyssey, "magnavoxodysseymulticard":Magnavox Odyssey (multicard), "magnavoxodyssey2":Magnavox Odyssey2, "mattelintellivision":Mattel Intellivision I & II, "nintendofamicom":Nintendo Famicom, "nintendofamicomdisk":Nintendo Famicom Disk, "nintendosuperfamicom":Nintendo Super Famicom / SNES (Pal), "nes":NES, "snes":SNES, "nintendo64":Nintendo 64, "nintendogb":Nintendo GB, "nintendogbc":Nintendo GBC, "nintendogba":Nintendo GBA, "nintendods":Nintendo DS, "nintendo2ds":Nintendo 2DS/3DS, "nintendovb":Nintendo Virtual Boy, "nintendoswitch":Nintendo Switch, "segagamegear":Sega Game Gear, "segagenesis":Sega Genesis, "segagenesistall":Sega Genesis (tall cart), "segamegadrive":Sega MegaDrive, "segamegadrivecodemasters":Sega MegaDrive Codemasters, "segamastersystem":Sega Master System, "sega32x":Sega 32x, "segacard":Sega Card/TG16, "segapico":Sega Pico, "sonyumd":Sony UMD, "sonypsvita":Sony PS Vita, "sonypsvitamemcard":Sony PS Vita (Mem Card), "necpcehucard":NEC PCE HuCard, "snkneogeoaes":SNK Neo Geo AES, "snkneogeomvs":SNK Neo Geo MVS, "bandai":Bandai Wonderswan/Color, "msx":MSX]
 
 // cards to use when multi card is selected I.E. sd;USBA;microsd
@@ -209,33 +209,46 @@ ishape =4;
 //z=desired depth of hole
 //item height=the hight object, not used.
 //shape=the item shape, (circle, hex or square)
-function LookupKnownItem(name="custom") = 
-  name == "4hexshank" ? [4, 0, 10, 20, "hex"] :
+//[width, thickness, depthneeded, itemHeight, shape]
+function LookupKnownTool(name="custom") = 
+  name == "4hexshank" ? [4, 0, 5, 20, "hex"] :
   name == "1/4hexshank" ? [6.35, 0, 8, 15, "hex"] :
-  name == "1/4hexlongshank" ? [6.35, 0, 15, 40, "hex"] :
+  name == "1/4hexshanklong" ? [6.35, 0, 15, 40, "hex"] :
   name == "5/16hexshank" ? [7.94, 0, 7, 0, "hex"] :
   name == "3/8hexshank" ? [9.52, 0, 10, 0, "hex"] :
+  name == "1/2shank" ? [12.7, 0, 20, 20, "round"] :
+  name == "12shank" ? [12, 0, 20, 20, "round"] :
+  name == "10shank" ? [10, 0, 150, 15, "round"] :
+  name == "3/8shank" ? [9.5250, 15, 20, 15, "round"] :
+  name == "8shank" ? [8, 0, 15, 15, "round"] :
+  name == "1/4shank" ? [6.35, 0, 10, 10, "round"] :
+  name == "6shank" ? [6, 0, 10, 10, "round"] :
+  name == "1/8shank" ? [3.2, 0, 10, 10, "round"] :
+  [0,0,0,0,""];
+
+//[width, thickness, depthneeded, itemHeight, shape]
+function LookupKnownBattery(name="custom") = 
   name == "aaaa" ? [8.3, 0, 10.625, 42.5, "round"] :
   name == "aaa" ? [10.5, 0, 11.125, 44.5, "round"] :
   name == "aa" ? [14.5, 0, 12.625, 50.5, "round"] :
   name == "c" ? [26.2, 0, 12.5, 50, "round"] :
   name == "d" ? [34.2, 0, 15.375, 61.5, "round"] :
-  name == "7540" ? [7.5, 0, 10, 40, "round"] :    
-  name == "8570" ? [8.5, 0, 17.5, 70, "round"] :  
-  name == "10180" ? [10, 0, 4.5, 18, "round"] :   
-  name == "10280" ? [10, 0, 7, 28, "round"] :     
-  name == "10440" ? [10, 0, 11, 44, "round"] :    
-  name == "10850" ? [10, 0, 21.25, 85, "round"] : 
-  name == "13400" ? [13, 0, 10, 40, "round"] :    
-  name == "14250" ? [14, 0, 6.25, 25, "round"] :  
-  name == "14300" ? [14, 0, 7.5, 30, "round"] :   
-  name == "14430" ? [14, 0, 10.75, 43, "round"] : 
-  name == "14500" ? [14, 0, 13.25, 53, "round"] : 
-  name == "14650" ? [14, 0, 16.25, 65, "round"] : 
-  name == "15270" ? [15, 0, 6.75, 27, "round"] :  
-  name == "16340" ? [16, 0, 8.5, 34, "round"] :   
-  name == "16650" ? [16, 0, 16.25, 65, "round"] : 
-  name == "17500" ? [17, 0, 12.5, 50, "round"] :  
+  name == "7540" ? [7.5, 0, 10, 40, "round"] :
+  name == "8570" ? [8.5, 0, 17.5, 70, "round"] :
+  name == "10180" ? [10, 0, 4.5, 18, "round"] :
+  name == "10280" ? [10, 0, 7, 28, "round"] :
+  name == "10440" ? [10, 0, 11, 44, "round"] :
+  name == "10850" ? [10, 0, 21.25, 85, "round"] :
+  name == "13400" ? [13, 0, 10, 40, "round"] :
+  name == "14250" ? [14, 0, 6.25, 25, "round"] :
+  name == "14300" ? [14, 0, 7.5, 30, "round"] :
+  name == "14430" ? [14, 0, 10.75, 43, "round"] :
+  name == "14500" ? [14, 0, 13.25, 53, "round"] :
+  name == "14650" ? [14, 0, 16.25, 65, "round"] :
+  name == "15270" ? [15, 0, 6.75, 27, "round"] :
+  name == "16340" ? [16, 0, 8.5, 34, "round"] :
+  name == "16650" ? [16, 0, 16.25, 65, "round"] :
+  name == "17500" ? [17, 0, 12.5, 50, "round"] :
   name == "17650" ? [17, 0, 16.25, 65, "round"] :
   name == "17670" ? [17, 0, 16.75, 67, "round"] :
   name == "18350" ? [18, 0, 8.75, 35, "round"] :
@@ -258,7 +271,6 @@ function LookupKnownItem(name="custom") =
   name == "4680" ? [46, 0, 20, 80, "round"] :
   [0,0,0,0,""];
 
- // result is dimensions for commnly know items
 //[width, thickness, depthneeded, itemHeight, shape]
 function LookupKnownCard(name="custom") = 
   name == "multicard" ? [0, 0, 0, 0, "square"] :
@@ -332,10 +344,12 @@ function LookupKnownShapes(name="round") =
 function LookupKnown(knowItem) = let(
       knownCard = LookupKnownCard(knowItem),
       knownCartridge = LookupKnownCartridge(knowItem),
-      knownItem = LookupKnownItem(knowItem)
+      knownTool = LookupKnownTool(knowItem),
+      knownBattery = LookupKnownBattery(knowItem)
     ) knownCard[4] != "" ? knownCard 
       : knownCartridge[4] != "" ? knownCartridge
-      : knownItem;
+      : knownBattery[4] != "" ? knownBattery
+      : knownTool;
 function addClearance(dim, clearance) =
     [dim.x > 0 ? dim.x+clearance : 0
     ,dim.y > 0 ? dim.y+clearance : 0
@@ -397,8 +411,9 @@ module itemholder(
   ySize = (num_y*gf_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
   yStep = ySize + compartment_spacing;
   
-  echo("itemholder", item=item, mc=mc,longCenter=longCenter,smallCenter=smallCenter,side=side, _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
-  echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
+  if(IsHelpEnabled($showHelp, "info")) echo("itemholder", item=item, mc=mc,longCenter=longCenter,smallCenter=smallCenter,side=side, _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
+  if(IsHelpEnabled($showHelp, "info")) echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
+  
   for(x =[0:1:compartments.x-1])
   {
     for(y =[0:1:compartments.y-1])
@@ -483,10 +498,12 @@ module gridfinity_itemholder(
   itemholder_auto_bin_height = itemholder_auto_bin_height,
   itemholder_multi_cards = itemholder_multi_cards,
   itemholder_multi_card_compact = itemholder_multi_card_compact,
-  itemholder_known_item = itemholder_known_item != "custom" ? itemholder_known_item  
+  itemholder_known_item = 
+        itemholder_known_tools != "custom" ? itemholder_known_tools  
+      : itemholder_known_batteries != "custom"? itemholder_known_batteries
       : itemholder_known_cards != "custom"? itemholder_known_cards
       : itemholder_known_cartridges, 
-      
+
   //gridfinity settings
   width=width, depth=depth, height=height,
   position=position,
