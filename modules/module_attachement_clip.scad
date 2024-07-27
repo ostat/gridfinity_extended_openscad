@@ -5,7 +5,7 @@ module attachement_clip(
   thickness = gf_lip_support_taper_height,
   tabStyle = 0)
 {
-  if(IsHelpEnabled($showHelp, "debug")) echo("attachement_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
+  if(IsHelpEnabled("debug")) echo("attachement_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
   tabVersion = 0;
   width = width > 0 ? width : height/2;
   tabHeight=height-thickness*2;

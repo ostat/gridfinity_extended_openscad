@@ -33,19 +33,19 @@ module gridfinity_label(
     
   // calcualte list of chambers. 
   labelWidthmm = labelSize.x * gf_pitch;
-  color(color_label){
-    chamberWidths = len(separator_positions) < 1 || 
-      labelWidthmm == 0 ||
-      label_position == "left" ||
-      label_position == "center" ||
-      label_position == "right" ?
-        [ num_x * gf_pitch ] // single chamber equal to the bin length
-        : [ for (i=[0:len(separator_positions)]) 
-          (i==len(separator_positions) 
-            ? num_x * gf_pitch
-            : separator_positions[i]) - (i==0 ? 0 : separator_positions[i-1]) ];
+  chamberWidths = len(separator_positions) < 1 || 
+    labelWidthmm == 0 ||
+    label_position == "left" ||
+    label_position == "center" ||
+    label_position == "right" ?
+      [ num_x * gf_pitch ] // single chamber equal to the bin length
+      : [ for (i=[0:len(separator_positions)]) 
+        (i==len(separator_positions) 
+          ? num_x * gf_pitch
+          : separator_positions[i]) - (i==0 ? 0 : separator_positions[i-1]) ];
                   
-    for (i=[0:len(chamberWidths)-1]) {
+  color(color_label)
+  for (i=[0:len(chamberWidths)-1]) {
       chamberStart = i == 0 ? 0 : separator_positions[i-1];
       chamberWidth = chamberWidths[i];
       label_num_x = (labelWidthmm == 0 || labelWidthmm > chamberWidth) ? chamberWidth : labelWidthmm;
@@ -70,10 +70,8 @@ module gridfinity_label(
            translate([2,labelPoints[i][0]+1,zpoint])
            LabelClick();
         } else if(label_relief > 0){
-          
-          #translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
+          translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
             cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
-        }
       }
     }
   }

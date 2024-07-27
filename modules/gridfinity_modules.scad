@@ -1,4 +1,5 @@
 include <modules_utility.scad>
+include <functions_general.scad>
 include <gridfinity_constants.scad>
 
 // set this to produce sharp corners on baseplates and bins
@@ -70,7 +71,8 @@ function wallThickness(wall_thickness, num_z) = wall_thickness != 0 ? wall_thick
         : num_z < 6 ? 0.95
         : num_z < 12 ? 1.2
         : 1.6;
-
+        
+grid_block();
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(
@@ -280,7 +282,7 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) 
       quadrent = [xi+(xx == -1 ? -0.5 : 0), yi+(yy == -1 ? -0.5 : 0)];
       trans = [pitch*(xi-1)+xx*r, pitch*(yi-1)+ yy*r, 0];
       $gcci=[trans,[xi,yi],[xx,yy]];
-      if(IsHelpEnabled($showHelp, "trace")) echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, quadrent=quadrent);
+      if(IsHelpEnabled("trace")) echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, quadrent=quadrent);
       //only copy if the cell is atleast half size
       if(quadrent.x <= num_x && quadrent.y <= num_y)
         //only box corners or every cell corner
@@ -299,7 +301,7 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
   assert(!is_undef(r), "r is undefined");
   assert(!is_undef(num_x), "num_x is undefined");
   assert(!is_undef(num_y), "num_y is undefined");
-  
+
   for (xx=[0, 1]) 
     for (yy=[0, 1]) 
     {

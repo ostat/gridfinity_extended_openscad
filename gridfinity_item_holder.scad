@@ -411,8 +411,8 @@ module itemholder(
   ySize = (num_y*gf_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
   yStep = ySize + compartment_spacing;
   
-  if(IsHelpEnabled($showHelp, "info")) echo("itemholder", item=item, mc=mc,longCenter=longCenter,smallCenter=smallCenter,side=side, _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
-  if(IsHelpEnabled($showHelp, "info")) echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
+  if(IsHelpEnabled("info")) echo("itemholder", item=item, mc=mc,longCenter=longCenter,smallCenter=smallCenter,side=side, _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
+  if(IsHelpEnabled("info")) echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
   
   for(x =[0:1:compartments.x-1])
   {

@@ -33,7 +33,7 @@ module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_diamete
     floorDepth = efficient_floor != "off"
       ? floor_thickness :
       floorHeight - baseClearanceHeight;
-      if(IsHelpEnabled($showHelp, "trace")) echo("showClippersForSide",floorHeight=floorHeight,magnet_diameter=magnet_diameter,screw_depth=screw_depth,floor_thickness=floor_thickness,num_z=num_z,filled_in=filled_in,efficient_floor=efficient_floor,flat_base=flat_base);
+      if(IsHelpEnabled("trace")) echo("showClippersForSide",floorHeight=floorHeight,magnet_diameter=magnet_diameter,screw_depth=screw_depth,floor_thickness=floor_thickness,num_z=num_z,filled_in=filled_in,efficient_floor=efficient_floor,flat_base=flat_base);
   wallTop = calculateWallTop(num_z, lip_style);
       
   isCutX = description == "depth";

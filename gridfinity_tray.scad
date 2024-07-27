@@ -196,7 +196,7 @@ module tray(
   if(len(customCompartments) == 0)
   {
     //Non custom components
-    if(IsHelpEnabled($showHelp, "trace")) echo(n=num_x*gf_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
+    if(IsHelpEnabled("trace")) echo(n=num_x*gf_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
     xSize = (num_x*gf_pitch-(verticalCompartments+1)*spacing)/verticalCompartments;
     xStep = xSize + spacing;
     ySize = (num_y*gf_pitch-(horizontalCompartments+1)*spacing)/horizontalCompartments;
@@ -206,7 +206,7 @@ module tray(
     {
       for(y =[0:1:horizontalCompartments-1])
       {
-        if(IsHelpEnabled($showHelp, "trace")) echo(x=x,y=y,xStep=xStep,yStep=yStep);
+        if(IsHelpEnabled("trace")) echo(x=x,y=y,xStep=xStep,yStep=yStep);
         translate([spacing+x*xStep,spacing+y*yStep,baseHeight+max(trayZpos,floorThickness)])
         roundedCube(
             xSize, ySize,
@@ -218,7 +218,7 @@ module tray(
   }
   else
   {
-    if(IsHelpEnabled($showHelp, "debug")) echo(customCompartments = splitCustomConfig(customCompartments));
+    if(IsHelpEnabled("debug")) echo(customCompartments = splitCustomConfig(customCompartments));
     //custom components
     compartments = split(customCompartments, "|");
     
@@ -331,7 +331,7 @@ module gridfinity_tray(
   num_y = calcDimensionDepth(depth);
   num_z = calcDimensionHeight(height);
   
-  if(IsHelpEnabled($showHelp, "info")) echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
+  if(IsHelpEnabled("info")) echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
   
   difference() {
     /*<!!start gridfinity_basic_cup!!>*/
@@ -427,7 +427,7 @@ module gridfinity_tray(
         [icornerradius, tray_corner_radius], 
         [idepth, num_z]];
 
-      if(IsHelpEnabled($showHelp, "info")) echo(outputCustomConfig("tray", replace_Items(configArray, [])));
+      if(IsHelpEnabled("info")) echo(outputCustomConfig("tray", replace_Items(configArray, [])));
   }
 }
 

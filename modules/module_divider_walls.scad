@@ -70,7 +70,7 @@ sepConfigs = calculateSeparatorsv2(
     bend_angle = bend_angle,
     bend_separation = bend_separation,
     cut_depth = cut_depth);
-  if(IsHelpEnabled($showHelp, "trace")) echo("separators",sepConfigs=sepConfigs);
+  if(IsHelpEnabled("trace")) echo("separators",sepConfigs=sepConfigs);
  
   if(is_list(sepConfigs) && len(sepConfigs) > 0){
     for (i=[0:len(sepConfigs)-1]) {

@@ -176,7 +176,7 @@ module baseplate(
     if(butterflyClipEnabled || filamentClipEnabled){
       gridcopy(width, depth) 
       union(){
-        if(IsHelpEnabled($showHelp, "debug")) echo("frame_plain", gci=$gci);
+        if(IsHelpEnabled("debug")) echo("frame_plain", gci=$gci);
         if(butterflyClipEnabled)
           AttachButterFly(size=butterflyClipSize,r=butterflyClipRadius,left=$gci.x==0,right=$gci.x==width-1,front=$gci.y==0,back=$gci.y==depth-1);
           

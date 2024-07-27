@@ -55,7 +55,7 @@ module SlidingLid(
       cylinder(r=lidLowerRadius, h=lidThickness/2, $fn=32);
   }
   
-  if(IsHelpEnabled($showHelp, "debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius );
+  if(IsHelpEnabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius );
   if(cutoutSize.x != 0 && cutoutSize.y != 0 && cutoutRadius>0){
     
     cSize = [
@@ -85,6 +85,6 @@ module SlidingLid(
     }
   }
   
-  if(IsHelpEnabled($showHelp, "debug")) echo("SlidingLid", num_x=num_x, num_y=num_y, wall_thickness=wall_thickness, clearance=clearance, lidThickness=lidThickness, lidMinSupport=lidMinSupport, lidMinWallThickness=lidMinWallThickness);
-  if(IsHelpEnabled($showHelp, "debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius, cutoutPosition=cutoutPosition);
+  if(IsHelpEnabled("debug")) echo("SlidingLid", num_x=num_x, num_y=num_y, wall_thickness=wall_thickness, clearance=clearance, lidThickness=lidThickness, lidMinSupport=lidMinSupport, lidMinWallThickness=lidMinWallThickness);
+  if(IsHelpEnabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius, cutoutPosition=cutoutPosition);
 }

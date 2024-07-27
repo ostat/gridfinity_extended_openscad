@@ -42,7 +42,7 @@ function sum(v, i=0, r=0) = i < len(v) ? sum(v, i+1, v[i] + r) : r;
 
 module sockets(widths=[], width = 100) {
   leftover = width - sum(widths);
-  if(IsHelpEnabled($showHelp, "debug")) echo(leftover=leftover, "(should be greater than 0)");
+  if(IsHelpEnabled("debug")) echo(leftover=leftover, "(should be greater than 0)");
   for (i = [0:len(widths)-1]) {
     s = move(widths, i, 0, leftover/(len(widths)-1));
     translate([widths[0]/2,0,0])

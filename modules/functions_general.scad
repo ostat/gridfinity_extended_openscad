@@ -58,15 +58,15 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
     strNext = createCustomConfig(arr, pos+1, sep)
   ) str(current, strNext!=""?str(sep, strNext):"");
   
-function IsHelpEnabled(help, level) = 
-  is_undef(help) 
+function IsHelpEnabled(level) = 
+  is_undef($showHelp) 
     ? false
-    : is_bool(help) 
-      ? help
-      : is_string(help) 
-        ? help == "info" && level == "info" ? true
-          : help == "debug" && (level == "info" || level == "debug") ? true
-          : help == "trace" && (level == "info" || level == "debug" || level == "trace") ? true
+    : is_bool($showHelp) 
+      ? $showHelp
+      : is_string($showHelp) 
+        ? $showHelp == "info" && level == "info" ? true
+          : $showHelp == "debug" && (level == "info" || level == "debug") ? true
+          : $showHelp == "trace" && (level == "info" || level == "debug" || level == "trace") ? true
           : false
         : false;
 

@@ -87,7 +87,7 @@ width = ceil((silver_w + 5.7)/42);
 // Y dimension in gridfinity units
 depth = ceil((maxlen(silver_defs)+2*margin+5.7)/42);
 
-if(IsHelpEnabled($showHelp, "debug")) echo("maxlen: ", maxlen(silver_defs));
+if(IsHelpEnabled("debug")) echo("maxlen: ", maxlen(silver_defs));
 
 // ##### Top level model
 
