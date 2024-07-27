@@ -535,7 +535,7 @@ module AttachButterFly(size=[5,3,2],r=0.5,left= true, right=true, front=true, ba
 module ButterFly(size,r,taper=false,half=false)
 {
   h = taper ? size.y/2+size.z : size.z;
-  render(){
+  //render(){
     intersection(){
       positions = [
         [-(size.x/2-r), size.y/2-r, h/2],

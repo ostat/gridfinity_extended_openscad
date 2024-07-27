@@ -2,7 +2,7 @@ include <ub.scad>
 include <functions_general.scad>
 
 module GridItemHolder(
-  canvisSize = [0,0],
+  canvasSize = [0,0],
   hexGrid = true, //false, true, "auto"
   customShape=false,
   circleFn = 6,
@@ -17,13 +17,13 @@ module GridItemHolder(
   crop = true,
   help) 
 {
-  assert(is_list(canvisSize) && len(canvisSize)==2, "canvisSize must be list of len 2");
+  assert(is_list(canvasSize) && len(canvasSize)==2, "canvasSize must be list of len 2");
   assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
   assert(is_bool(customShape), "customShape must be bool");    
   assert(is_num(circleFn), "circleFn must be number");    
   assert(is_list(holeSize) && len(holeSize)==2, "holeSize must be list of len 2");
   assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
-  assert(is_list(holeGrid) && len(holeGrid)==2, "canvisSize must be list of len 2");  
+  assert(is_list(holeGrid) && len(holeGrid)==2, "canvasSize must be list of len 2");  
   assert(is_num(holeHeight), "holeHeight must be number");    
   assert(is_num(holeChamfer), "holeChamfer must be number");    
   assert(is_num(holeChamfer), "holeChamfer must be number");  
@@ -44,9 +44,9 @@ module GridItemHolder(
   //For hex in a hex grid we can optomise the spacing, otherwise its too hard      
   Ri = holeSize[0]/2;//(circleFn==6 && hexGrid) || (circleFn==4) ? (holeSize[0]/2) : Rc;
   
-  canvisSize = border > 0 ? 
-    [canvisSize.x-border*2,canvisSize.y-border*2] : 
-    canvisSize;
+  canvasSize = border > 0 ? 
+    [canvasSize.x-border*2,canvasSize.y-border*2] : 
+    canvasSize;
     
   calcHoledimensions = [
       customShape ? holeSize[0] :
@@ -65,22 +65,22 @@ module GridItemHolder(
   //Calcualte the x and y items count for hexgrid
   eHexGrid = [
       holeGrid[0] !=0 ? holeGrid[0]
-        : floor((canvisSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
+        : floor((canvasSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
       holeGrid[1] !=0 ? holeGrid[1]
-        : floor(((canvisSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
+        : floor(((canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
       ];
 
   //Calcualte the x and y hex items count for squaregrid
   eSquareGrid = [
       holeGrid[0]!=0 ? holeGrid[0]
-        : floor((canvisSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
+        : floor((canvasSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
       holeGrid[1]!=0 ? holeGrid[1]
-        : floor((canvisSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1]))];
+        : floor((canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1]))];
 
   //Single lines should not be hex
   hexGrid = 
-    canvisSize.x<=holeSize.x+holeSpacing.x || 
-    canvisSize.y<=holeSize.y+holeSpacing.y ||
+    canvasSize.x<=holeSize.x+holeSpacing.x || 
+    canvasSize.y<=holeSize.y+holeSpacing.y ||
     holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
   if(IsHelpEnabled("trace")) echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
   hexGridCount = let(count = eHexGrid[0]*eHexGrid[1]) eHexGrid[0] % 2 == 0 ? floor(count) : ceil(count);
@@ -94,16 +94,16 @@ module GridItemHolder(
     //Crop to ensure that we dont go outside the bounds 
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
       translate([-fudgeFactor,-fudgeFactor,(center?holeHeight/2:0)-fudgeFactor])
-      cube([canvisSize[0]+fudgeFactor*2,canvisSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
+      cube([canvasSize[0]+fudgeFactor*2,canvasSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
     
     if(_hexGrid){
       //x and y spacing including the item size.
       es = [
         fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
-          ? calcHoledimensions[0]+(eHexGrid[0]<=1?0:((canvisSize[0]-eHexGrid[0]*calcHoledimensions[0])/(eHexGrid[0]-1))) 
+          ? calcHoledimensions[0]+(eHexGrid[0]<=1?0:((canvasSize[0]-eHexGrid[0]*calcHoledimensions[0])/(eHexGrid[0]-1))) 
           : hexxSpacing,
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoledimensions[1]+(eHexGrid[1]<=0.5?0:((canvisSize[1]-(eHexGrid[1]+0.5)*calcHoledimensions[1])/(eHexGrid[1]-0.5))) 
+          ? calcHoledimensions[1]+(eHexGrid[1]<=0.5?0:((canvasSize[1]-(eHexGrid[1]+0.5)*calcHoledimensions[1])/(eHexGrid[1]-0.5))) 
           : holeSpacing[1] + calcHoledimensions[1]];
       
       eFill=[
@@ -137,10 +137,10 @@ module GridItemHolder(
     else {
       es = [
         fill == "space" || fill == "spacevertical" || fill == "crophorizontal_spacevertical"
-          ? calcHoledimensions[0]+(eSquareGrid[0]<=1?0:((canvisSize[0]-eSquareGrid[0]*calcHoledimensions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
+          ? calcHoledimensions[0]+(eSquareGrid[0]<=1?0:((canvasSize[0]-eSquareGrid[0]*calcHoledimensions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
           : calcHoledimensions[0]+holeSpacing[0],
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoledimensions[1]+(eSquareGrid[1]<=1?0:((canvisSize[1]-eSquareGrid[1]*calcHoledimensions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
+          ? calcHoledimensions[1]+(eSquareGrid[1]<=1?0:((canvasSize[1]-eSquareGrid[1]*calcHoledimensions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
           : calcHoledimensions[1]+holeSpacing[1]];
       
       eFill=[
@@ -169,7 +169,7 @@ module GridItemHolder(
   }
   
   HelpTxt("GridItemHolder",[
-    "canvisSize",canvisSize
+    "canvasSize",canvasSize
     ,"circleFn",circleFn
     ,"hexGrid",hexGrid
     ,"holeSize",holeSize
@@ -207,7 +207,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   assert(is_list(side) && len(side) >= 3, "longCenter should be a list of length 5");
 
   if(IsHelpEnabled("trace")) echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
-  render()
+  render() //Render on item holder multiCard as it can be complex
   union(){
     minspacing = 3;
     translate([(longCenter.x)/2,side.x/2,0])

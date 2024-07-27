@@ -7,7 +7,6 @@ easement_z = 0.7; // a slightly large opening at the top for compliance while in
 minimum_wall = 4;
 blocks_needed = ceil((stick_diameter+2*minimum_wall)/gf_pitch);
 
-render()
 glue_stick_cup(blocks_needed, blocks_needed, cup_height);
 
 

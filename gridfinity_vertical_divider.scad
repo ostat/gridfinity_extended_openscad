@@ -165,8 +165,8 @@ module PatternedDivider(
       translate([0,height+baseHeight,0])
       rotate([0,0,-90])
       cutout_pattern(
-        patternstyle = wallpatternStyle ,
-        canvisSize = [height+baseHeight,length], //Swap x and y and rotate so hex is easier to print
+        patternStyle = wallpatternStyle ,
+        canvasSize = [height+baseHeight,length], //Swap x and y and rotate so hex is easier to print
         customShape = false,
         circleFn = wallpatternHoleSides,
         holeSize = [wallpatternHoleSize, wallpatternHoleSize],

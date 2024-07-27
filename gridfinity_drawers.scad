@@ -328,7 +328,7 @@ module chestCutouts(
   efficientBack,
   wallPatternBorderWidth,
   wallPatternEnabled,
-  wallPatternStyle,
+  wallpatternStyle,
   wallPatternWtyle,
   wallPatternHoleSpacing,
   wallPatternDividersEnabled,
@@ -367,23 +367,20 @@ module chestCutouts(
     translate([chestWallThickness, -fudgeFactor, vpos]) 
       cube([innerchest.x, innerchest.y+fudgeFactor, innerchest.z]);
         
-    if(efficientBack) {
+    if(efficientBack) 
       translate(locations[0][1])
       translate([-locations[0][0][0]/2, 0, vpos-locations[0][0][1]/2])
       cube([locations[0][0][0], wallPattern_thickness, locations[0][0][1]]);
-    }
     
     if(wallPatternEnabled)
-    {
       translate([0, 0, vpos]) 
       for(iSide = [efficientBack ? 1 : 0:1:len(locations)-1])
-      {
         translate(locations[iSide][1])
         rotate(locations[iSide][2])
-        render(){
+        render() //Render on chest pattern because detailed patters can be slow
         cutout_pattern(
-          patternstyle = wallPatternStyle,
-          canvisSize = [locations[iSide][0][1],locations[iSide][0][0]], //Swap x and y and rotate so hex is easier to print
+          patternStyle = wallpatternStyle,
+          canvasSize = [locations[iSide][0][1],locations[iSide][0][0]], //Swap x and y and rotate so hex is easier to print
           customShape = false,
           circleFn = wallPatternHoleSides,
           holeSize = [wallPatternHoleSize, wallPatternHoleSize],
@@ -394,9 +391,6 @@ module chestCutouts(
           voronoiNoise=wallPatternVoronoiNoise,
           voronoiRadius = wallPatternVoronoiRadius,
           help=false);
-        }
-      }
-    }
   }
   
   color(colour_chest) 
@@ -415,8 +409,8 @@ module chestCutouts(
 
 
 module cutout_pattern(
-  patternstyle,
-  canvisSize,
+  patternStyle,
+  canvasSize,
   customShape,
   circleFn,
   holeSize = [],
@@ -427,10 +421,10 @@ module cutout_pattern(
   voronoiNoise,
   voronoiRadius,
   help){
-  if(patternstyle == "grid" || patternstyle == "hexgrid") {
+  if(patternStyle == "grid" || patternStyle == "hexgrid") {
     GridItemHolder(
-      canvisSize = canvisSize,
-      hexGrid = patternstyle == "hexgrid",
+      canvasSize = canvasSize,
+      hexGrid = patternStyle == "hexgrid",
       customShape = customShape,
       circleFn = circleFn,
       holeSize = holeSize,
@@ -440,13 +434,13 @@ module cutout_pattern(
       fill=fill, //"none", "space", "crop"
       help=help);
   }
-  else if(patternstyle == "voronoi" || patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"){
+  else if(patternStyle == "voronoi" || patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"){
     rectangle_voronoi(
-      canvisSize = [canvisSize.x,canvisSize.y,holeHeight], 
+      canvasSize = [canvasSize.x,canvasSize.y,holeHeight], 
       spacing = holeSpacing.x, 
       cellsize = holeSize.x,
-      grid = (patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"),
-      gridOffset = (patternstyle == "voronoihexgrid"),
+      grid = (patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"),
+      gridOffset = (patternStyle == "voronoihexgrid"),
       noise=voronoiNoise,
       radius = voronoiRadius);
   }
@@ -485,7 +479,7 @@ module gridfinity_drawer(
     wallPatternBorderWidth = wallpattern_border_width,
     efficientBack = efficient_back,
     wallPatternEnabled = wallpattern_enabled,
-    wallPatternStyle = wallpattern_style,
+    wallpatternStyle = wallpattern_style,
     wallPatternHoleSpacing = wallpattern_hole_spacing,
     wallPatternDividersEnabled = wallpattern_dividers_enabled,
     wallPatternHoleSides = wallpattern_hole_sides,
@@ -560,7 +554,7 @@ module gridfinity_drawer(
         efficientBack=efficientBack,
         wallPatternBorderWidth=wallPatternBorderWidth,
         wallPatternEnabled=wallPatternEnabled,
-        wallPatternStyle=wallPatternStyle,
+        wallpatternStyle=wallpatternStyle,
         wallPatternHoleSpacing=wallPatternHoleSpacing,
         wallPatternDividersEnabled=wallPatternDividersEnabled,
         wallPatternHoleSides=wallPatternHoleSides,

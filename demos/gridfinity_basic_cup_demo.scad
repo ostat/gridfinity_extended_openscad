@@ -5,7 +5,7 @@ include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
 //Demo scenario. You need to manually set to the steps to match the scenario options, and the FPS to 1
-scenario = "demo"; //["demo","basiccup","position","chambers","draw","label","label_relief","halfpitch","lip_style","fingerslide", "basecorner","sequentialbridging","wallpattern","wallpatternstyle","wallpatternfill","wallcutout","taperedcorner","floorthickness","filledin","efficient_floor", "box_corner_attachments_only","center_magnet","spacer","flatbase","split_bin","debug", "multi","multi_cutout","multi_hexpattern","multi_voronoipattern","multi_voronoigridpattern","multi_voronoihexgridpattern","multi_rounded","multi_chamfered","multi_drawer", "multibatch_basiccup",multibatch_basiccup_magnet,multibatch_basiccup_magnetscrew,multibatch_basiccup_halfpitch,multibatch_basiccup_halfpitch_magnet, multibatch_basiccup_halfpitch_magnetscrew,multibatch_batch_flatbase,multibatch_efficientfloor,multibatch_efficientfloor_magnet,multibatch_efficientfloor_magnetscrew, multibatch_efficientfloor_halfpitch,multibatch_efficientfloor_halfpitch_magnet,multibatch_efficientfloor_halfpitch_magnetscrew,multibatch_efficientfloor_flatbase, multi_floor_demo, multi_floor_demo_ef_off, floor_demo]
+scenario = "demo"; //["demo","basiccup","position","chambers","draw","label","label_relief","halfpitch","lip_style","fingerslide", "basecorner","sequentialbridging","wallpattern","wallpatternStyle","wallpatternfill","wallcutout","taperedcorner","floorthickness","filledin","efficient_floor", "box_corner_attachments_only","center_magnet","spacer","flatbase","split_bin","debug", "multi","multi_cutout","multi_hexpattern","multi_voronoipattern","multi_voronoigridpattern","multi_voronoihexgridpattern","multi_rounded","multi_chamfered","multi_drawer", "multibatch_basiccup",multibatch_basiccup_magnet,multibatch_basiccup_magnetscrew,multibatch_basiccup_halfpitch,multibatch_basiccup_halfpitch_magnet, multibatch_basiccup_halfpitch_magnetscrew,multibatch_batch_flatbase,multibatch_efficientfloor,multibatch_efficientfloor_magnet,multibatch_efficientfloor_magnetscrew, multibatch_efficientfloor_halfpitch,multibatch_efficientfloor_halfpitch_magnet,multibatch_efficientfloor_halfpitch_magnetscrew,multibatch_efficientfloor_flatbase, multi_floor_demo, multi_floor_demo_ef_off, floor_demo]
     
 height = -1;
 width=-1;
@@ -389,7 +389,7 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
       ["hex grid - hex 7.5mm", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"], [iwallpattern_hole_size,7.5],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
       ["hex grid - hex 9mm crop fill", [[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"hexgrid"], [iwallpattern_hole_size,9], [iwallpattern_hole_sides,6],[iwallpattern_fill,"crop"],[ivertical_chambers, 3],[iwallpattern_dividers_enabled,true]]]]
 
-   : scenario == "wallpatternstyle" ? [["Wall Pattern Style",5,[],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2],[iwallpattern_hole_size,5],[iwallpattern_walls,[1,1,1,1]],[iwallpattern_style,"grid"],[iwallpattern_hole_sides,6]]],
+   : scenario == "wallpatternStyle" ? [["Wall Pattern Style",5,[],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2],[iwallpattern_hole_size,5],[iwallpattern_walls,[1,1,1,1]],[iwallpattern_style,"grid"],[iwallpattern_hole_sides,6]]],
       ["grid", [[iwallpattern_style,"grid"]]],
       ["hexgrid", [[iwallpattern_style,"hexgrid"]]],
       ["voronoi", [[iwallpattern_style,"voronoi"]]],

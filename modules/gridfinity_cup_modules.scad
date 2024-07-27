@@ -442,10 +442,10 @@ module gridfinity_cup(
                     translate([-$sepCfg[iSeperatorBendSeparation]/2, 0, fudgeFactor]) 
                     translate(left[1])
                     rotate(left[2])
-                    render() //Render because detailed patters can be slow
+                    render() //Render on vertical_separator pattern because detailed patters can be slow
                     cutout_pattern(
-                      patternstyle = wallpattern_style,
-                      canvisSize = [left[0][1],left[0][0]], //Swap x and y and rotate so hex is easier to print
+                      patternStyle = wallpattern_style,
+                      canvasSize = [left[0][1],left[0][0]], //Swap x and y and rotate so hex is easier to print
                       customShape = false,
                       circleFn = wallpattern_hole_sides,
                       holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -472,10 +472,10 @@ module gridfinity_cup(
                     translate([0,-$sepCfg[iSeperatorWallThickness]/2+$sepCfg[iSeperatorBendSeparation]/2, fudgeFactor]) 
                     translate(front[1])
                     rotate(front[2])
-                    render() //Render because detailed patters can be slow
+                    render() //Render on horizontal_separator pattern because detailed patters can be slow
                     cutout_pattern(
-                      patternstyle = wallpattern_style,
-                      canvisSize = [front[0][1],front[0][0]], //Swap x and y and rotate so hex is easier to print
+                      patternStyle = wallpattern_style,
+                      canvasSize = [front[0][1],front[0][0]], //Swap x and y and rotate so hex is easier to print
                       customShape = false,
                       circleFn = wallpattern_hole_sides,
                       holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -519,10 +519,10 @@ module gridfinity_cup(
                   //patterns in the outer walls
                   translate(locations[i][1])
                   rotate(locations[i][2])
-                  render()
+                  render() //Render on outer wall pattern because detailed patters can be slow
                     cutout_pattern(
-                      patternstyle = wallpattern_style,
-                      canvisSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
+                      patternStyle = wallpattern_style,
+                      canvasSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
                       customShape = false,
                       circleFn = wallpattern_hole_sides,
                       holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -749,8 +749,8 @@ module gridfinity_cup(
 }
 
 module cutout_pattern(
-  patternstyle,
-  canvisSize,
+  patternStyle,
+  canvasSize,
   customShape,
   circleFn,
   holeSize = [],
@@ -761,10 +761,10 @@ module cutout_pattern(
   voronoiNoise,
   voronoiRadius,
   help){
-  if(patternstyle == "grid" || patternstyle == "hexgrid") {
+  if(patternStyle == "grid" || patternStyle == "hexgrid") {
     GridItemHolder(
-      canvisSize = canvisSize,
-      hexGrid = patternstyle == "hexgrid",
+      canvasSize = canvasSize,
+      hexGrid = patternStyle == "hexgrid",
       customShape = customShape,
       circleFn = circleFn,
       holeSize = holeSize,
@@ -774,14 +774,14 @@ module cutout_pattern(
       fill=fill, //"none", "space", "crop"
       help=help);
   }
-  else if(patternstyle == "voronoi" || patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"){
-    if(IsHelpEnabled("trace")) echo("cutout_pattern", canvisSize = [canvisSize.x,canvisSize.y,holeHeight], thickness = holeSpacing.x, round=1);
+  else if(patternStyle == "voronoi" || patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"){
+    if(IsHelpEnabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
     rectangle_voronoi(
-      canvisSize = [canvisSize.x,canvisSize.y,holeHeight], 
+      canvasSize = [canvasSize.x,canvasSize.y,holeHeight], 
       spacing = holeSpacing.x, 
       cellsize = holeSize.x,
-      grid = (patternstyle == "voronoigrid" || patternstyle == "voronoihexgrid"),
-      gridOffset = (patternstyle == "voronoihexgrid"),
+      grid = (patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"),
+      gridOffset = (patternStyle == "voronoihexgrid"),
       noise=voronoiNoise,
       radius = voronoiRadius,
       center=center);

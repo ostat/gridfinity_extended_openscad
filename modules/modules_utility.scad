@@ -25,7 +25,7 @@ module WallCutout(
     offset(r=-cornerRadius)
     offset(r=2 * cornerRadius)
     offset(r=-cornerRadius)
-    union(){
+    #union(){
       translate([0,cornerRadius*4/2])
       square([topWidth*2,cornerRadius*4], true);
       hull(){

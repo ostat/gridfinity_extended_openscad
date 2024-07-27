@@ -78,7 +78,7 @@ module vrn2_from(points, spacing = 1, r = 0, delta = 0, chamfer = false, region_
 }
 
 module rectangle_voronoi(
-   canvisSize = [200,200,10],
+   canvasSize = [200,200,10],
    points=[],
    cellsize=10,
    noise=0.5, 
@@ -96,28 +96,28 @@ module rectangle_voronoi(
     ? points 
     : grid ?
      let(
-      _pointCount = [ceil(canvisSize.x/cellsize)+1,ceil(canvisSize.y/cellsize)+1],
+      _pointCount = [ceil(canvasSize.x/cellsize)+1,ceil(canvasSize.y/cellsize)+1],
       seed = seed == undef ? rands(0, 100000, 2)[0] : seed,
       seeds = rands(0, 100000, 2, seed), // you need a different seed for x and y
       pointsx = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[0]),
       pointsy = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[1])
     )[for(i = [0:_pointCount.x-1], y = [0:_pointCount.y-1]) 
-        [i*cellsize + pointsx[i+y*_pointCount.x]-canvisSize.x/2 + (y % 2 == 0 && gridOffset ? cellsize/2 : 0),
-          y*cellsize + pointsy[i*_pointCount.y+y]-canvisSize.y/2]]
+        [i*cellsize + pointsx[i+y*_pointCount.x]-canvasSize.x/2 + (y % 2 == 0 && gridOffset ? cellsize/2 : 0),
+          y*cellsize + pointsy[i*_pointCount.y+y]-canvasSize.y/2]]
     : let(
-      _pointCount = max((canvisSize.x * canvisSize.y)/(cellsize^2), 30),
+      _pointCount = max((canvasSize.x * canvasSize.y)/(cellsize^2), 30),
       seed = seed == undef ? rands(0, 100000, 2)[0] : seed,
       seeds = rands(0, 100000, 2, seed), // you need a different seed for x and y
-      pointsx = rands(-canvisSize.x/2, canvisSize.x/2, _pointCount, seeds[0]),
-      pointsy = rands(-canvisSize.y/2, canvisSize.y/2, _pointCount, seeds[1])
+      pointsx = rands(-canvasSize.x/2, canvasSize.x/2, _pointCount, seeds[0]),
+      pointsy = rands(-canvasSize.y/2, canvasSize.y/2, _pointCount, seeds[1])
     )[for(i = [0:_pointCount-1]) [pointsx[i],pointsy[i]]];
   
-  translate(center ? [0, 0, 0] : [canvisSize.x/2, canvisSize.y/2, 0])
+  translate(center ? [0, 0, 0] : [canvasSize.x/2, canvasSize.y/2, 0])
   intersection() {
-    translate([0,0,canvisSize.z/2])
-      cube(size = [canvisSize.x,canvisSize.y,canvisSize.z*2], center=true);
+    translate([0,0,canvasSize.z/2])
+      cube(size = [canvasSize.x,canvasSize.y,canvasSize.z*2], center=true);
   
-    linear_extrude(height = canvisSize.z)
+    linear_extrude(height = canvasSize.z)
       vrn2_from(
         points, 
         spacing=_spacing,

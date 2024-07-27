@@ -27,25 +27,25 @@ for(centeri = [0:1:len(centerOptions)-1])
 {
 for(hexi = [0:1:len(hexOptions)-1])
 {
-  canvisSize = 50;
-  canvisSpace = 25;
+  canvasSize = 50;
+  canvasSpace = 25;
   scenarios = 5;
   holeSize = 7;
   spacing = [2,2];
 
   samplei = 0;
-  xpos = (canvisSize+canvisSpace)*(scenarios)*centeri;
-  ypos = (canvisSize+canvisSpace)*hexi + (canvisSize+canvisSpace)*len(hexOptions)* filli;
+  xpos = (canvasSize+canvasSpace)*(scenarios)*centeri;
+  ypos = (canvasSize+canvasSpace)*hexi + (canvasSize+canvasSpace)*len(hexOptions)* filli;
   
   txt = str("fill style ", fillOptions[filli], " - center ", centerOptions[centeri], " - hex ", hexOptions[hexi]);
-  translate([xpos+canvisSize+5,ypos+canvisSize+10,0])
+  translate([xpos+canvasSize+5,ypos+canvasSize+10,0])
   text(txt, size=5);
   
-  translate([xpos+(canvisSize+canvisSpace)*0,ypos,0])
-  Highlight([canvisSize,canvisSize,1], "square")
-  translate(centerOptions[centeri] ? [canvisSize/2,canvisSize/2,0] : [0,0,0])
+  translate([xpos+(canvasSize+canvasSpace)*0,ypos,0])
+  Highlight([canvasSize,canvasSize,1], "square")
+  translate(centerOptions[centeri] ? [canvasSize/2,canvasSize/2,0] : [0,0,0])
   GridItemHolder(
-    canvisSize = [canvisSize,canvisSize],
+    canvasSize = [canvasSize,canvasSize],
     hexGrid = hexOptions[hexi],
     holeSize = [holeSize,2*holeSize],
     holeSpacing = spacing,
@@ -57,11 +57,11 @@ for(hexi = [0:1:len(hexOptions)-1])
     help = help)
     cube([holeSize,2*holeSize,holeSize]);
 
-  translate([xpos+(canvisSize+canvisSpace)*1,ypos,0])
-  Highlight([canvisSize,canvisSize,1], "square")
-  translate(centerOptions[centeri] ? [canvisSize/2,canvisSize/2,0] : [0,0,0])
+  translate([xpos+(canvasSize+canvasSpace)*1,ypos,0])
+  Highlight([canvasSize,canvasSize,1], "square")
+  translate(centerOptions[centeri] ? [canvasSize/2,canvasSize/2,0] : [0,0,0])
   GridItemHolder(
-    canvisSize = [canvisSize,canvisSize],
+    canvasSize = [canvasSize,canvasSize],
     hexGrid = hexOptions[hexi],
     holeSize = [2*holeSize,holeSize],
     holeSpacing = spacing,
@@ -73,11 +73,11 @@ for(hexi = [0:1:len(hexOptions)-1])
     help = help)
     cube([2*holeSize,holeSize,holeSize]);
     
-  translate([xpos+(canvisSize+canvisSpace)*2,ypos,0])
-  Highlight([canvisSize,canvisSize,1], "hex")
-  translate(centerOptions[centeri] ? [canvisSize/2,canvisSize/2,0] : [0,0,0])
+  translate([xpos+(canvasSize+canvasSpace)*2,ypos,0])
+  Highlight([canvasSize,canvasSize,1], "hex")
+  translate(centerOptions[centeri] ? [canvasSize/2,canvasSize/2,0] : [0,0,0])
   GridItemHolder(
-    canvisSize = [canvisSize,canvisSize],
+    canvasSize = [canvasSize,canvasSize],
     hexGrid = hexOptions[hexi],
     circleFn = 6,
     holeSize = [holeSize,holeSize],
@@ -89,11 +89,11 @@ for(hexi = [0:1:len(hexOptions)-1])
     customShape = false,
     help = help);
 
-  translate([xpos+(canvisSize+canvisSpace)*3,ypos,0])
-  Highlight([canvisSize,canvisSize,1], "circle")
-  translate(centerOptions[centeri] ? [canvisSize/2,canvisSize/2,0] : [0,0,0])
+  translate([xpos+(canvasSize+canvasSpace)*3,ypos,0])
+  Highlight([canvasSize,canvasSize,1], "circle")
+  translate(centerOptions[centeri] ? [canvasSize/2,canvasSize/2,0] : [0,0,0])
   GridItemHolder(
-    canvisSize = [canvisSize,canvisSize],
+    canvasSize = [canvasSize,canvasSize],
     hexGrid = hexOptions[hexi],
     circleFn = 64,
     holeSize = [holeSize,holeSize],
@@ -105,11 +105,11 @@ for(hexi = [0:1:len(hexOptions)-1])
     customShape = false,
     help = help);
     
-  translate([xpos+(canvisSize+canvisSpace)*4,ypos,0])
-  Highlight([canvisSize,canvisSize,1], "sqaure")
-  translate(centerOptions[centeri] ? [canvisSize/2,canvisSize/2,0] : [0,0,0])
+  translate([xpos+(canvasSize+canvasSpace)*4,ypos,0])
+  Highlight([canvasSize,canvasSize,1], "sqaure")
+  translate(centerOptions[centeri] ? [canvasSize/2,canvasSize/2,0] : [0,0,0])
   GridItemHolder(
-    canvisSize = [canvisSize,canvisSize],
+    canvasSize = [canvasSize,canvasSize],
     hexGrid = hexOptions[hexi],
     circleFn = 4,
     holeSize = [holeSize,holeSize],
@@ -130,25 +130,25 @@ for(centeri = [0:1:len(centerOptions)-1])
 {
 for(hexi = [0:1:len(hexOptions)-1])
 {
-  canvisSize = [162,120,0];
-  canvisSpace = 25;
+  canvasSize = [162,120,0];
+  canvasSpace = 25;
   scenarios = 1;
   holeSize = 7;
   spacing = [2,2];
 
-  xpos = (canvisSize[0]+canvisSpace)*(scenarios)*centeri;
-  ypos = (canvisSize[1]+canvisSpace)*hexi + (canvisSize[1]+canvisSpace)*len(hexOptions)* filli;
+  xpos = (canvasSize[0]+canvasSpace)*(scenarios)*centeri;
+  ypos = (canvasSize[1]+canvasSpace)*hexi + (canvasSize[1]+canvasSpace)*len(hexOptions)* filli;
   
   txt = str("fill style ", fillOptions[filli], " - center ", centerOptions[centeri], " - hex ", hexOptions[hexi]);
-  translate([xpos+(canvisSize.x+canvisSpace)*4,ypos+canvisSize[1]+10,0])
+  translate([xpos+(canvasSize.x+canvasSpace)*4,ypos+canvasSize[1]+10,0])
   text(txt, size=5);
   
-  //translate([(canvisSize[0]+canvisSpace)*10,ypos,0])
-  translate([xpos+(canvisSize.x+canvisSpace)*4,ypos,0])
+  //translate([(canvasSize[0]+canvasSpace)*10,ypos,0])
+  translate([xpos+(canvasSize.x+canvasSpace)*4,ypos,0])
   Highlight([162, 120,1], "sqaure")
-  translate(centerOptions[centeri] ? canvisSize/2 : [0,0,0])
+  translate(centerOptions[centeri] ? canvasSize/2 : [0,0,0])
   GridItemHolder(
-    canvisSize = [162, 120],
+    canvasSize = [162, 120],
     hexGrid = hexOptions[hexi],
     circleFn = 64,
     holeSize = [18.65,18.65],

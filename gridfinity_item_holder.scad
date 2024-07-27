@@ -422,7 +422,7 @@ module itemholder(
         ? [compartment_spacing+x*xStep+xSize/2, compartment_spacing+y*yStep+ySize/2, floorThickness-_depth]
         : [compartment_spacing+x*xStep, compartment_spacing+y*yStep, floorThickness-_depth])
         GridItemHolder(
-          canvisSize = [xSize,ySize],
+          canvasSize = [xSize,ySize],
           hexGrid= gridStyle == "square" ? false : gridStyle == "hex" ? true : gridStyle,
           customShape = item[4] == "square",
           circleFn = _sides,

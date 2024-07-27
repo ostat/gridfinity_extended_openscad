@@ -134,7 +134,7 @@ module gridfinity_sieve(
     color(color_extension)
     translate([0,0,-fudgeFactor])
       GridItemHolder(
-        canvisSize = [num_x*gf_pitch,num_y*gf_pitch],
+        canvasSize = [num_x*gf_pitch,num_y*gf_pitch],
         hexGrid = sieve_grid_style == "hex",
         //customShape = item[4] == "square",
         circleFn = sieve_hole_sides,
