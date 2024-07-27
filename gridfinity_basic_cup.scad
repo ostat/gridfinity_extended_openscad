@@ -8,8 +8,8 @@
 // https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup.html
 
 include <modules/gridfinity_constants.scad>
-use <modules/gridfinity_cup_modules.scad>
-use <modules/gridfinity_modules.scad>
+use <modules/module_gridfinity_cup.scad>
+use <modules/module_gridfinity.scad>
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */

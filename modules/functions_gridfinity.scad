@@ -1,7 +1,6 @@
 // set this to produce sharp corners on baseplates and bins
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
-fudgeFactor = 0.01;
 
 function calcDimensionWidth(width) = calcDimension(width, "width", gf_pitch);
 function calcDimensionDepth(depth) = calcDimension(depth, "depth", gf_pitch);
@@ -17,7 +16,7 @@ function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficie
 ) efficientFloor != "off" ? 0 
   : cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
 
-constTopHeight = 5.7+fudgeFactor*5; //Need to confirm this
+constTopHeight = let(fudgeFactor = 0.01) 5.7+fudgeFactor*5; //Need to confirm this
 
 function wallCutoutPosition_mm(userPosition, wallLength) = 
   (userPosition < 0 ? wallLength*gf_pitch/abs(userPosition) : gf_pitch*userPosition);

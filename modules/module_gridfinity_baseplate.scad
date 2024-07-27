@@ -1,6 +1,6 @@
 // include instead of use, so we get the pitch
 include <gridfinity_constants.scad>
-use <gridfinity_modules.scad>
+use <module_gridfinity.scad>
 
 /* [Plate] */
 // Plate Style

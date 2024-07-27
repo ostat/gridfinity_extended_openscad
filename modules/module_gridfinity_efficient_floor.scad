@@ -1,8 +1,7 @@
 include <gridfinity_constants.scad>
-include <roundedNegativeChampher.scad>
-use <gridfinity_modules.scad>
-
-fudgeFactor = 0.01;
+include <module_rounded_negative_champher.scad>
+use <module_gridfinity.scad>
+use <module_utility.scad>
 
 //creates the gird of efficient floor pads to be added to the cavity for removal from the overall filled in bin.
 module efficient_floor_grid(
@@ -59,6 +58,7 @@ module EfficientFloorAttachementCaps(
 {
   assert(is_list(grid_copy_corner_index) && len(grid_copy_corner_index) >= 3, "grid_copy_corner_index must be a list of length > 3");
   
+  fudgeFactor = 0.01; 
   magnetPosition = calculateMagnetPosition(magnet_diameter);
   blockSize = gf_pitch/2-magnetPosition+wall_thickness;
     
@@ -99,6 +99,8 @@ module EfficientFloor(
   floorSmooth = 0,
   efficientFloorGridHeight=efficientFloorGridHeight,
   $fn=64){
+  
+  fudgeFactor = 0.01;
   floorRadius=floorRounded ? 1 : 0;
 
   seventeen = gf_pitch/2-4;

@@ -1,5 +1,5 @@
 include <gridfinity_constants.scad>
-include <gridfinity_modules.scad>
+include <module_gridfinity.scad>
 
 iSlidingLidEnabled=0;
 iSlidingLidThickness=1;

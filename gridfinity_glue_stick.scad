@@ -1,4 +1,4 @@
-include <modules/gridfinity_modules.scad>
+include <modules/module_gridfinity.scad>
 include <modules/gridfinity_constants.scad>
 
 cup_height = 5;

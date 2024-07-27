@@ -1,4 +1,4 @@
-// include <gridfinity_modules.scad>
+// include <module_gridfinity.scad>
 use <../gridfinity_drawers.scad>
 include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>

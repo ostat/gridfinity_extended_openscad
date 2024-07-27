@@ -1,8 +1,8 @@
-include <modules/modules_item_holder.scad>
+include <modules/module_item_holder.scad>
 include <modules/gridfinity_constants.scad>
 include <modules/functions_general.scad>
-use <modules/gridfinity_cup_modules.scad>
-use <modules/gridfinity_modules.scad>
+use <modules/module_gridfinity_cup.scad>
+use <modules/module_gridfinity.scad>
 
 /*<!!start gridfinity_sieve!!>*/
 

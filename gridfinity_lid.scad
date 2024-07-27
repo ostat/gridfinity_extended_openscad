@@ -8,9 +8,9 @@
 // https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup.html
 
 include <modules/gridfinity_constants.scad>
-include <modules/module_sliding_lid.scad>
-use <modules/gridfinity_cup_modules.scad>
-use <modules/gridfinity_modules.scad>
+include <modules/module_gridfinity_sliding_lid.scad>
+use <modules/module_gridfinity_cup.scad>
+use <modules/module_gridfinity.scad>
 
 /* [Sliding Lid] */
 mode = "both";//[both, lid, cup]

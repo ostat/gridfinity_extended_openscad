@@ -1,6 +1,6 @@
-// include <gridfinity_modules.scad>
+// include <module_gridfinity.scad>
 use <../gridfinity_basic_cup.scad>
-use <../modules/gridfinity_cup_modules.scad>
+use <../modules/module_gridfinity_cup.scad>
 include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 

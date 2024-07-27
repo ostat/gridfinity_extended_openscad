@@ -1,4 +1,4 @@
-include <../modules/voronoi.scad>
+include <../modules/module_voronoi.scad>
 
 module Highlight(size = [100,100,1], txt=""){
   color("LightCoral")

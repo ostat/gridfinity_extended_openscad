@@ -5,11 +5,11 @@
 // Inspiration for their design was https://www.printables.com/pl/model/363389
 // The design has diveated sigficantly, I would not consider this compatiable with the orginal.
 
-use <modules/gridfinity_cup_modules.scad>
-use <modules/gridfinity_modules.scad>
-use <modules/module_baseplate.scad>
+use <modules/module_gridfinity_cup.scad>
+use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_baseplate.scad>
 include <modules/gridfinity_constants.scad>
-use <modules/modules_item_holder.scad>
+use <modules/module_item_holder.scad>
 
 /* [Render] */
 mode = "everything"; //[everything:Everything, onedrawer:Single Drawer, drawers:All drawers, chest:Chest]

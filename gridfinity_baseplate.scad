@@ -1,7 +1,7 @@
 // include instead of use, so we get the pitch
 include <modules/gridfinity_constants.scad>
-use <modules/gridfinity_modules.scad>
-use <modules/module_baseplate.scad>
+use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_baseplate.scad>
 
 /* [Size] */
 // X dimension. grid units (multiples of 42mm) or mm.

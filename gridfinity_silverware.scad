@@ -1,4 +1,4 @@
-include <modules/gridfinity_modules.scad>
+include <modules/module_gridfinity.scad>
 
 /* [Utensil count and measurements] */
 // Utensil definitions above this number are ignored

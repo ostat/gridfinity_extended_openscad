@@ -1,7 +1,7 @@
 // include instead of use, so we get the pitch
 include <../modules/gridfinity_constants.scad>
 include <../modules/functions_general.scad>
-use <../modules/module_baseplate.scad>
+use <../modules/module_gridfinity_baseplate.scad>
 
 scenario = "demo"; //["demo","baseplate","magnet","weighted", "lid","lid_flat_base","lid_half_pitch","customsize"]
 showtext = true;
