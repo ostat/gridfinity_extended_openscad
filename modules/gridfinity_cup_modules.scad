@@ -979,7 +979,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
             reducedlipstyle == "reduced" ? - gf_lip_lower_taper_height
             : reducedlipstyle =="none" ? seventeen+1.15-gf_pitch/2+0.25+wall_thickness
             : 0, 0])
-        translate([-(gf_pitch/2),-seventeen-1.15, floorht])
+        translate([0,-seventeen-1.15+gf_pitch/2, floorht])
           union(){
             if(fingerslide == "rounded"){
               roundedCorner(
