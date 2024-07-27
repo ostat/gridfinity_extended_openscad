@@ -196,7 +196,7 @@ module tray(
   if(len(customCompartments) == 0)
   {
     //Non custom components
-    //echo(n=num_x*gf_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
+    if(IsHelpEnabled($showHelp, "trace")) echo(n=num_x*gf_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
     xSize = (num_x*gf_pitch-(verticalCompartments+1)*spacing)/verticalCompartments;
     xStep = xSize + spacing;
     ySize = (num_y*gf_pitch-(horizontalCompartments+1)*spacing)/horizontalCompartments;
@@ -206,7 +206,7 @@ module tray(
     {
       for(y =[0:1:horizontalCompartments-1])
       {
-        //echo(x=x,y=y,xStep=xStep,yStep=yStep);
+        if(IsHelpEnabled($showHelp, "trace")) echo(x=x,y=y,xStep=xStep,yStep=yStep);
         translate([spacing+x*xStep,spacing+y*yStep,baseHeight+max(trayZpos,floorThickness)])
         roundedCube(
             xSize, ySize,
@@ -218,10 +218,9 @@ module tray(
   }
   else
   {
-    echo(customCompartments = splitCustomConfig(customCompartments));
+    if(IsHelpEnabled($showHelp, "debug")) echo(customCompartments = splitCustomConfig(customCompartments));
     //custom components
     compartments = split(customCompartments, "|");
-
     
     scl = [
       (num_x*gf_pitch-cellSpacing*2)/(num_x*gf_pitch),
@@ -232,7 +231,6 @@ module tray(
       for (x =[0:1:len(compartments)-1])
       {
           comp =csv_parse(compartments[x]);
-          //echo(comp=comp);
           xpos = comp[ixpos];
           ypos = comp[iypos];
           xsize = comp[ixsize];
@@ -333,7 +331,7 @@ module gridfinity_tray(
   num_y = calcDimensionDepth(depth);
   num_z = calcDimensionHeight(height);
   
-  echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
+  if(IsHelpEnabled($showHelp, "info")) echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
   
   difference() {
     /*<!!start gridfinity_basic_cup!!>*/
@@ -429,7 +427,7 @@ module gridfinity_tray(
         [icornerradius, tray_corner_radius], 
         [idepth, num_z]];
 
-      echo(outputCustomConfig("tray", replace_Items(configArray, [])));
+      if(IsHelpEnabled($showHelp, "info")) echo(outputCustomConfig("tray", replace_Items(configArray, [])));
   }
 }
 

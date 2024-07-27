@@ -1,4 +1,5 @@
 include <ub.scad>
+include <functions_general.scad>
 
 module GridItemHolder(
   canvisSize = [0,0],
@@ -81,7 +82,7 @@ module GridItemHolder(
     canvisSize.x<=holeSize.x+holeSpacing.x || 
     canvisSize.y<=holeSize.y+holeSpacing.y ||
     holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
-  //echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
+  if(IsHelpEnabled($showHelp, "trace")) echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
   hexGridCount = let(count = eHexGrid[0]*eHexGrid[1]) eHexGrid[0] % 2 == 0 ? floor(count) : ceil(count);
   squareCount = eSquareGrid[0]*eSquareGrid[1];
   _hexGrid = hexGrid != "auto" ? hexGrid //if not auto use what was chose
@@ -205,7 +206,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   assert(is_list(smallCenter) && len(smallCenter) >= 3, "longCenter should be a list of length 5");
   assert(is_list(side) && len(side) >= 3, "longCenter should be a list of length 5");
 
-  //echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
+  if(IsHelpEnabled($showHelp, "trace")) echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
   render()
   union(){
     minspacing = 3;

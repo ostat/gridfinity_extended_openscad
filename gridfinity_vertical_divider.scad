@@ -87,11 +87,11 @@ module Divider(
   $fn = 36
 ){
   _baseHeight = radius > baseHeight ? radius : baseHeight;
-
+  
   _backBottomHeight = max(_baseHeight,height-radius-abs(backTopInset*tan(backTopAngle)));
   _frontBottomHeight = max(_baseHeight,height-radius-abs(frontTopInset*tan(frontTopAngle)));
-  echo(height,radius, abs(backTopInset*tan(backTopAngle)),_backBottomHeight);
-  echo(_baseHeight=_baseHeight, height=height, _backBottomHeight=_backBottomHeight, _frontBottomHeight=_frontBottomHeight);
+  if(IsHelpEnabled($showHelp, "debug")) echo("Gridfinity_Divider", height,radius, abs(backTopInset*tan(backTopAngle)),_backBottomHeight);
+  if(IsHelpEnabled($showHelp, "debug")) echo("Gridfinity_Divider", _baseHeight=_baseHeight, height=height, _backBottomHeight=_backBottomHeight, _frontBottomHeight=_frontBottomHeight);
   
   positions = [
     [radius,_frontBottomHeight],      //front bottom

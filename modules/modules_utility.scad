@@ -121,10 +121,7 @@ module roundedCube(
   bottomRadius = bottomRadius > 0 ? bottomRadius : cornerRadius;
   sideRadius = sideRadius > 0 ? sideRadius : cornerRadius;
   
-  if(sideRadius < topRadius || sideRadius < bottomRadius)
-  {
-    echo("roundedCube", "Error, sideRadius must be >= than bottomRadius and topRadius", sideRadius=sideRadius, topRadius=topRadius, bottomRadius=bottomRadius);
-  }
+  assert(sideRadius < topRadius || sideRadius < bottomRadius, "sideRadius must be >= than bottomRadius and topRadius");
     
   positions=[
      [sideRadius                    ,sideRadius                   ]
@@ -300,7 +297,6 @@ module CubeWithRoundedCorner(
   assert(is_num(cornerRadius) && cornerRadius >= 0, "cornerRadius should be a number greater than 0");
   assert(is_num(edgeRadius), "edgeRadius should be a number");
   
-  echo("CubeWithRoundedCorner",size=size, cornerRadius=cornerRadius, edgeRadius=edgeRadius, center=center);
   fudgeFactor = 0.01;
   
   translate(center ? -size/2 : [0,0,0])
