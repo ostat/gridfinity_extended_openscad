@@ -1,78 +1,8 @@
 include <modules_utility.scad>
 include <functions_general.scad>
 include <gridfinity_constants.scad>
-
-// set this to produce sharp corners on baseplates and bins
-// not for general use (breaks compatibility) but may be useful for special cases
-sharp_corners = 0;
-
-function calcDimensionWidth(width) = calcDimension(width, "width", gf_pitch);
-function calcDimensionDepth(depth) = calcDimension(depth, "depth", gf_pitch);
-function calcDimensionHeight(height) = calcDimension(height, "height", gf_zpitch); 
-function calcDimension(value, name, unitSize) = 
-  is_num(value) ? value : 
-  assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
-  value[1] != 0 ? value[1]/unitSize : value[0];
-          
-function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
-  q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
-  //efficient floor has an effective radius of 0
-) efficientFloor != "off" ? 0 
-  : cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
-
-constTopHeight = 5.7+fudgeFactor*5; //Need to confirm this
-
-function wallCutoutPosition_mm(userPosition, wallLength) = 
-  (userPosition < 0 ? wallLength*gf_pitch/abs(userPosition) : gf_pitch*userPosition)-gf_pitch/2;
-
-//0.6 is needed to align the top of the cutout, need to fix this
-function calculateWallTop(num_z, lip_style) =
-  gf_zpitch * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
-  
-//Height to clear the voids in the base
-function cupBaseClearanceHeight(magnet_diameter, screw_depth, flat_base=false) = let (
-    mag_ht = magnet_diameter > 0 ? gf_magnet_thickness : 0)
-    flat_base 
-      ? max(mag_ht, screw_depth) 
-      : max(mag_ht, screw_depth, gfBaseHeight());
-
-function calculateMinFloorHeight(magnet_diameter,screw_depth) = 
-    cupBaseClearanceHeight(magnet_diameter,screw_depth) + gf_cup_floor_thickness;
-function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
-
-//Height of base including the floor.
-function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
-      let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
-  filledin ? num_z * gf_zpitch 
-    : efficient_floor != "off" 
-      ? floorThickness
-      : max(3.5, cupBaseClearanceHeight(magnet_diameter,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
-    
-//Usable floor depth (florr height - min floor)
-function calculateFloorThickness(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) = 
-  calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) - cupBaseClearanceHeight(magnet_diameter, screw_depth);
-    
-// calculate the position of separators from the size
-function splitChamber(num_separators, num_x) = num_separators < 1 
-      ? [] 
-      : [ for (i=[1:num_separators]) i*(num_x/(num_separators+1))*gf_pitch];
-
-function LookupKnownShapes(name="round") = 
-  name == "square" ? 4 :
-  name == "hex" ? 6 : 64;
-  
-function cupPosition(position, num_x, num_y) = position == "center" 
-    ? [-(num_x-1)*gf_pitch/2, -(num_y-1)*gf_pitch/2, 0] 
-    : position == "zero" ? [gf_pitch/2, gf_pitch/2, 0] 
-    : [0, 0, 0]; 
-
-//wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm) 
-function wallThickness(wall_thickness, num_z) = wall_thickness != 0 ? wall_thickness
-        : num_z < 6 ? 0.95
-        : num_z < 12 ? 1.2
-        : 1.6;
+include <functions_gridfinity.scad>
         
-grid_block();
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(
@@ -81,7 +11,7 @@ module grid_block(
   num_z=2, 
   magnet_diameter=gf_magnet_diameter, 
   screw_depth=gf_cupbase_screw_depth, 
-  position = "default",
+  position = "zero",
   hole_overhang_remedy=0, 
   half_pitch=false, 
   box_corner_attachments_only = false, 
@@ -112,12 +42,12 @@ module grid_block(
         color(color_base)
         pad_grid(num_x, num_y, half_pitch, flat_base);
         // main body will be cut down afterward
-        translate([-gf_pitch/2, -gf_pitch/2, 5]) 
+        tz(5) 
         cube([gf_pitch*num_x, gf_pitch*num_y, totalht-5]);
       }
       
       color(color_cup)
-      translate([0, 0, -fudgeFactor])
+      tz(-fudgeFactor)
       hull() 
       cornercopy(block_corner_position, num_x, num_y) 
       cylinder(r=gf_cup_corner_radius, h=totalht+fudgeFactor*2, $fn=$fn);
@@ -140,17 +70,17 @@ module grid_block(
     {
       // remove top so XxY can fit on top
       color(color_topcavity) 
-        translate([0, 0, gf_zpitch*num_z]) 
+        tz(gf_zpitch*num_z) 
         pad_oversize(num_x, num_y, 1);
     }
     else{
       color(color_topcavity) 
-        translate([-gf_pitch/2, -gf_pitch/2, gf_zpitch*num_z]) 
+        tz(gf_zpitch*num_z) 
         cube([num_x*gf_pitch,num_y*gf_pitch, gf_zpitch]);
     }
     
     color(color_basehole)
-    translate([0,0,-fudgeFactor])
+    tz(-fudgeFactor)
     gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only){
         rdeg =
           $gcci[2] == [ 1, 1] ? 90 :
@@ -253,11 +183,11 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
       
       hull() cornercopy(pad_corner_position, num_x, num_y) {
         if (sharp_corners) {
-          translate([0, 0, bevel2_bottom]) 
+          translate(bevel2_bottom) 
           cylsq2(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
         }
         else {
-          translate([0, 0, bevel2_bottom]) 
+          tz(bevel2_bottom) 
           cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht, $fn=32);
         }
       }
@@ -265,7 +195,6 @@ module pad_oversize(num_x=1, num_y=1, margins=0) {
     
     // cut off bottom if we're going to go negative
     if (margins) {
-      translate([-gf_pitch/2, -gf_pitch/2, 0])
       cube([gf_pitch*num_x, gf_pitch*num_y, axialdown]);
     }
   }
@@ -277,6 +206,7 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) 
   assert(!is_undef(num_x), "num_x is undefined");
   assert(!is_undef(num_y), "num_y is undefined");
   
+  translate([pitch/2,pitch/2])
   for (xi=[1:ceil(num_x)]) for (yi=[1:ceil(num_y)]) 
     for (xx=[-1, 1]) for (yy=[-1, 1]) {
       quadrent = [xi+(xx == -1 ? -0.5 : 0), yi+(yy == -1 ? -0.5 : 0)];
@@ -301,7 +231,7 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
   assert(!is_undef(r), "r is undefined");
   assert(!is_undef(num_x), "num_x is undefined");
   assert(!is_undef(num_y), "num_y is undefined");
-
+  translate([pitch/2,pitch/2])
   for (xx=[0, 1]) 
     for (yy=[0, 1]) 
     {
@@ -316,6 +246,7 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
 
 // make repeated copies of something(s) at the gridfinity spacing of 42mm
 module gridcopy(num_x, num_y, pitch=gf_pitch) {
+  //translate([pitch/2,pitch/2])
   for (xi=[0:num_x-1]) 
     for (yi=[0:num_y-1])
     {

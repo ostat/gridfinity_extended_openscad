@@ -67,7 +67,7 @@ module EfficientFloorAttachementCaps(
          : grid_copy_corner_index[2] == [ 1,-1] ? [0,0,180] 
          : grid_copy_corner_index[2] == [-1,-1] ? [0,0,90] 
          : [0,0,0])
-    translate([0,0,floor_thickness-fudgeFactor])
+    tz(floor_thickness-fudgeFactor)
     hull(){
       if(screw_depth > 0){
         cornerRadius = gf_cupbase_screw_diameter/2+wall_thickness*2;
@@ -86,8 +86,8 @@ module EfficientFloorAttachementCaps(
           size=[blockSize+cornerRadius,blockSize+cornerRadius,gf_magnet_thickness], 
           cornerRadius = cornerRadius,
           edgeRadius = wall_thickness);
-        }
-  }
+      }
+    }
 }
 //Creates the efficient floor pad that will be removed from the floor
 module EfficientFloor(
@@ -108,8 +108,7 @@ module EfficientFloor(
         
   smoothVersion=2;
   //Less than minEfficientPadSize is to small and glitches the cut away
-  if
-  (num_x > minEfficientPadSize && num_y > minEfficientPadSize )
+  if(num_x > minEfficientPadSize && num_y > minEfficientPadSize )
   if(floorSmooth == 2) {
     //Smooth floor that does not round over the divider walls
     
@@ -147,7 +146,10 @@ module EfficientFloor(
       topChampherZBottom = wallStartHeight+wallTaper;
     gridcopy(num_x, num_y, pitch=gf_pitch)
       //tz(efficientFloorGridHeight-topChampherRadius) 
-      tz(topChampherZBottom) 
+      translate([
+        gf_pitch/2,
+        gf_pitch/2,
+        topChampherZBottom]) 
       roundedNegativeChampher(
         champherRadius = topChampherRadius, 
         size=[
@@ -208,7 +210,11 @@ module EfficientFloor(
       if(floorRounded){
         maxRoundOver = 1.25;
         champherRadius = min(efficientFloorGridHeight-taperTopPos,maxRoundOver);
-        tz(efficientFloorGridHeight-taperTopPos > maxRoundOver ? efficientFloorGridHeight-taperTopPos-champherRadius : 0)
+
+        translate([
+          gf_pitch/2,
+          gf_pitch/2,
+          efficientFloorGridHeight-taperTopPos > maxRoundOver ? efficientFloorGridHeight-taperTopPos-champherRadius : 0])
         roundedNegativeChampher(
           champherRadius = champherRadius, 
           size=[

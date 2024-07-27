@@ -243,7 +243,7 @@ module Gridfinity_Divider(
   for(i = [0 : divider_count-1]){
     ypos = (num_y*gf_pitch-gf_cup_corner_radius*2-dividerwidth)/(divider_count-1)*i;
     translate(cupPosition(position,num_x,num_y))
-    translate([-gf_pitch/2+0.25,-gf_pitch/2+gf_cup_corner_radius+dividerwidth+ypos,floorHeight])
+    translate([0.25,gf_cup_corner_radius+dividerwidth+ypos,floorHeight])
     PatternedDivider(
       height = dividerheight,
       length = num_x*gf_pitch-0.5,

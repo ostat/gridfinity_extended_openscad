@@ -24,9 +24,9 @@ module gridfinity_label(
 
   labelCornerRadius = labelSize[3];
 
-  labelPoints = [[ (num_y-0.5)*gf_pitch-labelSize.y, zpoint-labelCornerRadius],
-    [ (num_y-0.5)*gf_pitch, zpoint-labelCornerRadius ],
-    [ (num_y-0.5)*gf_pitch, zpoint-labelCornerRadius-labelSize.z ]
+  labelPoints = [[ num_y*gf_pitch-labelSize.y, zpoint-labelCornerRadius],
+    [ num_y*gf_pitch, zpoint-labelCornerRadius ],
+    [ num_y*gf_pitch, zpoint-labelCornerRadius-labelSize.z ]
   ];
   
   separator_positions = calculateSeparators(vertical_separator_positions);
@@ -53,7 +53,7 @@ module gridfinity_label(
                       : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x 
                       : 0 ;
                       
-      translate([(-gf_pitch/2) + ((chamberStart + label_pos_x)),0,0])
+      translate([((chamberStart + label_pos_x)),0,0])
       difference(){
         hull() for (y=[0, 1, 2])
         translate([0, labelPoints[y][0], labelPoints[y][1]])

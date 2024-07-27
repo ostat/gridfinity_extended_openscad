@@ -419,8 +419,8 @@ module itemholder(
     for(y =[0:1:compartments.y-1])
     {
       translate(compartment_centered 
-        ? [compartment_spacing+x*xStep+(xSize-gf_pitch)/2, compartment_spacing+y*yStep+(ySize-gf_pitch)/2, floorThickness-_depth]
-        : [compartment_spacing+x*xStep-gf_pitch/2, compartment_spacing+y*yStep-gf_pitch/2, floorThickness-_depth])
+        ? [compartment_spacing+x*xStep+xSize/2, compartment_spacing+y*yStep+ySize/2, floorThickness-_depth]
+        : [compartment_spacing+x*xStep, compartment_spacing+y*yStep, floorThickness-_depth])
         GridItemHolder(
           canvisSize = [xSize,ySize],
           hexGrid= gridStyle == "square" ? false : gridStyle == "hex" ? true : gridStyle,

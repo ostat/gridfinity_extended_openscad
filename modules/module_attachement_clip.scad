@@ -1,3 +1,5 @@
+include <functions_general.scad>
+
 // Creates an wall clip that is used when box is split
 module attachement_clip(
   height = 8,

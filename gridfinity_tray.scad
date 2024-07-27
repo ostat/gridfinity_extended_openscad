@@ -402,7 +402,6 @@ module gridfinity_tray(
       help = help);
     /*<!!end gridfinity_basic_cup!!>*/
 
-    translate([-gf_pitch/2,-gf_pitch/2,0])
     translate(cupPosition(position,num_x,num_y))
     tray(
       num_x = num_x,

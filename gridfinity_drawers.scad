@@ -201,8 +201,8 @@ module drawer(
       
       if(drawerBase == "default" || drawerBase == "grid"){
         translate([
-          gf_pitch/2+wallThickness+clearance.x/2,
-          gf_pitch/2+wallThickness+clearance.y/2, 
+          wallThickness+clearance.x/2,
+          wallThickness+clearance.y/2, 
           (drawerFloor ? floorThickness-fudgeFactor : 0)-fudgeFactor*2]) 
           baseplate(
             width = innerUnitSize.x,
@@ -287,7 +287,7 @@ module chest(
       if(bottomGrid) {
         baseHeight=0.7;
         translate(bottomGridOffset) 
-        translate([gf_pitch/2, gf_pitch/2, -gf_zpitch*baseHeight+fudgeFactor])
+        tz(-gf_zpitch*baseHeight+fudgeFactor)
         grid_block(
           num_x=drawerInnerUnitSize.x, 
           num_y=drawerInnerUnitSize.y, 
@@ -303,7 +303,7 @@ module chest(
       
       if(enableTopGrid) {
         translate(topGridOffset) 
-        translate([gf_pitch/2, gf_pitch/2, totalH-fudgeFactor]) 
+        tz(totalH-fudgeFactor) 
         baseplate(
           width = drawerInnerUnitSize.x,
           depth = drawerInnerUnitSize.y,

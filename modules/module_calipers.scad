@@ -1,9 +1,26 @@
-module ShowCalipers(cutx, cuty, size, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
+include <ub.scad>
+include <gridfinity_constants.scad>
+include <functions_general.scad>
+include <functions_gridfinity.scad>
 
+module ShowCalipers(
+  cutx, cuty, 
+  size, 
+  lip_style, 
+  magnet_diameter, 
+  screw_depth, 
+  floor_thickness, 
+  filled_in,
+  wall_thickness,
+  efficient_floor,
+  flat_base){
+
+  echo("ShowCalipers", color_text=color_text);
+  
   color(color_text)
   if(cuty > 0 && $preview)
   {
-    translate([-gf_pitch/2,-gf_pitch*0.5+gf_pitch*cuty,0]) 
+    translate([0,gf_pitch*cuty,0]) 
     rotate([90,0,0])
     showCalipersForSide("width", size.x, size.z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
   }  
@@ -11,7 +28,7 @@ module ShowCalipers(cutx, cuty, size, lip_style, magnet_diameter, screw_depth, f
   color(color_text)
   if(cutx > 0 && $preview)
   {
-    translate([-gf_pitch*0.5+gf_pitch*cutx,gf_pitch*(size.y-0.5),0]) 
+    translate([gf_pitch*cutx,gf_pitch*size.y,0]) 
     rotate([90,0,270])
     showCalipersForSide("depth", size.y, size.z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
   }
