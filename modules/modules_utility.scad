@@ -121,7 +121,7 @@ module roundedCube(
   bottomRadius = bottomRadius > 0 ? bottomRadius : cornerRadius;
   sideRadius = sideRadius > 0 ? sideRadius : cornerRadius;
   
-  assert(sideRadius < topRadius || sideRadius < bottomRadius, "sideRadius must be >= than bottomRadius and topRadius");
+  //assert(sideRadius < topRadius || sideRadius < bottomRadius, "sideRadius must be >= than bottomRadius and topRadius");
     
   positions=[
      [sideRadius                    ,sideRadius                   ]

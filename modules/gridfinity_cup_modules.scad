@@ -1,4 +1,5 @@
 include <gridfinity_constants.scad>
+include <module_gridfinity_label.scad>
 include <functions_general.scad>
 include <voronoi.scad>
 include <module_sliding_lid.scad>
@@ -848,8 +849,8 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
       screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
       efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius, spacer=spacer, box_corner_attachments_only = box_corner_attachments_only, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
   
-
     if(IsHelpEnabled($showHelp, "trace")) echo("partitioned_cavity", vertical_separator_positions=vertical_separator_positions);
+    
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
     color(color_divider)
     translate([-gf_pitch/2, -gf_pitch/2, sepFloorHeight-fudgeFactor])
@@ -878,87 +879,16 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
       seperator_config = horizontal_separator_positions,
       separator_orentation = "horizontal");
       
-    // this is the label
-    if (label_style != "disabled") {
-      labelSize = let(
-          labelxtemp = is_num(label_size) ? label_size : is_list(label_size) && len(label_size) >= 1 ? label_size.x : 0,
-          labelx = labelxtemp <=0 ? num_x : labelxtemp,
-          labelytemp = is_list(label_size) && len(label_size) >= 2 ? label_size.y : 0,
-          labely = labelytemp <= 0 ? 14 : labelytemp,
-          labelztemp = is_list(label_size) && len(label_size) >= 3 ? label_size.z : 0,
-          labelz = labelztemp == -1 ? labely*3/4 : labelztemp == 0 ? labely : labelztemp,
-          labelrtemp = is_list(label_size) && len(label_size) >= 4 ? label_size[3] : 0,
-          labelr = labelrtemp <= 0 ? 0.6 : labelrtemp)
-            [labelx,labely,labelz,labelr];
-
-      labelCornerRadius = labelSize[3];
- 
-      labelPoints = [[ (num_y-0.5)*gf_pitch-labelSize.y, zpoint-labelCornerRadius],
-        [ (num_y-0.5)*gf_pitch, zpoint-labelCornerRadius ],
-        [ (num_y-0.5)*gf_pitch, zpoint-labelCornerRadius-labelSize.z ]
-      ];
-      
-      separator_positions = calculateSeparators(vertical_separator_positions);
-        
-      // calcualte list of chambers. 
-      labelWidthmm = labelSize.x * gf_pitch;
-      color(color_label){
-        chamberWidths = len(separator_positions) < 1 || 
-          labelWidthmm == 0 ||
-          label_position == "left" ||
-          label_position == "center" ||
-          label_position == "right" ?
-            [ num_x * gf_pitch ] // single chamber equal to the bin length
-            : [ for (i=[0:len(separator_positions)]) 
-              (i==len(separator_positions) 
-                ? num_x * gf_pitch
-                : separator_positions[i]) - (i==0 ? 0 : separator_positions[i-1]) ];
-                      
-        for (i=[0:len(chamberWidths)-1]) {
-          chamberStart = i == 0 ? 0 : separator_positions[i-1];
-          chamberWidth = chamberWidths[i];
-          label_num_x = (labelWidthmm == 0 || labelWidthmm > chamberWidth) ? chamberWidth : labelWidthmm;
-          label_pos_x = (label_position == "center" || label_position == "centerchamber" )? (chamberWidth - label_num_x) / 2 
-                          : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x 
-                          : 0 ;
-                          
-          translate([(-gf_pitch/2) + ((chamberStart + label_pos_x)),0,0])
-          difference(){
-            hull() 
-            for (i=[0, 1, 2])
-            translate([0, labelPoints[i][0], labelPoints[i][1]])
-            rotate([0, 90, 0])
-            union(){
-              //left
-              tz(abs(label_num_x))
-              sphere(r=labelCornerRadius, $fn=64);
-              //Right
-              sphere(r=labelCornerRadius, $fn=64);
-            }
-            
-            if(label_style == "click"){
-              clickSize= [36.7,11.3, 1.2];
-              clickRadius = 0.25;
-              translate([2,labelPoints[i][0]+1,zpoint-clickSize.z])
-              difference(){
-                roundedCube(size=clickSize,sideRadius=clickRadius);
-                for(i = [0:2]){
-                  translate([(i+0.5)*clickSize.x/3,clickSize.y+fudgeFactor,0.23])
-                  rotate([90,210,0])
-                  cylinder(h=clickSize.y+fudgeFactor*2,r=.75, $fn=3);
-                }}
-            } else if(label_relief > 0){
-              translate([0,labelPoints[i][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
-                cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
-            }
-          }
-        }
-      }
-    }
-    
-    if (label_style != "disabled") {
-    
-    }
+    if (label_style != "disabled")
+      gridfinity_label(
+        num_x = num_x,
+        num_y = num_y,
+        zpoint = zpoint,
+        vertical_separator_positions = vertical_separator_positions,
+        label_size=label_size,
+        label_position = label_position,
+        label_style = label_style,
+        label_relief = label_relief);
   }
 }
 
@@ -1146,7 +1076,6 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     if (efficient_floor != "off") {
       magnetPosition = calculateMagnetPosition(magnet_diameter);
       magnetCoverHeight = max(magnet_diameter > 0 ? gf_magnet_thickness : 0, screw_depth);
-      blockSize = gf_pitch/2-magnetPosition+wall_thickness;
       hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
       efficientFloorGridHeight = max(magnetCoverHeight,gfBaseHeight())+floor_thickness;
       if(IsHelpEnabled($showHelp, "trace")) echo("basic_cavity", efficient_floor=efficient_floor, efficientFloorGridHeight=efficientFloorGridHeight,  floor_thickness=floor_thickness);
@@ -1155,7 +1084,6 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
           cube([num_x*gf_pitch, num_y*gf_pitch, efficientFloorGridHeight]);
         
         difference(){
-
           efficient_floor_grid(
             num_x, num_y, 
             floorStyle = efficient_floor,
@@ -1165,16 +1093,15 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
             efficientFloorGridHeight=efficientFloorGridHeight,
             margins=q);
            
+           //Screw and magnet covers required for efficient floor
            if(hasCornerAttachments)
-             //Screw and magnet covers required for efficient floor
              gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only)
                 EfficientFloorAttachementCaps(
                   grid_copy_corner_index = $gcci,
                   floor_thickness = floor_thickness,
                   magnet_diameter=magnet_diameter,
                   screw_depth = screw_depth,
-                  wall_thickness = wall_thickness
-                );
+                  wall_thickness = wall_thickness);
           }
         }
       }
