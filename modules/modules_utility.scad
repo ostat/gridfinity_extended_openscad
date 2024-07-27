@@ -6,9 +6,10 @@ module WallCutout(
   height=21,
   thickness=10,
   cornerRadius=5,
+  topHeight,
   $fn = 64) {
  
-  topHeight = cornerRadius*4;
+  topHeight = is_undef(topHeight) || topHeight < 0 ? cornerRadius*4 : topHeight;
   bottomWidth = lowerWidth;
   topWidth = lowerWidth+(height/tan(wallAngle))*2;
 
@@ -16,8 +17,8 @@ module WallCutout(
   translate([0,0,-thickness/2])
   linear_extrude(height=thickness)
   intersection(){
-    translate([0,-height/2+cornerRadius,0])
-    square([topWidth+cornerRadius*2,height+cornerRadius*2], true);
+    translate([0,-height/2+topHeight/2,0])
+    square([topWidth+cornerRadius*2,height+topHeight], true);
     
     //Use tripple offset to fillet corners
     //https://www.reddit.com/r/openscad/comments/ut1n7t/quick_tip_simple_fillet_for_2d_shapes/
@@ -25,11 +26,11 @@ module WallCutout(
     offset(r=2 * cornerRadius)
     offset(r=-cornerRadius)
     union(){
-      translate([0,topHeight/2])
-      square([topWidth*2,topHeight], true);
+      translate([0,cornerRadius*4/2])
+      square([topWidth*2,cornerRadius*4], true);
       hull(){
-        translate([0,topHeight/2])
-        square([topWidth,topHeight], true);
+        translate([0,cornerRadius*4/2])
+        square([topWidth,cornerRadius*4], true);
         translate([0,-height/2])
         square([bottomWidth,height], true);
       }
@@ -53,27 +54,25 @@ module bentWall(
   
   fudgeFactor = 0.01;
   
-  render()
+  //#render()
   difference()
   {
-     union(){
-      if(separation != 0) { 
-        translate([thickness/2,bendPosition,0])
-        linear_extrude(height)
-        SBogen(
-          2D=thickness,
-          dist=separation,
-          //x0=true,
-          grad=bendAngle,
-          r1=lowerBendRadius <= 0 ? separation : lowerBendRadius,
-          r2=upperBendRadius <= 0 ? separation : upperBendRadius,
-          l1=bendPosition,
-          l2=length-bendPosition, $fn = fn);   
-      } else {
-        cube([thickness, length, height]);
-       }
-     }
-
+    if(separation != 0) { 
+      translate([thickness/2,bendPosition,0])
+      linear_extrude(height)
+      SBogen(
+        2D=thickness,
+        dist=separation,
+        //x0=true,
+        grad=bendAngle,
+        r1=lowerBendRadius <= 0 ? separation : lowerBendRadius,
+        r2=upperBendRadius <= 0 ? separation : upperBendRadius,
+        l1=bendPosition,
+        l2=length-bendPosition, $fn = fn);   
+    } else {
+      cube([thickness, length, height]);
+   }
+   
     cutoutHeight = 
       wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
         : wall_cutout_depth;
@@ -82,13 +81,15 @@ module bentWall(
         : wall_cutout_width == 0 ? length/2
         : wall_cutout_width;
     if(wall_cutout_depth != 0){
-      translate([0,length/2,height])
+      translate([thickness/2,length/2,height])
       rotate([0,0,90])
       WallCutout(
         height = cutoutHeight,
         lowerWidth = cutoutLength,
         cornerRadius = cutoutHeight,
-        thickness = (separation+thickness*2+fudgeFactor*2));
+        thickness = (separation+thickness+fudgeFactor*2),
+        topHeight = 1,
+        );
     }
    }
  }
