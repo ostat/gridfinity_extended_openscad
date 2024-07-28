@@ -83,7 +83,7 @@ default_horizontal_separator_config = "10.5|21|42|50|60";
 /* [Base] */
 default_magnet_diameter = 6.5;  // .1
 //create relief for magnet removal
-default_magnet_easy_release = true;
+default_magnet_easy_release = "auto";//["off","auto","inner","outer"] 
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
 default_center_magnet_diameter = 0;
@@ -280,7 +280,9 @@ module gridfinity_cup(
       box_corner_attachments_only=box_corner_attachments_only, 
       stackable = lip_style != "none",
       flat_base=flat_base,
-      magnet_easy_release = magnet_easy_release);
+      magnet_easy_release = 
+        magnet_easy_release == "auto" ? (efficient_floor == "off" ? "inner" : "outer")
+          : magnet_easy_release);
       
     if(!filled_in) 
     union(){

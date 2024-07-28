@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_silverware.scad'. Generated 2024-07-28 09:20
+//Combined version of 'gridfinity_silverware.scad'. Generated 2024-07-28 10:02
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -1748,7 +1748,7 @@ module grid_block(
   stackable = true,
   center_magnet_diameter = 0,
   center_magnet_thickness = 0,
-  magnet_easy_release = true,
+  magnet_easy_release = "off", //[off,inner,outer]
   $fn = 32,
   help)
 {
@@ -1816,7 +1816,7 @@ module grid_block(
           $gcci[2] == [-1, 1] ? 180 :
           $gcci[2] == [-1,-1] ? -90 :
           $gcci[2] == [ 1,-1] ? 0 : 0;
-        rotate([0,0,rdeg-45])
+        rotate([0,0,rdeg-45+(magnet_easy_release=="outer" ? 0 : 180)])
         MagentAndScrewRecess(
           magnetDiameter = magnet_diameter,
           magnetThickness = gf_magnet_thickness+0.1,
@@ -1824,7 +1824,7 @@ module grid_block(
           screwDepth = screw_depth,
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagentRelease = magnet_easy_release);
+          easyMagentRelease = magnet_easy_release != "off");
     }
   }
  
@@ -18132,6 +18132,7 @@ module woodscrew_baseplate(
     }
   }
 }
+
 module weighted_baseplate(
   num_x, 
   num_y,
@@ -18369,30 +18370,30 @@ module AttachButterFly(size=[5,3,2],r=0.5,left= true, right=true, front=true, ba
 module ButterFly(size,r,taper=false,half=false)
 {
   h = taper ? size.y/2+size.z : size.z;
-  //render(){
-    intersection(){
-      positions = [
-        [-(size.x/2-r), size.y/2-r, h/2],
-        [size.x/2-r, size.y/2-r, h/2],
-        [0, -(size.y/2-r), h/2]];
-      
-      union()
-      for(ri = [0:half?0:1]){
-        mirror([0,1,0]*ri)
-        hull(){
-          for(pi = [0:len(positions)-1]){
-            translate(positions[pi])
-              cylinder(h=h,r=r,center=true, $fn=32);
-          }
+  //render()
+  intersection(){
+    positions = [
+      [-(size.x/2-r), size.y/2-r, h/2],
+      [size.x/2-r, size.y/2-r, h/2],
+      [0, -(size.y/2-r), h/2]];
+    
+    union()
+    for(ri = [0:half?0:1]){
+      mirror([0,1,0]*ri)
+      hull(){
+        for(pi = [0:len(positions)-1]){
+          translate(positions[pi])
+            cylinder(h=h,r=r,center=true, $fn=32);
         }
       }
-      
-      if(taper)
-      rotate([0,90,0])
-      cylinder(h=size.x,r=size.y/2+size.z,$fn=4,center=true);
     }
+    
+    if(taper)
+    rotate([0,90,0])
+    cylinder(h=size.x,r=size.y/2+size.z,$fn=4,center=true);
   }
 }
+
 
 //CombinedEnd from path module_gridfinity_baseplate.scad
 

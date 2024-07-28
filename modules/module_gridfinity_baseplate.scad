@@ -298,6 +298,7 @@ module woodscrew_baseplate(
     }
   }
 }
+
 module weighted_baseplate(
   num_x, 
   num_y,
@@ -535,28 +536,28 @@ module AttachButterFly(size=[5,3,2],r=0.5,left= true, right=true, front=true, ba
 module ButterFly(size,r,taper=false,half=false)
 {
   h = taper ? size.y/2+size.z : size.z;
-  //render(){
-    intersection(){
-      positions = [
-        [-(size.x/2-r), size.y/2-r, h/2],
-        [size.x/2-r, size.y/2-r, h/2],
-        [0, -(size.y/2-r), h/2]];
-      
-      union()
-      for(ri = [0:half?0:1]){
-        mirror([0,1,0]*ri)
-        hull(){
-          for(pi = [0:len(positions)-1]){
-            translate(positions[pi])
-              cylinder(h=h,r=r,center=true, $fn=32);
-          }
+  //render()
+  intersection(){
+    positions = [
+      [-(size.x/2-r), size.y/2-r, h/2],
+      [size.x/2-r, size.y/2-r, h/2],
+      [0, -(size.y/2-r), h/2]];
+    
+    union()
+    for(ri = [0:half?0:1]){
+      mirror([0,1,0]*ri)
+      hull(){
+        for(pi = [0:len(positions)-1]){
+          translate(positions[pi])
+            cylinder(h=h,r=r,center=true, $fn=32);
         }
       }
-      
-      if(taper)
-      rotate([0,90,0])
-      cylinder(h=size.x,r=size.y/2+size.z,$fn=4,center=true);
     }
+    
+    if(taper)
+    rotate([0,90,0])
+    cylinder(h=size.x,r=size.y/2+size.z,$fn=4,center=true);
   }
 }
+
 

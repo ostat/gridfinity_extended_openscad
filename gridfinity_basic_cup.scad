@@ -55,7 +55,7 @@ horizontal_separator_config = "10.5|21|42|50|60";
 // (Zack's design uses magnet diameter of 6.5) 
 magnet_diameter = 0;  // .1
 //create relief for magnet removal 
-magnet_easy_release = true;
+magnet_easy_release  = "auto";//["off","auto","inner","outer"] 
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;

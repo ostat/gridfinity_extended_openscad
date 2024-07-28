@@ -19,7 +19,7 @@ module grid_block(
   stackable = true,
   center_magnet_diameter = 0,
   center_magnet_thickness = 0,
-  magnet_easy_release = true,
+  magnet_easy_release = "off", //[off,inner,outer]
   $fn = 32,
   help)
 {
@@ -87,7 +87,7 @@ module grid_block(
           $gcci[2] == [-1, 1] ? 180 :
           $gcci[2] == [-1,-1] ? -90 :
           $gcci[2] == [ 1,-1] ? 0 : 0;
-        rotate([0,0,rdeg-45])
+        rotate([0,0,rdeg-45+(magnet_easy_release=="outer" ? 0 : 180)])
         MagentAndScrewRecess(
           magnetDiameter = magnet_diameter,
           magnetThickness = gf_magnet_thickness+0.1,
@@ -95,7 +95,7 @@ module grid_block(
           screwDepth = screw_depth,
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagentRelease = magnet_easy_release);
+          easyMagentRelease = magnet_easy_release != "off");
     }
   }
  

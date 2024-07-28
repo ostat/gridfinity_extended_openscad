@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_basic_cup.scad'. Generated 2024-07-28 09:20
+//Combined version of 'gridfinity_basic_cup.scad'. Generated 2024-07-28 10:02
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -55,7 +55,7 @@ horizontal_separator_config = "10.5|21|42|50|60";
 // (Zack's design uses magnet diameter of 6.5) 
 magnet_diameter = 0;  // .1
 //create relief for magnet removal 
-magnet_easy_release = true;
+magnet_easy_release  = "auto";//["off","auto","inner","outer"] 
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
@@ -1859,7 +1859,7 @@ module grid_block(
   stackable = true,
   center_magnet_diameter = 0,
   center_magnet_thickness = 0,
-  magnet_easy_release = true,
+  magnet_easy_release = "off", //[off,inner,outer]
   $fn = 32,
   help)
 {
@@ -1927,7 +1927,7 @@ module grid_block(
           $gcci[2] == [-1, 1] ? 180 :
           $gcci[2] == [-1,-1] ? -90 :
           $gcci[2] == [ 1,-1] ? 0 : 0;
-        rotate([0,0,rdeg-45])
+        rotate([0,0,rdeg-45+(magnet_easy_release=="outer" ? 0 : 180)])
         MagentAndScrewRecess(
           magnetDiameter = magnet_diameter,
           magnetThickness = gf_magnet_thickness+0.1,
@@ -1935,7 +1935,7 @@ module grid_block(
           screwDepth = screw_depth,
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagentRelease = magnet_easy_release);
+          easyMagentRelease = magnet_easy_release != "off");
     }
   }
  
