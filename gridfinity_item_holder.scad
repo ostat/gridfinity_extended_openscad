@@ -373,7 +373,7 @@ module itemholder(
               chamferedSquare(
                 size = [_holeSize.x, _holeSize.y, _depth+fudgeFactor], 
                 chamfer=holeChamfer, 
-                cornerRadius=3, $fn=64);
+                cornerRadius=item[iitemDiameter]/2, $fn=64);
             } else if(item[ishape] == "halfround") {
               translate([_holeSize.x/2,_holeSize.y/2,0])
                 chamferedHalfCylinder(
@@ -474,7 +474,7 @@ module samplesholder(
       translate([-_holeSize.x/2-wallThickness,-_holeSize.y/2-wallThickness,-wallThickness-fudgeFactor])
         cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
       translate([-_holeSize.x/2,-_holeSize.y/2,0])
-        chamferedSquare([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer, cornerRadius=item[iitemDiameter], $fn=64);
+        chamferedSquare([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer, cornerRadius=item[iitemDiameter]/2, $fn=64);
     }
   } else if(item[ishape] == "halfround") {
     difference(){
