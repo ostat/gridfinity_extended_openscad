@@ -21,7 +21,7 @@ module GridItemHolder(
   assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
   assert(is_bool(customShape), "customShape must be bool");    
   assert(is_num(circleFn), "circleFn must be number");    
-  assert(is_list(holeSize) && len(holeSize)==2, "holeSize must be list of len 2");
+  assert(is_list(holeSize) && len(holeSize)>=2, "holeSize must be list of len 2");
   assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
   assert(is_list(holeGrid) && len(holeGrid)==2, "canvasSize must be list of len 2");  
   assert(is_num(holeHeight), "holeHeight must be number");    
@@ -189,16 +189,6 @@ module GridItemHolder(
     ,help);
 }
 
-module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
-  chamfer = min(h, chamfer);
-  union(){
-  cylinder(h=h, r=r, $fn = circleFn);
-  translate([0, 0, h-chamfer]) 
-    cylinder(h=chamfer, r1=r, r2=r+chamfer,$fn = circleFn);
-    }
-}
-
-//multiCard([24, 2.1, 18, 32, "square"],[12, 4.5, 13, 13, "square"],[20, 1.4, 10, 21.5, "square"]);
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   fudgeFactor = 0.01;
   
@@ -206,87 +196,146 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   assert(is_list(smallCenter) && len(smallCenter) >= 3, "longCenter should be a list of length 5");
   assert(is_list(side) && len(side) >= 3, "longCenter should be a list of length 5");
 
+  iitemDiameter= 0;
+  iitemx = 1;
+  iitemy = 2;
+  idepthneeded = 3;
+  iitemHeight = 4;
+  ishape = 5;
+
   if(IsHelpEnabled("trace")) echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
   render() //Render on item holder multiCard as it can be complex
   union(){
     minspacing = 3;
-    translate([(longCenter.x)/2,side.x/2,0])
+    translate([(longCenter[iitemx])/2,side[iitemx]/2,0])
     union(){
-    translate([-(longCenter.x)/2,-longCenter.y/2,0])
-    slotCutout([longCenter.x, longCenter.y, longCenter.z+fudgeFactor], chamfer);
+    translate([-(longCenter[iitemx])/2,-longCenter[iitemy]/2,0])
+    chamferedSquare([longCenter[iitemx], longCenter[iitemy], longCenter[idepthneeded]+fudgeFactor], chamfer);
     
-    translate([-smallCenter.x/2,-smallCenter.y/2,(longCenter.z-smallCenter.z)])
-    slotCutout([smallCenter.x, smallCenter.y, smallCenter.z+fudgeFactor], chamfer);
+    translate([-smallCenter[iitemx]/2,-smallCenter[iitemy]/2,(longCenter[idepthneeded]-smallCenter[idepthneeded])])
+    chamferedSquare([smallCenter[iitemx], smallCenter[iitemy], smallCenter[idepthneeded]+fudgeFactor], chamfer);
 
     if(alternate){
-      pos = let(targetPos = (longCenter.x)/4-(side.y)/2) max(targetPos, smallCenter.y+minspacing);
-      translate([-pos-side.y/2, 0, 0])
+      pos = let(targetPos = (longCenter[iitemx])/4-(side[iitemy])/2) max(targetPos, smallCenter[iitemy]+minspacing);
+      translate([-pos-side[iitemy]/2, 0, 0])
         rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
-      translate([+pos+side.y/2, 0, 0])
+      translate([+pos+side[iitemy]/2, 0, 0])
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
     } else {
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
-      translate([-(longCenter.x)/2+(side.y)/2, 0, 0])
+      translate([-(longCenter[iitemx])/2+(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
         
-      translate([(longCenter.x)/2-(side.y)/2, 0, 0])
+      translate([(longCenter[iitemx])/2-(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       }
     }
   }
 }
-            
-            
+
 // Creates a slot with a small champer for easy insertertion
 //#slotCutout(100,20,40);
 //width = width of slot
 //depth = depth of slot
 //height = height of slot
 //chamfer = chamfer size
-module slotCutout(size, chamfer = 1)
+module chamferedSquare(size, chamfer = 1, cornerRadius = 0)
 {
   assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
 
   fudgeFactor = 0.01;
   chamfer = min(size.z, chamfer);
-  
-  translate([size.x/2,size.y/2,0])
-  intersection(){
-    union(){
-      // Main slot
-      translate([-size.x/2,-size.y/2,0])
+  union(){
+    if(cornerRadius > 0){
+        hull(){
+          translate([cornerRadius,cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+          translate([size.x-cornerRadius,cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+          translate([cornerRadius,size.y-cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+          translate([size.x-cornerRadius,size.y-cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+        }
+    } else {
+      translate([0,0,0])
         cube([size.x, size.y, size.z]);
-      
-     // chamfer
-     translate([-size.x/2,-size.y/2,size.z+fudgeFactor])
-     hull(){
-        translate([0,0,0])
-          rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);
-        translate([size.x,0,0])
-        rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);
-        translate([0,size.y,0])
-        rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);
-        translate([size.x,size.y,0])
-        rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);          
-          
-      }
     }
+    
+    if(chamfer > 0)
+       translate([0,0,size.z+fudgeFactor-chamfer-cornerRadius])
+       chamferedRectangleTop(size=size, chamfer=chamfer, cornerRadius=cornerRadius);
   }
 }
 
+module chamferedRectangleTop(size, chamfer, cornerRadius){
+  fudgeFactor = 0.01;
+  
+  chamferFn = cornerRadius > 0 ? $fn : 4;
+
+  champherExtention = cornerRadius > 0 ? 0 
+    : (min(size.x,size.y,size.z)-chamfer)/4;
+    
+  //when the chamferFn value is 4 we need to chan the formula as the radius is corner to corner not edge to edge.
+  conesizeTop = chamfer+cornerRadius+champherExtention;
+  conesizeBottom = conesizeTop>size.z ? conesizeTop-size.z: 0;
+  
+  echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
+  //if cornerRadius = 0, we can further increase the height of the 'cone' so we can extend inside the shape
+  hull(){
+    translate([cornerRadius+champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
+      rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
+    translate([size.x-cornerRadius-champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
+    rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
+    translate([cornerRadius+champherExtention/2,size.y-cornerRadius-champherExtention/2,conesizeBottom-champherExtention])
+    rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
+    translate([size.x-cornerRadius-champherExtention/2,size.y-cornerRadius-champherExtention/2,conesizeBottom-champherExtention])
+    rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);          
+  }
+}
+
+module chamferedHalfCylinder(h, r, circleFn, chamfer=0.5) {
+  fudgeFactor = 0.01;
+  
+  chamfer = min(h, chamfer);
+  translate([0,-h/2,r])
+  union(){
+    rotate([-90,0,0])
+    difference(){
+      cylinder(h=h, r=r, $fn = circleFn);
+      translate([-r-fudgeFactor,-r,-fudgeFactor])
+      cube([(r+fudgeFactor)*2,r,h+fudgeFactor*2]);
+    }
+    
+    if(r>0)
+      translate([-r, 0, -chamfer+fudgeFactor]) 
+      chamferedRectangleTop(size=[r*2,h,r], chamfer=chamfer, cornerRadius=0);
+  }
+}
+
+module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
+  chamfer = min(h, chamfer);
+  union(){
+    cylinder(h=h, r=r, $fn = circleFn);
+    
+    if(r>0)
+      translate([0, 0, h-chamfer]) 
+      cylinder(h=chamfer, r1=r, r2=r+chamfer,$fn = circleFn);
+  }
+}
