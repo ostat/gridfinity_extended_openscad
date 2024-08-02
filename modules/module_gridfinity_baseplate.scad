@@ -492,13 +492,13 @@ module AttachFilament(l=5, d=1.75,left= true, right=true, front=true, back=true)
  h=4;
   positions = [
     //left
-    [left,[-gf_pitch/2,0, h],[0,90,0]],
+    [left,[0,0, h],[0,90,0]],
     //right
-    [right,[gf_pitch/2,0, h],[0,90,0]],
+    [right,[gf_pitch,0, h],[0,90,0]],
     //front
-    [front,[0, -gf_pitch/2,h],[90,0,0]],
+    [front,[0, 0,h],[90,0,0]],
     //back
-    [back,[0, gf_pitch/2,h],[90,0,0]]];
+    [back,[0, gf_pitch,h],[90,0,0]]];
   for(pi = [0:len(positions)-1]){
     if(positions[pi][0])
       translate(positions[pi][1])
@@ -513,17 +513,17 @@ module AttachButterFly(size=[5,3,2],r=0.5,left= true, right=true, front=true, ba
   
   positions = [
     //left
-    [left,[-gf_pitch/2,inset, -fudgeFactor],[0,0,-90]],
-    [left,[-gf_pitch/2,-inset, -fudgeFactor],[0,0,-90]],
+    [left,[0,inset, -fudgeFactor],[0,0,-90]],
+    [left,[0,-inset, -fudgeFactor],[0,0,-90]],
     //right
-    [right,[gf_pitch/2,inset, -fudgeFactor],[0,0,90]],
-    [right,[gf_pitch/2,-inset, -fudgeFactor],[0,0,90]],
+    [right,[gf_pitch,inset, -fudgeFactor],[0,0,90]],
+    [right,[gf_pitch,-inset, -fudgeFactor],[0,0,90]],
     //front
-    [front,[inset, -gf_pitch/2,-fudgeFactor],[0,0,0]],
-    [front,[-inset, -gf_pitch/2,-fudgeFactor],[0,0,0]],
+    [front,[inset, 0,-fudgeFactor],[0,0,0]],
+    [front,[-inset, 0,-fudgeFactor],[0,0,0]],
     //back
-    [back,[inset, gf_pitch/2,-fudgeFactor],[00,0,180]],
-    [back,[-inset, gf_pitch/2,-fudgeFactor],[0,0,180]]];
+    [back,[inset, gf_pitch,-fudgeFactor],[00,0,180]],
+    [back,[-inset, gf_pitch,-fudgeFactor],[0,0,180]]];
   for(pi = [0:len(positions)-1]){
     if(positions[pi][0])
       translate(positions[pi][1])
