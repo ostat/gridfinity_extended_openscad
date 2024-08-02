@@ -1,39 +1,48 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_item_holder.scad'. Generated 2024-07-28 10:02
+//Combined version of 'gridfinity_item_holder.scad'. Generated 2024-08-03 08:45
 ///////////////////////////////////////
 
 /*<!!start gridfinity_itemholder!!>*/
 /* [Item Holder] */
 itemholder_known_tools = "1/4hexshank"; // [ "custom":Custome, "4hexshank":4mm Hex Shank, "1/4hexshank":1/4 Hex Shank, "1/4hexshanklong":1/4 Hex Long Shank, "5/16hexshank":5/16 Hex Shank, "3/8hexshank":3/8 Hex Shank, "1/2shank":1/2 inch router bit, "12shank":12mm router bit, "10shank":10mm router bit, "3/8shank":3/8 inch router bit, "8shank":8mm router bit, "1/4shank":1/4 inch router bit, "6shank":6mm router bit, "1/8shank":1/8 inch Dremel router bit]
-itemholder_known_batteries = "custom"; // [ "custom":Custome, "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "c":C cell, "d":d cell, "7540":7540 cell, "8570":8570 cell, "10180":10180 cell, "10280":10280 cell, "10440":10440 cell, "10850":10850 cell, "13400":13400 cell, "14250":14250 cell, "14300":14300 cell, "14430":14430 cell, "14500":14500 cell, "14650":14650 cell, "15270":15270 cell, "16340":16340 cell, "16650":16650 cell, "17500":17500 cell, "17650":17650 cell, "17670":17670 cell, "18350":18350 cell, "18490":18490 cell, "18500":18500 cell, "18650":18650 cell, "20700":20700 cell, "21700":21700 cell, "25500":25500 cell, "26500":26500 cell, "26650":26650 cell, "26700":26700 cell, "26800":26800 cell, "32600":32600 cell, "32650":32650 cell, "32700":32700 cell, "38120":38120 cell, "38140":38140 cell, "40152":40152 cell, "4680":4680 cell]
-itemholder_known_cards = "custom"; // [ "custom":Custome, "multicard":Multi card slot, "compactflashi":CompactFlash. Type I, "compactflashii":CompactFlash. Type II, "smartmedia":SmartMedia, "mmc":MMC. MMCplus, "mmcmobile":RS-MMC. MMCmobile, "mmcmicro":MMCmicro, "sd":SD. SDHC. SDXC. SDIO. MicroP2, "minisd":miniSD. miniSDHC. miniSDIO, "microsd":microSD. microSDHC. microSDXC, "memorystickstandard":Memory Stick Standard. PRO, "memorystickduo":Memory Stick Duo. PRO Duo. PRO-HG. XC, "memorystickmicro":Memory Stick Micro (M2). XC, "nano":Nano Memory, "psvita":PS Vita Memory Card, "xqd":XQD card, "xD":xD, "USB A":USB A, "USB C":USB C]
+itemholder_known_batteries = "custom"; // [ "custom":Custome, "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "9v":9v, "c":C cell, "d":d cell, "7540":7540 cell, "8570":8570 cell, "10180":10180 cell, "10280":10280 cell, "10440":10440 cell, "10850":10850 cell, "13400":13400 cell, "14250":14250 cell, "14300":14300 cell, "14430":14430 cell, "14500":14500 cell, "14650":14650 cell, "15270":15270 cell, "16340":16340 cell, "16650":16650 cell, "17500":17500 cell, "17650":17650 cell, "17670":17670 cell, "18350":18350 cell, "18490":18490 cell, "18500":18500 cell, "18650":18650 cell, "20700":20700 cell, "21700":21700 cell, "25500":25500 cell, "26500":26500 cell, "26650":26650 cell, "26700":26700 cell, "26800":26800 cell, "32600":32600 cell, "32650":32650 cell, "32700":32700 cell, "38120":38120 cell, "38140":38140 cell, "40152":40152 cell, "4680":4680 cell]
+itemholder_known_cell_batteries = "custom"; // [ "custom":Custome, "cr927":CR927 cell, "cr1025":CR1025 cell, "cr1130":CR1130 cell, "cr1216":CR1216 cell, "cr1220":CR1220 cell, "cr1225":CR1225 cell, "cr1616":CR1616 cell, "cr1620":CR1620 cell, "cr1632":CR1632 cell, "cr2012":CR2012 cell, "cr2016":CR2016 cell, "cr2020":CR2020 cell, "cr2025":CR2025 cell, "cr2032":CR2032 cell, "cr2040":CR2040 cell, "cr2050":CR2050 cell, "cr2320":CR2320 cell, "cr2325":CR2325 cell, "cr2330":CR2330 cell, "br2335":BR2335 cell, "cr2354":CR2354 cell, "cr2412":CR2412 cell, "cr2430":CR2430 cell, "cr2450":CR2450 cell, "cr2477":CR2477 cell, "cr3032":CR3032 cell, "cr11108":CR11108 cell]
+itemholder_known_cards = "custom"; // [ "custom":Custome, "multicard":Multi card slot, "compactflashi":CompactFlash. Type I, "compactflashii":CompactFlash. Type II, "smartmedia":SmartMedia, "mmc":MMC. MMCplus, "mmcmobile":RS-MMC. MMCmobile, "mmcmicro":MMCmicro, "sd":SD. SDHC. SDXC. SDIO. MicroP2, "minisd":miniSD. miniSDHC. miniSDIO, "microsd":microSD. microSDHC. microSDXC, "memorystickstandard":Memory Stick Standard. PRO, "memorystickduo":Memory Stick Duo. PRO Duo. PRO-HG. XC, "memorystickmicro":Memory Stick Micro (M2). XC, "nano":Nano Memory, "psvita":PS Vita Memory Card, "xqd":XQD card, "xD":xD, "usba":USB A, "usbc":USB C]
 itemholder_known_cartridges = "custom"; // [ "custom":Custome, "atari800":Atari 800, "atari2600":Atari 2600/7800/Colecovision, "atari5200":Atari 5200, "atari7800":Atari 7800, "commodore":Commodore Vic20, "magnavoxodyssey":Magnavox Odyssey, "magnavoxodysseymulticard":Magnavox Odyssey (multicard), "magnavoxodyssey2":Magnavox Odyssey2, "mattelintellivision":Mattel Intellivision I & II, "nintendofamicom":Nintendo Famicom, "nintendofamicomdisk":Nintendo Famicom Disk, "nintendosuperfamicom":Nintendo Super Famicom / SNES (Pal), "nes":NES, "snes":SNES, "nintendo64":Nintendo 64, "nintendogb":Nintendo GB, "nintendogbc":Nintendo GBC, "nintendogba":Nintendo GBA, "nintendods":Nintendo DS, "nintendo2ds":Nintendo 2DS/3DS, "nintendovb":Nintendo Virtual Boy, "nintendoswitch":Nintendo Switch, "segagamegear":Sega Game Gear, "segagenesis":Sega Genesis, "segagenesistall":Sega Genesis (tall cart), "segamegadrive":Sega MegaDrive, "segamegadrivecodemasters":Sega MegaDrive Codemasters, "segamastersystem":Sega Master System, "sega32x":Sega 32x, "segacard":Sega Card/TG16, "segapico":Sega Pico, "sonyumd":Sony UMD, "sonypsvita":Sony PS Vita, "sonypsvitamemcard":Sony PS Vita (Mem Card), "necpcehucard":NEC PCE HuCard, "snkneogeoaes":SNK Neo Geo AES, "snkneogeomvs":SNK Neo Geo MVS, "bandai":Bandai Wonderswan/Color, "msx":MSX]
+// Enlarge the holes by this amount for clearance
+itemholder_hole_clearance = 0.25;
+// Depth of hole, Overrides the know item depth. Limited by floor height
+itemholder_hole_depth = 0; //0.1
+// 45 deg chamfer added to the top of the hole (mm)
+itemholder_hole_chamfer = 1; //0.5
 
+/* [Item Holder - Sample Item] */
+//Render just a sample of the item hole, to be used as a test print
+itemholder_enable_sample = true;
+//Wall thickness of the sample print
+itemholder_sample_wall_thickness = 3;
+
+/* [Item Holder - Multi Card] */
 // cards to use when multi card is selected I.E. sd;USBA;microsd
-itemholder_multi_cards = "sd,USBA,microsd";
-
+itemholder_multi_cards = "sd,usba,microsd";
 // Force nesting of multi cards, This has an issue where the last item could be cropped.
 itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 
+/* [Item Holder - Custom Item] */
+// Should the grid be square or hex
+itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard"]
+// The number of sides for a round hole
+itemholder_hole_sides = 4; 
+// Diameter of the round hole
+itemholder_hole_diameter = 5; //0.1
+// The size the hole
+itemholder_hole_size = [20, 25]; //0.1
+
+/* [Item Holder - Item Layout] */
 // Should the grid be square or hex
 itemholder_grid_style = "auto"; //["square","hex","auto"]
 //Spacing around the holes
 itemholder_hole_spacing = 2; //0.1
-
-//enlarge the holes by this amount for clearance
-itemholder_hole_clearance = 0.65;
-
-// Depth of hole, Overrides the know item depth. Limited by floor height
-itemholder_hole_depth = 0; //0.1
-
-// 45 deg chamfer added to the top of the hole (mm)
-itemholder_hole_chamfer = 1; //0.5
-
-// The number of sides for the hole, when custom is selected
-itemholder_hole_sides = 4; 
-// The size the hole, when custom is selected
-itemholder_hole_size = [10, 10]; //0.1
-
 // Number of holes in the x and y dimension, 0 is dynamic
 itemholder_hole_gridx = 0; //1
 // Number of holes in the y dimension, 0 is dynamic, y.5, is only valid for hex.
@@ -44,7 +53,7 @@ itemholder_compartments = [1,1]; //[1:10]
 // Spacing around the compartments
 itemholder_compartment_spacing = 3; //0.1
 // Center the holes within the compartments
-itemholder_compartment_centered = true; //0.1
+itemholder_compartment_centered = true;
 itemholder_compartment_fill = "none"; //["none", "space", "crop"]
 
 /*
@@ -58,6 +67,8 @@ dimensions of the tray cutout, a string with comma separated values, and pipe (|
 */
 //[[xpos,ypos,xsize,ysize,radius,depth]]. xpos, ypos, the x/y position in gridfinity units.xsize, ysize. the x/y size in gridfinity units. radius, [optional] corner radius in mm.depth, [optional] depth in mm\nexample "0,0,2,1|2,0,2,1,2,5"
 itemholder_customcompartments = "";
+
+
 /*<!!end gridfinity_itemholder!!>*/
 
 /*<!!start gridfinity_basic_cup!!>*/
@@ -2127,6 +2138,9 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
 // make repeated copies of something(s) at the gridfinity spacing of 42mm
 module gridcopy(num_x, num_y, pitch=gf_pitch) {
   //translate([pitch/2,pitch/2])
+  assert(is_num(num_x) && num_x>=1, "num_x must be a number greater than 0");
+  assert(is_num(num_y) && num_y>=1, "num_y must be a number greater than 0");
+  assert(is_num(pitch) && pitch>=1, "pitch must be a number greater than 0");
   for (xi=[0:num_x-1]) 
     for (yi=[0:num_y-1])
     {
@@ -16854,6 +16868,11 @@ function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2
 
 //Height of base including the floor.
 function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
+      assert(is_num(floor_thickness), "floor_thickness must be a number")
+      assert(is_num(magnet_diameter), "magnet_diameter must be a number")
+      assert(is_num(screw_depth), "screw_depth must be a number")
+      assert(is_bool(filledin), "filledin must be a number")
+      assert(is_bool(flat_base), "flat_base must be a number")
       let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
   filledin ? num_z * gf_zpitch 
     : efficient_floor != "off" 
@@ -17080,7 +17099,7 @@ module GridItemHolder(
   assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
   assert(is_bool(customShape), "customShape must be bool");    
   assert(is_num(circleFn), "circleFn must be number");    
-  assert(is_list(holeSize) && len(holeSize)==2, "holeSize must be list of len 2");
+  assert(is_list(holeSize) && len(holeSize)>=2, "holeSize must be list of len 2");
   assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
   assert(is_list(holeGrid) && len(holeGrid)==2, "canvasSize must be list of len 2");  
   assert(is_num(holeHeight), "holeHeight must be number");    
@@ -17248,16 +17267,6 @@ module GridItemHolder(
     ,help);
 }
 
-module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
-  chamfer = min(h, chamfer);
-  union(){
-  cylinder(h=h, r=r, $fn = circleFn);
-  translate([0, 0, h-chamfer]) 
-    cylinder(h=chamfer, r1=r, r2=r+chamfer,$fn = circleFn);
-    }
-}
-
-//multiCard([24, 2.1, 18, 32, "square"],[12, 4.5, 13, 13, "square"],[20, 1.4, 10, 21.5, "square"]);
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   fudgeFactor = 0.01;
   
@@ -17265,90 +17274,149 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   assert(is_list(smallCenter) && len(smallCenter) >= 3, "longCenter should be a list of length 5");
   assert(is_list(side) && len(side) >= 3, "longCenter should be a list of length 5");
 
+  iitemDiameter= 0;
+  iitemx = 1;
+  iitemy = 2;
+  idepthneeded = 3;
+  iitemHeight = 4;
+  ishape = 5;
+
   if(IsHelpEnabled("trace")) echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
   render() //Render on item holder multiCard as it can be complex
   union(){
     minspacing = 3;
-    translate([(longCenter.x)/2,side.x/2,0])
+    translate([(longCenter[iitemx])/2,side[iitemx]/2,0])
     union(){
-    translate([-(longCenter.x)/2,-longCenter.y/2,0])
-    slotCutout([longCenter.x, longCenter.y, longCenter.z+fudgeFactor], chamfer);
+    translate([-(longCenter[iitemx])/2,-longCenter[iitemy]/2,0])
+    chamferedSquare([longCenter[iitemx], longCenter[iitemy], longCenter[idepthneeded]+fudgeFactor], chamfer);
     
-    translate([-smallCenter.x/2,-smallCenter.y/2,(longCenter.z-smallCenter.z)])
-    slotCutout([smallCenter.x, smallCenter.y, smallCenter.z+fudgeFactor], chamfer);
+    translate([-smallCenter[iitemx]/2,-smallCenter[iitemy]/2,(longCenter[idepthneeded]-smallCenter[idepthneeded])])
+    chamferedSquare([smallCenter[iitemx], smallCenter[iitemy], smallCenter[idepthneeded]+fudgeFactor], chamfer);
 
     if(alternate){
-      pos = let(targetPos = (longCenter.x)/4-(side.y)/2) max(targetPos, smallCenter.y+minspacing);
-      translate([-pos-side.y/2, 0, 0])
+      pos = let(targetPos = (longCenter[iitemx])/4-(side[iitemy])/2) max(targetPos, smallCenter[iitemy]+minspacing);
+      translate([-pos-side[iitemy]/2, 0, 0])
         rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
-      translate([+pos+side.y/2, 0, 0])
+      translate([+pos+side[iitemy]/2, 0, 0])
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
     } else {
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
-      translate([-(longCenter.x)/2+(side.y)/2, 0, 0])
+      translate([-(longCenter[iitemx])/2+(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
         
-      translate([(longCenter.x)/2-(side.y)/2, 0, 0])
+      translate([(longCenter[iitemx])/2-(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       }
     }
   }
 }
-            
-            
+
 // Creates a slot with a small champer for easy insertertion
 //#slotCutout(100,20,40);
 //width = width of slot
 //depth = depth of slot
 //height = height of slot
 //chamfer = chamfer size
-module slotCutout(size, chamfer = 1)
+module chamferedSquare(size, chamfer = 1, cornerRadius = 0)
 {
   assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
 
   fudgeFactor = 0.01;
   chamfer = min(size.z, chamfer);
-  
-  translate([size.x/2,size.y/2,0])
-  intersection(){
-    union(){
-      // Main slot
-      translate([-size.x/2,-size.y/2,0])
+  union(){
+    if(cornerRadius > 0){
+        hull(){
+          translate([cornerRadius,cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+          translate([size.x-cornerRadius,cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+          translate([cornerRadius,size.y-cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+          translate([size.x-cornerRadius,size.y-cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+        }
+    } else {
+      translate([0,0,0])
         cube([size.x, size.y, size.z]);
-      
-     // chamfer
-     translate([-size.x/2,-size.y/2,size.z+fudgeFactor])
-     hull(){
-        translate([0,0,0])
-          rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);
-        translate([size.x,0,0])
-        rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);
-        translate([0,size.y,0])
-        rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);
-        translate([size.x,size.y,0])
-        rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);          
-          
-      }
     }
+    
+    if(chamfer > 0)
+       translate([0,0,size.z+fudgeFactor-chamfer-cornerRadius])
+       chamferedRectangleTop(size=size, chamfer=chamfer, cornerRadius=cornerRadius);
   }
 }
 
+module chamferedRectangleTop(size, chamfer, cornerRadius){
+  fudgeFactor = 0.01;
+  
+  chamferFn = cornerRadius > 0 ? $fn : 4;
+
+  champherExtention = cornerRadius > 0 ? 0 
+    : (min(size.x,size.y,size.z)-chamfer)/4;
+    
+  //when the chamferFn value is 4 we need to chan the formula as the radius is corner to corner not edge to edge.
+  conesizeTop = chamfer+cornerRadius+champherExtention;
+  conesizeBottom = conesizeTop>size.z ? conesizeTop-size.z: 0;
+  
+  echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
+  //if cornerRadius = 0, we can further increase the height of the 'cone' so we can extend inside the shape
+  hull(){
+    translate([cornerRadius+champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
+      rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
+    translate([size.x-cornerRadius-champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
+    rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
+    translate([cornerRadius+champherExtention/2,size.y-cornerRadius-champherExtention/2,conesizeBottom-champherExtention])
+    rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
+    translate([size.x-cornerRadius-champherExtention/2,size.y-cornerRadius-champherExtention/2,conesizeBottom-champherExtention])
+    rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);          
+  }
+}
+
+module chamferedHalfCylinder(h, r, circleFn, chamfer=0.5) {
+  fudgeFactor = 0.01;
+  
+  chamfer = min(h, chamfer);
+  translate([0,-h/2,r])
+  union(){
+    rotate([-90,0,0])
+    difference(){
+      cylinder(h=h, r=r, $fn = circleFn);
+      translate([-r-fudgeFactor,-r,-fudgeFactor])
+      cube([(r+fudgeFactor)*2,r,h+fudgeFactor*2]);
+    }
+    
+    if(r>0)
+      translate([-r, 0, -chamfer+fudgeFactor]) 
+      chamferedRectangleTop(size=[r*2,h,r], chamfer=chamfer, cornerRadius=0);
+  }
+}
+
+module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
+  chamfer = min(h, chamfer);
+  union(){
+    cylinder(h=h, r=r, $fn = circleFn);
+    
+    if(r>0)
+      translate([0, 0, h-chamfer]) 
+      cylinder(h=chamfer, r1=r, r2=r+chamfer,$fn = circleFn);
+  }
+}
 //CombinedEnd from path module_item_holder.scad
 //Combined from path module_gridfinity_efficient_floor.scad
 
@@ -17495,21 +17563,18 @@ module EfficientFloor(
       topChampherRadius = topSmoothTransition/2;
       topChampherCornerRadius = cornerRadius;
       topChampherZBottom = wallStartHeight+wallTaper;
-    gridcopy(num_x, num_y, pitch=gf_pitch)
-      //tz(efficientFloorGridHeight-topChampherRadius) 
       translate([
-        gf_pitch/2,
-        gf_pitch/2,
+        gf_pitch/2*num_x,
+        gf_pitch/2*num_y,
         topChampherZBottom]) 
       roundedNegativeChampher(
         champherRadius = topChampherRadius, 
         size=[
-          seventeen*2+(topChampherCornerRadius)*2,
-          seventeen*2+(topChampherCornerRadius)*2], 
+          (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_x-1)),
+          (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_y-1))],
         cornerRadius = topChampherCornerRadius, 
         champher = true,
         height = 4);
-      
       // tapered top portion
       //wallTaper;
      hull() {
@@ -17569,8 +17634,8 @@ module EfficientFloor(
         roundedNegativeChampher(
           champherRadius = champherRadius, 
           size=[
-            seventeen*2+(cornerRadius)*2,
-            seventeen*2+(cornerRadius)*2], 
+            (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_x-1)),
+            (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_y-1))],
           cornerRadius = cornerRadius, 
           height = 4);
       }
@@ -17826,8 +17891,6 @@ module ShowCalipers(
   wall_thickness,
   efficient_floor,
   flat_base){
-
-  echo("ShowCalipers", color_text=color_text);
   
   color(color_text)
   if(cuty > 0 && $preview)
@@ -18477,13 +18540,13 @@ module AttachFilament(l=5, d=1.75,left= true, right=true, front=true, back=true)
  h=4;
   positions = [
     //left
-    [left,[-gf_pitch/2,0, h],[0,90,0]],
+    [left,[0,0, h],[0,90,0]],
     //right
-    [right,[gf_pitch/2,0, h],[0,90,0]],
+    [right,[gf_pitch,0, h],[0,90,0]],
     //front
-    [front,[0, -gf_pitch/2,h],[90,0,0]],
+    [front,[0, 0,h],[90,0,0]],
     //back
-    [back,[0, gf_pitch/2,h],[90,0,0]]];
+    [back,[0, gf_pitch,h],[90,0,0]]];
   for(pi = [0:len(positions)-1]){
     if(positions[pi][0])
       translate(positions[pi][1])
@@ -18498,17 +18561,17 @@ module AttachButterFly(size=[5,3,2],r=0.5,left= true, right=true, front=true, ba
   
   positions = [
     //left
-    [left,[-gf_pitch/2,inset, -fudgeFactor],[0,0,-90]],
-    [left,[-gf_pitch/2,-inset, -fudgeFactor],[0,0,-90]],
+    [left,[0,inset, -fudgeFactor],[0,0,-90]],
+    [left,[0,-inset, -fudgeFactor],[0,0,-90]],
     //right
-    [right,[gf_pitch/2,inset, -fudgeFactor],[0,0,90]],
-    [right,[gf_pitch/2,-inset, -fudgeFactor],[0,0,90]],
+    [right,[gf_pitch,inset, -fudgeFactor],[0,0,90]],
+    [right,[gf_pitch,-inset, -fudgeFactor],[0,0,90]],
     //front
-    [front,[inset, -gf_pitch/2,-fudgeFactor],[0,0,0]],
-    [front,[-inset, -gf_pitch/2,-fudgeFactor],[0,0,0]],
+    [front,[inset, 0,-fudgeFactor],[0,0,0]],
+    [front,[-inset, 0,-fudgeFactor],[0,0,0]],
     //back
-    [back,[inset, gf_pitch/2,-fudgeFactor],[00,0,180]],
-    [back,[-inset, gf_pitch/2,-fudgeFactor],[0,0,180]]];
+    [back,[inset, gf_pitch,-fudgeFactor],[00,0,180]],
+    [back,[-inset, gf_pitch,-fudgeFactor],[0,0,180]]];
   for(pi = [0:len(positions)-1]){
     if(positions[pi][0])
       translate(positions[pi][1])
@@ -18547,165 +18610,257 @@ module ButterFly(size,r,taper=false,half=false)
 
 
 //CombinedEnd from path module_gridfinity_baseplate.scad
+//Combined from path module_item_holder_data.scad
+iitemDiameter= 0;
+iitemx = 1;
+iitemy = 2;
+idepthneeded = 3;
+iitemHeight = 4;
+ishape = 5;
 
-iitemx =0;
-iitemy =1;
-idepthneeded =2;
-iitemHeight =3;
-ishape =4;
-
+function LookupKnownShapes(name="round", default = 64) = 
+  name == "square" || name == "halfround" || name == "multicard" ? 4 :
+  name == "hex" ? 6 : 
+  name == "round" ? 64 :
+  default;
+  
 // result is dimensions for commnly know items
-//[x, y, z, item height, shape]
-//x=width (diameter on round, flat to flat on hex)
-//y=length (not used in round or hex)
+//[diameter, x, y, z, item height, shape]
+//x=diameter on round, flat to flat on hex, corner diameter in square.
+//x=width for square
+//y=length for square
 //z=desired depth of hole
-//item height=the hight object, not used.
-//shape=the item shape, (circle, hex or square)
-//[width, thickness, depthneeded, itemHeight, shape]
+//item height=the hight object, not used currently.
+//shape=the item shape, (circle, hex, halfround or square)
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
 function LookupKnownTool(name="custom") = 
-  name == "4hexshank" ? [4, 0, 5, 20, "hex"] :
-  name == "1/4hexshank" ? [6.35, 0, 8, 15, "hex"] :
-  name == "1/4hexshanklong" ? [6.35, 0, 15, 40, "hex"] :
-  name == "5/16hexshank" ? [7.94, 0, 7, 0, "hex"] :
-  name == "3/8hexshank" ? [9.52, 0, 10, 0, "hex"] :
-  name == "1/2shank" ? [12.7, 0, 20, 20, "round"] :
-  name == "12shank" ? [12, 0, 20, 20, "round"] :
-  name == "10shank" ? [10, 0, 150, 15, "round"] :
-  name == "3/8shank" ? [9.5250, 15, 20, 15, "round"] :
-  name == "8shank" ? [8, 0, 15, 15, "round"] :
-  name == "1/4shank" ? [6.35, 0, 10, 10, "round"] :
-  name == "6shank" ? [6, 0, 10, 10, "round"] :
-  name == "1/8shank" ? [3.2, 0, 10, 10, "round"] :
-  [0,0,0,0,""];
+  name == "4hexshank" ? [4, 0, 0, 5, 20, "hex"] :
+  name == "1/4hexshank" ? [6.35, 0, 0, 8, 15, "hex"] :
+  name == "1/4hexshanklong" ? [6.35, 0, 0, 15, 40, "hex"] :
+  name == "5/16hexshank" ? [7.94, 0, 0, 7, 0, "hex"] :
+  name == "3/8hexshank" ? [9.52, 0, 0, 10, 0, "hex"] :
+  name == "1/2shank" ? [12.7, 0, 0, 20, 20, "round"] :
+  name == "12shank" ? [12, 0, 0, 20, 20, "round"] :
+  name == "10shank" ? [10, 0, 0, 15, 20, "round"] :
+  name == "3/8shank" ? [9.525, 0, 20, 20, 15, "round"] :
+  name == "8shank" ? [8, 0, 0, 15, 15, "round"] :
+  name == "1/4shank" ? [6.35, 0, 0, 10, 20, "round"] :
+  name == "6shank" ? [6, 0, 0, 10, 10, "round"] :
+  name == "1/8shank" ? [3.2, 0, 0, 10, 10, "round"] :
+  [0,0,0,0,0,"","LookupKnownTool"];
 
-//[width, thickness, depthneeded, itemHeight, shape]
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
 function LookupKnownBattery(name="custom") = 
-  name == "aaaa" ? [8.3, 0, 10.625, 42.5, "round"] :
-  name == "aaa" ? [10.5, 0, 11.125, 44.5, "round"] :
-  name == "aa" ? [14.5, 0, 12.625, 50.5, "round"] :
-  name == "c" ? [26.2, 0, 12.5, 50, "round"] :
-  name == "d" ? [34.2, 0, 15.375, 61.5, "round"] :
-  name == "7540" ? [7.5, 0, 10, 40, "round"] :
-  name == "8570" ? [8.5, 0, 17.5, 70, "round"] :
-  name == "10180" ? [10, 0, 4.5, 18, "round"] :
-  name == "10280" ? [10, 0, 7, 28, "round"] :
-  name == "10440" ? [10, 0, 11, 44, "round"] :
-  name == "10850" ? [10, 0, 21.25, 85, "round"] :
-  name == "13400" ? [13, 0, 10, 40, "round"] :
-  name == "14250" ? [14, 0, 6.25, 25, "round"] :
-  name == "14300" ? [14, 0, 7.5, 30, "round"] :
-  name == "14430" ? [14, 0, 10.75, 43, "round"] :
-  name == "14500" ? [14, 0, 13.25, 53, "round"] :
-  name == "14650" ? [14, 0, 16.25, 65, "round"] :
-  name == "15270" ? [15, 0, 6.75, 27, "round"] :
-  name == "16340" ? [16, 0, 8.5, 34, "round"] :
-  name == "16650" ? [16, 0, 16.25, 65, "round"] :
-  name == "17500" ? [17, 0, 12.5, 50, "round"] :
-  name == "17650" ? [17, 0, 16.25, 65, "round"] :
-  name == "17670" ? [17, 0, 16.75, 67, "round"] :
-  name == "18350" ? [18, 0, 8.75, 35, "round"] :
-  name == "18490" ? [18, 0, 12.25, 49, "round"] :
-  name == "18500" ? [18, 0, 12.5, 50, "round"] :
-  name == "18650" ? [18, 0, 16.25, 65, "round"] :
-  name == "20700" ? [20, 0, 17.5, 70, "round"] :
-  name == "21700" ? [21, 0, 17.5, 70, "round"] :
-  name == "25500" ? [25, 0, 12.5, 50, "round"] :
-  name == "26500" ? [26, 0, 12.5, 50, "round"] :
-  name == "26650" ? [26, 0, 16.25, 65, "round"] :
-  name == "26700" ? [26, 0, 17.5, 70, "round"] :
-  name == "26800" ? [26, 0, 20, 80, "round"] :
-  name == "32600" ? [32, 0, 15, 60, "round"] :
-  name == "32650" ? [32, 0, 16.925, 67.7, "round"] :
-  name == "32700" ? [32, 0, 17.5, 70, "round"] :
-  name == "38120" ? [38, 0, 30, 120, "round"] :
-  name == "38140" ? [38, 0, 35, 140, "round"] :
-  name == "40152" ? [40, 0, 38, 152, "round"] :
-  name == "4680" ? [46, 0, 20, 80, "round"] :
-  [0,0,0,0,""];
+  name == "aaaa" ? [8.3, 0, 0, 10.625, 42.5, "round"] :
+  name == "aaa" ? [10.5, 0, 0, 11.125, 44.5, "round"] :
+  name == "aa" ? [14.5, 0, 0, 12.625, 50.5, "round"] :
+  name == "9v" ? [1, 17.5, 26.5, 12.5, 48.5, "square"] :
+  name == "c" ? [26.2, 0, 0, 12.5, 50, "round"] :
+  name == "d" ? [34.2, 0, 0, 15.375, 61.5, "round"] :
+  name == "7540" ? [7.5, 0, 0, 10, 40, "round"] :
+  name == "8570" ? [8.5, 0, 0, 17.5, 70, "round"] :
+  name == "10180" ? [10, 0, 0, 4.5, 18, "round"] :
+  name == "10280" ? [10, 0, 0, 7, 28, "round"] :
+  name == "10440" ? [10, 0, 0, 11, 44, "round"] :
+  name == "10850" ? [10, 0, 0, 21.25, 85, "round"] :
+  name == "13400" ? [13, 0, 0, 10, 40, "round"] :
+  name == "14250" ? [14, 0, 0, 6.25, 25, "round"] :
+  name == "14300" ? [14, 0, 0, 7.5, 30, "round"] :
+  name == "14430" ? [14, 0, 0, 10.75, 43, "round"] :
+  name == "14500" ? [14, 0, 0, 13.25, 53, "round"] :
+  name == "14650" ? [14, 0, 0, 16.25, 65, "round"] :
+  name == "15270" ? [15, 0, 0, 6.75, 27, "round"] :
+  name == "16340" ? [16, 0, 0, 8.5, 34, "round"] :
+  name == "16650" ? [16, 0, 0, 16.25, 65, "round"] :
+  name == "17500" ? [17, 0, 0, 12.5, 50, "round"] :
+  name == "17650" ? [17, 0, 0, 16.25, 65, "round"] :
+  name == "17670" ? [17, 0, 0, 16.75, 67, "round"] :
+  name == "18350" ? [18, 0, 0, 8.75, 35, "round"] :
+  name == "18490" ? [18, 0, 0, 12.25, 49, "round"] :
+  name == "18500" ? [18, 0, 0, 12.5, 50, "round"] :
+  name == "18650" ? [18, 0, 0, 16.25, 65, "round"] :
+  name == "20700" ? [20, 0, 0, 17.5, 70, "round"] :
+  name == "21700" ? [21, 0, 0, 17.5, 70, "round"] :
+  name == "25500" ? [25, 0, 0, 12.5, 50, "round"] :
+  name == "26500" ? [26, 0, 0, 12.5, 50, "round"] :
+  name == "26650" ? [26, 0, 0, 16.25, 65, "round"] :
+  name == "26700" ? [26, 0, 0, 17.5, 70, "round"] :
+  name == "26800" ? [26, 0, 0, 20, 80, "round"] :
+  name == "32600" ? [32, 0, 0, 15, 60, "round"] :
+  name == "32650" ? [32, 0, 0, 16.925, 67.7, "round"] :
+  name == "32700" ? [32, 0, 0, 17.5, 70, "round"] :
+  name == "38120" ? [38, 0, 0, 30, 120, "round"] :
+  name == "38140" ? [38, 0, 0, 35, 140, "round"] :
+  name == "40152" ? [40, 0, 0, 38, 152, "round"] :
+  name == "4680" ? [46, 0, 0, 20, 80, "round"] :
+  [0,0,0,0,0,"","LookupKnownBattery"];
 
-//[width, thickness, depthneeded, itemHeight, shape]
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
+function LookupKnownCellBattery(name="custom") = 
+  name == "cr927" ? [0, 9.5, 2.7, 0, 0, "halfround"] :
+  name == "cr1025" ? [0, 10, 2.5, 0, 0, "halfround"] :
+  name == "cr1130" ? [0, 11.5, 3, 0, 0, "halfround"] :
+  name == "cr1216" ? [0, 12.5, 1.6, 0, 0, "halfround"] :
+  name == "cr1220" ? [0, 12.5, 2, 0, 0, "halfround"] :
+  name == "cr1225" ? [0, 12.5, 2.5, 0, 0, "halfround"] :
+  name == "cr1616" ? [0, 16, 1.6, 0, 0, "halfround"] :
+  name == "cr1620" ? [0, 16, 2, 0, 0, "halfround"] :
+  name == "cr1632" ? [0, 16, 3.2, 0, 0, "halfround"] :
+  name == "cr2012" ? [0, 20, 1.2, 0, 0, "halfround"] :
+  name == "cr2016" ? [0, 20, 1.6, 0, 0, "halfround"] :
+  name == "cr2020" ? [0, 20, 2, 0, 0, "halfround"] :
+  name == "cr2025" ? [0, 20, 2.5, 0, 0, "halfround"] :
+  name == "cr2032" ? [0, 20, 3.2, 0, 0, "halfround"] :
+  name == "cr2040" ? [0, 20, 4, 0, 0, "halfround"] :
+  name == "cr2050" ? [0, 20, 5, 0, 0, "halfround"] :
+  name == "cr2320" ? [0, 23, 2, 0, 0, "halfround"] :
+  name == "cr2325" ? [0, 23, 2.5, 0, 0, "halfround"] :
+  name == "cr2330" ? [0, 23, 3, 0, 0, "halfround"] :
+  name == "br2335" ? [0, 23, 3.5, 0, 0, "halfround"] :
+  name == "cr2354" ? [0, 23, 5.4, 0, 0, "halfround"] :
+  name == "cr2412" ? [0, 24.5, 1.2, 0, 0, "halfround"] :
+  name == "cr2430" ? [0, 24.5, 3, 0, 0, "halfround"] :
+  name == "cr2450" ? [0, 24.5, 5, 0, 0, "halfround"] :
+  name == "cr2477" ? [0, 24.5, 7.7, 0, 0, "halfround"] :
+  name == "cr3032" ? [0, 30, 3.2, 0, 0, "halfround"] :
+  name == "cr11108" ? [0, 11.6, 10.8, 0, 0, "halfround"] :
+  [0,0,0,0,0,"","LookupKnownCellBattery"];
+  
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
 function LookupKnownCard(name="custom") = 
-  name == "multicard" ? [0, 0, 0, 0, "square"] :
-  name == "compactflashi" ? [43, 3.3, 9, 36, "square"] :
-  name == "compactflashii" ? [43, 5, 9, 36, "square"] :
-  name == "smartmedia" ? [37, 0.76, 11.25, 45, "square"] :
-  name == "mmc" ? [24, 1.4, 8, 32, "square"] :
-  name == "mmcmobile" ? [24, 1.4, 4.5, 18, "square"] :
-  name == "mmcmicro" ? [14, 1.1, 3, 12, "square"] :
-  name == "sd" ? [24, 2.1, 18, 32, "square"] :
-  name == "minisd" ? [20, 1.4, 10, 21.5, "square"] :
-  name == "microsd" ? [11, 0.7, 9, 15, "square"] :
-  name == "memorystickstandard" ? [21.5, 2.8, 12.5, 50, "square"] :
-  name == "memorystickduo" ? [20, 1.6, 7.75, 31, "square"] :
-  name == "memorystickmicro" ? [12.5, 1.2, 3.75, 15, "square"] :
-  name == "nano" ? [12.3, 0.7, 2.2, 8.8, "square"] :
-  name == "psvita" ? [15, 1.6, 3.125, 12.5, "square"] :
-  name == "xqd" ? [38.5, 3.8, 7.45, 29.8, "square"] :
-  name == "xD" ? [25, 1.78, 5, 20, "square"] :
-  name == "USBA" ? [12, 4.5, 13, 13, "square"] :
-  name == "USBC" ? [8.5, 4, 10, 0, "square"] :
-  [0,0,0,0,""];
+  name == "multicard" ? [0, 0, 0, 0, 0, "multicard"] :
+  name == "compactflashi" ? [0, 43, 3.3, 9, 36, "square"] :
+  name == "compactflashii" ? [0, 43, 5, 9, 36, "square"] :
+  name == "smartmedia" ? [0, 37, 0.76, 11.25, 45, "square"] :
+  name == "mmc" ? [0, 24, 1.4, 8, 32, "square"] :
+  name == "mmcmobile" ? [0, 24, 1.4, 4.5, 18, "square"] :
+  name == "mmcmicro" ? [0, 14, 1.1, 3, 12, "square"] :
+  name == "sd" ? [0, 24, 2.1, 18, 32, "square"] :
+  name == "minisd" ? [0, 20, 1.4, 10, 21.5, "square"] :
+  name == "microsd" ? [0, 11, 0.7, 9, 15, "square"] :
+  name == "memorystickstandard" ? [0, 21.5, 2.8, 12.5, 50, "square"] :
+  name == "memorystickduo" ? [0, 20, 1.6, 7.75, 31, "square"] :
+  name == "memorystickmicro" ? [0, 12.5, 1.2, 3.75, 15, "square"] :
+  name == "nano" ? [0, 12.3, 0.7, 2.2, 8.8, "square"] :
+  name == "psvita" ? [0, 15, 1.6, 3.125, 12.5, "square"] :
+  name == "xqd" ? [0, 38.5, 3.8, 7.45, 29.8, "square"] :
+  name == "xD" ? [0, 25, 1.78, 5, 20, "square"] :
+  name == "usba" ? [0, 12, 4.5, 13, 13, "square"] :
+  name == "usbc" ? [0, 8.5, 4, 10, 0, "square"] :
+  [0,0,0,0,0,"","LookupKnownCard"];
 
-//[width, thickness, depthneeded, itemHeight, shape]
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
 function LookupKnownCartridge(name="custom") = 
-  name == "atari800" ? [68, 21, 19.25, 77, "square"] :
-  name == "atari2600" ? [81, 19, 21.75, 87, "square"] :
-  name == "atari5200" ? [104, 20, 28, 112, "square"] :
-  name == "atari7800" ? [81, 19, 21.75, 87, "square"] :
-  name == "commodore" ? [79, 17, 34.75, 139, "square"] :
-  name == "magnavoxodyssey" ? [100, 5.5, 15, 60, "square"] :
-  name == "magnavoxodysseymulticard" ? [105, 15, 27.5, 110, "square"] :
-  name == "magnavoxodyssey2" ? [80, 21, 31.75, 127, "square"] :
-  name == "mattelintellivision" ? [68, 16, 22, 88, "square"] :
-  name == "nintendofamicom" ? [71, 17, 27, 108, "square"] :
-  name == "nintendofamicomdisk" ? [76, 4, 22.5, 90, "square"] :
-  name == "nintendosuperfamicom" ? [127, 20, 21.5, 86, "square"] :
-  name == "nes" ? [120, 17, 33.5, 134, "square"] :
-  name == "snes" ? [136, 20, 21.925, 87.7, "square"] :
-  name == "nintendo64" ? [116, 18, 18.75, 75, "square"] :
-  name == "nintendogb" ? [57, 7.5, 16.375, 65.5, "square"] :
-  name == "nintendogbc" ? [57, 9, 16.375, 65.5, "square"] :
-  name == "nintendogba" ? [35, 6, 14.25, 57, "square"] :
-  name == "nintendods" ? [33, 3.8, 8.75, 35, "square"] :
-  name == "nintendo2ds" ? [35, 3.8, 8.75, 35, "square"] :
-  name == "nintendovb" ? [75, 7, 17, 68, "square"] :
-  name == "nintendoswitch" ? [21, 3, 7.75, 31, "square"] :
-  name == "segagamegear" ? [66, 10, 17, 68, "square"] :
-  name == "segagenesis" ? [118, 15, 17, 68, "square"] :
-  name == "segagenesistall" ? [96, 16, 22, 88, "square"] :
-  name == "segamegadrive" ? [93, 17, 16.75, 67, "square"] :
-  name == "segamegadrivecodemasters" ? [109, 17, 18.75, 75, "square"] :
-  name == "segamastersystem" ? [69, 17, 27, 108, "square"] :
-  name == "sega32x" ? [72, 16, 27.75, 111, "square"] :
-  name == "segacard" ? [84, 2, 13.25, 53, "square"] :
-  name == "segapico" ? [181, 15, 55.75, 223, "square"] :
-  name == "sonyumd" ? [64, 0, 1.05, 4.2, "round"] :
-  name == "sonypsvita" ? [22, 2, 7.5, 30, "square"] :
-  name == "sonypsvitamemcard" ? [12.5, 1.6, 3.75, 15, "square"] :
-  name == "necpcehucard" ? [53, 2, 21, 84, "square"] :
-  name == "snkneogeoaes" ? [146.05, 31.75, 47.625, 190.5, "square"] :
-  name == "snkneogeomvs" ? [145, 35, 46.25, 185, "square"] :
-  name == "bandai" ? [41, 6, 16.5, 66, "square"] :
-  name == "msx" ? [109, 16.8, 17.35, 69.4, "square"] :
-  name == "rect" ? [itemholder_hole_size[0], itemholder_hole_size[1],0,0, "square"] :[0,0,0,0,""];
-  
-function LookupKnownShapes(name="round") = 
-  name == "square" ? 4 :
-  name == "hex" ? 6 : 64;
-  
-function LookupKnown(knowItem) = let(
-      knownCard = LookupKnownCard(knowItem),
-      knownCartridge = LookupKnownCartridge(knowItem),
-      knownTool = LookupKnownTool(knowItem),
-      knownBattery = LookupKnownBattery(knowItem)
-    ) knownCard[4] != "" ? knownCard 
-      : knownCartridge[4] != "" ? knownCartridge
-      : knownBattery[4] != "" ? knownBattery
-      : knownTool;
+  name == "atari800" ? [0, 68, 21, 19.25, 77, "square"] :
+  name == "atari2600" ? [0, 81, 19, 21.75, 87, "square"] :
+  name == "atari5200" ? [0, 104, 20, 28, 112, "square"] :
+  name == "atari7800" ? [0, 81, 19, 21.75, 87, "square"] :
+  name == "commodore" ? [0, 79, 17, 34.75, 139, "square"] :
+  name == "magnavoxodyssey" ? [0, 100, 5.5, 15, 60, "square"] :
+  name == "magnavoxodysseymulticard" ? [0, 105, 15, 27.5, 110, "square"] :
+  name == "magnavoxodyssey2" ? [0, 80, 21, 31.75, 127, "square"] :
+  name == "mattelintellivision" ? [0, 68, 16, 22, 88, "square"] :
+  name == "nintendofamicom" ? [0, 71, 17, 27, 108, "square"] :
+  name == "nintendofamicomdisk" ? [0, 76, 4, 22.5, 90, "square"] :
+  name == "nintendosuperfamicom" ? [0, 127, 20, 21.5, 86, "square"] :
+  name == "nes" ? [0, 120, 17, 33.5, 134, "square"] :
+  name == "snes" ? [0, 136, 20, 21.925, 87.7, "square"] :
+  name == "nintendo64" ? [0, 116, 18, 18.75, 75, "square"] :
+  name == "nintendogb" ? [0, 57, 7.5, 16.375, 65.5, "square"] :
+  name == "nintendogbc" ? [0, 57, 9, 16.375, 65.5, "square"] :
+  name == "nintendogba" ? [0, 35, 6, 14.25, 57, "square"] :
+  name == "nintendods" ? [0, 33, 3.8, 8.75, 35, "square"] :
+  name == "nintendo2ds" ? [0, 35, 3.8, 8.75, 35, "square"] :
+  name == "nintendovb" ? [0, 75, 7, 17, 68, "square"] :
+  name == "nintendoswitch" ? [0, 21, 3, 7.75, 31, "square"] :
+  name == "segagamegear" ? [0, 66, 10, 17, 68, "square"] :
+  name == "segagenesis" ? [0, 118, 15, 17, 68, "square"] :
+  name == "segagenesistall" ? [0, 96, 16, 22, 88, "square"] :
+  name == "segamegadrive" ? [0, 93, 17, 16.75, 67, "square"] :
+  name == "segamegadrivecodemasters" ? [0, 109, 17, 18.75, 75, "square"] :
+  name == "segamastersystem" ? [0, 69, 17, 27, 108, "square"] :
+  name == "sega32x" ? [0, 72, 16, 27.75, 111, "square"] :
+  name == "segacard" ? [0, 84, 2, 13.25, 53, "square"] :
+  name == "segapico" ? [0, 181, 15, 55.75, 223, "square"] :
+  name == "sonyumd" ? [0, 64, 0, 1.05, 4.2, "round"] :
+  name == "sonypsvita" ? [0, 22, 2, 7.5, 30, "square"] :
+  name == "sonypsvitamemcard" ? [0, 12.5, 1.6, 3.75, 15, "square"] :
+  name == "necpcehucard" ? [0, 53, 2, 21, 84, "square"] :
+  name == "snkneogeoaes" ? [0, 146.05, 31.75, 47.625, 190.5, "square"] :
+  name == "snkneogeomvs" ? [0, 145, 35, 46.25, 185, "square"] :
+  name == "bandai" ? [0, 41, 6, 16.5, 66, "square"] :
+  name == "msx" ? [0, 109, 16.8, 17.35, 69.4, "square"] :
+  [0,0,0,0,0,"","LookupKnownCartridge"];
+//CombinedEnd from path module_item_holder_data.scad
+ 
+function LookupKnown(knowItemCode, customDiameter = [0,0], customSize=0, customDepth=0, customShape="square") = let(
+      knownCard = LookupKnownCard(knowItemCode),
+      knownCartridge = LookupKnownCartridge(knowItemCode),
+      knownTool = LookupKnownTool(knowItemCode),
+      knownBattery = LookupKnownBattery(knowItemCode),
+      knownCellBattery = LookupKnownCellBattery(knowItemCode)
+    ) knownCard[ishape] != "" ? knownCard 
+      : knownCartridge[ishape] != "" ? knownCartridge
+      : knownBattery[ishape] != "" ? knownBattery
+      : knownCellBattery[ishape] != "" ? knownCellBattery
+      : knownTool[ishape] != "" ? knownTool
+      : [customDiameter, customSize.x, customSize.y, customDepth, 0, customShape];
+      
 function addClearance(dim, clearance) =
-    [dim.x > 0 ? dim.x+clearance : 0
-    ,dim.y > 0 ? dim.y+clearance : 0
-    ,dim.z];
+    [dim[iitemDiameter] > 0 ? dim[iitemDiameter]+clearance : 0
+    ,dim[iitemx] > 0 ? dim[iitemx]+clearance : 0
+    ,dim[iitemy] > 0 ? dim[iitemy]+clearance : 0
+    ,dim[idepthneeded]];
+
+icSides = 0;
+icHoleSize = 1;
+icMcLongCenterItem = 2;
+icMcShortCenterItem = 3;
+icMcSideItem = 4;
+icMcCompact = 5;
+
+function multiCardCalculations(
+  multiCards = "sd,usba,microsd", 
+  multiCardCompact = 0,
+  holeClearance = 0
+) = let(
+      mc = split(multiCards, ","),
+      longCenterItem = addClearance(LookupKnown(mc[0]), holeClearance),
+      shortCenterItem = addClearance(LookupKnown(mc[1]), holeClearance),
+      sideItem = addClearance(LookupKnown(mc[2]), holeClearance),
+      multiCardCompact = multiCardCompact > 0 ? sideItem[iitemx] * (1 - min(multiCardCompact/2 + 0.5 ,1)) : 0,
+      _sides = LookupKnownShapes("multicard"),
+      _holeSize = [
+        max(longCenterItem[iitemx],shortCenterItem[iitemx]), 
+        max(longCenterItem[iitemy], shortCenterItem[iitemy], sideItem[iitemx] - multiCardCompact), 
+        max(longCenterItem[idepthneeded], shortCenterItem[idepthneeded], sideItem[idepthneeded])]
+    ) [_sides,
+      _holeSize,
+      longCenterItem,
+      shortCenterItem,
+      sideItem,
+      multiCardCompact];
+
+function itemCalculations(
+  item,
+  sides,
+  holeDepth,
+  holeClearance
+  ) = let(
+    _sides = LookupKnownShapes(item[ishape], sides),
+    _depthTemp = holeDepth > 0 ? holeDepth : item[idepthneeded],
+    _depth = _depthTemp <= 0 ? 5 : _depthTemp,
+    _holeSize = 
+      item[ishape] == "round"  || item[ishape] == "hex"
+        ? [item[iitemDiameter]+holeClearance, 0, _depth]
+      : item[ishape] == "halfround" 
+        ? [item[iitemx]+holeClearance, item[iitemy]+holeClearance, item[iitemx]/2]
+      : [item[iitemx]+holeClearance,item[iitemy]+holeClearance,_depth]
+  ) [_sides,
+      _holeSize,
+      [],[],[],0];   
+    
+////////
 
 //TODO for the hose size its not correct due to loss in the number of faces.
 //E.G a 10mm circle cant contain a 10mm hex
@@ -18714,15 +18869,17 @@ module itemholder(
   num_x = 1,
   num_y = 2,
   num_z, 
-  knowItem = "custom",
-  multiCards = "sd,USBA,microsd",
+  knowItemCode = "custom",
+  customHoleBaseShape = "square",
+  multiCards = "sd,usba,microsd",
   multiCardCompact = 0,
   gridStyle = "auto",
   sides = 4,
-  holeSize = 10,
+  holeSize = [10,10],
+  holeDiameter = 10,
   holeDepth = 5, 
   holeChamfer = 1,
-  holeClearance = 0.65,
+  holeClearance = 0.2,
   holeSpacing = 0,
   holeGrid  = [0,0],
   floorThickness,
@@ -18734,37 +18891,42 @@ module itemholder(
   customcompartments = "",
   help = false)
 {
-  gridStyle = knowItem == "multicard" ? "square" : gridStyle;
-  
   //Non custom components
-  item = LookupKnown(knowItem);
-  mc = split(multiCards, ",");
+  item = LookupKnown(
+    knowItemCode=knowItemCode,
+    customDiameter=holeDiameter, 
+    customSize=holeSize, 
+    customDepth=holeDepth, 
+    customShape=customHoleBaseShape);
+ 
+  itemCalc = item[ishape] == "multicard"
+      ? multiCardCalculations(
+          multiCards = multiCards, 
+          multiCardCompact = multiCardCompact,
+          holeClearance = holeClearance)
+      : itemCalculations(
+          item = item,
+          sides = sides,
+          holeDepth = holeDepth,
+          holeClearance=holeClearance);
+          
+  gridStyle = item[ishape] == "multicard" || item[ishape] == "square" || item[ishape] == "halfround" 
+    ? "square" : gridStyle;  
   
-  longCenter = addClearance(LookupKnown(mc[0]), holeClearance);
-  smallCenter = addClearance(LookupKnown(mc[1]), holeClearance);
-  side = addClearance(LookupKnown(mc[2]), holeClearance);
+  _sides = itemCalc[icSides];
+  _holeSize = itemCalc[icHoleSize];
+  _multiCardCompact = itemCalc[icMcCompact];
+  _depth = min(itemCalc[icHoleSize].z, floorThickness);
   
-  _multiCardCompact = (knowItem == "multicard" && multiCardCompact > 0 ? side.x * (1 - min(multiCardCompact/2 + 0.5 ,1)) : 0);
-  
-  _sides = knowItem == "multicard" ? 4
-    : item[4] == "" ? sides : LookupKnownShapes(item[4]);
-  _holeSize = knowItem == "multicard" ? [max(longCenter.x,smallCenter.x), max(longCenter.y, smallCenter.y, side.x -_multiCardCompact)]
-    : item[4] != "square" ?
-    [(item[0] == 0 ? holeSize[0] : item[0])+holeClearance, (item[1] == 0 ? holeSize[1] : item[1])+holeClearance]
-    : [item[0],item[1]];
-    
-  _depth= let( 
-    itemDepth = knowItem == "multicard" ? max(longCenter.z, smallCenter.z, side.z) : item.z,
-    desiredDepth=(holeDepth > 0 ? holeDepth : itemDepth))
-      desiredDepth > floorThickness ? floorThickness : desiredDepth;
-
   xSize = (num_x*gf_pitch-(compartments.x+1)*compartment_spacing)/compartments.x;
   xStep = xSize + compartment_spacing;
   ySize = (num_y*gf_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
   yStep = ySize + compartment_spacing;
   
-  if(IsHelpEnabled("info")) echo("itemholder", item=item, mc=mc,longCenter=longCenter,smallCenter=smallCenter,side=side, _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
-  if(IsHelpEnabled("info")) echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
+  if(IsHelpEnabled("info"));
+  echo("itemholder", item=item, multiCards=multiCards,longCenter=itemCalc[icMcLongCenterItem],smallCenter=itemCalc[icMcShortCenterItem],side=itemCalc[icMcSideItem], _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
+  if(IsHelpEnabled("info"));
+  echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
   
   for(x =[0:1:compartments.x-1])
   {
@@ -18776,7 +18938,7 @@ module itemholder(
         GridItemHolder(
           canvasSize = [xSize,ySize],
           hexGrid= gridStyle == "square" ? false : gridStyle == "hex" ? true : gridStyle,
-          customShape = item[4] == "square",
+          customShape = item[ishape] != "round" && item[ishape] != "hex",
           circleFn = _sides,
           holeSize = _holeSize,
           holeSpacing = [holeSpacing,holeSpacing],
@@ -18786,16 +18948,23 @@ module itemholder(
           center=compartment_centered,
           fill=compartment_fill,
           help=help)
-          union(){
-            if(knowItem=="multicard")
+            if(item[ishape]=="multicard")
             {
               multiCard(
-                longCenter, smallCenter, side, 
+                itemCalc[icMcLongCenterItem], itemCalc[icMcShortCenterItem], itemCalc[icMcSideItem], 
                 chamfer = holeChamfer,
                 alternate = _multiCardCompact > 0 && (($idx.y % 2) != $idx.x % 2));
-            }else if(item[4] == "square") {
-              slotCutout([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer);
-            }
+            } else if(item[ishape] == "square") {
+              chamferedSquare(
+                size = [_holeSize.x, _holeSize.y, _depth+fudgeFactor], 
+                chamfer=holeChamfer, 
+                cornerRadius=3, $fn=64);
+            } else if(item[ishape] == "halfround") {
+              translate([_holeSize.x/2,_holeSize.y/2,0])
+                chamferedHalfCylinder(
+                  r=item[iitemx]/2, 
+                  h=item[iitemy], 
+                  chamfer=holeChamfer, $fn=64);
           }
     }
   }
@@ -18804,7 +18973,7 @@ module itemholder(
     "num_x",num_x
     ,"num_y",num_y
     ,"num_z",num_z
-    ,"knowItem",knowItem
+    ,"knowItemCode",knowItemCode
     ,"gridStyle",gridStyle
     ,"sides",sides
     ,"holeSize",holeSize
@@ -18830,10 +18999,109 @@ module itemholder(
     ,help);
 }
 
+module samplesholder(
+  knowItemCode = "custom",
+  customHoleBaseShape,
+  holeDiameter,
+  multiCards = "sd,USBA,microsd",
+  multiCardCompact = 0,
+  sides = 4,
+  holeSize = [10,10],
+  holeDepth = 5, 
+  holeChamfer = 1,
+  holeClearance = 0.2,
+  wallThickness,
+  help = false)
+{
+  floorThickness=wallThickness;
+  
+  //Non custom components
+  item = LookupKnown(
+    knowItemCode=knowItemCode,
+    customDiameter=holeDiameter, 
+    customSize=holeSize, 
+    customDepth=holeDepth, 
+    customShape=customHoleBaseShape);
+  mc = split(multiCards, ",");
+  
+  itemCalc = item[ishape] == "multicard"
+      ? multiCardCalculations(
+          multiCards = multiCards, 
+          multiCardCompact = multiCardCompact,
+          holeClearance = holeClearance)
+      : itemCalculations(
+          item = item,
+          sides = sides,
+          holeDepth = holeDepth,
+          holeClearance=holeClearance);
+      
+    _sides = itemCalc[icSides];
+    _holeSize = itemCalc[icHoleSize];
+    _depth = itemCalc[icHoleSize].z;
+    Rc = itemCalc[icSides]<=2 || itemCalc[icSides]>16 ? _holeSize[0]/2 : (_holeSize[0]/2)/cos(180/itemCalc[icSides]);
+
+  if(IsHelpEnabled("info"));
+  echo("itemholder", knowItemCode=knowItemCode, holeDepth=holeDepth, item=item, itemCalc=itemCalc, mc=mc,longCenter=itemCalc[icMcLongCenterItem],smallCenter=itemCalc[icMcShortCenterItem],side=itemCalc[icMcSideItem], _sides=_sides, _holeSize=_holeSize,_depth=_depth, Rc=Rc, Dc=Rc*2);
+
+  if(knowItemCode=="multicard")
+  {
+    difference(){
+      translate([-_holeSize.x/2-wallThickness,-_holeSize.y/2-wallThickness,-wallThickness-fudgeFactor])
+        cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
+      translate([-_holeSize.x/2,-_holeSize.y/2-holeChamfer,0])
+        multiCard(
+          itemCalc[icMcLongCenterItem], itemCalc[icMcShortCenterItem], itemCalc[icMcSideItem], 
+          chamfer = holeChamfer,
+          alternate =false);
+      }
+  } else if(item[ishape] == "square") {
+    difference(){
+      translate([-_holeSize.x/2-wallThickness,-_holeSize.y/2-wallThickness,-wallThickness-fudgeFactor])
+        cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
+      translate([-_holeSize.x/2,-_holeSize.y/2,0])
+        chamferedSquare([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer, cornerRadius=item[iitemDiameter], $fn=64);
+    }
+  } else if(item[ishape] == "halfround") {
+    difference(){
+      translate([-_holeSize.x/2-wallThickness,-_holeSize.y/2-wallThickness,-wallThickness-fudgeFactor])
+        cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
+
+      chamferedHalfCylinder(r=item[iitemx]/2, h=item[iitemy], chamfer=holeChamfer, $fn=64);
+    }
+  } else {
+    difference(){
+      translate([0,0,-wallThickness-fudgeFactor])
+        cylinder(h=_depth+fudgeFactor+wallThickness, r=Rc+wallThickness, $fn=64);
+      chamferedCylinder(h=_depth+fudgeFactor, r=Rc, chamfer=holeChamfer, circleFn = _sides);
+    }
+  }
+  
+  HelpTxt("sampleholder",[
+    "knowItemCode",knowItemCode
+    ,"multiCards",multiCards
+    ,"multiCardCompact",multiCardCompact
+    ,"sides",sides
+    ,"holeSize",holeSize
+    ,"holeDepth",holeDepth
+    ,"holeChamfer",holeChamfer
+    ,"holeClearance",holeClearance
+    ,"wallThickness",wallThickness
+    ,"_sides",_sides
+    ,"_holeSize",_holeSize
+    ,"_depth",_depth
+    ,"Rc", Rc]
+    ,help);
+}
+
+
 // Generates the gridfinity bin with cutouts.
 // Runs the function without needing to pass the variables.
 module gridfinity_itemholder(
   //itemholder settings
+  itemholder_enable_sample = itemholder_enable_sample,
+  itemholder_sample_wall_thickness = itemholder_sample_wall_thickness,
+  itemholder_hole_base_shape = itemholder_hole_base_shape,
+  itemholder_hole_diameter = itemholder_hole_diameter,
   itemholder_grid_style = itemholder_grid_style,
   itemholder_hole_sides = itemholder_hole_sides,
   itemholder_hole_size = itemholder_hole_size,
@@ -18853,9 +19121,10 @@ module gridfinity_itemholder(
   itemholder_known_item = 
         itemholder_known_tools != "custom" ? itemholder_known_tools  
       : itemholder_known_batteries != "custom"? itemholder_known_batteries
+      : itemholder_known_cell_batteries != "custom"? itemholder_known_cell_batteries
       : itemholder_known_cards != "custom"? itemholder_known_cards
       : itemholder_known_cartridges, 
-
+      
   //gridfinity settings
   width=width, depth=depth, height=height,
   position=position,
@@ -18921,128 +19190,156 @@ module gridfinity_itemholder(
   cutx=cutx,
   cuty=cuty,
   help=enable_help) {
+  $showHelp = help;
   
-  difference() {
-    num_x = calcDimensionWidth(width);
-    num_y = calcDimensionDepth(depth);
-    num_z = calcDimensionHeight(height);
-    
-   //calcualte height if needed.
-   knowItemDepth = itemholder_known_item == "multicard" ? 
-    let (
-      mc = split(itemholder_multi_cards, ","), 
-      longCenter = LookupKnown(mc[0]),
-      smallCenter = LookupKnown(mc[1]),
-      side = LookupKnown(mc[2])) max(longCenter.z,smallCenter.z,side.z)
-    : let( item = LookupKnown(itemholder_known_item)) item.z;
-   
-    itemholder_hole_depth=(itemholder_hole_depth > 0 ? itemholder_hole_depth : knowItemDepth);
-    
-    // min floor height
-    bch = cupBaseClearanceHeight(magnet_diameter, screw_depth);
-    mfh = calculateMinFloorHeight(magnet_diameter, screw_depth);
-    
-    //calculate the bin height. This math is not right
-    height = !itemholder_auto_bin_height || itemholder_hole_depth <=0 ? num_z
-        : filled_in && lip_style != "none" 
-          ? (mfh+itemholder_hole_depth)/gf_zpitch
-          : ceil((mfh+itemholder_hole_depth)/gf_zpitch);
-       
-    // calculate floor thickness
-    ft = calculateFloorThickness(magnet_diameter, screw_depth, itemholder_hole_depth+gf_cup_floor_thickness, height, filled_in);  
- 
-    /*<!!start gridfinity_basic_cup!!>*/
+  num_x = calcDimensionWidth(width);
+  num_y = calcDimensionDepth(depth);
+  num_z = calcDimensionHeight(height);
 
-    gridfinity_cup(
-    width=width, depth=depth, height=height,
-    position=position,
-    filled_in=filled_in,
-    label_style=label_style,
-    label_position=label_position,
-    label_size=label_size,
-    label_relief=label_relief,
-    fingerslide=fingerslide,
-    fingerslide_radius=fingerslide_radius,
-    magnet_diameter=magnet_diameter,
-    magnet_easy_release=magnet_easy_release,
-    screw_depth=screw_depth,
-    center_magnet_diameter=center_magnet_diameter,
-    center_magnet_thickness=center_magnet_thickness,
-    floor_thickness=ft,
-    cavity_floor_radius=cavity_floor_radius,
-    wall_thickness=wall_thickness,
-    hole_overhang_remedy=hole_overhang_remedy,
-    efficient_floor=efficient_floor,
-    chamber_wall_thickness=chamber_wall_thickness,
-    vertical_chambers = vertical_chambers,
-    vertical_separator_bend_position=vertical_separator_bend_position,
-    vertical_separator_bend_angle=vertical_separator_bend_angle,
-    vertical_separator_bend_separation=vertical_separator_bend_separation,
-    vertical_separator_cut_depth=vertical_separator_cut_depth,
-    vertical_irregular_subdivisions=vertical_irregular_subdivisions,
-    vertical_separator_config=vertical_separator_config,
-    horizontal_chambers=horizontal_chambers,
-    horizontal_separator_bend_position=horizontal_separator_bend_position,
-    horizontal_separator_bend_angle=horizontal_separator_bend_angle,
-    horizontal_separator_bend_separation=horizontal_separator_bend_separation,
-    horizontal_separator_cut_depth=horizontal_separator_cut_depth,
-    horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
-    horizontal_separator_config=horizontal_separator_config, 
-    half_pitch=half_pitch,
-    lip_style=lip_style,
-    zClearance=zClearance,
-    box_corner_attachments_only=box_corner_attachments_only,
-    flat_base = flat_base,
-    spacer=spacer,
-    tapered_corner=tapered_corner,
-    tapered_corner_size = tapered_corner_size,
-    tapered_setback = tapered_setback,
-    wallpattern_enabled=wallpattern_enabled,
-    wallpattern_style=wallpattern_style,
-    wallpattern_walls=wallpattern_walls, 
-    wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-    wallpattern_hole_sides=wallpattern_hole_sides,
-    wallpattern_hole_size=wallpattern_hole_size, 
-    wallpattern_hole_spacing=wallpattern_hole_spacing,
-    wallpattern_fill=wallpattern_fill,
-    wallpattern_voronoi_noise=wallpattern_voronoi_noise,
-    wallpattern_voronoi_radius = wallpattern_voronoi_radius,
-    wallcutout_enabled=wallcutout_enabled,
-    wallcutout_walls=wallcutout_walls,
-    wallcutout_width=wallcutout_width,
-    wallcutout_angle=wallcutout_angle,
-    wallcutout_height=wallcutout_height,
-    wallcutout_corner_radius=wallcutout_corner_radius,
-    extension_enabled=[extension_x_enabled,extension_y_enabled],
-    extension_tabs_enabled = extension_tabs_enabled,
-    cutx=cutx,
-    cuty=cuty,
-    help = enable_help);
-    /*<!!end gridfinity_basic_cup!!>*/
+  item = LookupKnown(
+      knowItemCode=itemholder_known_item,
+      customDiameter=itemholder_hole_diameter, 
+      customSize=itemholder_hole_size, 
+      customDepth=itemholder_hole_depth, 
+      customShape=itemholder_hole_base_shape);
+  
+  itemCalc = item[ishape] == "multicard"
+      ? multiCardCalculations(
+          multiCards = itemholder_multi_cards, 
+          multiCardCompact = itemholder_multi_card_compact,
+          holeClearance = itemholder_hole_clearance)
+      : itemCalculations(
+          item = item,
+          sides = itemholder_hole_sides,
+          holeDepth = itemholder_hole_depth,
+          holeClearance = itemholder_hole_clearance);
 
-    color(color_extension)
-    translate(cupPosition(position,num_x,num_y))
-    translate([0,0,bch])
-    itemholder(
-      num_x=num_x, num_y=num_y, num_z=height,
-      knowItem = itemholder_known_item,
+  _depth = itemCalc[icHoleSize].z;
+  // min floor height
+  bch = cupBaseClearanceHeight(magnet_diameter, screw_depth);
+  mfh = calculateMinFloorHeight(magnet_diameter, screw_depth);
+  
+  //calculate the bin height. This math is not right
+  height = !itemholder_auto_bin_height || _depth <=0 ? num_z
+      : filled_in && lip_style != "none" 
+        ? (mfh+_depth)/gf_zpitch
+        : ceil((mfh+_depth)/gf_zpitch);
+    
+  // calculate floor thickness
+  ft = calculateFloorThickness(magnet_diameter, screw_depth, _depth+gf_cup_floor_thickness, height, filled_in);  
+
+  if(itemholder_enable_sample == false)
+  {
+    difference() {
+      /*<!!start gridfinity_basic_cup!!>*/
+      gridfinity_cup(
+      width=width, depth=depth, height=height,
+      position=position,
+      filled_in=filled_in,
+      label_style=label_style,
+      label_position=label_position,
+      label_size=label_size,
+      label_relief=label_relief,
+      fingerslide=fingerslide,
+      fingerslide_radius=fingerslide_radius,
+      magnet_diameter=magnet_diameter,
+      magnet_easy_release=magnet_easy_release,
+      screw_depth=screw_depth,
+      center_magnet_diameter=center_magnet_diameter,
+      center_magnet_thickness=center_magnet_thickness,
+      floor_thickness=ft,
+      cavity_floor_radius=cavity_floor_radius,
+      wall_thickness=wall_thickness,
+      hole_overhang_remedy=hole_overhang_remedy,
+      efficient_floor=efficient_floor,
+      chamber_wall_thickness=chamber_wall_thickness,
+      vertical_chambers = vertical_chambers,
+      vertical_separator_bend_position=vertical_separator_bend_position,
+      vertical_separator_bend_angle=vertical_separator_bend_angle,
+      vertical_separator_bend_separation=vertical_separator_bend_separation,
+      vertical_separator_cut_depth=vertical_separator_cut_depth,
+      vertical_irregular_subdivisions=vertical_irregular_subdivisions,
+      vertical_separator_config=vertical_separator_config,
+      horizontal_chambers=horizontal_chambers,
+      horizontal_separator_bend_position=horizontal_separator_bend_position,
+      horizontal_separator_bend_angle=horizontal_separator_bend_angle,
+      horizontal_separator_bend_separation=horizontal_separator_bend_separation,
+      horizontal_separator_cut_depth=horizontal_separator_cut_depth,
+      horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
+      horizontal_separator_config=horizontal_separator_config, 
+      half_pitch=half_pitch,
+      lip_style=lip_style,
+      zClearance=zClearance,
+      box_corner_attachments_only=box_corner_attachments_only,
+      flat_base = flat_base,
+      spacer=spacer,
+      tapered_corner=tapered_corner,
+      tapered_corner_size = tapered_corner_size,
+      tapered_setback = tapered_setback,
+      wallpattern_enabled=wallpattern_enabled,
+      wallpattern_style=wallpattern_style,
+      wallpattern_walls=wallpattern_walls, 
+      wallpattern_dividers_enabled=wallpattern_dividers_enabled,
+      wallpattern_hole_sides=wallpattern_hole_sides,
+      wallpattern_hole_size=wallpattern_hole_size, 
+      wallpattern_hole_spacing=wallpattern_hole_spacing,
+      wallpattern_fill=wallpattern_fill,
+      wallpattern_voronoi_noise=wallpattern_voronoi_noise,
+      wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+      wallcutout_enabled=wallcutout_enabled,
+      wallcutout_walls=wallcutout_walls,
+      wallcutout_width=wallcutout_width,
+      wallcutout_angle=wallcutout_angle,
+      wallcutout_height=wallcutout_height,
+      wallcutout_corner_radius=wallcutout_corner_radius,
+      extension_enabled=[extension_x_enabled,extension_y_enabled],
+      extension_tabs_enabled = extension_tabs_enabled,
+      cutx=cutx,
+      cuty=cuty,
+      help = enable_help);
+      /*<!!end gridfinity_basic_cup!!>*/
+
+      color(color_extension)
+      translate(cupPosition(position,num_x,num_y))
+      translate([0,0,bch])
+      itemholder(
+        num_x=num_x, num_y=num_y, num_z=height,
+        knowItemCode = itemholder_known_item,
+        customHoleBaseShape = itemholder_hole_base_shape,
+        multiCards = itemholder_multi_cards,
+        multiCardCompact = itemholder_multi_card_compact,
+        gridStyle = itemholder_grid_style,
+        sides = itemholder_hole_sides,
+        holeSize = itemholder_hole_size,
+        holeDiameter = itemholder_hole_diameter,
+        holeSpacing = itemholder_hole_spacing,
+        holeDepth = itemholder_hole_depth, 
+        holeChamfer = itemholder_hole_chamfer,
+        holeGrid  = itemholder_hole_grid,
+        holeClearance = itemholder_hole_clearance,
+        floorThickness = ft,
+        wallThickness = wall_thickness,
+        compartments = itemholder_compartments,
+        compartment_spacing = itemholder_compartment_spacing,
+        compartment_centered = itemholder_compartment_centered,
+        compartment_fill = itemholder_compartment_fill,
+        customcompartments = itemholder_customcompartments,
+        help=help);
+      }
+  } else {
+    //generate sample print
+    samplesholder(
+      knowItemCode = itemholder_known_item,
+      customHoleBaseShape = itemholder_hole_base_shape,
       multiCards = itemholder_multi_cards,
       multiCardCompact = itemholder_multi_card_compact,
-      gridStyle = itemholder_grid_style,
       sides = itemholder_hole_sides,
       holeSize = itemholder_hole_size,
-      holeSpacing = itemholder_hole_spacing,
+      holeDiameter = itemholder_hole_diameter,
       holeDepth = itemholder_hole_depth, 
       holeChamfer = itemholder_hole_chamfer,
-      holeGrid  = itemholder_hole_grid,
       holeClearance = itemholder_hole_clearance,
-      floorThickness = ft,
-      wallThickness = wall_thickness,
-      compartments = itemholder_compartments,
-      compartment_spacing = itemholder_compartment_spacing,
-      compartment_centered = itemholder_compartment_centered,
-      compartment_fill = itemholder_compartment_fill,
-      customcompartments = itemholder_customcompartments,
+      wallThickness = itemholder_sample_wall_thickness,
       help=help);
   }
 }

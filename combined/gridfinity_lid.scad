@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_lid.scad'. Generated 2024-07-28 10:02
+//Combined version of 'gridfinity_lid.scad'. Generated 2024-08-03 08:45
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -2091,6 +2091,9 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
 // make repeated copies of something(s) at the gridfinity spacing of 42mm
 module gridcopy(num_x, num_y, pitch=gf_pitch) {
   //translate([pitch/2,pitch/2])
+  assert(is_num(num_x) && num_x>=1, "num_x must be a number greater than 0");
+  assert(is_num(num_y) && num_y>=1, "num_y must be a number greater than 0");
+  assert(is_num(pitch) && pitch>=1, "pitch must be a number greater than 0");
   for (xi=[0:num_x-1]) 
     for (yi=[0:num_y-1])
     {
@@ -16818,6 +16821,11 @@ function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2
 
 //Height of base including the floor.
 function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
+      assert(is_num(floor_thickness), "floor_thickness must be a number")
+      assert(is_num(magnet_diameter), "magnet_diameter must be a number")
+      assert(is_num(screw_depth), "screw_depth must be a number")
+      assert(is_bool(filledin), "filledin must be a number")
+      assert(is_bool(flat_base), "flat_base must be a number")
       let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
   filledin ? num_z * gf_zpitch 
     : efficient_floor != "off" 
@@ -17044,7 +17052,7 @@ module GridItemHolder(
   assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
   assert(is_bool(customShape), "customShape must be bool");    
   assert(is_num(circleFn), "circleFn must be number");    
-  assert(is_list(holeSize) && len(holeSize)==2, "holeSize must be list of len 2");
+  assert(is_list(holeSize) && len(holeSize)>=2, "holeSize must be list of len 2");
   assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
   assert(is_list(holeGrid) && len(holeGrid)==2, "canvasSize must be list of len 2");  
   assert(is_num(holeHeight), "holeHeight must be number");    
@@ -17212,16 +17220,6 @@ module GridItemHolder(
     ,help);
 }
 
-module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
-  chamfer = min(h, chamfer);
-  union(){
-  cylinder(h=h, r=r, $fn = circleFn);
-  translate([0, 0, h-chamfer]) 
-    cylinder(h=chamfer, r1=r, r2=r+chamfer,$fn = circleFn);
-    }
-}
-
-//multiCard([24, 2.1, 18, 32, "square"],[12, 4.5, 13, 13, "square"],[20, 1.4, 10, 21.5, "square"]);
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   fudgeFactor = 0.01;
   
@@ -17229,90 +17227,149 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   assert(is_list(smallCenter) && len(smallCenter) >= 3, "longCenter should be a list of length 5");
   assert(is_list(side) && len(side) >= 3, "longCenter should be a list of length 5");
 
+  iitemDiameter= 0;
+  iitemx = 1;
+  iitemy = 2;
+  idepthneeded = 3;
+  iitemHeight = 4;
+  ishape = 5;
+
   if(IsHelpEnabled("trace")) echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
   render() //Render on item holder multiCard as it can be complex
   union(){
     minspacing = 3;
-    translate([(longCenter.x)/2,side.x/2,0])
+    translate([(longCenter[iitemx])/2,side[iitemx]/2,0])
     union(){
-    translate([-(longCenter.x)/2,-longCenter.y/2,0])
-    slotCutout([longCenter.x, longCenter.y, longCenter.z+fudgeFactor], chamfer);
+    translate([-(longCenter[iitemx])/2,-longCenter[iitemy]/2,0])
+    chamferedSquare([longCenter[iitemx], longCenter[iitemy], longCenter[idepthneeded]+fudgeFactor], chamfer);
     
-    translate([-smallCenter.x/2,-smallCenter.y/2,(longCenter.z-smallCenter.z)])
-    slotCutout([smallCenter.x, smallCenter.y, smallCenter.z+fudgeFactor], chamfer);
+    translate([-smallCenter[iitemx]/2,-smallCenter[iitemy]/2,(longCenter[idepthneeded]-smallCenter[idepthneeded])])
+    chamferedSquare([smallCenter[iitemx], smallCenter[iitemy], smallCenter[idepthneeded]+fudgeFactor], chamfer);
 
     if(alternate){
-      pos = let(targetPos = (longCenter.x)/4-(side.y)/2) max(targetPos, smallCenter.y+minspacing);
-      translate([-pos-side.y/2, 0, 0])
+      pos = let(targetPos = (longCenter[iitemx])/4-(side[iitemy])/2) max(targetPos, smallCenter[iitemy]+minspacing);
+      translate([-pos-side[iitemy]/2, 0, 0])
         rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
-      translate([+pos+side.y/2, 0, 0])
+      translate([+pos+side[iitemy]/2, 0, 0])
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
     } else {
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
-      translate([-(longCenter.x)/2+(side.y)/2, 0, 0])
+      translate([-(longCenter[iitemx])/2+(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
         
-      translate([(longCenter.x)/2-(side.y)/2, 0, 0])
+      translate([(longCenter[iitemx])/2-(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
-        translate([-(side.x)/2,-(side.y)/2,(longCenter.z-side.z)])
-        slotCutout([side.x, side.y, side.z+fudgeFactor], chamfer);
+        translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
+        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       }
     }
   }
 }
-            
-            
+
 // Creates a slot with a small champer for easy insertertion
 //#slotCutout(100,20,40);
 //width = width of slot
 //depth = depth of slot
 //height = height of slot
 //chamfer = chamfer size
-module slotCutout(size, chamfer = 1)
+module chamferedSquare(size, chamfer = 1, cornerRadius = 0)
 {
   assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
 
   fudgeFactor = 0.01;
   chamfer = min(size.z, chamfer);
-  
-  translate([size.x/2,size.y/2,0])
-  intersection(){
-    union(){
-      // Main slot
-      translate([-size.x/2,-size.y/2,0])
+  union(){
+    if(cornerRadius > 0){
+        hull(){
+          translate([cornerRadius,cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+          translate([size.x-cornerRadius,cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+          translate([cornerRadius,size.y-cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+          translate([size.x-cornerRadius,size.y-cornerRadius,0])
+          cylinder(h = size.z, r=cornerRadius);
+        }
+    } else {
+      translate([0,0,0])
         cube([size.x, size.y, size.z]);
-      
-     // chamfer
-     translate([-size.x/2,-size.y/2,size.z+fudgeFactor])
-     hull(){
-        translate([0,0,0])
-          rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);
-        translate([size.x,0,0])
-        rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);
-        translate([0,size.y,0])
-        rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);
-        translate([size.x,size.y,0])
-        rotate([180,0,45])
-          cylinder(chamfer,chamfer,00,$fn=4);          
-          
-      }
     }
+    
+    if(chamfer > 0)
+       translate([0,0,size.z+fudgeFactor-chamfer-cornerRadius])
+       chamferedRectangleTop(size=size, chamfer=chamfer, cornerRadius=cornerRadius);
   }
 }
 
+module chamferedRectangleTop(size, chamfer, cornerRadius){
+  fudgeFactor = 0.01;
+  
+  chamferFn = cornerRadius > 0 ? $fn : 4;
+
+  champherExtention = cornerRadius > 0 ? 0 
+    : (min(size.x,size.y,size.z)-chamfer)/4;
+    
+  //when the chamferFn value is 4 we need to chan the formula as the radius is corner to corner not edge to edge.
+  conesizeTop = chamfer+cornerRadius+champherExtention;
+  conesizeBottom = conesizeTop>size.z ? conesizeTop-size.z: 0;
+  
+  echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
+  //if cornerRadius = 0, we can further increase the height of the 'cone' so we can extend inside the shape
+  hull(){
+    translate([cornerRadius+champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
+      rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
+    translate([size.x-cornerRadius-champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
+    rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
+    translate([cornerRadius+champherExtention/2,size.y-cornerRadius-champherExtention/2,conesizeBottom-champherExtention])
+    rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
+    translate([size.x-cornerRadius-champherExtention/2,size.y-cornerRadius-champherExtention/2,conesizeBottom-champherExtention])
+    rotate([0,0,45])
+      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);          
+  }
+}
+
+module chamferedHalfCylinder(h, r, circleFn, chamfer=0.5) {
+  fudgeFactor = 0.01;
+  
+  chamfer = min(h, chamfer);
+  translate([0,-h/2,r])
+  union(){
+    rotate([-90,0,0])
+    difference(){
+      cylinder(h=h, r=r, $fn = circleFn);
+      translate([-r-fudgeFactor,-r,-fudgeFactor])
+      cube([(r+fudgeFactor)*2,r,h+fudgeFactor*2]);
+    }
+    
+    if(r>0)
+      translate([-r, 0, -chamfer+fudgeFactor]) 
+      chamferedRectangleTop(size=[r*2,h,r], chamfer=chamfer, cornerRadius=0);
+  }
+}
+
+module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
+  chamfer = min(h, chamfer);
+  union(){
+    cylinder(h=h, r=r, $fn = circleFn);
+    
+    if(r>0)
+      translate([0, 0, h-chamfer]) 
+      cylinder(h=chamfer, r1=r, r2=r+chamfer,$fn = circleFn);
+  }
+}
 //CombinedEnd from path module_item_holder.scad
 //Combined from path module_gridfinity_efficient_floor.scad
 
@@ -17459,21 +17516,18 @@ module EfficientFloor(
       topChampherRadius = topSmoothTransition/2;
       topChampherCornerRadius = cornerRadius;
       topChampherZBottom = wallStartHeight+wallTaper;
-    gridcopy(num_x, num_y, pitch=gf_pitch)
-      //tz(efficientFloorGridHeight-topChampherRadius) 
       translate([
-        gf_pitch/2,
-        gf_pitch/2,
+        gf_pitch/2*num_x,
+        gf_pitch/2*num_y,
         topChampherZBottom]) 
       roundedNegativeChampher(
         champherRadius = topChampherRadius, 
         size=[
-          seventeen*2+(topChampherCornerRadius)*2,
-          seventeen*2+(topChampherCornerRadius)*2], 
+          (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_x-1)),
+          (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_y-1))],
         cornerRadius = topChampherCornerRadius, 
         champher = true,
         height = 4);
-      
       // tapered top portion
       //wallTaper;
      hull() {
@@ -17533,8 +17587,8 @@ module EfficientFloor(
         roundedNegativeChampher(
           champherRadius = champherRadius, 
           size=[
-            seventeen*2+(cornerRadius)*2,
-            seventeen*2+(cornerRadius)*2], 
+            (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_x-1)),
+            (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_y-1))],
           cornerRadius = cornerRadius, 
           height = 4);
       }
@@ -17790,8 +17844,6 @@ module ShowCalipers(
   wall_thickness,
   efficient_floor,
   flat_base){
-
-  echo("ShowCalipers", color_text=color_text);
   
   color(color_text)
   if(cuty > 0 && $preview)
@@ -18441,13 +18493,13 @@ module AttachFilament(l=5, d=1.75,left= true, right=true, front=true, back=true)
  h=4;
   positions = [
     //left
-    [left,[-gf_pitch/2,0, h],[0,90,0]],
+    [left,[0,0, h],[0,90,0]],
     //right
-    [right,[gf_pitch/2,0, h],[0,90,0]],
+    [right,[gf_pitch,0, h],[0,90,0]],
     //front
-    [front,[0, -gf_pitch/2,h],[90,0,0]],
+    [front,[0, 0,h],[90,0,0]],
     //back
-    [back,[0, gf_pitch/2,h],[90,0,0]]];
+    [back,[0, gf_pitch,h],[90,0,0]]];
   for(pi = [0:len(positions)-1]){
     if(positions[pi][0])
       translate(positions[pi][1])
@@ -18462,17 +18514,17 @@ module AttachButterFly(size=[5,3,2],r=0.5,left= true, right=true, front=true, ba
   
   positions = [
     //left
-    [left,[-gf_pitch/2,inset, -fudgeFactor],[0,0,-90]],
-    [left,[-gf_pitch/2,-inset, -fudgeFactor],[0,0,-90]],
+    [left,[0,inset, -fudgeFactor],[0,0,-90]],
+    [left,[0,-inset, -fudgeFactor],[0,0,-90]],
     //right
-    [right,[gf_pitch/2,inset, -fudgeFactor],[0,0,90]],
-    [right,[gf_pitch/2,-inset, -fudgeFactor],[0,0,90]],
+    [right,[gf_pitch,inset, -fudgeFactor],[0,0,90]],
+    [right,[gf_pitch,-inset, -fudgeFactor],[0,0,90]],
     //front
-    [front,[inset, -gf_pitch/2,-fudgeFactor],[0,0,0]],
-    [front,[-inset, -gf_pitch/2,-fudgeFactor],[0,0,0]],
+    [front,[inset, 0,-fudgeFactor],[0,0,0]],
+    [front,[-inset, 0,-fudgeFactor],[0,0,0]],
     //back
-    [back,[inset, gf_pitch/2,-fudgeFactor],[00,0,180]],
-    [back,[-inset, gf_pitch/2,-fudgeFactor],[0,0,180]]];
+    [back,[inset, gf_pitch,-fudgeFactor],[00,0,180]],
+    [back,[-inset, gf_pitch,-fudgeFactor],[0,0,180]]];
   for(pi = [0:len(positions)-1]){
     if(positions[pi][0])
       translate(positions[pi][1])
@@ -18511,6 +18563,188 @@ module ButterFly(size,r,taper=false,half=false)
 
 
 //CombinedEnd from path module_gridfinity_baseplate.scad
+//Combined from path module_item_holder_data.scad
+iitemDiameter= 0;
+iitemx = 1;
+iitemy = 2;
+idepthneeded = 3;
+iitemHeight = 4;
+ishape = 5;
+
+function LookupKnownShapes(name="round", default = 64) = 
+  name == "square" || name == "halfround" || name == "multicard" ? 4 :
+  name == "hex" ? 6 : 
+  name == "round" ? 64 :
+  default;
+  
+// result is dimensions for commnly know items
+//[diameter, x, y, z, item height, shape]
+//x=diameter on round, flat to flat on hex, corner diameter in square.
+//x=width for square
+//y=length for square
+//z=desired depth of hole
+//item height=the hight object, not used currently.
+//shape=the item shape, (circle, hex, halfround or square)
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
+function LookupKnownTool(name="custom") = 
+  name == "4hexshank" ? [4, 0, 0, 5, 20, "hex"] :
+  name == "1/4hexshank" ? [6.35, 0, 0, 8, 15, "hex"] :
+  name == "1/4hexshanklong" ? [6.35, 0, 0, 15, 40, "hex"] :
+  name == "5/16hexshank" ? [7.94, 0, 0, 7, 0, "hex"] :
+  name == "3/8hexshank" ? [9.52, 0, 0, 10, 0, "hex"] :
+  name == "1/2shank" ? [12.7, 0, 0, 20, 20, "round"] :
+  name == "12shank" ? [12, 0, 0, 20, 20, "round"] :
+  name == "10shank" ? [10, 0, 0, 15, 20, "round"] :
+  name == "3/8shank" ? [9.525, 0, 20, 20, 15, "round"] :
+  name == "8shank" ? [8, 0, 0, 15, 15, "round"] :
+  name == "1/4shank" ? [6.35, 0, 0, 10, 20, "round"] :
+  name == "6shank" ? [6, 0, 0, 10, 10, "round"] :
+  name == "1/8shank" ? [3.2, 0, 0, 10, 10, "round"] :
+  [0,0,0,0,0,"","LookupKnownTool"];
+
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
+function LookupKnownBattery(name="custom") = 
+  name == "aaaa" ? [8.3, 0, 0, 10.625, 42.5, "round"] :
+  name == "aaa" ? [10.5, 0, 0, 11.125, 44.5, "round"] :
+  name == "aa" ? [14.5, 0, 0, 12.625, 50.5, "round"] :
+  name == "9v" ? [1, 17.5, 26.5, 12.5, 48.5, "square"] :
+  name == "c" ? [26.2, 0, 0, 12.5, 50, "round"] :
+  name == "d" ? [34.2, 0, 0, 15.375, 61.5, "round"] :
+  name == "7540" ? [7.5, 0, 0, 10, 40, "round"] :
+  name == "8570" ? [8.5, 0, 0, 17.5, 70, "round"] :
+  name == "10180" ? [10, 0, 0, 4.5, 18, "round"] :
+  name == "10280" ? [10, 0, 0, 7, 28, "round"] :
+  name == "10440" ? [10, 0, 0, 11, 44, "round"] :
+  name == "10850" ? [10, 0, 0, 21.25, 85, "round"] :
+  name == "13400" ? [13, 0, 0, 10, 40, "round"] :
+  name == "14250" ? [14, 0, 0, 6.25, 25, "round"] :
+  name == "14300" ? [14, 0, 0, 7.5, 30, "round"] :
+  name == "14430" ? [14, 0, 0, 10.75, 43, "round"] :
+  name == "14500" ? [14, 0, 0, 13.25, 53, "round"] :
+  name == "14650" ? [14, 0, 0, 16.25, 65, "round"] :
+  name == "15270" ? [15, 0, 0, 6.75, 27, "round"] :
+  name == "16340" ? [16, 0, 0, 8.5, 34, "round"] :
+  name == "16650" ? [16, 0, 0, 16.25, 65, "round"] :
+  name == "17500" ? [17, 0, 0, 12.5, 50, "round"] :
+  name == "17650" ? [17, 0, 0, 16.25, 65, "round"] :
+  name == "17670" ? [17, 0, 0, 16.75, 67, "round"] :
+  name == "18350" ? [18, 0, 0, 8.75, 35, "round"] :
+  name == "18490" ? [18, 0, 0, 12.25, 49, "round"] :
+  name == "18500" ? [18, 0, 0, 12.5, 50, "round"] :
+  name == "18650" ? [18, 0, 0, 16.25, 65, "round"] :
+  name == "20700" ? [20, 0, 0, 17.5, 70, "round"] :
+  name == "21700" ? [21, 0, 0, 17.5, 70, "round"] :
+  name == "25500" ? [25, 0, 0, 12.5, 50, "round"] :
+  name == "26500" ? [26, 0, 0, 12.5, 50, "round"] :
+  name == "26650" ? [26, 0, 0, 16.25, 65, "round"] :
+  name == "26700" ? [26, 0, 0, 17.5, 70, "round"] :
+  name == "26800" ? [26, 0, 0, 20, 80, "round"] :
+  name == "32600" ? [32, 0, 0, 15, 60, "round"] :
+  name == "32650" ? [32, 0, 0, 16.925, 67.7, "round"] :
+  name == "32700" ? [32, 0, 0, 17.5, 70, "round"] :
+  name == "38120" ? [38, 0, 0, 30, 120, "round"] :
+  name == "38140" ? [38, 0, 0, 35, 140, "round"] :
+  name == "40152" ? [40, 0, 0, 38, 152, "round"] :
+  name == "4680" ? [46, 0, 0, 20, 80, "round"] :
+  [0,0,0,0,0,"","LookupKnownBattery"];
+
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
+function LookupKnownCellBattery(name="custom") = 
+  name == "cr927" ? [0, 9.5, 2.7, 0, 0, "halfround"] :
+  name == "cr1025" ? [0, 10, 2.5, 0, 0, "halfround"] :
+  name == "cr1130" ? [0, 11.5, 3, 0, 0, "halfround"] :
+  name == "cr1216" ? [0, 12.5, 1.6, 0, 0, "halfround"] :
+  name == "cr1220" ? [0, 12.5, 2, 0, 0, "halfround"] :
+  name == "cr1225" ? [0, 12.5, 2.5, 0, 0, "halfround"] :
+  name == "cr1616" ? [0, 16, 1.6, 0, 0, "halfround"] :
+  name == "cr1620" ? [0, 16, 2, 0, 0, "halfround"] :
+  name == "cr1632" ? [0, 16, 3.2, 0, 0, "halfround"] :
+  name == "cr2012" ? [0, 20, 1.2, 0, 0, "halfround"] :
+  name == "cr2016" ? [0, 20, 1.6, 0, 0, "halfround"] :
+  name == "cr2020" ? [0, 20, 2, 0, 0, "halfround"] :
+  name == "cr2025" ? [0, 20, 2.5, 0, 0, "halfround"] :
+  name == "cr2032" ? [0, 20, 3.2, 0, 0, "halfround"] :
+  name == "cr2040" ? [0, 20, 4, 0, 0, "halfround"] :
+  name == "cr2050" ? [0, 20, 5, 0, 0, "halfround"] :
+  name == "cr2320" ? [0, 23, 2, 0, 0, "halfround"] :
+  name == "cr2325" ? [0, 23, 2.5, 0, 0, "halfround"] :
+  name == "cr2330" ? [0, 23, 3, 0, 0, "halfround"] :
+  name == "br2335" ? [0, 23, 3.5, 0, 0, "halfround"] :
+  name == "cr2354" ? [0, 23, 5.4, 0, 0, "halfround"] :
+  name == "cr2412" ? [0, 24.5, 1.2, 0, 0, "halfround"] :
+  name == "cr2430" ? [0, 24.5, 3, 0, 0, "halfround"] :
+  name == "cr2450" ? [0, 24.5, 5, 0, 0, "halfround"] :
+  name == "cr2477" ? [0, 24.5, 7.7, 0, 0, "halfround"] :
+  name == "cr3032" ? [0, 30, 3.2, 0, 0, "halfround"] :
+  name == "cr11108" ? [0, 11.6, 10.8, 0, 0, "halfround"] :
+  [0,0,0,0,0,"","LookupKnownCellBattery"];
+  
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
+function LookupKnownCard(name="custom") = 
+  name == "multicard" ? [0, 0, 0, 0, 0, "multicard"] :
+  name == "compactflashi" ? [0, 43, 3.3, 9, 36, "square"] :
+  name == "compactflashii" ? [0, 43, 5, 9, 36, "square"] :
+  name == "smartmedia" ? [0, 37, 0.76, 11.25, 45, "square"] :
+  name == "mmc" ? [0, 24, 1.4, 8, 32, "square"] :
+  name == "mmcmobile" ? [0, 24, 1.4, 4.5, 18, "square"] :
+  name == "mmcmicro" ? [0, 14, 1.1, 3, 12, "square"] :
+  name == "sd" ? [0, 24, 2.1, 18, 32, "square"] :
+  name == "minisd" ? [0, 20, 1.4, 10, 21.5, "square"] :
+  name == "microsd" ? [0, 11, 0.7, 9, 15, "square"] :
+  name == "memorystickstandard" ? [0, 21.5, 2.8, 12.5, 50, "square"] :
+  name == "memorystickduo" ? [0, 20, 1.6, 7.75, 31, "square"] :
+  name == "memorystickmicro" ? [0, 12.5, 1.2, 3.75, 15, "square"] :
+  name == "nano" ? [0, 12.3, 0.7, 2.2, 8.8, "square"] :
+  name == "psvita" ? [0, 15, 1.6, 3.125, 12.5, "square"] :
+  name == "xqd" ? [0, 38.5, 3.8, 7.45, 29.8, "square"] :
+  name == "xD" ? [0, 25, 1.78, 5, 20, "square"] :
+  name == "usba" ? [0, 12, 4.5, 13, 13, "square"] :
+  name == "usbc" ? [0, 8.5, 4, 10, 0, "square"] :
+  [0,0,0,0,0,"","LookupKnownCard"];
+
+//[diameter, width, thickness, depthneeded, itemHeight, shape]
+function LookupKnownCartridge(name="custom") = 
+  name == "atari800" ? [0, 68, 21, 19.25, 77, "square"] :
+  name == "atari2600" ? [0, 81, 19, 21.75, 87, "square"] :
+  name == "atari5200" ? [0, 104, 20, 28, 112, "square"] :
+  name == "atari7800" ? [0, 81, 19, 21.75, 87, "square"] :
+  name == "commodore" ? [0, 79, 17, 34.75, 139, "square"] :
+  name == "magnavoxodyssey" ? [0, 100, 5.5, 15, 60, "square"] :
+  name == "magnavoxodysseymulticard" ? [0, 105, 15, 27.5, 110, "square"] :
+  name == "magnavoxodyssey2" ? [0, 80, 21, 31.75, 127, "square"] :
+  name == "mattelintellivision" ? [0, 68, 16, 22, 88, "square"] :
+  name == "nintendofamicom" ? [0, 71, 17, 27, 108, "square"] :
+  name == "nintendofamicomdisk" ? [0, 76, 4, 22.5, 90, "square"] :
+  name == "nintendosuperfamicom" ? [0, 127, 20, 21.5, 86, "square"] :
+  name == "nes" ? [0, 120, 17, 33.5, 134, "square"] :
+  name == "snes" ? [0, 136, 20, 21.925, 87.7, "square"] :
+  name == "nintendo64" ? [0, 116, 18, 18.75, 75, "square"] :
+  name == "nintendogb" ? [0, 57, 7.5, 16.375, 65.5, "square"] :
+  name == "nintendogbc" ? [0, 57, 9, 16.375, 65.5, "square"] :
+  name == "nintendogba" ? [0, 35, 6, 14.25, 57, "square"] :
+  name == "nintendods" ? [0, 33, 3.8, 8.75, 35, "square"] :
+  name == "nintendo2ds" ? [0, 35, 3.8, 8.75, 35, "square"] :
+  name == "nintendovb" ? [0, 75, 7, 17, 68, "square"] :
+  name == "nintendoswitch" ? [0, 21, 3, 7.75, 31, "square"] :
+  name == "segagamegear" ? [0, 66, 10, 17, 68, "square"] :
+  name == "segagenesis" ? [0, 118, 15, 17, 68, "square"] :
+  name == "segagenesistall" ? [0, 96, 16, 22, 88, "square"] :
+  name == "segamegadrive" ? [0, 93, 17, 16.75, 67, "square"] :
+  name == "segamegadrivecodemasters" ? [0, 109, 17, 18.75, 75, "square"] :
+  name == "segamastersystem" ? [0, 69, 17, 27, 108, "square"] :
+  name == "sega32x" ? [0, 72, 16, 27.75, 111, "square"] :
+  name == "segacard" ? [0, 84, 2, 13.25, 53, "square"] :
+  name == "segapico" ? [0, 181, 15, 55.75, 223, "square"] :
+  name == "sonyumd" ? [0, 64, 0, 1.05, 4.2, "round"] :
+  name == "sonypsvita" ? [0, 22, 2, 7.5, 30, "square"] :
+  name == "sonypsvitamemcard" ? [0, 12.5, 1.6, 3.75, 15, "square"] :
+  name == "necpcehucard" ? [0, 53, 2, 21, 84, "square"] :
+  name == "snkneogeoaes" ? [0, 146.05, 31.75, 47.625, 190.5, "square"] :
+  name == "snkneogeomvs" ? [0, 145, 35, 46.25, 185, "square"] :
+  name == "bandai" ? [0, 41, 6, 16.5, 66, "square"] :
+  name == "msx" ? [0, 109, 16.8, 17.35, 69.4, "square"] :
+  [0,0,0,0,0,"","LookupKnownCartridge"];
+//CombinedEnd from path module_item_holder_data.scad
 /*<!!end gridfinity_basic_cup!!>*/
 
 if(mode == "both" || mode == "cup")
