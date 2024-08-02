@@ -146,21 +146,18 @@ module EfficientFloor(
       topChampherRadius = topSmoothTransition/2;
       topChampherCornerRadius = cornerRadius;
       topChampherZBottom = wallStartHeight+wallTaper;
-    gridcopy(num_x, num_y, pitch=gf_pitch)
-      //tz(efficientFloorGridHeight-topChampherRadius) 
       translate([
-        gf_pitch/2,
-        gf_pitch/2,
+        gf_pitch/2*num_x,
+        gf_pitch/2*num_y,
         topChampherZBottom]) 
       roundedNegativeChampher(
         champherRadius = topChampherRadius, 
         size=[
-          seventeen*2+(topChampherCornerRadius)*2,
-          seventeen*2+(topChampherCornerRadius)*2], 
+          (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_x-1)),
+          (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_y-1))],
         cornerRadius = topChampherCornerRadius, 
         champher = true,
         height = 4);
-      
       // tapered top portion
       //wallTaper;
      hull() {
@@ -220,8 +217,8 @@ module EfficientFloor(
         roundedNegativeChampher(
           champherRadius = champherRadius, 
           size=[
-            seventeen*2+(cornerRadius)*2,
-            seventeen*2+(cornerRadius)*2], 
+            (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_x-1)),
+            (seventeen*2+(topChampherCornerRadius)*2+gf_pitch*(num_y-1))],
           cornerRadius = cornerRadius, 
           height = 4);
       }

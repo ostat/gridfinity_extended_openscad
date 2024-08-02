@@ -11,6 +11,7 @@ depth = [1, 0]; //0.1
 oversize_method = "fill"; //[crop, fill]
 //Enable custom grid, you will configure this in the (Lid not supported)
 Custom_Grid_Enabled = false;
+position = "center"; //[default,center,zero]
 
 /* [Plate] */
 // Plate Style
@@ -75,6 +76,7 @@ if(Butterfly_Clip_Only)
     r=Butterfly_Clip_Radius);
 }
 else{
+  translate(cupPosition(position,num_x,num_y))
   gridfinity_baseplate(
       num_x = num_x,
       num_y = num_y,

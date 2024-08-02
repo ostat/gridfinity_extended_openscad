@@ -247,6 +247,9 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
 // make repeated copies of something(s) at the gridfinity spacing of 42mm
 module gridcopy(num_x, num_y, pitch=gf_pitch) {
   //translate([pitch/2,pitch/2])
+  assert(is_num(num_x) && num_x>=1, "num_x must be a number greater than 0");
+  assert(is_num(num_y) && num_y>=1, "num_y must be a number greater than 0");
+  assert(is_num(pitch) && pitch>=1, "pitch must be a number greater than 0");
   for (xi=[0:num_x-1]) 
     for (yi=[0:num_y-1])
     {

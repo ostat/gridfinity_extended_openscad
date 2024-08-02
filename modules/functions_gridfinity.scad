@@ -38,6 +38,11 @@ function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2
 
 //Height of base including the floor.
 function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
+      assert(is_num(floor_thickness), "floor_thickness must be a number")
+      assert(is_num(magnet_diameter), "magnet_diameter must be a number")
+      assert(is_num(screw_depth), "screw_depth must be a number")
+      assert(is_bool(filledin), "filledin must be a number")
+      assert(is_bool(flat_base), "flat_base must be a number")
       let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
   filledin ? num_z * gf_zpitch 
     : efficient_floor != "off" 

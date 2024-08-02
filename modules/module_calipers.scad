@@ -14,8 +14,6 @@ module ShowCalipers(
   wall_thickness,
   efficient_floor,
   flat_base){
-
-  echo("ShowCalipers", color_text=color_text);
   
   color(color_text)
   if(cuty > 0 && $preview)
