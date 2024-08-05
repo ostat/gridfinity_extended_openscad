@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_drawers.scad'. Generated 2024-08-05 22:19
+//Combined version of 'gridfinity_drawers.scad'. Generated 2024-08-06 07:31
 ///////////////////////////////////////
 // Gridfinity drawer system.
 // Intended for Gridfinity bins to sit in the drawers, meaning the outer chest will not fit neatly on to a gridfinity grid.
@@ -18966,9 +18966,9 @@ module chestCutouts(
  
     //positions for wall cutouts
     back = [
-      [innerchest.x-ridgeDepth*2,innerchest.z-ridgeDepth*2], //size
+      [innerchest.z-ridgeDepth*2,innerchest.x-ridgeDepth*2], //size
       [innerchest.x/2+chestWallThickness, innerchest.y+chestWallThickness/2-wallPattern_thickness/2, innerchest.z/2], //location
-      [90,0,180]]; //rotation 
+      [0,90,90]]; //rotation 
     left = [
       [innerchest.z-ridgeDepth*2,innerchest.y-ridgeDepth*2],    //size
       [+chestWallThickness/2-wallPattern_thickness/2, (innerchest.y+chestWallThickness)/2, innerchest.z/2], //location
