@@ -406,7 +406,7 @@ module chestCutouts(
     bottomWallpatternStyle]; //rotation 
       
   for(side = [top, bottom])  
-    if(topWallPatternStyle!="none")
+    if(side[3] != "none")
       translate(side[1])
       rotate(side[2])
       render() //Render on chest pattern because detailed patters can be slow
