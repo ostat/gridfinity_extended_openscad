@@ -26,14 +26,14 @@ function LookupKnownTool(name="custom") =
   name == "1/4hexshanklong" ? [6.35, 0, 0, 15, 40, "hex"] :
   name == "5/16hexshank" ? [7.94, 0, 0, 7, 0, "hex"] :
   name == "3/8hexshank" ? [9.52, 0, 0, 10, 0, "hex"] :
-  name == "1/2shank" ? [12.7, 0, 0, 20, 20, "round"] :
-  name == "12shank" ? [12, 0, 0, 20, 20, "round"] :
-  name == "10shank" ? [10, 0, 0, 15, 20, "round"] :
-  name == "3/8shank" ? [9.525, 0, 20, 20, 15, "round"] :
-  name == "8shank" ? [8, 0, 0, 15, 15, "round"] :
-  name == "1/4shank" ? [6.35, 0, 0, 10, 20, "round"] :
-  name == "6shank" ? [6, 0, 0, 10, 10, "round"] :
-  name == "1/8shank" ? [3.2, 0, 0, 10, 10, "round"] :
+  name == "1/2shank" ? [12.7, 0, 0, 20, 50, "round"] :
+  name == "12shank" ? [12, 0, 0, 20, 50, "round"] :
+  name == "10shank" ? [10, 0, 0, 20, 50, "round"] :
+  name == "3/8shank" ? [9.525, 0, 0, 20, 50, "round"] :
+  name == "8shank" ? [8, 0, 0, 20, 50, "round"] :
+  name == "1/4shank" ? [6.35, 0, 0, 20, 50, "round"] :
+  name == "6shank" ? [6, 0, 0, 15, 40, "round"] :
+  name == "1/8shank" ? [3.2, 0, 0, 15, 40, "round"] :
   [0,0,0,0,0,"","LookupKnownTool"];
 
 //[diameter, width, thickness, depthneeded, itemHeight, shape]

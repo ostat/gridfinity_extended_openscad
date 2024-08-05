@@ -1,20 +1,30 @@
 include <ub.scad>
 include <functions_general.scad>
 
+
+//GridItemHolder(fill="space", center=true, rotateGrid = true);
+//translate([0,50,0])
+//GridItemHolder(fill="space", center=true, rotateGrid = false);
+
+//translate([100,0,0])
+//GridItemHolder(fill="space", hexGrid=false, rotateGrid = true);
+//translate([100,50,0])
+//GridItemHolder(fill="space", hexGrid=false, rotateGrid = false);
 module GridItemHolder(
-  canvasSize = [0,0],
+  canvasSize = [100,50],
   hexGrid = true, //false, true, "auto"
   customShape=false,
   circleFn = 6,
-  holeSize = [0,0],
-  holeSpacing = [0,0],
+  holeSize = [10,10],
+  holeSpacing = [2,2],
   holeGrid = [0,0],
-  holeHeight = 0,
+  holeHeight = 3,
   holeChamfer = 0,
-  border = 0,
+  border = 3,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
-  crop = true,
+  //crop = true,
+  rotateGrid = false,
   help) 
 {
   assert(is_list(canvasSize) && len(canvasSize)==2, "canvasSize must be list of len 2");
@@ -27,8 +37,8 @@ module GridItemHolder(
   assert(is_num(holeHeight), "holeHeight must be number");    
   assert(is_num(holeChamfer), "holeChamfer must be number");    
   assert(is_num(holeChamfer), "holeChamfer must be number");  
-  assert(is_string(fill), "fill must be a string")
-  assert(is_bool(crop), "crop must be bool");  
+  assert(is_string(fill), "fill must be a string");
+  assert(is_bool(rotateGrid), "rotateGrid must be bool");  
 
   fudgeFactor = 0.01;
   
@@ -44,9 +54,11 @@ module GridItemHolder(
   //For hex in a hex grid we can optomise the spacing, otherwise its too hard      
   Ri = holeSize[0]/2;//(circleFn==6 && hexGrid) || (circleFn==4) ? (holeSize[0]/2) : Rc;
   
-  canvasSize = border > 0 ? 
-    [canvasSize.x-border*2,canvasSize.y-border*2] : 
-    canvasSize;
+  _canvasSize = 
+    let (cs = rotateGrid ? [canvasSize.y,canvasSize.x] : canvasSize)
+      border > 0 ? 
+        [cs.x-border*2,cs.y-border*2] : 
+        cs;
     
   calcHoledimensions = [
       customShape ? holeSize[0] :
@@ -65,22 +77,22 @@ module GridItemHolder(
   //Calcualte the x and y items count for hexgrid
   eHexGrid = [
       holeGrid[0] !=0 ? holeGrid[0]
-        : floor((canvasSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
+        : floor((_canvasSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
       holeGrid[1] !=0 ? holeGrid[1]
-        : floor(((canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
+        : floor(((_canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
       ];
 
   //Calcualte the x and y hex items count for squaregrid
   eSquareGrid = [
       holeGrid[0]!=0 ? holeGrid[0]
-        : floor((canvasSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
+        : floor((_canvasSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
       holeGrid[1]!=0 ? holeGrid[1]
-        : floor((canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1]))];
+        : floor((_canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1]))];
 
   //Single lines should not be hex
   hexGrid = 
-    canvasSize.x<=holeSize.x+holeSpacing.x || 
-    canvasSize.y<=holeSize.y+holeSpacing.y ||
+    _canvasSize.x<=holeSize.x+holeSpacing.x || 
+    _canvasSize.y<=holeSize.y+holeSpacing.y ||
     holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
   if(IsHelpEnabled("trace")) echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
   hexGridCount = let(count = eHexGrid[0]*eHexGrid[1]) eHexGrid[0] % 2 == 0 ? floor(count) : ceil(count);
@@ -89,21 +101,26 @@ module GridItemHolder(
           : hexGridCount == squareCount ? false //if equal prefer square
           : hexGridCount > squareCount;
           
-  translate(center ? [0, 0, 0] : [border, border, 0])
+  echo(str("🟩ItemGrid: count ", _hexGrid?hexGridCount:squareCount, " using grid ", _hexGrid?"hex":"square", ), input=hexGrid==true?"hex":hexGrid==false?"square":hexGrid, hexGridCount=hexGridCount,squareCount=squareCount);
+  
+
+  translate(center ? [0, 0, 0] : [(rotateGrid?canvasSize.x:0)+ border, border, 0])
+  //translate(rotateGrid && !center ?[canvasSize.x,0,0]:[0,0,0])
+  rotate(rotateGrid?[0,0,90]:[0,0,0])
   intersection(){
     //Crop to ensure that we dont go outside the bounds 
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
       translate([-fudgeFactor,-fudgeFactor,(center?holeHeight/2:0)-fudgeFactor])
-      cube([canvasSize[0]+fudgeFactor*2,canvasSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
+      cube([_canvasSize[0]+fudgeFactor*2,_canvasSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
     
     if(_hexGrid){
       //x and y spacing including the item size.
       es = [
         fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
-          ? calcHoledimensions[0]+(eHexGrid[0]<=1?0:((canvasSize[0]-eHexGrid[0]*calcHoledimensions[0])/(eHexGrid[0]-1))) 
+          ? calcHoledimensions[0]+(eHexGrid[0]<=1?0:((_canvasSize[0]-eHexGrid[0]*calcHoledimensions[0])/(eHexGrid[0]-1))) 
           : hexxSpacing,
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoledimensions[1]+(eHexGrid[1]<=0.5?0:((canvasSize[1]-(eHexGrid[1]+0.5)*calcHoledimensions[1])/(eHexGrid[1]-0.5))) 
+          ? calcHoledimensions[1]+(eHexGrid[1]<=0.5?0:((_canvasSize[1]-(eHexGrid[1]+0.5)*calcHoledimensions[1])/(eHexGrid[1]-0.5))) 
           : holeSpacing[1] + calcHoledimensions[1]];
       
       eFill=[
@@ -137,10 +154,10 @@ module GridItemHolder(
     else {
       es = [
         fill == "space" || fill == "spacevertical" || fill == "crophorizontal_spacevertical"
-          ? calcHoledimensions[0]+(eSquareGrid[0]<=1?0:((canvasSize[0]-eSquareGrid[0]*calcHoledimensions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
+          ? calcHoledimensions[0]+(eSquareGrid[0]<=1?0:((_canvasSize[0]-eSquareGrid[0]*calcHoledimensions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
           : calcHoledimensions[0]+holeSpacing[0],
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoledimensions[1]+(eSquareGrid[1]<=1?0:((canvasSize[1]-eSquareGrid[1]*calcHoledimensions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
+          ? calcHoledimensions[1]+(eSquareGrid[1]<=1?0:((_canvasSize[1]-eSquareGrid[1]*calcHoledimensions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
           : calcHoledimensions[1]+holeSpacing[1]];
       
       eFill=[
@@ -170,6 +187,7 @@ module GridItemHolder(
   
   HelpTxt("GridItemHolder",[
     "canvasSize",canvasSize
+    ,"_canvasSize",_canvasSize
     ,"circleFn",circleFn
     ,"hexGrid",hexGrid
     ,"holeSize",holeSize
@@ -292,7 +310,7 @@ module chamferedRectangleTop(size, chamfer, cornerRadius){
   conesizeTop = chamfer+cornerRadius+champherExtention;
   conesizeBottom = conesizeTop>size.z ? conesizeTop-size.z: 0;
   
-  echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
+  if(IsHelpEnabled("trace")) echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
   //if cornerRadius = 0, we can further increase the height of the 'cone' so we can extend inside the shape
   hull(){
     translate([cornerRadius+champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])

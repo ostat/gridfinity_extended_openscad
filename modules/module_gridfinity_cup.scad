@@ -122,7 +122,7 @@ default_wallcutout_corner_radius=5;
 
 /* [Wall Pattern] */
 default_wallpattern_enabled=false; 
-default_wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
+default_wallpattern_style = "grid"; //[grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
 default_wallpattern_dividers_enabled ="disabled"; //["disabled", "horizontal", "vertical", "both"] 
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0]; 
@@ -407,20 +407,20 @@ module gridfinity_cup(
             //Position
             [(num_x)*gf_pitch/2, wallpattern_thickness, z],
             //rotation
-            [90,90,0]];
+            [90,0,0]];
           back = [
             [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz - (label_style != "disabled" ? 10 : 0)],
             //[(num_x-1)*gf_pitch/2, (num_y-0.5)*gf_pitch, (gf_zpitch+0.5)+(heightz - (label_style != "disabled" ? 10 : 0))/2],
             [(num_x)*gf_pitch/2, (num_y)*gf_pitch, z - (label_style != "disabled" ? 10 : 0)/2],
-            [90,90,0]];
+            [90,0,0]];
           left = [
             [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz],
             [0, (num_y)*gf_pitch/2, z],
-            [90,90,90]];
+            [90,0,90]];
           right = [
             [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz],
             [(num_x)*gf_pitch-wallpattern_thickness, (num_y)*gf_pitch/2, z],
-            [90,90,90]];
+            [90,0,90]];
         
         locations = [front, back, left, right];
           
@@ -445,7 +445,7 @@ module gridfinity_cup(
                     render() //Render on vertical_separator pattern because detailed patters can be slow
                     cutout_pattern(
                       patternStyle = wallpattern_style,
-                      canvasSize = [left[0][1],left[0][0]], //Swap x and y and rotate so hex is easier to print
+                      canvasSize = left[0], 
                       customShape = false,
                       circleFn = wallpattern_hole_sides,
                       holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -469,13 +469,13 @@ module gridfinity_cup(
                   cut_depth = horizontal_separator_cut_depth,
                   separator_orentation = "horizontal") 
                     rotate([0,0,-90])
-                    translate([0,-$sepCfg[iSeperatorWallThickness]/2+$sepCfg[iSeperatorBendSeparation]/2, fudgeFactor]) 
+                    translate([0,$sepCfg[iSeperatorBendSeparation]/2, fudgeFactor]) 
                     translate(front[1])
                     rotate(front[2])
                     render() //Render on horizontal_separator pattern because detailed patters can be slow
                     cutout_pattern(
                       patternStyle = wallpattern_style,
-                      canvasSize = [front[0][1],front[0][0]], //Swap x and y and rotate so hex is easier to print
+                      canvasSize = front[0], 
                       customShape = false,
                       circleFn = wallpattern_hole_sides,
                       holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -522,7 +522,7 @@ module gridfinity_cup(
                   render() //Render on outer wall pattern because detailed patters can be slow
                     cutout_pattern(
                       patternStyle = wallpattern_style,
-                      canvasSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
+                      canvasSize = locations[i][0],
                       customShape = false,
                       circleFn = wallpattern_hole_sides,
                       holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -761,10 +761,10 @@ module cutout_pattern(
   voronoiNoise,
   voronoiRadius,
   help){
-  if(patternStyle == "grid" || patternStyle == "hexgrid") {
+  if(patternStyle == "grid" || patternStyle == "hexgrid" || patternStyle == "gridrotated" || patternStyle == "hexgridrotated") {
     GridItemHolder(
       canvasSize = canvasSize,
-      hexGrid = patternStyle == "hexgrid",
+      hexGrid = (patternStyle == "hexgrid" || patternStyle == "hexgridrotated"),
       customShape = customShape,
       circleFn = circleFn,
       holeSize = holeSize,
@@ -772,6 +772,7 @@ module cutout_pattern(
       holeHeight = holeHeight,
       center=center,
       fill=fill, //"none", "space", "crop"
+      rotateGrid = (patternStyle == "gridrotated" || patternStyle == "hexgridrotated"),
       help=help);
   }
   else if(patternStyle == "voronoi" || patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"){

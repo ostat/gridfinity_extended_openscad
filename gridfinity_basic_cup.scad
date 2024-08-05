@@ -32,12 +32,12 @@ zClearance = 0; // 0.1
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
 // X dimension subdivisions
-vertical_chambers = 1;
+vertical_chambers = 1; 
 vertical_separator_bend_position = 0;
 vertical_separator_bend_angle = 0;
 vertical_separator_bend_separation = 0;
 vertical_separator_cut_depth=0;
-horizontal_chambers = 1;
+horizontal_chambers = 1; 
 horizontal_separator_bend_position = 0;
 horizontal_separator_bend_angle = 0;
 horizontal_separator_bend_separation = 0;
@@ -111,7 +111,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "grid"; //[grid, hexgrid, voronoi,voronoigrid,voronoihexgrid]
+wallpattern_style = "grid"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.

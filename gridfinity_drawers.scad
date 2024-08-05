@@ -49,11 +49,13 @@ drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and f
 drawer_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
 
 /* [Chest Top Plate] */
+chest_top_wallpattern_style = "none"; //[none, grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
 chest_enable_top_grid = true;
 // Plate Style
 chest_top_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
 
 /* [Chest Base] */
+chest_bottom_wallpattern_style = "none"; //[none, grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
 chest_bottom_grid = true;
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 6.5;  // .1
@@ -69,17 +71,15 @@ half_pitch = false;
 flat_base = false;
 
 /* [Chest Wall Pattern] */
+// Grid wall patter
+wallpattern_enabled=false;
 // wall pattern border width. -1 defaults to chest_wall_thickness. less than 0 chest_wall_thickness/abs(wallpattern_border_width)
 wallpattern_border_width = -1;
 efficient_back = true;
-// Grid wall patter
-wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[grid, hexgrid, voronoi,voronoigrid,voronoihexgrid]
+wallpattern_style = "hexgrid"; //[grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
-// Add the pattern to the dividers
-wallpattern_dividers_enabled=false; 
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
@@ -256,7 +256,6 @@ module chest(
   chestWallThickness,
   enableTopGrid,
   topGridStyle,
-  //ridgeDepth,
   bottomGrid,
   bottomMagnetDiameter,
   bottomScrewDepth,
@@ -326,12 +325,13 @@ module chestCutouts(
   clearance,
   chestWallThickness,
   efficientBack,
+  topWallPatternStyle,
+  bottomWallpatternStyle,
   wallPatternBorderWidth,
   wallPatternEnabled,
   wallpatternStyle,
   wallPatternWtyle,
   wallPatternHoleSpacing,
-  wallPatternDividersEnabled,
   wallPatternHoleSides,
   wallPatternHoleSize,
   wallPatternFill,
@@ -350,15 +350,16 @@ module chestCutouts(
     back = [
       [innerchest.x-ridgeDepth*2,innerchest.z-ridgeDepth*2], //size
       [innerchest.x/2+chestWallThickness, innerchest.y+chestWallThickness/2-wallPattern_thickness/2, innerchest.z/2], //location
-      [90,90,180]]; //rotation 
+      [90,0,180]]; //rotation 
     left = [
-      [innerchest.y-ridgeDepth*2,innerchest.z-ridgeDepth*2],    //size
+      [innerchest.z-ridgeDepth*2,innerchest.y-ridgeDepth*2],    //size
       [+chestWallThickness/2-wallPattern_thickness/2, (innerchest.y+chestWallThickness)/2, innerchest.z/2], //location
-      [90,90,90]];//rotation
+      [0,90,0]];//rotation
     right = [
-      [innerchest.y-ridgeDepth*2,innerchest.z-ridgeDepth*2],//size
+      [innerchest.z-ridgeDepth*2,innerchest.y-ridgeDepth*2],//size
       [innerchest.x+chestWallThickness*1.5-wallPattern_thickness/2, (innerchest.y+chestWallThickness)/2, innerchest.z/2],//location
-      [90,90,90]];//rotation
+      [0,90,0]];//rotation
+
     locations = [back, left, right];
   
     vpos = startH + drawerPosition(iDrawer, drawerOuterSizes, clearance, drawerSlideThickness);
@@ -380,7 +381,7 @@ module chestCutouts(
         render() //Render on chest pattern because detailed patters can be slow
         cutout_pattern(
           patternStyle = wallpatternStyle,
-          canvasSize = [locations[iSide][0][1],locations[iSide][0][0]], //Swap x and y and rotate so hex is easier to print
+          canvasSize = locations[iSide][0],
           customShape = false,
           circleFn = wallPatternHoleSides,
           holeSize = [wallPatternHoleSize, wallPatternHoleSize],
@@ -393,6 +394,36 @@ module chestCutouts(
           help=false);
   }
   
+  top = [
+    [outerChest.x-ridgeDepth*2,outerChest.y-ridgeDepth*2], //size
+    [outerChest.x/2, outerChest.y/2, outerChest.z-chestWallThickness-fudgeFactor], //location
+    [0,0,0],
+    topWallPatternStyle]; //rotation  
+  bottom = [
+    [outerChest.x-ridgeDepth*2,outerChest.y-ridgeDepth*2], //size
+    [outerChest.x/2, outerChest.y/2, -fudgeFactor], //location
+    [0,0,0],
+    bottomWallpatternStyle]; //rotation 
+      
+  for(side = [top, bottom])  
+    if(topWallPatternStyle!="none")
+      translate(side[1])
+      rotate(side[2])
+      render() //Render on chest pattern because detailed patters can be slow
+        cutout_pattern(
+          patternStyle = side[3],
+          canvasSize = side[0],
+          customShape = false,
+          circleFn = wallPatternHoleSides,
+          holeSize = [wallPatternHoleSize, wallPatternHoleSize],
+          holeSpacing = [wallPatternHoleSpacing, wallPatternHoleSpacing],
+          holeHeight = wallPattern_thickness,
+          center=true,
+          fill=wallPatternFill, //"none", "space", "crop"
+          voronoiNoise=wallPatternVoronoiNoise,
+          voronoiRadius = wallPatternVoronoiRadius,
+          help=false);
+   
   color(colour_chest) 
   if(drawerSlideWidth > 0 && drawerCount > 1)
   {
@@ -420,11 +451,12 @@ module cutout_pattern(
   fill,
   voronoiNoise,
   voronoiRadius,
+  rotateGrid = true,
   help){
-  if(patternStyle == "grid" || patternStyle == "hexgrid") {
+  if(patternStyle == "grid" || patternStyle == "hexgrid" || patternStyle == "gridrotated" || patternStyle == "hexgridrotated") {
     GridItemHolder(
       canvasSize = canvasSize,
-      hexGrid = patternStyle == "hexgrid",
+      hexGrid = (patternStyle == "hexgrid" || patternStyle == "hexgridrotated"),
       customShape = customShape,
       circleFn = circleFn,
       holeSize = holeSize,
@@ -432,6 +464,7 @@ module cutout_pattern(
       holeHeight = holeHeight,
       center=center,
       fill=fill, //"none", "space", "crop"
+      rotateGrid = (patternStyle == "gridrotated" || patternStyle == "hexgridrotated"),
       help=help);
   }
   else if(patternStyle == "voronoi" || patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"){
@@ -468,8 +501,10 @@ module gridfinity_drawer(
     drawerBase = drawer_base,
     drawerGridStyle = drawer_grid_style,
     chestEnableTopGrid = chest_enable_top_grid,
+    chestTopWallPatternStyle=chest_top_wallpattern_style,
     chestTopGridStyle = chest_top_grid_style,
     bottomGrid = chest_bottom_grid,
+    bottomWallpatternStyle = chest_bottom_wallpattern_style,
     bottomMagnetDiameter = magnet_diameter,
     bottomScrewDepth = screw_depth,
     bottomHoleOverhangRemedy = hole_overhang_remedy,
@@ -481,7 +516,6 @@ module gridfinity_drawer(
     wallPatternEnabled = wallpattern_enabled,
     wallpatternStyle = wallpattern_style,
     wallPatternHoleSpacing = wallpattern_hole_spacing,
-    wallPatternDividersEnabled = wallpattern_dividers_enabled,
     wallPatternHoleSides = wallpattern_hole_sides,
     wallPatternHoleSize = wallpattern_hole_size,
     wallPatternFill = wallpattern_fill,
@@ -511,9 +545,10 @@ module gridfinity_drawer(
     
   outerChest = [
     drawerOuterSizes[0].x + (chestClearance.x * 2) + (chestWallThickness * 2),
-    drawerOuterSizes[0].y + (chestClearance.y * 2) + (chestWallThickness)];
+    drawerOuterSizes[0].y + (chestClearance.y * 2) + (chestWallThickness),
+    sum(drawerOuterSizes).z + (chestClearance.z*2*drawerCount) + drawerSlideThickness * (drawerCount - 1) + chestWallThickness*2];
     
-  totalH = sum(drawerOuterSizes).z + (chestClearance.z*2*drawerCount) + drawerSlideThickness * (drawerCount - 1) + chestWallThickness*2;
+  totalH = outerChest.z;
 
   startH = chestWallThickness;
 
@@ -526,7 +561,6 @@ module gridfinity_drawer(
       chestWallThickness=chestWallThickness,
       enableTopGrid=chestEnableTopGrid,
       topGridStyle=chestTopGridStyle,
-      //ridgeDepth=ridgeDepth,
       bottomGrid=bottomGrid,
       bottomMagnetDiameter=bottomMagnetDiameter,
       bottomScrewDepth=bottomScrewDepth,
@@ -552,11 +586,12 @@ module gridfinity_drawer(
         clearance=chestClearance,
         chestWallThickness=chestWallThickness,
         efficientBack=efficientBack,
+        topWallPatternStyle=chestTopWallPatternStyle,
+        bottomWallpatternStyle = bottomWallpatternStyle,
         wallPatternBorderWidth=wallPatternBorderWidth,
         wallPatternEnabled=wallPatternEnabled,
         wallpatternStyle=wallpatternStyle,
         wallPatternHoleSpacing=wallPatternHoleSpacing,
-        wallPatternDividersEnabled=wallPatternDividersEnabled,
         wallPatternHoleSides=wallPatternHoleSides,
         wallPatternHoleSize=wallPatternHoleSize,
         wallPatternFill=wallPatternFill,
