@@ -181,6 +181,9 @@ module roundedCorner(
   height,
   fn=64)
 {
+  assert(is_num(length), "length must be a number");
+  assert(is_num(height), "height must be a number");
+  assert(is_num(radius), "radius must be a number");
   difference(){
     union(){
       //main corner to be removed
