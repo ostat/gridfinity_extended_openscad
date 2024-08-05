@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_lid.scad'. Generated 2024-08-03 08:45
+//Combined version of 'gridfinity_lid.scad'. Generated 2024-08-05 21:41
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -284,6 +284,8 @@ default_label_position = "disabled"; //[left: left aligned label, right: right a
 default_label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interfere with stacking
 default_label_relief = 0; // 0.1
+// wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
+default_label_walls=[1,0,0,0];  //[0-1]
 
 /* Sliding Lid */
 default_sliding_lid_enabled = false;
@@ -300,6 +302,8 @@ default_sliding_clearance = 0.1;//0.1
 default_fingerslide = "none"; //[none, rounded, chamfered]
 // radius of the corner fillet
 default_fingerslide_radius = 8;
+// wall to enable on, front, back, left, right.  0: disabled; 1: enabled;
+default_fingerslide_walls=[1,0,0,0]; //[0:1:1]
 
 /* Subdivisions */
 // X dimension subdivisions
@@ -356,7 +360,7 @@ default_tapered_setback = -1;//gf_cup_corner_radius/2;
 /* Wall Cutout */
 default_wallcutout_enabled=false;
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-default_wallcutout_walls=[1,0,0,0];  //0.1
+default_wallcutout_walls=[1,0,0,0]; //[0:1:1]
 //default will be binwidth/2
 default_wallcutout_width=0;
 default_wallcutout_angle=70;
@@ -366,7 +370,7 @@ default_wallcutout_corner_radius=5;
 
 /* Wall Pattern */
 default_wallpattern_enabled=false; 
-default_wallpattern_style = "grid"; //["grid", "hexgrid", "voronoi","voronoigrid","voronoihexgrid"]
+default_wallpattern_style = "grid"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid]
 default_wallpattern_dividers_enabled ="disabled"; //["disabled", "horizontal", "vertical", "both"] 
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0]; 
@@ -381,7 +385,7 @@ default_extension_x_enabled = false;
 default_extension_y_enabled = false;
 default_extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
-default_extension_tab_size= [10,0,0,0]; //0.1
+default_extension_tab_size= [10,0,0,0];
 
 /* debug */
 default_cutx = 0;//0.01
@@ -405,10 +409,12 @@ module gridfinity_cup(
   label_position=default_label_position,
   label_size=default_label_size,
   label_relief=default_label_relief,
+  label_walls=default_label_walls,
   sliding_lid_enabled = default_sliding_lid_enabled,
   sliding_lid_thickness = default_sliding_lid_thickness,
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
+  fingerslide_walls=default_fingerslide_walls,
   magnet_diameter=default_magnet_diameter,
   magnet_easy_release=default_magnet_easy_release,
   screw_depth=default_screw_depth,
@@ -472,9 +478,9 @@ module gridfinity_cup(
   cuty=default_cuty,
   help=default_help) {
   $showHelp = help;
-  num_x = calcDimensionWidth(width);
-  num_y = calcDimensionDepth(depth);
-  num_z = calcDimensionHeight(height);
+  num_x = calcDimensionWidth(width, true);
+  num_y = calcDimensionDepth(depth, true);
+  num_z = calcDimensionHeight(height, true);
 
   vertical_separator_positions = vertical_irregular_subdivisions 
     ? vertical_separator_config 
@@ -533,8 +539,10 @@ module gridfinity_cup(
         label_position=label_position,
         label_size=label_size,
         label_relief=label_relief,
+        label_walls=label_walls,
         fingerslide=fingerslide, 
         fingerslide_radius=fingerslide_radius, 
+        fingerslide_walls=fingerslide_walls,
         magnet_diameter=magnet_diameter,
         screw_depth=screw_depth, 
         floor_thickness=floor_thickness, 
@@ -650,20 +658,20 @@ module gridfinity_cup(
             //Position
             [(num_x)*gf_pitch/2, wallpattern_thickness, z],
             //rotation
-            [90,90,0]];
+            [90,0,0]];
           back = [
             [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz - (label_style != "disabled" ? 10 : 0)],
             //[(num_x-1)*gf_pitch/2, (num_y-0.5)*gf_pitch, (gf_zpitch+0.5)+(heightz - (label_style != "disabled" ? 10 : 0))/2],
             [(num_x)*gf_pitch/2, (num_y)*gf_pitch, z - (label_style != "disabled" ? 10 : 0)/2],
-            [90,90,0]];
+            [90,0,0]];
           left = [
             [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz],
             [0, (num_y)*gf_pitch/2, z],
-            [90,90,90]];
+            [90,0,90]];
           right = [
             [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz],
             [(num_x)*gf_pitch-wallpattern_thickness, (num_y)*gf_pitch/2, z],
-            [90,90,90]];
+            [90,0,90]];
         
         locations = [front, back, left, right];
           
@@ -688,7 +696,7 @@ module gridfinity_cup(
                     render() //Render on vertical_separator pattern because detailed patters can be slow
                     cutout_pattern(
                       patternStyle = wallpattern_style,
-                      canvasSize = [left[0][1],left[0][0]], //Swap x and y and rotate so hex is easier to print
+                      canvasSize = left[0], 
                       customShape = false,
                       circleFn = wallpattern_hole_sides,
                       holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -712,13 +720,13 @@ module gridfinity_cup(
                   cut_depth = horizontal_separator_cut_depth,
                   separator_orentation = "horizontal") 
                     rotate([0,0,-90])
-                    translate([0,-$sepCfg[iSeperatorWallThickness]/2+$sepCfg[iSeperatorBendSeparation]/2, fudgeFactor]) 
+                    translate([0,$sepCfg[iSeperatorBendSeparation]/2, fudgeFactor]) 
                     translate(front[1])
                     rotate(front[2])
                     render() //Render on horizontal_separator pattern because detailed patters can be slow
                     cutout_pattern(
                       patternStyle = wallpattern_style,
-                      canvasSize = [front[0][1],front[0][0]], //Swap x and y and rotate so hex is easier to print
+                      canvasSize = front[0], 
                       customShape = false,
                       circleFn = wallpattern_hole_sides,
                       holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -765,7 +773,7 @@ module gridfinity_cup(
                   render() //Render on outer wall pattern because detailed patters can be slow
                     cutout_pattern(
                       patternStyle = wallpattern_style,
-                      canvasSize = [locations[i][0][1],locations[i][0][0]], //Swap x and y and rotate so hex is easier to print
+                      canvasSize = locations[i][0],
                       customShape = false,
                       circleFn = wallpattern_hole_sides,
                       holeSize = [wallpattern_hole_size, wallpattern_hole_size],
@@ -941,8 +949,10 @@ module gridfinity_cup(
     ,"label_position",label_position
     ,"label_size",label_size
     ,"label_relief",label_relief
+    ,"label_walls",label_walls
     ,"fingerslide",fingerslide
     ,"fingerslide_radius",fingerslide_radius
+    ,"fingerslide_walls",fingerslide_walls
     ,"magnet_diameter",magnet_diameter
     ,"screw_depth",screw_depth
     ,"floor_thickness",floor_thickness
@@ -1004,10 +1014,10 @@ module cutout_pattern(
   voronoiNoise,
   voronoiRadius,
   help){
-  if(patternStyle == "grid" || patternStyle == "hexgrid") {
+  if(patternStyle == "grid" || patternStyle == "hexgrid" || patternStyle == "gridrotated" || patternStyle == "hexgridrotated") {
     GridItemHolder(
       canvasSize = canvasSize,
-      hexGrid = patternStyle == "hexgrid",
+      hexGrid = (patternStyle == "hexgrid" || patternStyle == "hexgridrotated"),
       customShape = customShape,
       circleFn = circleFn,
       holeSize = holeSize,
@@ -1015,6 +1025,7 @@ module cutout_pattern(
       holeHeight = holeHeight,
       center=center,
       fill=fill, //"none", "space", "crop"
+      rotateGrid = (patternStyle == "gridrotated" || patternStyle == "hexgridrotated"),
       help=help);
   }
   else if(patternStyle == "voronoi" || patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"){
@@ -1032,7 +1043,9 @@ module cutout_pattern(
 }
 
 module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, label_position=default_label_position, 
-    label_size=default_label_size, label_relief=default_label_relief, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
+    label_size=default_label_size, label_relief=default_label_relief, label_walls=default_label_walls,
+    fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
+    fingerslide_walls=default_fingerslide_walls,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, half_pitch=default_half_pitch,         chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_zClearance=default_chamber_wall_zClearance,
@@ -1054,7 +1067,8 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
   
   difference() {
     color(color_cupcavity)
-    basic_cavity(num_x, num_y, num_z, fingerslide=fingerslide, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
+    basic_cavity(num_x, num_y, num_z, 
+    fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
       screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
       efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius, spacer=spacer, box_corner_attachments_only = box_corner_attachments_only, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
@@ -1089,20 +1103,54 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
       seperator_config = horizontal_separator_positions,
       separator_orentation = "horizontal");
       
-    if(label_style != "disabled")
+    if(label_style != "disabled"){
+      vertical_separator_positions = calculateSeparators(
+          seperator_config = vertical_separator_positions, 
+          length = gf_pitch*num_y,
+          height = gf_zpitch*(num_z)-sepFloorHeight+fudgeFactor*2-max(zClearance, chamber_wall_zClearance),
+          wall_thickness = chamber_wall_thickness,
+          bend_position = vertical_separator_bend_position,
+          bend_angle = vertical_separator_bend_angle,
+          bend_separation = vertical_separator_bend_separation,
+          cut_depth = vertical_separator_cut_depth);
+      horizontal_separator_positions = calculateSeparators(
+          seperator_config = horizontal_separator_positions, 
+          length = gf_pitch*num_x,
+          height = gf_zpitch*(num_z)-sepFloorHeight+fudgeFactor*2-max(zClearance, chamber_wall_zClearance),
+          wall_thickness = chamber_wall_thickness,
+          bend_position = horizontal_separator_bend_position,
+          bend_angle = horizontal_separator_bend_angle,
+          bend_separation = horizontal_separator_bend_separation,
+          cut_depth = horizontal_separator_cut_depth);
+          
       gridfinity_label(
         num_x = num_x,
         num_y = num_y,
         zpoint = zpoint,
         vertical_separator_positions = vertical_separator_positions,
+        horizontal_separator_positions = horizontal_separator_positions,
         label_size=label_size,
         label_position = label_position,
         label_style = label_style,
-        label_relief = label_relief);
+        label_relief = label_relief,
+        label_walls=label_walls);
+        
+    }
   }
 }
+/*
+calculateSeparators(
+                  seperator_config, 
+                  length,
+                  height,
+                  wall_thickness = 0,
+                  bend_position = 0,
+                  bend_angle = 0,
+                  bend_separation = 0,
+                  cut_depth = 0)
+  */                
 
-module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
+module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, half_pitch=default_half_pitch, 
@@ -1218,25 +1266,17 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     
     // fingerslide inside bottom of cutout
     if(fingerslide != "none"){
-      translate([0, 
-            reducedlipstyle == "reduced" ? - gf_lip_lower_taper_height
-            : reducedlipstyle =="none" ? seventeen+1.15-gf_pitch/2+0.25+wall_thickness
-            : 0, 0])
-        translate([0,-seventeen-1.15+gf_pitch/2, floorht])
-          union(){
-            if(fingerslide == "rounded"){
-              roundedCorner(
-                radius = fingerslide_radius, 
-                length=gf_pitch*num_x, 
-                height = gf_zpitch*num_z);
-            }
-            else if(fingerslide == "chamfered"){
-              chamferedCorner(
-                chamferLength = fingerslide_radius, 
-                length=gf_pitch*num_x,
-                height = gf_zpitch*num_z);
-          }
-        }
+      FingerSlide(
+        num_x = num_x, 
+        num_y = num_y,
+        num_z = num_z,
+        fingerslide_walls=fingerslide_walls,
+        fingerslide=fingerslide,
+        fingerslide_radius=fingerslide_radius,
+        reducedlipstyle=reducedlipstyle,
+        wall_thickness=wall_thickness,
+        floorht=floorht,
+        seventeen=seventeen);
     }
 
     if (efficient_floor != "off") {
@@ -1305,6 +1345,88 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     gridcopy(1, 1) 
       EfficientFloor(num_x, num_y,-fudgeFactor, q);
   }
+}
+
+///Creates the finger slide that will be subtracted from the cavity  
+module FingerSlide(
+        num_x = num_x, 
+        num_y = num_y,
+        num_z = num_z,
+        fingerslide_walls=fingerslide_walls,
+        fingerslide=fingerslide,
+        fingerslide_radius=fingerslide_radius,
+        reducedlipstyle=reducedlipstyle,
+        wall_thickness=wall_thickness,
+        floorht=floorht,
+        seventeen=seventeen) {
+  assert(is_num(num_x), "num_x must be a number");
+  assert(is_num(num_y), "num_y must be a number");
+  assert(is_num(num_z), "num_z must be a number");
+  assert(is_list(fingerslide_walls), "fingerslide_walls must be a list");
+  assert(is_string(fingerslide), "fingerslide must be a string");
+  assert(is_num(fingerslide_radius), "fingerslide_radius must be a number");
+  assert(is_string(reducedlipstyle), "reducedlipstyle must be a string");
+  assert(is_num(wall_thickness), "wall_thickness must be a number");
+  assert(is_num(floorht), "floorht must be a number");
+  assert(is_num(seventeen), "seventeen must be a number");
+  
+  echo("fingerslide", fingerslide_walls=fingerslide_walls, fingerslide=fingerslide);
+  front = [
+    //width
+    num_x*gf_pitch,
+    //Position
+    [0, 0, 0],
+    //rotation
+    [0,0,0]];
+  back = [
+    //width
+    num_x*gf_pitch,
+    //Position
+    [num_x*gf_pitch, num_y*gf_pitch, 0],
+    //rotation
+    [0,0,180]];
+  left = [
+    //width
+    num_y*gf_pitch,
+    //Position
+    [0, num_y*gf_pitch, 0],
+    //rotation
+    [0,0,270]];
+  right = [
+    //width
+    num_y*gf_pitch,
+    //Position
+    [num_x*gf_pitch, 0, 0],
+    //rotation
+    [0,0,90]];
+    
+  locations = [front, back, left, right];
+
+  for(i = [0:1:len(locations)-1])
+    union()
+      if(fingerslide_walls[i] > 0)
+        //patterns in the outer walls
+        translate(locations[i][1])
+        rotate(locations[i][2])                  
+  translate([0, 
+        reducedlipstyle == "reduced" ? - gf_lip_lower_taper_height
+        : reducedlipstyle =="none" ? seventeen+1.15-gf_pitch/2+0.25+wall_thickness
+        : 0, 0])
+    translate([0,-seventeen-1.15+gf_pitch/2, floorht])
+      union(){
+        if(fingerslide == "rounded"){
+          roundedCorner(
+            radius = fingerslide_radius, 
+            length=locations[i][0], 
+            height = gf_zpitch*num_z);
+        }
+        else if(fingerslide == "chamfered"){
+          chamferedCorner(
+            chamferLength = fingerslide_radius, 
+            length=locations[i][0],
+            height = gf_zpitch*num_z);
+      }
+    }
 }
 
 module SlidingLidSupportMaterial(
@@ -1398,7 +1520,11 @@ module SlidingLidCavity(
 }
 //CombinedEnd from path module_gridfinity_cup.scad
 //Combined from path module_gridfinity_label.scad
-
+ilWidth=0;
+ilPosition=1;
+ilRotation=2;
+ilSeparatorConfig=3;
+ilReversed=4;
 
 module gridfinity_label(
   num_x,
@@ -1406,14 +1532,27 @@ module gridfinity_label(
   zpoint,
   label_position,
   vertical_separator_positions,
+  horizontal_separator_positions,
   label_size,
   label_style,
-  label_relief
+  label_relief,
+  label_walls = [1,1,1,1]
 )
 {
+  assert(is_num(num_x), "num_x must be a number");
+  assert(is_num(num_y), "num_y must be a number");
+  assert(is_num(zpoint), "zpoint must be a number");
+  assert(is_string(label_position), "label_position must be a string");
+  assert(is_string(vertical_separator_positions) || is_list(vertical_separator_positions), "vertical_separator_positions must be a list");
+  assert(is_string(horizontal_separator_positions) || is_list(horizontal_separator_positions), "horizontal_separator_positions must be a list");
+  assert(is_list(label_size), "label_size must be a list");
+  assert(is_string(label_style), "label_style must be a string");
+  assert(is_num(label_relief), "label_relief must be a number");
+  assert(is_list(label_walls), "label_walls must be a list");
+  
   labelSize = let(
       labelxtemp = is_num(label_size) ? label_size : is_list(label_size) && len(label_size) >= 1 ? label_size.x : 0,
-      labelx = labelxtemp <=0 ? num_x : labelxtemp,
+      labelx = labelxtemp <=0 ? 0 : labelxtemp,
       labelytemp = is_list(label_size) && len(label_size) >= 2 ? label_size.y : 0,
       labely = labelytemp <= 0 ? 14 : labelytemp,
       labelztemp = is_list(label_size) && len(label_size) >= 3 ? label_size.z : 0,
@@ -1423,55 +1562,111 @@ module gridfinity_label(
         [labelx,labely,labelz,labelr];
 
   labelCornerRadius = labelSize[3];
-
-  labelPoints = [[ num_y*gf_pitch-labelSize.y, zpoint-labelCornerRadius],
-    [ num_y*gf_pitch, zpoint-labelCornerRadius ],
-    [ num_y*gf_pitch, zpoint-labelCornerRadius-labelSize.z ]
-  ];
   
-  separator_positions = calculateSeparators(vertical_separator_positions);
+  front = [
+    //width
+    num_x*gf_pitch,
+    //Position
+    [0, num_y*gf_pitch, 0],
+    //rotation
+    [0,0,0],
+    vertical_separator_positions,
+    //is reversed
+    false];
+  back = [
+    //width
+    num_x*gf_pitch,
+    //Position
+    [num_x*gf_pitch, 0, 0],
+    //rotation
+    [0,0,180],
+    vertical_separator_positions,
+    //is reversed
+    true];
+  left = [
+    //width
+    num_y*gf_pitch,
+    //Position
+    [0, 0, 0],
+    //rotation
+    [0,0,90],
+    horizontal_separator_positions,
+    //is reversed
+    false];
+  right = [
+    //width
+    num_y*gf_pitch,
+    //Position
+    [num_x*gf_pitch, num_y*gf_pitch, 0],
+    //rotation
+    [0,0,270],
+    horizontal_separator_positions,
+    //is reversed
+    true];
     
-  // calcualte list of chambers. 
-  labelWidthmm = labelSize.x * gf_pitch;
-  chamberWidths = len(separator_positions) < 1 || 
-    labelWidthmm == 0 ||
-    label_position == "left" ||
-    label_position == "center" ||
-    label_position == "right" ?
-      [ num_x * gf_pitch ] // single chamber equal to the bin length
-      : [ for (i=[0:len(separator_positions)]) 
-        (i==len(separator_positions) 
-          ? num_x * gf_pitch
-          : separator_positions[i]) - (i==0 ? 0 : separator_positions[i-1]) ];
-                  
+  locations = [front, back, left, right];
+ 
   color(color_label)
-  for (i=[0:len(chamberWidths)-1]) {
-      chamberStart = i == 0 ? 0 : separator_positions[i-1];
-      chamberWidth = chamberWidths[i];
-      label_num_x = (labelWidthmm == 0 || labelWidthmm > chamberWidth) ? chamberWidth : labelWidthmm;
-      label_pos_x = (label_position == "center" || label_position == "centerchamber" )? (chamberWidth - label_num_x) / 2 
-                      : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x 
-                      : 0 ;
-                      
-      translate([((chamberStart + label_pos_x)),0,0])
-      difference(){
-        hull() for (y=[0, 1, 2])
-        translate([0, labelPoints[y][0], labelPoints[y][1]])
-          rotate([0, 90, 0])
-          union(){
-            //left
-            tz(abs(label_num_x))
-            sphere(r=labelCornerRadius, $fn=64);
-            //Right
-            sphere(r=labelCornerRadius, $fn=64);
-          }
-        
-        if(label_style == "click"){
-           translate([2,labelPoints[i][0]+1,zpoint])
-           LabelClick();
-        } else if(label_relief > 0){
-          translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
-            cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
+  for(l = [0:1:len(locations)-1]){
+    location = locations[l];
+    separator_positions = location[ilSeparatorConfig];//calculateSeparators(location[3]);
+   
+    labelPoints = [[ 0-labelSize.y, zpoint-labelCornerRadius],
+      [ 0, zpoint-labelCornerRadius ],
+      [ 0, zpoint-labelCornerRadius-labelSize.z ]
+    ];
+  
+    // calcualte list of chambers. 
+    labelWidthmm = labelSize.x <=0 ? location[ilWidth] : labelSize.x * gf_pitch;
+    chamberWidths = len(separator_positions) < 1 || 
+      labelWidthmm == 0 ||
+      label_position == "left" ||
+      label_position == "center" ||
+      label_position == "right" ?
+        [ location[ilWidth] ] // single chamber equal to the bin length
+        : [ for (i=[0:len(separator_positions)]) 
+          (i==len(separator_positions) 
+            ? location[0]
+            : separator_positions[i][iSeperatorPosition]) - (i==0 ? 0 : separator_positions[i-1][iSeperatorPosition]) ];
+                
+    union()
+    if(label_walls[l] > 0)
+      //patterns in the outer walls
+      translate(location[1])
+      rotate(location[2])     
+    for (i=[0:len(chamberWidths)-1]) {
+        chamberStart = i == 0 
+          ? 0 
+          : separator_positions[i-1][iSeperatorPosition] + 
+            separator_positions[i-1][iSeperatorBendSeparation]/2
+              *(separator_positions[i-1][iSeperatorBendAngle] < 0 ? -1 : 1)
+              *(location[ilReversed] ? -1 : 1);
+        chamberWidth = chamberWidths[i];
+        label_num_x = (labelWidthmm == 0 || labelWidthmm > chamberWidth) ? chamberWidth : labelWidthmm;
+        label_pos_x = ((label_position == "center" || label_position == "centerchamber" )? (chamberWidth - label_num_x) / 2 
+                        : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x 
+                        : 0);
+                  
+        translate([i == 0 ? 0 : ((chamberStart + label_pos_x)*(location[ilReversed] ? -1 : 1) + (location[ilReversed] ? location[ilWidth] : 0)),0,0])
+        difference(){
+          hull() for (y=[0, 1, 2])
+          translate([0, labelPoints[y][0], labelPoints[y][1]])
+            rotate([0, 90, 0])
+            union(){
+              //left
+              tz(abs(label_num_x))
+              sphere(r=labelCornerRadius, $fn=64);
+              //Right
+              sphere(r=labelCornerRadius, $fn=64);
+            }
+          
+          if(label_style == "click"){
+             translate([2,labelPoints[i][0]+1,zpoint])
+             LabelClick();
+          } else if(label_relief > 0){
+            translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
+              cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
+        }
       }
     }
   }
@@ -2286,6 +2481,9 @@ module roundedCorner(
   height,
   fn=64)
 {
+  assert(is_num(length), "length must be a number");
+  assert(is_num(height), "height must be a number");
+  assert(is_num(radius), "radius must be a number");
   difference(){
     union(){
       //main corner to be removed
@@ -16785,13 +16983,15 @@ Release
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
-function calcDimensionWidth(width) = calcDimension(width, "width", gf_pitch);
-function calcDimensionDepth(depth) = calcDimension(depth, "depth", gf_pitch);
-function calcDimensionHeight(height) = calcDimension(height, "height", gf_zpitch); 
-function calcDimension(value, name, unitSize) = 
-  is_num(value) ? value : 
-  assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
-  value[1] != 0 ? value[1]/unitSize : value[0];
+function calcDimensionWidth(width, shouldLog = false) = calcDimension(width, "width", gf_pitch, shouldLog);
+function calcDimensionDepth(depth, shouldLog = false) = calcDimension(depth, "depth", gf_pitch, shouldLog);
+function calcDimensionHeight(height, shouldLog = false) = calcDimension(height, "height", gf_zpitch, shouldLog); 
+function calcDimension(value, name, unitSize, shouldLog) = 
+  is_num(value) ? 
+    (shouldLog ? echo(str("🟩",name,": ", value, "gf (",value*unitSize,"mm)"), input=value) value : value)
+  : assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
+    let(calcUnits = value[1] != 0 ? value[1]/unitSize : value[0])
+    (shouldLog ? echo(str("🟩",name,": ", calcUnits, "gf (",calcUnits*unitSize,"mm)"), input=value) calcUnits: calcUnits);
           
 function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
@@ -16867,11 +17067,7 @@ iSeperatorBendAngle = 6;
 iSeperatorWallCutDepth = 7;
 iSeperatorWallCutoutWidth = 8;  
 
-function calculateSeparators(seperator_config) = 
-  is_string(seperator_config) ? [] : 
-  is_list(seperator_config) ? seperator_config : [];
-
-function calculateSeparatorsv2(
+function calculateSeparators(
                   seperator_config, 
                   length,
                   height,
@@ -16920,7 +17116,7 @@ module separators_generic(
 {
 assert(separator_orentation == "horizontal" || separator_orentation == "vertical", "separator_orentation must be 'horizontal' or 'vertical'");
 
-sepConfigs = calculateSeparatorsv2(
+sepConfigs = calculateSeparators(
     seperator_config = seperator_config, 
     length = length,
     height = height,
@@ -17032,20 +17228,30 @@ module separatorsv1(
 //CombinedEnd from path module_divider_walls.scad
 //Combined from path module_item_holder.scad
 
+
+//GridItemHolder(fill="space", center=true, rotateGrid = true);
+//translate([0,50,0])
+//GridItemHolder(fill="space", center=true, rotateGrid = false);
+
+//translate([100,0,0])
+//GridItemHolder(fill="space", hexGrid=false, rotateGrid = true);
+//translate([100,50,0])
+//GridItemHolder(fill="space", hexGrid=false, rotateGrid = false);
 module GridItemHolder(
-  canvasSize = [0,0],
+  canvasSize = [100,50],
   hexGrid = true, //false, true, "auto"
   customShape=false,
   circleFn = 6,
-  holeSize = [0,0],
-  holeSpacing = [0,0],
+  holeSize = [10,10],
+  holeSpacing = [2,2],
   holeGrid = [0,0],
-  holeHeight = 0,
+  holeHeight = 3,
   holeChamfer = 0,
-  border = 0,
+  border = 3,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
-  crop = true,
+  //crop = true,
+  rotateGrid = false,
   help) 
 {
   assert(is_list(canvasSize) && len(canvasSize)==2, "canvasSize must be list of len 2");
@@ -17058,8 +17264,8 @@ module GridItemHolder(
   assert(is_num(holeHeight), "holeHeight must be number");    
   assert(is_num(holeChamfer), "holeChamfer must be number");    
   assert(is_num(holeChamfer), "holeChamfer must be number");  
-  assert(is_string(fill), "fill must be a string")
-  assert(is_bool(crop), "crop must be bool");  
+  assert(is_string(fill), "fill must be a string");
+  assert(is_bool(rotateGrid), "rotateGrid must be bool");  
 
   fudgeFactor = 0.01;
   
@@ -17075,9 +17281,11 @@ module GridItemHolder(
   //For hex in a hex grid we can optomise the spacing, otherwise its too hard      
   Ri = holeSize[0]/2;//(circleFn==6 && hexGrid) || (circleFn==4) ? (holeSize[0]/2) : Rc;
   
-  canvasSize = border > 0 ? 
-    [canvasSize.x-border*2,canvasSize.y-border*2] : 
-    canvasSize;
+  _canvasSize = 
+    let (cs = rotateGrid ? [canvasSize.y,canvasSize.x] : canvasSize)
+      border > 0 ? 
+        [cs.x-border*2,cs.y-border*2] : 
+        cs;
     
   calcHoledimensions = [
       customShape ? holeSize[0] :
@@ -17096,22 +17304,22 @@ module GridItemHolder(
   //Calcualte the x and y items count for hexgrid
   eHexGrid = [
       holeGrid[0] !=0 ? holeGrid[0]
-        : floor((canvasSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
+        : floor((_canvasSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
       holeGrid[1] !=0 ? holeGrid[1]
-        : floor(((canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
+        : floor(((_canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
       ];
 
   //Calcualte the x and y hex items count for squaregrid
   eSquareGrid = [
       holeGrid[0]!=0 ? holeGrid[0]
-        : floor((canvasSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
+        : floor((_canvasSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
       holeGrid[1]!=0 ? holeGrid[1]
-        : floor((canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1]))];
+        : floor((_canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1]))];
 
   //Single lines should not be hex
   hexGrid = 
-    canvasSize.x<=holeSize.x+holeSpacing.x || 
-    canvasSize.y<=holeSize.y+holeSpacing.y ||
+    _canvasSize.x<=holeSize.x+holeSpacing.x || 
+    _canvasSize.y<=holeSize.y+holeSpacing.y ||
     holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
   if(IsHelpEnabled("trace")) echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
   hexGridCount = let(count = eHexGrid[0]*eHexGrid[1]) eHexGrid[0] % 2 == 0 ? floor(count) : ceil(count);
@@ -17120,21 +17328,26 @@ module GridItemHolder(
           : hexGridCount == squareCount ? false //if equal prefer square
           : hexGridCount > squareCount;
           
-  translate(center ? [0, 0, 0] : [border, border, 0])
+  echo(str("🟩ItemGrid: count ", _hexGrid?hexGridCount:squareCount, " using grid ", _hexGrid?"hex":"square", ), input=hexGrid==true?"hex":hexGrid==false?"square":hexGrid, hexGridCount=hexGridCount,squareCount=squareCount);
+  
+
+  translate(center ? [0, 0, 0] : [(rotateGrid?canvasSize.x:0)+ border, border, 0])
+  //translate(rotateGrid && !center ?[canvasSize.x,0,0]:[0,0,0])
+  rotate(rotateGrid?[0,0,90]:[0,0,0])
   intersection(){
     //Crop to ensure that we dont go outside the bounds 
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
       translate([-fudgeFactor,-fudgeFactor,(center?holeHeight/2:0)-fudgeFactor])
-      cube([canvasSize[0]+fudgeFactor*2,canvasSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
+      cube([_canvasSize[0]+fudgeFactor*2,_canvasSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
     
     if(_hexGrid){
       //x and y spacing including the item size.
       es = [
         fill == "space" || fill == "spacevertical" ||fill == "crophorizontal_spacevertical"
-          ? calcHoledimensions[0]+(eHexGrid[0]<=1?0:((canvasSize[0]-eHexGrid[0]*calcHoledimensions[0])/(eHexGrid[0]-1))) 
+          ? calcHoledimensions[0]+(eHexGrid[0]<=1?0:((_canvasSize[0]-eHexGrid[0]*calcHoledimensions[0])/(eHexGrid[0]-1))) 
           : hexxSpacing,
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoledimensions[1]+(eHexGrid[1]<=0.5?0:((canvasSize[1]-(eHexGrid[1]+0.5)*calcHoledimensions[1])/(eHexGrid[1]-0.5))) 
+          ? calcHoledimensions[1]+(eHexGrid[1]<=0.5?0:((_canvasSize[1]-(eHexGrid[1]+0.5)*calcHoledimensions[1])/(eHexGrid[1]-0.5))) 
           : holeSpacing[1] + calcHoledimensions[1]];
       
       eFill=[
@@ -17168,10 +17381,10 @@ module GridItemHolder(
     else {
       es = [
         fill == "space" || fill == "spacevertical" || fill == "crophorizontal_spacevertical"
-          ? calcHoledimensions[0]+(eSquareGrid[0]<=1?0:((canvasSize[0]-eSquareGrid[0]*calcHoledimensions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
+          ? calcHoledimensions[0]+(eSquareGrid[0]<=1?0:((_canvasSize[0]-eSquareGrid[0]*calcHoledimensions[0])/(eSquareGrid[0] - (center ? 0.5 :1))))
           : calcHoledimensions[0]+holeSpacing[0],
         fill == "space" || fill == "spacehorizontal" ||fill == "cropvertical_spacehorizontal"
-          ? calcHoledimensions[1]+(eSquareGrid[1]<=1?0:((canvasSize[1]-eSquareGrid[1]*calcHoledimensions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
+          ? calcHoledimensions[1]+(eSquareGrid[1]<=1?0:((_canvasSize[1]-eSquareGrid[1]*calcHoledimensions[1])/(eSquareGrid[1] - (center ? 0.5 :1))))
           : calcHoledimensions[1]+holeSpacing[1]];
       
       eFill=[
@@ -17201,6 +17414,7 @@ module GridItemHolder(
   
   HelpTxt("GridItemHolder",[
     "canvasSize",canvasSize
+    ,"_canvasSize",_canvasSize
     ,"circleFn",circleFn
     ,"hexGrid",hexGrid
     ,"holeSize",holeSize
@@ -17323,7 +17537,7 @@ module chamferedRectangleTop(size, chamfer, cornerRadius){
   conesizeTop = chamfer+cornerRadius+champherExtention;
   conesizeBottom = conesizeTop>size.z ? conesizeTop-size.z: 0;
   
-  echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
+  if(IsHelpEnabled("trace")) echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
   //if cornerRadius = 0, we can further increase the height of the 'cone' so we can extend inside the shape
   hull(){
     translate([cornerRadius+champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
@@ -18592,14 +18806,14 @@ function LookupKnownTool(name="custom") =
   name == "1/4hexshanklong" ? [6.35, 0, 0, 15, 40, "hex"] :
   name == "5/16hexshank" ? [7.94, 0, 0, 7, 0, "hex"] :
   name == "3/8hexshank" ? [9.52, 0, 0, 10, 0, "hex"] :
-  name == "1/2shank" ? [12.7, 0, 0, 20, 20, "round"] :
-  name == "12shank" ? [12, 0, 0, 20, 20, "round"] :
-  name == "10shank" ? [10, 0, 0, 15, 20, "round"] :
-  name == "3/8shank" ? [9.525, 0, 20, 20, 15, "round"] :
-  name == "8shank" ? [8, 0, 0, 15, 15, "round"] :
-  name == "1/4shank" ? [6.35, 0, 0, 10, 20, "round"] :
-  name == "6shank" ? [6, 0, 0, 10, 10, "round"] :
-  name == "1/8shank" ? [3.2, 0, 0, 10, 10, "round"] :
+  name == "1/2shank" ? [12.7, 0, 0, 20, 50, "round"] :
+  name == "12shank" ? [12, 0, 0, 20, 50, "round"] :
+  name == "10shank" ? [10, 0, 0, 20, 50, "round"] :
+  name == "3/8shank" ? [9.525, 0, 0, 20, 50, "round"] :
+  name == "8shank" ? [8, 0, 0, 20, 50, "round"] :
+  name == "1/4shank" ? [6.35, 0, 0, 20, 50, "round"] :
+  name == "6shank" ? [6, 0, 0, 15, 40, "round"] :
+  name == "1/8shank" ? [3.2, 0, 0, 15, 40, "round"] :
   [0,0,0,0,0,"","LookupKnownTool"];
 
 //[diameter, width, thickness, depthneeded, itemHeight, shape]
