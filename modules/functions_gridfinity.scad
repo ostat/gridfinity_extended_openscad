@@ -2,13 +2,15 @@
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
-function calcDimensionWidth(width) = calcDimension(width, "width", gf_pitch);
-function calcDimensionDepth(depth) = calcDimension(depth, "depth", gf_pitch);
-function calcDimensionHeight(height) = calcDimension(height, "height", gf_zpitch); 
-function calcDimension(value, name, unitSize) = 
-  is_num(value) ? value : 
-  assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
-  value[1] != 0 ? value[1]/unitSize : value[0];
+function calcDimensionWidth(width, shouldLog = false) = calcDimension(width, "width", gf_pitch, shouldLog);
+function calcDimensionDepth(depth, shouldLog = false) = calcDimension(depth, "depth", gf_pitch, shouldLog);
+function calcDimensionHeight(height, shouldLog = false) = calcDimension(height, "height", gf_zpitch, shouldLog); 
+function calcDimension(value, name, unitSize, shouldLog) = 
+  is_num(value) ? 
+    (shouldLog ? echo(str("🟩",name,": ", value, "gf (",value*unitSize,"mm)"), input=value) value : value)
+  : assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
+    let(calcUnits = value[1] != 0 ? value[1]/unitSize : value[0])
+    (shouldLog ? echo(str("🟩",name,": ", calcUnits, "gf (",calcUnits*unitSize,"mm)"), input=value) calcUnits: calcUnits);
           
 function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
