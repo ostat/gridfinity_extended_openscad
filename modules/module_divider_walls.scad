@@ -8,11 +8,7 @@ iSeperatorBendAngle = 6;
 iSeperatorWallCutDepth = 7;
 iSeperatorWallCutoutWidth = 8;  
 
-function calculateSeparators(seperator_config) = 
-  is_string(seperator_config) ? [] : 
-  is_list(seperator_config) ? seperator_config : [];
-
-function calculateSeparatorsv2(
+function calculateSeparators(
                   seperator_config, 
                   length,
                   height,
@@ -61,7 +57,7 @@ module separators_generic(
 {
 assert(separator_orentation == "horizontal" || separator_orentation == "vertical", "separator_orentation must be 'horizontal' or 'vertical'");
 
-sepConfigs = calculateSeparatorsv2(
+sepConfigs = calculateSeparators(
     seperator_config = seperator_config, 
     length = length,
     height = height,

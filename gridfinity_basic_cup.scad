@@ -84,6 +84,8 @@ label_position = "left"; // [left, right, center, leftchamber, rightchamber, cen
 label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interfere with stacking
 label_relief = 0; // 0.1
+// wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
+label_walls=[1,0,0,0];  //[0:1:1]
 
 /* [Sliding Lid] */
 sliding_lid_enabled = false;
@@ -100,6 +102,8 @@ sliding_clearance = 0.1;//0.1
 fingerslide = "none"; //[none, rounded, chamfered]
 // Radius of the corner fillet
 fingerslide_radius = 8;
+// wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
+fingerslide_walls=[1,0,0,0];  //[0:1:1]
 
 /* [Tapered Corner] */
 tapered_corner = "none"; //[none, rounded, chamfered]
@@ -115,7 +119,7 @@ wallpattern_style = "grid"; //[grid, gridrotated, hexgrid, hexgridrotated, voron
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
-wallpattern_walls=[1,1,1,1]; 
+wallpattern_walls=[1,1,1,1];  //[0:1:1]
 // Add the pattern to the dividers
 wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
@@ -163,8 +167,10 @@ gridfinity_cup(
   label_position=label_position,
   label_size=label_size,
   label_relief=label_relief,
+  label_walls=label_walls,
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
+  fingerslide_walls=fingerslide_walls,
   magnet_diameter=magnet_diameter,
   magnet_easy_release=magnet_easy_release,
   screw_depth=screw_depth,
