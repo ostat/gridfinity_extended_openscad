@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_basic_cup.scad'. Generated 2024-08-05 21:41
+//Combined version of 'gridfinity_basic_cup.scad'. Generated 2024-08-06 21:20
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -2266,11 +2266,11 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) 
 }
 
 // similar to quadtranslate but expands to extremities of a block
-module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
+module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch, center = false) {
   assert(!is_undef(r), "r is undefined");
   assert(!is_undef(num_x), "num_x is undefined");
   assert(!is_undef(num_y), "num_y is undefined");
-  translate([pitch/2,pitch/2])
+  translate(center ? [0,0] : [pitch/2,pitch/2])
   for (xx=[0, 1]) 
     for (yy=[0, 1]) 
     {

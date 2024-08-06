@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_vertical_divider.scad'. Generated 2024-08-05 21:42
+//Combined version of 'gridfinity_vertical_divider.scad'. Generated 2024-08-06 21:20
 ///////////////////////////////////////
 
 /* [Divider] */
@@ -2179,11 +2179,11 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) 
 }
 
 // similar to quadtranslate but expands to extremities of a block
-module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch) {
+module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch, center = false) {
   assert(!is_undef(r), "r is undefined");
   assert(!is_undef(num_x), "num_x is undefined");
   assert(!is_undef(num_y), "num_y is undefined");
-  translate([pitch/2,pitch/2])
+  translate(center ? [0,0] : [pitch/2,pitch/2])
   for (xx=[0, 1]) 
     for (yy=[0, 1]) 
     {
@@ -18225,10 +18225,9 @@ module gridfinity_baseplate(
             }
           }
         }
-        if(oversizeMethod == "crop"){
-          translate([-gf_pitch/2, -gf_pitch/2,0])
-            cube([num_x*gf_pitch, num_y*gf_pitch,20]);
-        }
+        if(oversizeMethod == "crop")
+          cube([num_x*gf_pitch, num_y*gf_pitch,20]);
+        
     }
     /*
     if(cutx && $preview){
@@ -18242,12 +18241,12 @@ module gridfinity_baseplate(
     
     if(cutx > 0 && $preview){
       color(color_cut)
-      translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
+      translate([-fudgeFactor,0,-fudgeFactor])
         cube([gf_pitch*cutx,(depth+1)*gf_pitch,2*gf_zpitch]);
     }
     if(cuty > 0 && $preview){
       color(color_cut)
-      translate([-gf_pitch*0.5,-gf_pitch*0.5,-fudgeFactor])
+      translate([0,-fudgeFactor,-fudgeFactor])
         cube([(width+1)*gf_pitch,gf_pitch*cuty,2*gf_zpitch]);
     }
   }
@@ -18339,7 +18338,7 @@ module base_lid(
         num_x, num_y, 
         trim=0.25,
         baseTaper = gf_cup_corner_radius/2,
-        fn = fn);
+        $fn = fn);
   }
   difference() {
     grid_block(
@@ -18350,11 +18349,11 @@ module base_lid(
       screw_depth=0, 
       flat_base=flat_base,
       half_pitch=half_pitch, 
-      fn = fn);
+      $fn = fn);
     
     if(efficient_base)
     {
-      translate([-gf_pitch/2,-gf_pitch/2,(lidEfficientBaseHeight+0.6)*gf_zpitch])
+      tz((lidEfficientBaseHeight+0.6)*gf_zpitch)
         cube([gf_pitch*num_x,gf_pitch*num_y,gf_zpitch]);
       
     }
@@ -18409,15 +18408,16 @@ module woodscrew_baseplate(
       cornerRadius = cornerRadius,
       roundedCorners = roundedCorners);
     
-    gridcopy(num_x, num_y) {
-      cornercopy(magnet_position) {
-        translate([0, 0, -gf_baseplate_magnet_thickness])
+    translate([gf_pitch/2,gf_pitch/2])
+      gridcopy(num_x, num_y) {
+      cornercopy(magnet_position, center= true) {
+        tz(-gf_baseplate_magnet_thickness)
         cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+eps, $fn=48);
         
-        translate([0, 0, -frameHeight]) cylinder(d=3.5, h=frameHeight, $fn=24);
+        tz(-frameHeight) cylinder(d=3.5, h=frameHeight, $fn=24);
         
         // counter-sunk holes in the bottom
-        translate([0, 0, -frameHeight -fudgeFactor]) cylinder(d1=8.5, d2=3.5, h=2.5, $fn=24);
+        tz(-frameHeight -fudgeFactor) cylinder(d1=8.5, d2=3.5, h=2.5, $fn=24);
       }
       
       //counter-sunk holes for woodscrews
@@ -18444,8 +18444,9 @@ module weighted_baseplate(
         cornerRadius = cornerRadius,
         roundedCorners = roundedCorners);
     
+    translate([gf_pitch/2,gf_pitch/2])
     gridcopy(num_x, num_y) {
-      cornercopy(magnet_position) {
+      cornercopy(magnet_position, center= true) {
         translate([0, 0, frameHeight-gf_baseplate_magnet_thickness])
         cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+eps, $fn=48);
         
@@ -18488,8 +18489,10 @@ module magnet_baseplate(
         cornerRadius = cornerRadius,
         roundedCorners = roundedCorners);
     
+    
+    translate([gf_pitch/2,gf_pitch/2])
     gridcopy(num_x, num_y) {
-      cornercopy(magnet_position) {
+      cornercopy(magnet_position, center= true) {
         translate([0, 0, -fudgeFactor])
          cylinder(d=gf_baseplate_magnet_od, h=gf_baseplate_magnet_thickness+fudgeFactor*2, $fn=48);
       }
