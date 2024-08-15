@@ -207,20 +207,22 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch) 
   assert(!is_undef(num_y), "num_y is undefined");
   
   translate([pitch/2,pitch/2])
-  for (xi=[1:ceil(num_x)]) for (yi=[1:ceil(num_y)]) 
-    for (xx=[-1, 1]) for (yy=[-1, 1]) {
-      quadrent = [xi+(xx == -1 ? -0.5 : 0), yi+(yy == -1 ? -0.5 : 0)];
-      trans = [pitch*(xi-1)+xx*r, pitch*(yi-1)+ yy*r, 0];
-      $gcci=[trans,[xi,yi],[xx,yy]];
-      if(IsHelpEnabled("trace")) echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, quadrent=quadrent);
+  for (cellx=[1:ceil(num_x)], celly=[1:ceil(num_y)]) 
+    for (quadrentx=[-1, 1], quadrenty=[-1, 1]) {
+      cell = [cellx, celly];
+      quadrent = [quadrentx, quadrenty];
+      gridPosition = [cell.x+(quadrent.x == -1 ? -0.5 : 0), cell.y+(quadrent.y == -1 ? -0.5 : 0)];
+      trans = [pitch*(cell.x-1)+quadrent.x*r, pitch*(cell.y-1)+ quadrent.y*r, 0];
+      $gcci=[trans,cell,quadrent];
+      if(IsHelpEnabled("info")) echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, gridPosition=gridPosition);
       //only copy if the cell is atleast half size
-      if(quadrent.x <= num_x && quadrent.y <= num_y)
+      if(gridPosition.x <= num_x && gridPosition.y <= num_y)
         //only box corners or every cell corner
         if(!onlyBoxCorners || 
-          (xi == 1 && yi == 1 && xx == -1 && yy == -1) ||
-          (xi == floor(num_x) && yi == floor(num_y) && xx == 1 && yy == 1) ||
-          (xi == 1 && yi == floor(num_y) && xx == -1 && yy == 1) ||
-          (xi == floor(num_x) && yi == 1 && xx == 1 && yy == -1)) 
+          ((cell.x == 1 && quadrent.x == -1) && (cell.y == 1  && quadrent.y == -1)) ||
+          (gridPosition.x*2 == floor(num_x*2) && gridPosition.y*2 == floor(num_y*2)) ||
+          ((cell.x == 1 && quadrent.x == -1) && gridPosition.y*2 == floor(num_y*2) ) ||
+          (gridPosition.x*2 == floor(num_x*2) && (cell.y == 1 && quadrent.y == -1))) 
           translate(trans)
           children();
     }
@@ -232,15 +234,14 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch, center = false) {
   assert(!is_undef(num_x), "num_x is undefined");
   assert(!is_undef(num_y), "num_y is undefined");
   translate(center ? [0,0] : [pitch/2,pitch/2])
-  for (xx=[0, 1]) 
-    for (yy=[0, 1]) 
-    {
-      $idx=[xx,yy,0];
-      xpos = xx == 0 ? -r : pitch*(num_x-1)+r;
-      ypos = yy == 0 ? -r : pitch*(num_y-1)+r;
-      translate([xpos, ypos, 0]) 
-        children();
-    }
+  
+  for (xx=[0, 1], yy=[0, 1]) {
+    $idx=[xx,yy,0];
+    xpos = xx == 0 ? -r : pitch*(num_x-1)+r;
+    ypos = yy == 0 ? -r : pitch*(num_y-1)+r;
+    translate([xpos, ypos, 0]) 
+      children();
+  }
 }
 
 
