@@ -139,7 +139,7 @@ module gridfinity_label(
             }
           
           if(label_style == "click"){
-             translate([2,labelPoints[i][0]+1,zpoint])
+             translate([2,labelPoints[0][0]+1,zpoint])
              LabelClick();
           } else if(label_relief > 0){
             translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
