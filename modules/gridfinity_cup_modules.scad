@@ -1086,7 +1086,7 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
             if(label_style == "click"){
               clickSize= [36.7,11.3, 1.2];
               clickRadius = 0.25;
-              translate([2,labelPoints[i][0]+1,zpoint-clickSize.z])
+              translate([2,labelPoints[0][0]+1,zpoint-clickSize.z])
               difference(){
                 roundedCube(size=clickSize,sideRadius=clickRadius);
                 for(i = [0:2]){
