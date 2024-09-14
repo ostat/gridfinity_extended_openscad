@@ -88,8 +88,7 @@ module bentWall(
         lowerWidth = cutoutLength,
         cornerRadius = cutoutHeight,
         thickness = (separation+thickness+fudgeFactor*2),
-        topHeight = 1,
-        );
+        topHeight = 1);
     }
    }
  }
