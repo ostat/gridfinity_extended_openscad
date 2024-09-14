@@ -369,9 +369,9 @@ module chestCutouts(
       cube([innerchest.x, innerchest.y+fudgeFactor, innerchest.z]);
         
     if(efficientBack) 
-      translate(locations[0][1])
-      translate([-locations[0][0][0]/2, 0, vpos-locations[0][0][1]/2])
-      cube([locations[0][0][0], wallPattern_thickness, locations[0][0][1]]);
+      translate(back[1])
+      translate([-back[0][1]/2, 0, vpos-back[0][0]/2])
+      cube([back[0][1], wallPattern_thickness, back[0][0]]);
     
     if(wallPatternEnabled)
       translate([0, 0, vpos]) 
@@ -465,6 +465,7 @@ module cutout_pattern(
       center=center,
       fill=fill, //"none", "space", "crop"
       rotateGrid = (patternStyle == "gridrotated" || patternStyle == "hexgridrotated"),
+      border=0,
       help=help);
   }
   else if(patternStyle == "voronoi" || patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"){

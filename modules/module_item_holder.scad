@@ -20,7 +20,7 @@ module GridItemHolder(
   holeGrid = [0,0],
   holeHeight = 3,
   holeChamfer = 0,
-  border = 3,
+  border = 0,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   //crop = true,
