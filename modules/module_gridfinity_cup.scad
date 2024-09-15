@@ -116,7 +116,7 @@ default_tapered_setback = -1;//gf_cup_corner_radius/2;
 /* [Wall Cutout] */
 default_wallcutout_enabled=false;
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-default_wallcutout_walls=[1,0,0,0]; //[0:1:1]
+default_wallcutout_walls=[1,0,0,0]; 
 //default will be binwidth/2
 default_wallcutout_width=0;
 default_wallcutout_angle=70;
@@ -126,10 +126,10 @@ default_wallcutout_corner_radius=5;
 
 /* [Wall Pattern] */
 default_wallpattern_enabled=false; 
-default_wallpattern_style = "grid"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid]
+default_wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid]
 default_wallpattern_dividers_enabled ="disabled"; //["disabled", "horizontal", "vertical", "both"] 
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
-default_wallpattern_walls=[1,0,0,0]; 
+default_wallpattern_walls=[1,0,0,0];  //[0:1:1]
 default_wallpattern_hole_sides = 6;
 default_wallpattern_hole_size = 10; //0.1
 default_wallpattern_hole_spacing = 2; //0.1
@@ -570,7 +570,7 @@ module gridfinity_cup(
               //Subtract cutout from wall pattern
             if(wallcutout_enabled)
               for(i = [0:1:len(wallcutout_locations)-1])
-                if(wallcutout_walls[i] > 0)
+                if(wallcutout_walls[i] != 0)
                   translate(wallcutout_locations[i][0])
                   rotate(wallcutout_locations[i][2])
                   WallCutout(
