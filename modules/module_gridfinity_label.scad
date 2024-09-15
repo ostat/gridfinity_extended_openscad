@@ -4,6 +4,19 @@ ilRotation=2;
 ilSeparatorConfig=3;
 ilReversed=4;
 
+function calculateLabelSize(label_size) = 
+    assert(is_list(label_size), "label_size must be a list")
+    let(
+      labelxtemp = is_num(label_size) ? label_size : is_list(label_size) && len(label_size) >= 1 ? label_size.x : 0,
+      labelx = labelxtemp <=0 ? 0 : labelxtemp,
+      labelytemp = is_list(label_size) && len(label_size) >= 2 ? label_size.y : 0,
+      labely = labelytemp <= 0 ? 14 : labelytemp,
+      labelztemp = is_list(label_size) && len(label_size) >= 3 ? label_size.z : 0,
+      labelz = labelztemp == -1 ? labely*3/4 : labelztemp == 0 ? labely : labelztemp,
+      labelrtemp = is_list(label_size) && len(label_size) >= 4 ? label_size[3] : 0,
+      labelr = labelrtemp <= 0 ? 0.6 : labelrtemp)
+        [labelx,labely,labelz,labelr];
+
 module gridfinity_label(
   num_x,
   num_y,
@@ -28,30 +41,11 @@ module gridfinity_label(
   assert(is_num(label_relief), "label_relief must be a number");
   assert(is_list(label_walls), "label_walls must be a list");
   
-  labelSize = let(
-      labelxtemp = is_num(label_size) ? label_size : is_list(label_size) && len(label_size) >= 1 ? label_size.x : 0,
-      labelx = labelxtemp <=0 ? 0 : labelxtemp,
-      labelytemp = is_list(label_size) && len(label_size) >= 2 ? label_size.y : 0,
-      labely = labelytemp <= 0 ? 14 : labelytemp,
-      labelztemp = is_list(label_size) && len(label_size) >= 3 ? label_size.z : 0,
-      labelz = labelztemp == -1 ? labely*3/4 : labelztemp == 0 ? labely : labelztemp,
-      labelrtemp = is_list(label_size) && len(label_size) >= 4 ? label_size[3] : 0,
-      labelr = labelrtemp <= 0 ? 0.6 : labelrtemp)
-        [labelx,labely,labelz,labelr];
-
+  labelSize = calculateLabelSize(label_size);
+  
   labelCornerRadius = labelSize[3];
   
   front = [
-    //width
-    num_x*gf_pitch,
-    //Position
-    [0, num_y*gf_pitch, 0],
-    //rotation
-    [0,0,0],
-    vertical_separator_positions,
-    //is reversed
-    false];
-  back = [
     //width
     num_x*gf_pitch,
     //Position
@@ -61,6 +55,17 @@ module gridfinity_label(
     vertical_separator_positions,
     //is reversed
     true];
+  back = [
+    //width
+    num_x*gf_pitch,
+    //Position
+    [0, num_y*gf_pitch, 0],
+    //rotation
+    [0,0,0],
+    vertical_separator_positions,
+    //is reversed
+    false];
+
   left = [
     //width
     num_y*gf_pitch,

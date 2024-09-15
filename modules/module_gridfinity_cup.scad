@@ -41,7 +41,7 @@ default_label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interfere with stacking
 default_label_relief = 0; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
-default_label_walls=[1,0,0,0];  //[0-1]
+default_label_walls=[0,1,0,0];  //[0:1:1]
 
 /* [Sliding Lid] */
 default_sliding_lid_enabled = false;
@@ -409,25 +409,40 @@ module gridfinity_cup(
              : -gf_lip_height-1.8);
           z=wallpatternzpos+heightz/2;
           
+          labelSize = calculateLabelSize(label_size);
+          //Subtracting the wallpattern_thickness is a bit of a hack, its needed as the label extends in to the wall.
+          labelSizez = (label_style != "disabled" ? labelSize.z-wallpattern_thickness : 0);
+          
           front = [
             //width,height
-            [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz],
+            [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
+              heightz - (label_walls[0] != 0 ? labelSizez : 0)],
             //Position
-            [(num_x)*gf_pitch/2, wallpattern_thickness, z],
+            [(num_x)*gf_pitch/2, 
+              wallpattern_thickness, 
+              z - (label_walls[0] != 0 ? labelSizez : 0)/2],
             //rotation
             [90,0,0]];
           back = [
-            [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz - (label_style != "disabled" ? 10 : 0)],
-            //[(num_x-1)*gf_pitch/2, (num_y-0.5)*gf_pitch, (gf_zpitch+0.5)+(heightz - (label_style != "disabled" ? 10 : 0))/2],
-            [(num_x)*gf_pitch/2, (num_y)*gf_pitch, z - (label_style != "disabled" ? 10 : 0)/2],
+            [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
+              heightz - (label_walls[1] != 0 ? labelSizez : 0)],
+            [(num_x)*gf_pitch/2, 
+              (num_y)*gf_pitch, 
+               z - (label_walls[1] != 0 ? labelSizez : 0)/2],
             [90,0,0]];
           left = [
-            [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz],
-            [0, (num_y)*gf_pitch/2, z],
+            [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
+              heightz - (label_walls[2] != 0 ? labelSizez : 0)],
+            [0, 
+              (num_y)*gf_pitch/2, 
+              z - (label_walls[2] != 0 ? labelSizez : 0)/2],
             [90,0,90]];
           right = [
-            [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,heightz],
-            [(num_x)*gf_pitch-wallpattern_thickness, (num_y)*gf_pitch/2, z],
+            [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
+              heightz - (label_walls[3] != 0 ? labelSizez : 0)],
+            [(num_x)*gf_pitch-wallpattern_thickness,   
+              (num_y)*gf_pitch/2, 
+              z - (label_walls[3] != 0 ? labelSizez : 0)/2],
             [90,0,90]];
         
         locations = [front, back, left, right];

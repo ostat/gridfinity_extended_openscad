@@ -85,7 +85,7 @@ label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interfere with stacking
 label_relief = 0; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
-label_walls=[1,0,0,0];  //[0:1:1]
+label_walls=[0,1,0,0];  //[0:1:1]
 
 /* [Sliding Lid] */
 sliding_lid_enabled = false;
