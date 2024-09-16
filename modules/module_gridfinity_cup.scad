@@ -35,7 +35,7 @@ default_zClearance = 0; // 0.1
 // Include overhang for labeling
 default_label_style = "normal"; //[disabled: no label, normal:normal, click]
 
-default_label_position = "disabled"; //[left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
+default_label_position = "left"; //[left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
 // Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 default_label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interfere with stacking
@@ -64,6 +64,7 @@ default_fingerslide_walls=[1,0,0,0]; //[0:1:1]
 /* [Subdivisions] */
 // X dimension subdivisions
 default_chamber_wall_thickness = 1.2;//0.1
+//Reduce the wall height by this amount
 default_chamber_wall_zClearance = 0;//0.1
 default_vertical_chambers = 1;
 default_vertical_separator_bend_position = 0;//0.1

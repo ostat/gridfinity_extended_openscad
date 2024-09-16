@@ -31,6 +31,8 @@ zClearance = 0; // 0.1
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
+//Reduce the wall height by this amount
+chamber_wall_zClearance = 0;//0.1
 // X dimension subdivisions
 vertical_chambers = 1; 
 vertical_separator_bend_position = 0;
@@ -182,6 +184,7 @@ gridfinity_cup(
   hole_overhang_remedy=hole_overhang_remedy,
   efficient_floor=efficient_floor,
   chamber_wall_thickness=chamber_wall_thickness,
+  chamber_wall_zClearance=chamber_wall_zClearance,
   vertical_chambers = vertical_chambers,
   vertical_separator_bend_position=vertical_separator_bend_position,
   vertical_separator_bend_angle=vertical_separator_bend_angle,
