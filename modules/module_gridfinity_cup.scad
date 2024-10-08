@@ -1122,7 +1122,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
     
     hull() 
     for (x=[1.5+0.25+wall_thickness, num_x*gf_pitch-1.5-0.25-wall_thickness]){
-      for (y=[-10, (num_y-0.5)*gf_pitch-seventeen])
+      for (y=[11, (num_y)*gf_pitch-seventeen])
       translate([x, y, top-height])
       cylinder(d=3, h=height, $fn=24);
     }
