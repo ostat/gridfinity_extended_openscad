@@ -134,15 +134,24 @@ wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
 /* [Wall Cutout] */
-wallcutout_enabled=false;
+wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-wallcutout_walls=[1,0,0,0];  //0.1
+wallcutout_vertical_position=-2;  //0.1
 //default will be binwidth/2
-wallcutout_width=0;
-wallcutout_angle=70;
+wallcutout_vertical_width=0;
+wallcutout_vertical_angle=70;
 //default will be binHeight
-wallcutout_height=0;
-wallcutout_corner_radius=5;
+wallcutout_vertical_height=0;
+wallcutout_vertical_corner_radius=5;
+wallcutout_horizontal ="disabled"; //[disabled, enabled, wallsonly, leftonly, rightonly]
+// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_horizontal_position=-2;  //0.1
+//default will be binwidth/2
+wallcutout_horizontal_width=0;
+wallcutout_horizontal_angle=70;
+//default will be binHeight
+wallcutout_horizontal_height=0;
+wallcutout_horizontal_corner_radius=5;
 
 /* [Extendable] */
 extension_x_enabled = "disabled"; //[disabled, front, back]
@@ -222,14 +231,18 @@ gridfinity_cup(
   wallpattern_fill=wallpattern_fill,
   wallpattern_voronoi_noise=wallpattern_voronoi_noise,
   wallpattern_voronoi_radius = wallpattern_voronoi_radius,
-  wallcutout_enabled=wallcutout_enabled,
-  wallcutout_walls=wallcutout_walls,
-  wallcutout_width=wallcutout_width,
-  wallcutout_angle=wallcutout_angle,
-  wallcutout_height=wallcutout_height,
-  wallcutout_corner_radius=wallcutout_corner_radius,
-  extension_enabled=[extension_x_enabled,extension_y_enabled],
-  extension_tabs_enabled = extension_tabs_enabled,
+  wallcutout_vertical=wallcutout_vertical,
+  wallcutout_vertical_position=wallcutout_vertical_position,
+  wallcutout_vertical_width=wallcutout_vertical_width,
+  wallcutout_vertical_angle=wallcutout_vertical_angle,
+  wallcutout_vertical_height=wallcutout_vertical_height,
+  wallcutout_vertical_corner_radius=wallcutout_vertical_corner_radius,
+  wallcutout_horizontal=wallcutout_horizontal,
+  wallcutout_horizontal_position=wallcutout_horizontal_position,
+  wallcutout_horizontal_width=wallcutout_horizontal_width,
+  wallcutout_horizontal_angle=wallcutout_horizontal_angle,
+  wallcutout_horizontal_height=wallcutout_horizontal_height,
+  wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
   extension_enabled=[
     [extension_x_enabled,extension_x_position],
     [extension_y_enabled,extension_y_position]],

@@ -18,8 +18,8 @@ default_depth = [1, 0]; //0.1
 // Z dimension excluding. grid units (multiples of 7mm) or mm.
 default_height = [3, 0]; //0.1
 
-default_position="default"; //["default","center","zero"]
-default_filled_in = false; 
+default_position = "default"; //["default","center","zero"]
+default_filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Might want to remove inner lip of cup
 default_lip_style = "normal"; //[normal, reduced, minimum, none]
 
@@ -114,16 +114,26 @@ default_tapered_corner = "none"; //[none, rounded, chamfered]
 default_tapered_corner_size = 10;
 // Set back of the tapered corner, default is the gridfinity corner radius
 default_tapered_setback = -1;//gf_cup_corner_radius/2;
+
 /* [Wall Cutout] */
-default_wallcutout_enabled=false;
+default_wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-default_wallcutout_walls=[1,0,0,0]; 
+default_wallcutout_vertical_position=-2;  //0.1
 //default will be binwidth/2
-default_wallcutout_width=0;
-default_wallcutout_angle=70;
+default_wallcutout_vertical_width=0;
+default_wallcutout_vertical_angle=70;
 //default will be binHeight
-default_wallcutout_height=0; //0.1
-default_wallcutout_corner_radius=5;
+default_wallcutout_vertical_height=0;
+default_wallcutout_vertical_corner_radius=5;
+default_wallcutout_horizontal ="disabled"; //[disabled, enabled, wallsonly, leftonly, rightonly]
+// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
+default_wallcutout_horizontal_position=-2;  //0.1
+//default will be binwidth/2
+default_wallcutout_horizontal_width=0;
+default_wallcutout_horizontal_angle=70;
+//default will be binHeight
+default_wallcutout_horizontal_height=0;
+default_wallcutout_horizontal_corner_radius=5;
 
 /* [Wall Pattern] */
 default_wallpattern_enabled=false; 
@@ -218,15 +228,20 @@ module gridfinity_cup(
   wallpattern_hole_sides=default_wallpattern_hole_sides,
   wallpattern_hole_size=default_wallpattern_hole_size,
   wallpattern_hole_spacing=default_wallpattern_hole_spacing,
-  wallcutout_enabled=default_wallcutout_enabled,
   wallpattern_voronoi_noise=default_wallpattern_voronoi_noise,
   wallpattern_voronoi_radius = default_wallpattern_voronoi_radius,
-  wallcutout_walls=default_wallcutout_walls,
-  wallcutout_width=default_wallcutout_width,
-  wallcutout_angle=default_wallcutout_angle,
-  wallcutout_height=default_wallcutout_height,
-  wallcutout_corner_radius=default_wallcutout_corner_radius,
-  extension_enabled=[default_extension_x_enabled,default_extension_y_enabled],
+  wallcutout_vertical=default_wallcutout_vertical,
+  wallcutout_vertical_position=default_wallcutout_vertical_position,
+  wallcutout_vertical_width=default_wallcutout_vertical_width,
+  wallcutout_vertical_angle=default_wallcutout_vertical_angle,
+  wallcutout_vertical_height=default_wallcutout_vertical_height,
+  wallcutout_vertical_corner_radius=default_wallcutout_vertical_corner_radius,
+  wallcutout_horizontal=default_wallcutout_horizontal,
+  wallcutout_horizontal_position=default_wallcutout_horizontal_position,
+  wallcutout_horizontal_width=default_wallcutout_horizontal_width,
+  wallcutout_horizontal_angle=default_wallcutout_horizontal_angle,
+  wallcutout_horizontal_height=default_wallcutout_horizontal_height,
+  wallcutout_horizontal_corner_radius=default_wallcutout_horizontal_corner_radius,
   extension_enabled=[
     [default_extension_x_enabled,default_extension_x_position],
     [default_extension_y_enabled,default_extension_y_position]],
@@ -283,243 +298,341 @@ module gridfinity_cup(
   
   translate(cupPosition(position,num_x,num_y))
   union(){
-  difference() {
-    grid_block(
-      num_x, num_y, num_z, 
-      magnet_diameter, 
-      screw_depth, 
-      center_magnet_diameter = center_magnet_diameter,
-      center_magnet_thickness = center_magnet_thickness,
-      hole_overhang_remedy=hole_overhang_remedy, 
-      half_pitch=half_pitch,
-      box_corner_attachments_only=box_corner_attachments_only, 
-      stackable = lip_style != "none",
-      flat_base=flat_base,
-      magnet_easy_release = magnet_easy_release);
-      
-    if(!filled_in) 
-    union(){
-      partitioned_cavity(
+    difference() {
+      grid_block(
         num_x, num_y, num_z, 
-        label_style=label_style,
-        label_position=label_position,
-        label_size=label_size,
-        label_relief=label_relief,
-        label_walls=label_walls,
-        fingerslide=fingerslide, 
-        fingerslide_radius=fingerslide_radius, 
-        fingerslide_walls=fingerslide_walls,
-        magnet_diameter=magnet_diameter,
-        screw_depth=screw_depth, 
-        floor_thickness=floor_thickness, 
-        wall_thickness=wall_thickness,
-        efficient_floor=efficient_floor, 
+        magnet_diameter, 
+        screw_depth, 
+        center_magnet_diameter = center_magnet_diameter,
+        center_magnet_thickness = center_magnet_thickness,
+        hole_overhang_remedy=hole_overhang_remedy, 
         half_pitch=half_pitch,
-        chamber_wall_thickness=chamber_wall_thickness,
-        chamber_wall_zClearance=chamber_wall_zClearance,
-        vertical_separator_bend_position = vertical_separator_bend_position,
-        vertical_separator_bend_angle = vertical_separator_bend_angle,
-        vertical_separator_bend_separation = vertical_separator_bend_separation,
-        vertical_separator_cut_depth = vertical_separator_cut_depth,
-        horizontal_separator_bend_position = horizontal_separator_bend_position,
-        horizontal_separator_bend_angle = horizontal_separator_bend_angle,
-        horizontal_separator_bend_separation = horizontal_separator_bend_separation,
-        horizontal_separator_cut_depth = horizontal_separator_cut_depth,
-        vertical_separator_positions = vertical_separator_positions,
-        horizontal_separator_positions = horizontal_separator_positions,
-        lip_style=lip_style, 
-        zClearance=zClearance,
+        box_corner_attachments_only=box_corner_attachments_only, 
+        stackable = 
+          lip_style == LipStyle_none ? Stackable_disabled 
+          : filled_in == FilledIn_enabledfilllip ? Stackable_filllip : Stackable_enabled,
         flat_base=flat_base,
-        spacer=spacer,
-        cavity_floor_radius=cavity_floor_radius,
-        box_corner_attachments_only = box_corner_attachments_only,
-        sliding_lid_settings= slidingLidSettings
-        );
-    
-    color(color_wallcutout)
-      union(){
-        floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
-        cavityFloorRadius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficient_floor);
-        wallTop = calculateWallTop(num_z, lip_style);
-        cutoutclearance = gf_cup_corner_radius/2;
+        magnet_easy_release = magnet_easy_release);
 
-        tapered_setback = tapered_setback < 0 ? gf_cup_corner_radius : tapered_setback;
-        tapered_corner_size = 
-              tapered_corner_size == -2 ? (wallTop - floorHeight)/2
-            : tapered_corner_size < 0 ? wallTop - floorHeight //meant for -1, but also catch others
-            : tapered_corner_size == 0 ? wallTop - floorHeight - cavityFloorRadius
-            : tapered_corner_size;
-            
-        //This could be more sprcific based on the base height, and the lip style.
-        wallcutout_thickness = wall_thickness*2+max(wall_thickness*2,cavityFloorRadius);//wall_thickness*2 should be lip thickness
-        wallcutout_hgt = wallcutout_height < 0 
-            ? (wallTop - floorHeight)/abs(wallcutout_height)
-            : wallcutout_height == 0 ? wallTop - floorHeight -cavityFloorRadius
-            : wallcutout_height;
-        wallcutout_front = [
-          [wallCutoutPosition_mm(wallcutout_walls[0],num_x), wallcutout_thickness/2+gf_tolerance/2-fudgeFactor, wallTop],
-          num_x*gf_pitch/3,
-          [0,0,0]];
-        wallcutout_back = [
-          [wallCutoutPosition_mm(wallcutout_walls[1],num_x), num_y*gf_pitch-wallcutout_thickness/2-gf_tolerance/2+fudgeFactor, wallTop],
-          num_x*gf_pitch/3,
-          [0,0,0]];
-        wallcutout_left = [[wallcutout_thickness/2+gf_tolerance/2-fudgeFactor, wallCutoutPosition_mm(wallcutout_walls[2],num_y), wallTop],
-          num_y*gf_pitch/3,
-          [0,0,90]];
-        wallcutout_right = [
-          [num_x*gf_pitch-wallcutout_thickness/2-gf_tolerance/2+fudgeFactor, wallCutoutPosition_mm(wallcutout_walls[3],num_y), wallTop],
-          num_y*gf_pitch/3,
-          [0,0,90]];
-        
-        wallcutout_locations = [wallcutout_front, wallcutout_back, wallcutout_left, wallcutout_right];
-        if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
-          //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
-          translate([0,tapered_setback+gf_tolerance,gf_zpitch*num_z+gf_Lip_Height-gf_tolerance])
-          rotate([270,0,0])
-          union(){
-            if(tapered_corner == "rounded"){
-              roundedCorner(
-                radius = tapered_corner_size, 
-                length=(num_x+1)*gf_pitch, 
-                height = tapered_corner_size);
-            }
-            else if(tapered_corner == "chamfered"){
-              chamferedCorner(
-                chamferLength = tapered_corner_size, 
-                length=(num_x+1)*gf_pitch, 
-                height = tapered_corner_size);
+      if(filled_in == FilledIn_disabled) 
+      union(){
+        partitioned_cavity(
+          num_x, num_y, num_z, 
+          label_style=label_style,
+          label_position=label_position,
+          label_size=label_size,
+          label_relief=label_relief,
+          label_walls=label_walls,
+          fingerslide=fingerslide, 
+          fingerslide_radius=fingerslide_radius, 
+          fingerslide_walls=fingerslide_walls,
+          magnet_diameter=magnet_diameter,
+          screw_depth=screw_depth, 
+          floor_thickness=floor_thickness, 
+          wall_thickness=wall_thickness,
+          efficient_floor=efficient_floor, 
+          half_pitch=half_pitch,
+          chamber_wall_thickness=chamber_wall_thickness,
+          chamber_wall_zClearance=chamber_wall_zClearance,
+          vertical_separator_bend_position = vertical_separator_bend_position,
+          vertical_separator_bend_angle = vertical_separator_bend_angle,
+          vertical_separator_bend_separation = vertical_separator_bend_separation,
+          vertical_separator_cut_depth = vertical_separator_cut_depth,
+          horizontal_separator_bend_position = horizontal_separator_bend_position,
+          horizontal_separator_bend_angle = horizontal_separator_bend_angle,
+          horizontal_separator_bend_separation = horizontal_separator_bend_separation,
+          horizontal_separator_cut_depth = horizontal_separator_cut_depth,
+          vertical_separator_positions = vertical_separator_positions,
+          horizontal_separator_positions = horizontal_separator_positions,
+          lip_style=lip_style, 
+          zClearance=zClearance,
+          flat_base=flat_base,
+          spacer=spacer,
+          cavity_floor_radius=cavity_floor_radius,
+          box_corner_attachments_only = box_corner_attachments_only,
+          sliding_lid_settings= slidingLidSettings
+          );
+      
+      color(color_wallcutout)
+        union(){
+          floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
+          cavityFloorRadius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficient_floor);
+          wallTop = calculateWallTop(num_z, lip_style);
+          cutoutclearance = gf_cup_corner_radius/2;
+
+          tapered_setback = tapered_setback < 0 ? gf_cup_corner_radius : tapered_setback;
+          tapered_corner_size = 
+                tapered_corner_size == -2 ? (wallTop - floorHeight)/2
+              : tapered_corner_size < 0 ? wallTop - floorHeight //meant for -1, but also catch others
+              : tapered_corner_size == 0 ? wallTop - floorHeight - cavityFloorRadius
+              : tapered_corner_size;
+              
+              
+        wallcutouts_vertical = calculateWallCutout(
+          wall_length = num_x,
+          opposite_wall_distance = num_y,
+          wallcutout_type = wallcutout_vertical,
+          wallcutout_position = wallcutout_vertical_position,
+          wallcutout_width = wallcutout_vertical_width,
+          wallcutout_angle = wallcutout_vertical_angle,
+          wallcutout_height = wallcutout_vertical_height,
+          wallcutout_corner_radius = wallcutout_vertical_corner_radius,
+          wallcutout_rotation = [0,0,0],
+          walcutout_reposition = [0,0,0],
+          wall_thickness = wall_thickness,
+          cavityFloorRadius = cavityFloorRadius,
+          wallTop = wallTop,
+          floorHeight = floorHeight);
+        wallcutouts_horizontal = calculateWallCutout(
+          wall_length = num_y,
+          opposite_wall_distance = num_x,
+          wallcutout_type = wallcutout_horizontal,
+          wallcutout_position = wallcutout_horizontal_position,
+          wallcutout_width = wallcutout_horizontal_width,
+          wallcutout_angle = wallcutout_horizontal_angle,
+          wallcutout_height = wallcutout_horizontal_height,
+          wallcutout_corner_radius = wallcutout_horizontal_corner_radius,
+          wallcutout_rotation = [0,0,90],
+          walcutout_reposition = [num_x*gf_pitch,0,0],
+          wall_thickness = wall_thickness,
+          cavityFloorRadius = cavityFloorRadius,
+          wallTop = wallTop,
+          floorHeight = floorHeight);
+          
+          wallcutout_locations = [wallcutouts_vertical[0], wallcutouts_vertical[1], wallcutouts_horizontal[0], wallcutouts_horizontal[1]];
+          if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
+            //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
+            translate([0,tapered_setback+gf_tolerance,gf_zpitch*num_z+gf_Lip_Height-gf_tolerance])
+            rotate([270,0,0])
+            union(){
+              if(tapered_corner == "rounded"){
+                roundedCorner(
+                  radius = tapered_corner_size, 
+                  length=(num_x+1)*gf_pitch, 
+                  height = tapered_corner_size);
+              }
+              else if(tapered_corner == "chamfered"){
+                chamferedCorner(
+                  chamferLength = tapered_corner_size, 
+                  length=(num_x+1)*gf_pitch, 
+                  height = tapered_corner_size);
+              }
             }
           }
-        }
-        
-        if(wallcutout_enabled)
-          for(i = [0:1:len(wallcutout_locations)-1])
-            if(wallcutout_walls[i] != 0)
-              translate(wallcutout_locations[i][0])
-              rotate(wallcutout_locations[i][2])
-              WallCutout(
-                lowerWidth=wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, wallcutout_locations[i][1]) : wallcutout_width,
-                wallAngle=wallcutout_angle,
-                height=wallcutout_hgt,
-                thickness=wallcutout_thickness,
-                cornerRadius=wallcutout_corner_radius);
-        
-        if(wallpattern_enabled){
-          wallpattern_thickness = wall_thickness*2;
-          border = wall_thickness;
-          wallpatternzpos = floorHeight+max(cavityFloorRadius,border);
+
+          if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
+            for(wallcutout_location = wallcutout_locations)
+              if(wallcutout_location[iwalcutout_enabled] == true)
+                translate(wallcutout_location[iwalcutout_reposition])
+                rotate(wallcutout_location[iwalcutout_rotation])
+                translate(wallcutout_location[iwalcutout_position])
+                WallCutout(
+                  lowerWidth=wallcutout_location[iwalcutout_size].x,
+                  wallAngle=wallcutout_location[iwalcutout_config][iwalcutoutconfig_angle],
+                  height=wallcutout_location[iwalcutout_size].z,
+                  thickness=wallcutout_location[iwalcutout_size].y,
+                  cornerRadius=wallcutout_location[iwalcutout_config][iwalcutoutconfig_cornerradius]);
           
-          //I feel this should use wallTop, but it seems to work...
-          heightz = gf_zpitch*(num_z)-wallpatternzpos + (
-            //Position specific to each LIP style
-            lip_style == "reduced" ? 0.6 :
-            lip_style == "minimum" ? 3 -border*2 
-             : -gf_lip_height-1.8);
-          z=wallpatternzpos+heightz/2;
+          if(wallpattern_enabled){
+            wallpattern_thickness = wall_thickness*2;
+            border = wall_thickness;
+            wallpatternzpos = floorHeight+max(cavityFloorRadius,border);
+            
+            //I feel this should use wallTop, but it seems to work...
+            heightz = gf_zpitch*(num_z)-wallpatternzpos + (
+              //Position specific to each LIP style
+              lip_style == "reduced" ? 0.6 :
+              lip_style == "minimum" ? 3 -border*2 
+               : -gf_lip_height-1.8);
+            z=wallpatternzpos+heightz/2;
+            
+            labelSize = calculateLabelSize(label_size);
+            //Subtracting the wallpattern_thickness is a bit of a hack, its needed as the label extends in to the wall.
+            labelSizez = (label_style != "disabled" ? labelSize.z-wallpattern_thickness : 0);
+            
+            front = [
+              //width,height
+              [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
+                heightz - (label_walls[0] != 0 ? labelSizez : 0)],
+              //Position
+              [(num_x)*gf_pitch/2, 
+                wallpattern_thickness, 
+                z - (label_walls[0] != 0 ? labelSizez : 0)/2],
+              //rotation
+              [90,0,0]];
+            back = [
+              [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
+                heightz - (label_walls[1] != 0 ? labelSizez : 0)],
+              [(num_x)*gf_pitch/2, 
+                (num_y)*gf_pitch, 
+                 z - (label_walls[1] != 0 ? labelSizez : 0)/2],
+              [90,0,0]];
+            left = [
+              [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
+                heightz - (label_walls[2] != 0 ? labelSizez : 0)],
+              [0, 
+                (num_y)*gf_pitch/2, 
+                z - (label_walls[2] != 0 ? labelSizez : 0)/2],
+              [90,0,90]];
+            right = [
+              [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
+                heightz - (label_walls[3] != 0 ? labelSizez : 0)],
+              [(num_x)*gf_pitch-wallpattern_thickness,   
+                (num_y)*gf_pitch/2, 
+                z - (label_walls[3] != 0 ? labelSizez : 0)/2],
+              [90,0,90]];
           
-          labelSize = calculateLabelSize(label_size);
-          //Subtracting the wallpattern_thickness is a bit of a hack, its needed as the label extends in to the wall.
-          labelSizez = (label_style != "disabled" ? labelSize.z-wallpattern_thickness : 0);
-          
-          front = [
-            //width,height
-            [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
-              heightz - (label_walls[0] != 0 ? labelSizez : 0)],
-            //Position
-            [(num_x)*gf_pitch/2, 
-              wallpattern_thickness, 
-              z - (label_walls[0] != 0 ? labelSizez : 0)/2],
-            //rotation
-            [90,0,0]];
-          back = [
-            [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
-              heightz - (label_walls[1] != 0 ? labelSizez : 0)],
-            [(num_x)*gf_pitch/2, 
-              (num_y)*gf_pitch, 
-               z - (label_walls[1] != 0 ? labelSizez : 0)/2],
-            [90,0,0]];
-          left = [
-            [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
-              heightz - (label_walls[2] != 0 ? labelSizez : 0)],
-            [0, 
-              (num_y)*gf_pitch/2, 
-              z - (label_walls[2] != 0 ? labelSizez : 0)/2],
-            [90,0,90]];
-          right = [
-            [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
-              heightz - (label_walls[3] != 0 ? labelSizez : 0)],
-            [(num_x)*gf_pitch-wallpattern_thickness,   
-              (num_y)*gf_pitch/2, 
-              z - (label_walls[3] != 0 ? labelSizez : 0)/2],
-            [90,0,90]];
-        
-        locations = [front, back, left, right];
-          
-        //["disabled", "horizontal", "vertical", "both"] 
-        if(wallpattern_dividers_enabled != "disabled"){
-          difference(){
-            union(){
-              if(wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
-                separators_generic(
-                  seperator_config = vertical_separator_positions, 
-                  length = left[0][1],
-                  height = left[0][0],
-                  wall_thickness = chamber_wall_thickness*2,
-                  bend_position = vertical_separator_bend_position,
-                  bend_angle = vertical_separator_bend_angle,
-                  bend_separation = vertical_separator_bend_separation,
-                  cut_depth = vertical_separator_cut_depth,
-                  separator_orentation = "vertical") 
-                    translate([-$sepCfg[iSeperatorBendSeparation]/2, 0, fudgeFactor]) 
-                    translate(left[1])
-                    rotate(left[2])
-                    render() //Render on vertical_separator pattern because detailed patters can be slow
-                    cutout_pattern(
-                      patternStyle = wallpattern_style,
-                      canvasSize = left[0], 
-                      customShape = false,
-                      circleFn = wallpattern_hole_sides,
-                      holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                      holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                      holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
-                      center=true,
-                      fill=wallpattern_fill, //"none", "space", "crop"
-                      voronoiNoise=wallpattern_voronoi_noise,
-                      voronoiRadius = wallpattern_voronoi_radius,
-                      help=help);
+          locations = [front, back, left, right];
+            
+          //["disabled", "horizontal", "vertical", "both"] 
+          if(wallpattern_dividers_enabled != "disabled"){
+            difference(){
+              union(){
+                if(wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
+                  separators_generic(
+                    seperator_config = vertical_separator_positions, 
+                    length = left[0][1],
+                    height = left[0][0],
+                    wall_thickness = chamber_wall_thickness*2,
+                    bend_position = vertical_separator_bend_position,
+                    bend_angle = vertical_separator_bend_angle,
+                    bend_separation = vertical_separator_bend_separation,
+                    cut_depth = vertical_separator_cut_depth,
+                    separator_orentation = "vertical") 
+                      translate([-$sepCfg[iSeperatorBendSeparation]/2, 0, fudgeFactor]) 
+                      translate(left[1])
+                      rotate(left[2])
+                      render() //Render on vertical_separator pattern because detailed patters can be slow
+                      cutout_pattern(
+                        patternStyle = wallpattern_style,
+                        canvasSize = left[0], 
+                        customShape = false,
+                        circleFn = wallpattern_hole_sides,
+                        holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                        holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                        holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
+                        center=true,
+                        fill=wallpattern_fill, //"none", "space", "crop"
+                        voronoiNoise=wallpattern_voronoi_noise,
+                        voronoiRadius = wallpattern_voronoi_radius,
+                        help=help);
+                  
+                if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
+                  separators_generic(
+                    seperator_config = horizontal_separator_positions, 
+                    length = front[0][1],
+                    height = front[0][0],
+                    wall_thickness = chamber_wall_thickness*2,
+                    bend_position = horizontal_separator_bend_position,
+                    bend_angle = horizontal_separator_bend_angle,
+                    bend_separation = horizontal_separator_bend_separation,
+                    cut_depth = horizontal_separator_cut_depth,
+                    separator_orentation = "horizontal") 
+                      rotate([0,0,-90])
+                      translate([0,$sepCfg[iSeperatorBendSeparation]/2, fudgeFactor]) 
+                      translate(front[1])
+                      rotate(front[2])
+                      render() //Render on horizontal_separator pattern because detailed patters can be slow
+                      cutout_pattern(
+                        patternStyle = wallpattern_style,
+                        canvasSize = front[0], 
+                        customShape = false,
+                        circleFn = wallpattern_hole_sides,
+                        holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                        holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                        holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
+                        center=true,
+                        fill=wallpattern_fill, //"none", "space", "crop"
+                        voronoiNoise=wallpattern_voronoi_noise,
+                        voronoiRadius = wallpattern_voronoi_radius,
+                        help=help);
+                }
                 
-              if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
-                separators_generic(
-                  seperator_config = horizontal_separator_positions, 
-                  length = front[0][1],
-                  height = front[0][0],
-                  wall_thickness = chamber_wall_thickness*2,
-                  bend_position = horizontal_separator_bend_position,
-                  bend_angle = horizontal_separator_bend_angle,
-                  bend_separation = horizontal_separator_bend_separation,
-                  cut_depth = horizontal_separator_cut_depth,
-                  separator_orentation = "horizontal") 
-                    rotate([0,0,-90])
-                    translate([0,$sepCfg[iSeperatorBendSeparation]/2, fudgeFactor]) 
-                    translate(front[1])
-                    rotate(front[2])
-                    render() //Render on horizontal_separator pattern because detailed patters can be slow
-                    cutout_pattern(
-                      patternStyle = wallpattern_style,
-                      canvasSize = front[0], 
-                      customShape = false,
-                      circleFn = wallpattern_hole_sides,
-                      holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                      holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                      holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
-                      center=true,
-                      fill=wallpattern_fill, //"none", "space", "crop"
-                      voronoiNoise=wallpattern_voronoi_noise,
-                      voronoiRadius = wallpattern_voronoi_radius,
-                      help=help);
+                //Subtract setback from wall pattern
+                if(tapered_corner == "rounded" || tapered_corner == "chamfered")
+                  //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
+                  translate([
+                    -cutoutclearance,
+                    +tapered_setback+gf_tolerance+cutoutclearance,
+                    gf_zpitch*num_z+gf_Lip_Height-gf_tolerance-cutoutclearance])
+                  rotate([270,0,0])
+                  union()
+                    if(tapered_corner == "rounded"){
+                      roundedCorner(
+                        radius = tapered_corner_size-cutoutclearance, 
+                        length=(num_x+1)*gf_pitch, 
+                        height = tapered_corner_size);
+                    }
+                    else if(tapered_corner == "chamfered"){
+                      chamferedCorner(
+                        chamferLength = tapered_corner_size-cutoutclearance, 
+                        length=(num_x+1)*gf_pitch, 
+                        height = tapered_corner_size);
+                    }
+                    
               }
+            }
+            difference(){
+              for(i = [0:1:len(locations)-1])
+                union()
+                  if(wallpattern_walls[i] > 0)
+                    //patterns in the outer walls
+                    translate(locations[i][1])
+                    rotate(locations[i][2])
+                    render() //Render on outer wall pattern because detailed patters can be slow
+                      cutout_pattern(
+                        patternStyle = wallpattern_style,
+                        canvasSize = locations[i][0],
+                        customShape = false,
+                        circleFn = wallpattern_hole_sides,
+                        holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                        holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                        holeHeight = wallpattern_thickness,
+                        center=true,
+                        fill=wallpattern_fill, //"none", "space", "crop"
+                        voronoiNoise=wallpattern_voronoi_noise,
+                        voronoiRadius = wallpattern_voronoi_radius,
+                        help=help);
               
+              //subtract dividers from outer wall pattern
+              sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
+              translate([0, 0, sepFloorHeight-fudgeFactor])
+              separators(  
+                length=gf_pitch*num_y,
+                height=gf_zpitch*(num_z)-sepFloorHeight+border*2+fudgeFactor*2,
+                wall_thickness = chamber_wall_thickness+cutoutclearance*2,
+                bend_position = vertical_separator_bend_position,
+                bend_angle = vertical_separator_bend_angle,
+                bend_separation = vertical_separator_bend_separation,
+                cut_depth = vertical_separator_cut_depth,
+                seperator_config = vertical_separator_positions);
+
+              translate([gf_pitch*num_x, 0, sepFloorHeight-fudgeFactor])
+              rotate([0,0,90])
+              separators(  
+                length=gf_pitch*num_x,
+                height=gf_zpitch*(num_z)-sepFloorHeight+border*2+fudgeFactor*2,
+                wall_thickness = chamber_wall_thickness+cutoutclearance*2,
+                bend_position = horizontal_separator_bend_position,
+                bend_angle = horizontal_separator_bend_angle,
+                bend_separation = horizontal_separator_bend_separation,
+                cut_depth = horizontal_separator_cut_depth,
+                seperator_config = horizontal_separator_positions);
+
+                //Subtract cutout from wall pattern
+              if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
+                for(wallcutout_location = wallcutout_locations)
+                  if(wallcutout_location[iwalcutout_enabled] == true)
+                    translate(wallcutout_location[iwalcutout_reposition])
+                    rotate(wallcutout_location[iwalcutout_rotation])
+                    translate(wallcutout_location[iwalcutout_position])
+                    WallCutout(
+                      lowerWidth=wallcutout_location[iwalcutout_size].x+cutoutclearance*2,
+                      wallAngle=wallcutout_location[iwalcutout_config][iwalcutoutconfig_angle],
+                      height=wallcutout_location[iwalcutout_size].z+cutoutclearance,
+                      thickness=wallcutout_location[iwalcutout_size].y,
+                      cornerRadius=wallcutout_location[iwalcutout_config][iwalcutoutconfig_cornerradius]);
+        
               //Subtract setback from wall pattern
               if(tapered_corner == "rounded" || tapered_corner == "chamfered")
                 //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
@@ -543,89 +656,6 @@ module gridfinity_cup(
                   }
                   
             }
-          }
-          difference(){
-            for(i = [0:1:len(locations)-1])
-              union()
-                if(wallpattern_walls[i] > 0)
-                  //patterns in the outer walls
-                  translate(locations[i][1])
-                  rotate(locations[i][2])
-                  render() //Render on outer wall pattern because detailed patters can be slow
-                    cutout_pattern(
-                      patternStyle = wallpattern_style,
-                      canvasSize = locations[i][0],
-                      customShape = false,
-                      circleFn = wallpattern_hole_sides,
-                      holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                      holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                      holeHeight = wallpattern_thickness,
-                      center=true,
-                      fill=wallpattern_fill, //"none", "space", "crop"
-                      voronoiNoise=wallpattern_voronoi_noise,
-                      voronoiRadius = wallpattern_voronoi_radius,
-                      help=help);
-            
-            //subtract dividers from outer wall pattern
-            sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
-            translate([0, 0, sepFloorHeight-fudgeFactor])
-            separators(  
-              length=gf_pitch*num_y,
-              height=gf_zpitch*(num_z)-sepFloorHeight+border*2+fudgeFactor*2,
-              wall_thickness = chamber_wall_thickness+cutoutclearance*2,
-              bend_position = vertical_separator_bend_position,
-              bend_angle = vertical_separator_bend_angle,
-              bend_separation = vertical_separator_bend_separation,
-              cut_depth = vertical_separator_cut_depth,
-              seperator_config = vertical_separator_positions);
-
-            translate([gf_pitch*num_x, 0, sepFloorHeight-fudgeFactor])
-            rotate([0,0,90])
-            separators(  
-              length=gf_pitch*num_x,
-              height=gf_zpitch*(num_z)-sepFloorHeight+border*2+fudgeFactor*2,
-              wall_thickness = chamber_wall_thickness+cutoutclearance*2,
-              bend_position = horizontal_separator_bend_position,
-              bend_angle = horizontal_separator_bend_angle,
-              bend_separation = horizontal_separator_bend_separation,
-              cut_depth = horizontal_separator_cut_depth,
-              seperator_config = horizontal_separator_positions);
-
-              //Subtract cutout from wall pattern
-            if(wallcutout_enabled)
-              for(i = [0:1:len(wallcutout_locations)-1])
-                if(wallcutout_walls[i] != 0)
-                  translate(wallcutout_locations[i][0])
-                  rotate(wallcutout_locations[i][2])
-                  WallCutout(
-                    lowerWidth=(wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, wallcutout_locations[i][1]) : wallcutout_width)+cutoutclearance*2,
-                    wallAngle=wallcutout_angle,
-                    height=wallcutout_hgt+cutoutclearance,
-                    thickness=wallcutout_thickness,
-                    cornerRadius=wallcutout_corner_radius);
-          
-            //Subtract setback from wall pattern
-            if(tapered_corner == "rounded" || tapered_corner == "chamfered")
-              //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
-              translate([
-                -cutoutclearance,
-                +tapered_setback+gf_tolerance+cutoutclearance,
-                gf_zpitch*num_z+gf_Lip_Height-gf_tolerance-cutoutclearance])
-              rotate([270,0,0])
-              union()
-                if(tapered_corner == "rounded"){
-                  roundedCorner(
-                    radius = tapered_corner_size-cutoutclearance, 
-                    length=(num_x+1)*gf_pitch, 
-                    height = tapered_corner_size);
-                }
-                else if(tapered_corner == "chamfered"){
-                  chamferedCorner(
-                    chamferLength = tapered_corner_size-cutoutclearance, 
-                    length=(num_x+1)*gf_pitch, 
-                    height = tapered_corner_size);
-                }
-                
           }
         }
       }
@@ -779,12 +809,20 @@ module gridfinity_cup(
     ,"wallpattern_fill",wallpattern_fill
     ,"wallpattern_voronoi_noise",wallpattern_voronoi_noise
     ,"wallpattern_voronoi_radius",wallpattern_voronoi_radius
-    ,"wallcutout_enabled",wallcutout_enabled
-    ,"wallcutout_walls",wallcutout_walls
-    ,"wallcutout_width",wallcutout_width
-    ,"wallcutout_angle",wallcutout_angle
-    ,"wallcutout_height",wallcutout_height
-    ,"wallcutout_corner_radius",wallcutout_corner_radius
+    ,"wallcutout_vertical",[
+        wallcutout_vertical, 
+        wallcutout_vertical_position,
+        wallcutout_vertical_width,
+        wallcutout_vertical_angle,
+        wallcutout_vertical_height,
+        wallcutout_vertical_corner_radius]
+    ,"wallcutout_horizontal",[
+        wallcutout_horizontal, 
+        wallcutout_horizontal_position,
+        wallcutout_horizontal_width,
+        wallcutout_horizontal_angle,
+        wallcutout_horizontal_height,
+        wallcutout_horizontal_corner_radius]
     ,"extension_enabled",extension_enabled
     ,"extension_tabs_enabled",extension_tabs_enabled
     ,"cutx",cutx

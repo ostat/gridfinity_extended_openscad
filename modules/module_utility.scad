@@ -1,42 +1,5 @@
 include <ub.scad>
-
-module WallCutout(
-  lowerWidth=50,
-  wallAngle=70,
-  height=21,
-  thickness=10,
-  cornerRadius=5,
-  topHeight,
-  $fn = 64) {
- 
-  topHeight = is_undef(topHeight) || topHeight < 0 ? cornerRadius*4 : topHeight;
-  bottomWidth = lowerWidth;
-  topWidth = lowerWidth+(height/tan(wallAngle))*2;
-
-  rotate([90,0,0])
-  translate([0,0,-thickness/2])
-  linear_extrude(height=thickness)
-  intersection(){
-    translate([0,-height/2+topHeight/2,0])
-    square([topWidth+cornerRadius*2,height+topHeight], true);
-    
-    //Use tripple offset to fillet corners
-    //https://www.reddit.com/r/openscad/comments/ut1n7t/quick_tip_simple_fillet_for_2d_shapes/
-    offset(r=-cornerRadius)
-    offset(r=2 * cornerRadius)
-    offset(r=-cornerRadius)
-    #union(){
-      translate([0,cornerRadius*4/2])
-      square([topWidth*2,cornerRadius*4], true);
-      hull(){
-        translate([0,cornerRadius*4/2])
-        square([topWidth,cornerRadius*4], true);
-        translate([0,-height/2])
-        square([bottomWidth,height], true);
-      }
-    }
-  }
-}
+include <module_utility_wallcutout.scad>
 
 module bentWall(
   length=100,
