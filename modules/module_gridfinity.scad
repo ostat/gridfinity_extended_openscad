@@ -3,6 +3,7 @@ include <functions_general.scad>
 include <gridfinity_constants.scad>
 include <functions_gridfinity.scad>
         
+
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 module grid_block(
@@ -16,7 +17,7 @@ module grid_block(
   half_pitch=false, 
   box_corner_attachments_only = false, 
   flat_base=false, 
-  stackable = true,
+  stackable = "enabled", //["enabled", "disabled", "filllip"]
   center_magnet_diameter = 0,
   center_magnet_thickness = 0,
   magnet_easy_release = "off", //[off,inner,outer]
@@ -24,6 +25,8 @@ module grid_block(
   help)
 {
   assert_openscad_version();
+  
+  stackable = validateStackable(stackable);
   
   outer_size = gf_pitch - gf_tolerance;  // typically 41.5
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
@@ -66,12 +69,15 @@ module grid_block(
       }
     }
     
-    if(stackable)
+    if(stackable == Stackable_enabled)
     {
       // remove top so XxY can fit on top
       color(color_topcavity) 
         tz(gf_zpitch*num_z) 
         pad_oversize(num_x, num_y, 1);
+    }
+    else if (stackable == Stackable_filllip){
+      //do nothing
     }
     else{
       color(color_topcavity) 

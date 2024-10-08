@@ -240,6 +240,7 @@ module gridfinity_cup(
   num_y = calcDimensionDepth(depth, true);
   num_z = calcDimensionHeight(height, true);
 
+  filled_in = validateFilledIn(filled_in);
   vertical_separator_positions = vertical_irregular_subdivisions 
     ? vertical_separator_config 
     : splitChamber(vertical_chambers-1, num_x);

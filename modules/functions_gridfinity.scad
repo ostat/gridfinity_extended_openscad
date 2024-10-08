@@ -19,10 +19,15 @@ function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficie
   : cavity_floor_radius >= 0 ? min((2.3+2*q)/2, cavity_floor_radius) : (2.3+2*q)/2;
 
 constTopHeight = let(fudgeFactor = 0.01) 5.7+fudgeFactor*5; //Need to confirm this
-
-function wallCutoutPosition_mm(userPosition, wallLength) = 
+  
+  
+//unit position to mm.
+//positive values are in units.
+//negative values are ration total/abs(value)
+function wallCutoutPosition_mm(userPosition, wallLength) = unitPositionTo_mm(userPosition, wallLength);
+function unitPositionTo_mm(userPosition, wallLength) = 
   (userPosition < 0 ? wallLength*gf_pitch/abs(userPosition) : gf_pitch*userPosition);
-
+  
 //0.6 is needed to align the top of the cutout, need to fix this
 function calculateWallTop(num_z, lip_style) =
   gf_zpitch * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
@@ -43,10 +48,11 @@ function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num
       assert(is_num(floor_thickness), "floor_thickness must be a number")
       assert(is_num(magnet_diameter), "magnet_diameter must be a number")
       assert(is_num(screw_depth), "screw_depth must be a number")
-      assert(is_bool(filledin), "filledin must be a number")
-      assert(is_bool(flat_base), "flat_base must be a number")
-      let(floorThickness = max(floor_thickness, gf_cup_floor_thickness))
-  filledin ? num_z * gf_zpitch 
+      assert(is_bool(flat_base), "flat_base must be a bool")
+      let(
+        filledin = validateFilledIn(filledin),
+        floorThickness = max(floor_thickness, gf_cup_floor_thickness))
+  filledin != FilledIn_disabled ? num_z * gf_zpitch 
     : efficient_floor != "off" 
       ? floorThickness
       : max(3.5, cupBaseClearanceHeight(magnet_diameter,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
@@ -74,3 +80,51 @@ function wallThickness(wall_thickness, num_z) = wall_thickness != 0 ? wall_thick
         : num_z < 6 ? 0.95
         : num_z < 12 ? 1.2
         : 1.6;
+        
+/* Data types */
+function list_contains(list,value,index=0) = 
+  assert(is_list(list), "list must be a list")
+  assert(index >= 0 && index < len(list), str("index is invalid len '" , len(list) , "' index '", index, "'"))
+  list[index] == value 
+    ? true 
+    : index <= len(list)  ? list_contains(list,value,index+1)
+    : false;
+
+function typeerror(type, value) = str("invalid value for type '" , type , "'; value '" , value ,"'");
+
+FilledIn_disabled = "disabled";
+FilledIn_enabled = "enabled";
+FilledIn_enabledfilllip = "enabledfilllip";
+FilledIn_values = [FilledIn_disabled,FilledIn_enabled,FilledIn_enabledfilllip];
+function validateFilledIn(value) = 
+  //Convert boolean to list value
+  let(value = is_bool(value) ? value ? FilledIn_enabled : FilledIn_disabled : value)
+  assert(list_contains(FilledIn_values, value), typeerror("FilledIn", value))
+  value;
+  
+LipStyle_normal = "normal";
+LipStyle_reduced = "reduced";
+LipStyle_minimum = "minimum";
+LipStyle_none = "none";
+LipStyle_values = [LipStyle_normal,LipStyle_reduced,LipStyle_minimum,LipStyle_none];
+function validateLipStyle(value) = 
+  assert(list_contains(LipStyle_values, value), typeerror("LipStyle", value))
+  value;
+
+Stackable_enabled = "enabled";
+Stackable_disabled = "disabled";
+Stackable_filllip = "filllip";
+Stackable_values = [Stackable_enabled,Stackable_disabled,Stackable_filllip];
+  function validateStackable(value) = 
+  //Convert boolean to list value
+  let(value = is_bool(value) ? value ? Stackable_enabled : Stackable_disabled : value) 
+  assert(list_contains(Stackable_values, value), typeerror("Stackable", value))
+  value;
+
+BinExtensionEnabled_disabled = "disabled";
+BinExtensionEnabled_front = "front";
+BinExtensionEnabled_back = "back";  
+function validateBinExtensionEnabled(value) = 
+  assert(is_list(value) && len(value) == 2, "must be a list of length 2")
+  [ is_bool(value.x) ? [value.x ? BinExtensionEnabled_front : BinExtensionEnabled_disabled, 0.5] : value.x,
+    is_bool(value.y) ? [value.y ? BinExtensionEnabled_front : BinExtensionEnabled_disabled, 0.5] : value.y];
