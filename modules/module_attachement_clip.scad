@@ -1,10 +1,19 @@
 include <functions_general.scad>
+include <gridfinity_constants.scad>
 
+/*
+attachement_clip(height = 13,
+  width = 0,
+  thickness = 2,
+  footingThickness= 2,
+  tabStyle = 0);
+*/
 // Creates an wall clip that is used when box is split
 module attachement_clip(
   height = 8,
   width = 0,
   thickness = gf_lip_support_taper_height,
+  footingThickness= 1,
   tabStyle = 0)
 {
   if(IsHelpEnabled("debug")) echo("attachement_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
@@ -101,9 +110,13 @@ module attachement_clip(
            [thickness, 0, thickness],                           //4
            [thickness, -width+thickness, thickness],            //5
            [thickness, -width+thickness, height-thickness],     //6
-           [thickness, 0, height-thickness]                     //7
+           [thickness, 0, height-thickness],                    //7
+           [-footingThickness, 0, 0],                           //8
+           [-footingThickness, -width, 0],                      //9
+           [-footingThickness, -width, height],                 //10
+           [-footingThickness, 0, height]                       //11
            ], 
-         faces = [[0,1,2,3],[4,5,6,7]]
+         faces = [[0,1,2,3],[4,5,6,7],[8,9,10,11]]
       );
       hull()
       polyhedron
