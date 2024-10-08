@@ -33,7 +33,7 @@ itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 
 /* [Item Holder - Custom Item] */
 // Should the grid be square or hex
-itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard"]
+itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard","custom"]
 // The number of sides for a round hole
 itemholder_hole_sides = 4; 
 // Diameter of the round hole
@@ -181,20 +181,33 @@ wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
 /* [Wall Cutout] */
-wallcutout_enabled=false;
+wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-wallcutout_walls=[1,0,0,0];  //0.1
+wallcutout_vertical_position=-2;  //0.1
 //default will be binwidth/2
-wallcutout_width=0;
-wallcutout_angle=70;
+wallcutout_vertical_width=0;
+wallcutout_vertical_angle=70;
 //default will be binHeight
-wallcutout_height=0;
-wallcutout_corner_radius=5;
+wallcutout_vertical_height=0;
+wallcutout_vertical_corner_radius=5;
+wallcutout_horizontal ="disabled"; //[disabled, enabled, wallsonly, leftonly, rightonly]
+// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_horizontal_position=-2;  //0.1
+//default will be binwidth/2
+wallcutout_horizontal_width=0;
+wallcutout_horizontal_angle=70;
+//default will be binHeight
+wallcutout_horizontal_height=0;
+wallcutout_horizontal_corner_radius=5;
 
 /* [Extendable] */
-extension_x_enabled = false;
-extension_y_enabled = false;
+extension_x_enabled = "disabled"; //[disabled, front, back]
+extension_x_position = 0.5; 
+extension_y_enabled = "disabled"; //[disabled, front, back]
+extension_y_position = 0.5; 
 extension_tabs_enabled = true;
+//Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
+extension_tab_size= [10,0,0,0];
 
 /* [debug] */
 //Slice along the x axis
@@ -207,7 +220,31 @@ enable_help = false;
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
- 
+
+//Function for creating a custom shape.
+//To use this feature you need to define the require shape in the module below.
+//Then configure the options in the customiser, is the item is space approabiatly.
+module mycustomshape(){ 
+  //Example custom shape
+  //settings needed
+  //item hole depth 30
+  //item hole size 20,25
+  //item grid style square
+  //item spacing 4
+  translate([4,0,0])
+  union(){
+    chamferedSquare(size=[15,25,30], chamfer = 1, cornerRadius = 1);
+    translate([-4,5,25])
+    chamferedSquare(size=[5,15,5], chamfer = 1, cornerRadius = 1);
+  }
+  
+  //You can use any shapes but these are some example shapes
+  //chamferedSquare(size=[10,10,10], chamfer = 1, cornerRadius = 1);
+  //chamferedRectangleTop(size=[10,10,10], chamfer = 1, cornerRadius = 1);
+  //chamferedHalfCylinder(h=10, r=5, circleFn=64, chamfer=0.5);
+  //chamferedCylinder(h=10, r=5, circleFn=64, chamfer=0.5);
+}
+
 function LookupKnown(knowItemCode, customDiameter = [0,0], customSize=0, customDepth=0, customShape="square") = let(
       knownCard = LookupKnownCard(knowItemCode),
       knownCartridge = LookupKnownCartridge(knowItemCode),
@@ -313,7 +350,7 @@ module itemholder(
     customSize=holeSize, 
     customDepth=holeDepth, 
     customShape=customHoleBaseShape);
- 
+  
   itemCalc = item[ishape] == "multicard"
       ? multiCardCalculations(
           multiCards = multiCards, 
@@ -342,7 +379,7 @@ module itemholder(
   if(IsHelpEnabled("info")) echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
   
   for(x =[0:1:compartments.x-1])
-  {
+  { 
     for(y =[0:1:compartments.y-1])
     {
       translate(compartment_centered 
@@ -378,6 +415,8 @@ module itemholder(
                   r=item[iitemx]/2, 
                   h=item[iitemy], 
                   chamfer=holeChamfer, $fn=64);
+          } else if(item[ishape]=="custom") {
+            mycustomshape();
           }
     }
   }
@@ -591,14 +630,23 @@ module gridfinity_itemholder(
   wallpattern_fill=wallpattern_fill,
   wallpattern_voronoi_noise=wallpattern_voronoi_noise,
   wallpattern_voronoi_radius = wallpattern_voronoi_radius,
-  wallcutout_enabled=wallcutout_enabled,
-  wallcutout_walls=wallcutout_walls,
-  wallcutout_width=wallcutout_width,
-  wallcutout_angle=wallcutout_angle,
-  wallcutout_height=wallcutout_height,
-  wallcutout_corner_radius=wallcutout_corner_radius,
-  extension_enabled=[extension_x_enabled,extension_y_enabled],
-  extension_tabs_enabled = extension_tabs_enabled,
+  wallcutout_vertical=wallcutout_vertical,
+  wallcutout_vertical_position=wallcutout_vertical_position,
+  wallcutout_vertical_width=wallcutout_vertical_width,
+  wallcutout_vertical_angle=wallcutout_vertical_angle,
+  wallcutout_vertical_height=wallcutout_vertical_height,
+  wallcutout_vertical_corner_radius=wallcutout_vertical_corner_radius,
+  wallcutout_horizontal=wallcutout_horizontal,
+  wallcutout_horizontal_position=wallcutout_horizontal_position,
+  wallcutout_horizontal_width=wallcutout_horizontal_width,
+  wallcutout_horizontal_angle=wallcutout_horizontal_angle,
+  wallcutout_horizontal_height=wallcutout_horizontal_height,
+  wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
+  extension_enabled=[
+    [extension_x_enabled,extension_x_position],
+    [extension_y_enabled,extension_y_position]],
+  extension_tabs_enabled=extension_tabs_enabled,
+  extension_tab_size=extension_tab_size,
   cutx=cutx,
   cuty=cuty,
   help=enable_help) {
@@ -698,14 +746,23 @@ module gridfinity_itemholder(
       wallpattern_fill=wallpattern_fill,
       wallpattern_voronoi_noise=wallpattern_voronoi_noise,
       wallpattern_voronoi_radius = wallpattern_voronoi_radius,
-      wallcutout_enabled=wallcutout_enabled,
-      wallcutout_walls=wallcutout_walls,
-      wallcutout_width=wallcutout_width,
-      wallcutout_angle=wallcutout_angle,
-      wallcutout_height=wallcutout_height,
-      wallcutout_corner_radius=wallcutout_corner_radius,
-      extension_enabled=[extension_x_enabled,extension_y_enabled],
-      extension_tabs_enabled = extension_tabs_enabled,
+      wallcutout_vertical=wallcutout_vertical,
+      wallcutout_vertical_position=wallcutout_vertical_position,
+      wallcutout_vertical_width=wallcutout_vertical_width,
+      wallcutout_vertical_angle=wallcutout_vertical_angle,
+      wallcutout_vertical_height=wallcutout_vertical_height,
+      wallcutout_vertical_corner_radius=wallcutout_vertical_corner_radius,
+      wallcutout_horizontal=wallcutout_horizontal,
+      wallcutout_horizontal_position=wallcutout_horizontal_position,
+      wallcutout_horizontal_width=wallcutout_horizontal_width,
+      wallcutout_horizontal_angle=wallcutout_horizontal_angle,
+      wallcutout_horizontal_height=wallcutout_horizontal_height,
+      wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
+      extension_enabled=[
+        [extension_x_enabled,extension_x_position],
+        [extension_y_enabled,extension_y_position]],
+      extension_tabs_enabled=extension_tabs_enabled,
+      extension_tab_size=extension_tab_size,
       cutx=cutx,
       cuty=cuty,
       help = enable_help);
