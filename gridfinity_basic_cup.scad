@@ -145,9 +145,13 @@ wallcutout_height=0;
 wallcutout_corner_radius=5;
 
 /* [Extendable] */
-extension_x_enabled = false;
-extension_y_enabled = false;
+extension_x_enabled = "disabled"; //[disabled, front, back]
+extension_x_position = 0.5; 
+extension_y_enabled = "disabled"; //[disabled, front, back]
+extension_y_position = 0.5; 
 extension_tabs_enabled = true;
+//Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
+extension_tab_size= [10,0,0,0];
 
 /* [debug] */
 //Slice along the x axis
@@ -226,6 +230,11 @@ gridfinity_cup(
   wallcutout_corner_radius=wallcutout_corner_radius,
   extension_enabled=[extension_x_enabled,extension_y_enabled],
   extension_tabs_enabled = extension_tabs_enabled,
+  extension_enabled=[
+    [extension_x_enabled,extension_x_position],
+    [extension_y_enabled,extension_y_position]],
+  extension_tabs_enabled=extension_tabs_enabled,
+  extension_tab_size=extension_tab_size,
   sliding_lid_enabled = sliding_lid_enabled, 
   sliding_lid_thickness = sliding_lid_thickness, 
   sliding_min_wall_thickness = sliding_min_wallThickness, 

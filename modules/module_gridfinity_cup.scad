@@ -138,8 +138,10 @@ default_wallpattern_voronoi_noise = 0.75;
 default_wallpattern_voronoi_radius = 0.5;
 
 /* [Extendable] */
-default_extension_x_enabled = false;
-default_extension_y_enabled = false;
+default_extension_x_enabled = "disabled"; //[disabled, front, back]
+default_extension_x_position = 0.5; 
+default_extension_y_enabled = "disabled"; //[disabled, front, back]
+default_extension_y_position = 0.5; 
 default_extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 default_extension_tab_size= [10,0,0,0];
@@ -225,6 +227,9 @@ module gridfinity_cup(
   wallcutout_height=default_wallcutout_height,
   wallcutout_corner_radius=default_wallcutout_corner_radius,
   extension_enabled=[default_extension_x_enabled,default_extension_y_enabled],
+  extension_enabled=[
+    [default_extension_x_enabled,default_extension_x_position],
+    [default_extension_y_enabled,default_extension_y_position]],
   extension_tabs_enabled=default_extension_tabs_enabled,
   extension_tab_size=default_extension_tab_size,
   sliding_lid_enabled = default_sliding_lid_enabled, 
@@ -241,6 +246,8 @@ module gridfinity_cup(
   num_z = calcDimensionHeight(height, true);
 
   filled_in = validateFilledIn(filled_in);
+  extension_enabled = validateBinExtensionEnabled(extension_enabled);
+  
   vertical_separator_positions = vertical_irregular_subdivisions 
     ? vertical_separator_config 
     : splitChamber(vertical_chambers-1, num_x);
@@ -622,79 +629,89 @@ module gridfinity_cup(
           }
         }
       }
-    }
-   
-    extentionCut = 0.5;
-    if(extension_enabled.x)
-     color(color_wallcutout)
-      tz(-fudgeFactor)
-        cube([gf_pitch*extentionCut,num_y*gf_pitch,(num_z+1)*gf_zpitch]);
-    
-    if(extension_enabled.y)
-     color(color_wallcutout)
-      tz(-fudgeFactor)
-        cube([gf_pitch*num_x,gf_pitch*extentionCut,(num_z+1)*gf_zpitch]);
-    
-    if(cutx > 0 && $preview)
-      color(color_cut)
-      tz(-fudgeFactor)
-        cube([gf_pitch*cutx,num_y*gf_pitch,(num_z+1)*gf_zpitch]);
+      
+      if(extension_enabled.x[0]!=BinExtensionEnabled_disabled)
+        color(color_wallcutout)
+        if(extension_enabled.x[0]==BinExtensionEnabled_front)
+        tz(-fudgeFactor)
+          cube([unitPositionTo_mm(extension_enabled.x[1],num_x),num_y*gf_pitch,(num_z+1)*gf_zpitch]);
+        else
+          translate([unitPositionTo_mm(extension_enabled.x[1],num_x),0,-fudgeFactor])
+            cube([num_x*gf_pitch-unitPositionTo_mm(extension_enabled.x[1],num_x),num_y*gf_pitch,(num_z+1)*gf_zpitch]);
+      
+      if(extension_enabled.y[0]!=BinExtensionEnabled_disabled)
+        color(color_wallcutout)
+        if(extension_enabled.y[0]==BinExtensionEnabled_front)
+          tz(-fudgeFactor)
+          cube([gf_pitch*num_x,unitPositionTo_mm(extension_enabled.y[1],num_y),(num_z+1)*gf_zpitch]);
+        else
+          translate([0,unitPositionTo_mm(extension_enabled.y[1],num_y),-fudgeFactor])
+          cube([gf_pitch*num_x,num_y*gf_pitch-unitPositionTo_mm(extension_enabled.y[1],num_y),(num_z+1)*gf_zpitch]);
 
-    if(cuty > 0 && $preview)
-      color(color_cut)
-      tz(-fudgeFactor)
-        cube([num_x*gf_pitch,gf_pitch*cuty,(num_z+1)*gf_zpitch]);
-  }
-  
-  if((extension_enabled.x || extension_enabled.y) && extension_tabs_enabled) {
-    refTabHeight = extension_tab_size.x;
-    tabThickness = extension_tab_size.z == 0 ? 1.4 : extension_tab_size.z;//1.4; //This should be calculated
-    tabWidth = extension_tab_size.y;
-    tabStyle = extension_tab_size[3];
+      if(cutx > 0 && $preview)
+        color(color_cut)
+        tz(-fudgeFactor)
+          cube([gf_pitch*cutx,num_y*gf_pitch,(num_z+1)*gf_zpitch]);
+
+      if(cuty > 0 && $preview)
+        color(color_cut)
+        tz(-fudgeFactor)
+          cube([num_x*gf_pitch,gf_pitch*cuty,(num_z+1)*gf_zpitch]);
+    }
     
-    floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
+    if((extension_enabled.x[0]!=BinExtensionEnabled_disabled || extension_enabled.y[0]!=BinExtensionEnabled_disabled) && extension_tabs_enabled) {
+      refTabHeight = extension_tab_size.x;
+      tabThickness = extension_tab_size.z == 0 ? 1.4 : extension_tab_size.z;//1.4; //This should be calculated
+      tabWidth = extension_tab_size.y;
+      tabStyle = extension_tab_size[3];
+      
+      floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
+      
+      //todo need to correct this
+      lipheight = lip_style == "none" ? tabThickness
+        : lip_style == "reduced" ? gf_lip_upper_taper_height+tabThickness
+        //Add tabThickness, as the taper can bleed in to the lip
+        : gf_lip_upper_taper_height + gf_lip_lower_taper_height-tabThickness;
+      ceilingHeight = gf_zpitch*num_z-zClearance-lipheight;
     
-    //todo need to correct this
-    lipheight = lip_style == "none" ? tabThickness
-      : lip_style == "reduced" ? gf_lip_upper_taper_height+tabThickness
-      //Add tabThickness, as the taper can bleed in to the lip
-      : gf_lip_upper_taper_height + gf_lip_lower_taper_height-tabThickness;
-    ceilingHeight = gf_zpitch*num_z-zClearance-lipheight;
-  
-    //tabWorkingheight = (num_z-1)*gf_zpitch-gf_Lip_Height;
-    tabWorkingheight = ceilingHeight-floorHeight;
-  
-    tabsCount = max(floor(tabWorkingheight/refTabHeight),1);
-    tabHeight = tabWorkingheight/tabsCount;
-    if(IsHelpEnabled("debug")) echo("tabs", binHeight =num_z, tabHeight=tabHeight, floorHeight=floorHeight, cavity_floor_radius=cavity_floor_radius, tabThickness=tabThickness);
-    cut = 0.5;
-    for(i=[0:1:tabsCount-1])
-    {
-      isOdd =  i % 2;
-      if(IsHelpEnabled("trace")) echo("tabs", i=i, isOdd=isOdd);
-      if(extension_enabled.x){
-        if(!isOdd) {
-          translate([gf_pitch*cut,num_y*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
-            rotate([0,180,90])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
-        } else if(!extension_enabled.y) {
-          translate([gf_pitch*cut,wall_thickness+gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
-            rotate([0,0,90])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
-        }
+      //tabWorkingheight = (num_z-1)*gf_zpitch-gf_Lip_Height;
+      tabWorkingheight = ceilingHeight-floorHeight;
+    
+      tabsCount = max(floor(tabWorkingheight/refTabHeight),1);
+      tabHeight = tabWorkingheight/tabsCount;
+      if(IsHelpEnabled("debug")) echo("tabs", binHeight =num_z, tabHeight=tabHeight, floorHeight=floorHeight, cavity_floor_radius=cavity_floor_radius, tabThickness=tabThickness);
+      cutx = unitPositionTo_mm(extension_enabled.x[1],num_x);
+      cuty = unitPositionTo_mm(extension_enabled.y[1],num_y);
+      even = (extension_enabled.x[0]==BinExtensionEnabled_front && extension_enabled.y[0]!=BinExtensionEnabled_back) ?
+                [[0,180,90], [cutx,num_y*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight], "darkgreen"]
+              : (extension_enabled.y[0]==BinExtensionEnabled_front && extension_enabled.x[0]!=BinExtensionEnabled_front) ?
+                [[0,180,180], [wall_thickness+gf_tolerance/2,cuty,floorHeight], "green"]
+              : (extension_enabled.x[0]==BinExtensionEnabled_back && extension_enabled.y[0]!=BinExtensionEnabled_front) ?
+                [[0,180,270], [cutx,wall_thickness+gf_tolerance/2,floorHeight], "lime"]
+              : (extension_enabled.y[0]==BinExtensionEnabled_back && extension_enabled.y[0]!=BinExtensionEnabled_front) ?
+                [[0,180,0], [num_x*gf_pitch-wall_thickness-gf_tolerance/2,cuty,floorHeight], "aqua"] 
+              : [[0,0,0],[0,0,0], extension_enabled, "grey"];
+      odd = (extension_enabled.x[0]==BinExtensionEnabled_front && extension_enabled.y[0]!=BinExtensionEnabled_front) ?
+                [[0,0,90], [cutx,wall_thickness+gf_tolerance/2,floorHeight], "pink"]
+            : (extension_enabled.y[0]==BinExtensionEnabled_front && extension_enabled.x[0]!=BinExtensionEnabled_back) ?
+                [[0,0,180], [num_x*gf_pitch-wall_thickness-gf_tolerance/2,cuty,floorHeight], "red"]
+            : (extension_enabled.x[0]==BinExtensionEnabled_back && extension_enabled.y[0]!=BinExtensionEnabled_back) ?
+                [[0,0,270], [cutx,num_y*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight], "orange"]
+            : (extension_enabled.y[0]==BinExtensionEnabled_back && extension_enabled.y[0]!=BinExtensionEnabled_front) ?
+                [[0,0,0], [wall_thickness+gf_tolerance/2,cuty,floorHeight], "yellow"]
+            : [[0,0,0],[0,0,0], extension_enabled, "grey"];
+              
+      for(i=[0:1:tabsCount-1])
+      {
+        isOdd = i % 2;
+        tabPos = isOdd == 0 ? even : odd;
+        if(IsHelpEnabled("trace")) echo("tabs", i=i, isOdd=isOdd, tabPos=tabPos);
+        //color(tabPos[2])
+        tz((i+0.5)*tabHeight)
+        translate(tabPos[1])
+          rotate(tabPos[0])
+          attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, footingThickness=wall_thickness, tabStyle=tabStyle);
       }
-
-      if(extension_enabled.y)
-        if(isOdd) {
-          translate([num_x*gf_pitch-wall_thickness-gf_tolerance/2,gf_pitch*cut,floorHeight+(i+0.5)*tabHeight])
-            rotate([0,0,180])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
-        } else if(!extension_enabled.x) {
-          translate([wall_thickness+gf_tolerance/2,gf_pitch*cut,floorHeight+(i+0.5)*tabHeight])
-            rotate([0,180,180])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
-        }
-    }
     }
   }  
   
