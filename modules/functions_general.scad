@@ -1,5 +1,16 @@
 include <functions_string.scad>
 
+//round a number to a decimal with a defined number of significent figures
+function roundtoDecimal(value, sigFigs = 0) = 
+  assert(is_num(value), "value must be a number")
+  assert(is_num(sigFigs) && sigFigs >= 0, "sigFigs must be a number")
+  let(
+    sigFigs = round(sigFigs),
+    factor = 10^round(sigFigs))
+    sigFigs == 0 
+      ? round(value) 
+      : round(value*factor)/factor;
+      
 //Replace multiple values in an array
 function replace_Items(keyValueArray, arr) = !(len(keyValueArray)>0) ? arr : 
   assert(is_list(arr), "replace_Items(keyValueArray, arr) - arr is not a list")

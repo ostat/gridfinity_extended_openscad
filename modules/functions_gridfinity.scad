@@ -9,8 +9,9 @@ function calcDimension(value, name, unitSize, shouldLog) =
   is_num(value) ? 
     (shouldLog ? echo(str("🟩",name,": ", value, "gf (",value*unitSize,"mm)"), input=value) value : value)
   : assert(is_list(value) && len(value) == 2, str(unitSize ," should be array of length 2"))
-    let(calcUnits = value[1] != 0 ? value[1]/unitSize : value[0])
-    (shouldLog ? echo(str("🟩",name,": ", calcUnits, "gf (",calcUnits*unitSize,"mm)"), input=value) calcUnits: calcUnits);
+    let(calcUnits = value[1] != 0 ? value[1]/unitSize : value[0],
+    roundedCalcUnits = roundtoDecimal(calcUnits,4))
+    (shouldLog ? echo(str("🟩",name,": ", calcUnits, "gf (",calcUnits*unitSize,"mm)"), input=value, roundedCalcUnits=roundedCalcUnits) roundedCalcUnits: roundedCalcUnits);
           
 function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
@@ -89,7 +90,6 @@ function list_contains(list,value,index=0) =
     ? true 
     : index <= len(list)  ? list_contains(list,value,index+1)
     : false;
-
 function typeerror(type, value) = str("invalid value for type '" , type , "'; value '" , value ,"'");
 
 FilledIn_disabled = "disabled";
