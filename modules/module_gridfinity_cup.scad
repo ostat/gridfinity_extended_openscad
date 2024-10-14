@@ -3,6 +3,7 @@ include <module_gridfinity_label.scad>
 include <functions_general.scad>
 include <module_voronoi.scad>
 include <module_gridfinity_sliding_lid.scad>
+include <module_gridfinity_Extendable.scad>
 include <module_divider_walls.scad>
 
 use <module_gridfinity.scad>
@@ -88,7 +89,7 @@ default_horizontal_separator_config = "10.5|21|42|50|60";
 /* [Base] */
 default_magnet_diameter = 6.5;  // .1
 //create relief for magnet removal
-default_magnet_easy_release = true;
+default_magnet_easy_release = "auto";//["off","auto","inner","outer"] 
 // (Zack's design uses depth of 6)
 default_screw_depth = 6;
 default_center_magnet_diameter = 0;
@@ -155,7 +156,7 @@ default_extension_y_position = 0.5;
 default_extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 default_extension_tab_size= [10,0,0,0];
-
+   
 /* [debug] */
 default_cutx = 0;//0.01
 default_cuty = 0;//0.01
@@ -242,11 +243,13 @@ module gridfinity_cup(
   wallcutout_horizontal_angle=default_wallcutout_horizontal_angle,
   wallcutout_horizontal_height=default_wallcutout_horizontal_height,
   wallcutout_horizontal_corner_radius=default_wallcutout_horizontal_corner_radius,
-  extension_enabled=[
-    [default_extension_x_enabled,default_extension_x_position],
-    [default_extension_y_enabled,default_extension_y_position]],
-  extension_tabs_enabled=default_extension_tabs_enabled,
-  extension_tab_size=default_extension_tab_size,
+  extendable_Settings = ExtendableSettings(
+    extendablexEnabled = default_extension_x_enabled, 
+    extendablexPosition = default_extension_x_position, 
+    extendableyEnabled = default_extension_y_enabled, 
+    extendableyPosition = default_extension_y_position, 
+    extendableTabsEnabled = default_extension_tabs_enabled, 
+    extendableTabSize = default_extension_tab_size),
   sliding_lid_enabled = default_sliding_lid_enabled, 
   sliding_lid_thickness = default_sliding_lid_thickness, 
   sliding_min_wall_thickness = default_sliding_min_wallThickness, 
@@ -260,9 +263,10 @@ module gridfinity_cup(
   num_y = calcDimensionDepth(depth, true);
   num_z = calcDimensionHeight(height, true);
 
+  magnet_easy_release = validateMagnetEasyRelease(magnet_easy_release, efficient_floor);
   filled_in = validateFilledIn(filled_in);
-  extension_enabled = validateBinExtensionEnabled(extension_enabled);
-  
+  extendable_Settings = ValidateExtendableSettings(extendable_Settings, num_x=num_x, num_y=num_y);
+  echo(extendable_Settings=extendable_Settings, magnet_easy_release=magnet_easy_release);
   vertical_separator_positions = vertical_irregular_subdivisions 
     ? vertical_separator_config 
     : splitChamber(vertical_chambers-1, num_x);
@@ -328,6 +332,7 @@ module gridfinity_cup(
           fingerslide_walls=fingerslide_walls,
           magnet_diameter=magnet_diameter,
           screw_depth=screw_depth, 
+          magnet_easy_release = magnet_easy_release,
           floor_thickness=floor_thickness, 
           wall_thickness=wall_thickness,
           efficient_floor=efficient_floor, 
@@ -660,23 +665,23 @@ module gridfinity_cup(
         }
       }
       
-      if(extension_enabled.x[0]!=BinExtensionEnabled_disabled)
+      if(extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_disabled)
         color(color_wallcutout)
-        if(extension_enabled.x[0]==BinExtensionEnabled_front)
+        if(extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_front)
         tz(-fudgeFactor)
-          cube([unitPositionTo_mm(extension_enabled.x[1],num_x),num_y*gf_pitch,(num_z+1)*gf_zpitch]);
+          cube([unitPositionTo_mm(extendable_Settings.x[1],num_x),num_y*gf_pitch,(num_z+1)*gf_zpitch]);
         else
-          translate([unitPositionTo_mm(extension_enabled.x[1],num_x),0,-fudgeFactor])
-            cube([num_x*gf_pitch-unitPositionTo_mm(extension_enabled.x[1],num_x),num_y*gf_pitch,(num_z+1)*gf_zpitch]);
+          translate([unitPositionTo_mm(extendable_Settings.x[1],num_x),0,-fudgeFactor])
+            cube([num_x*gf_pitch-unitPositionTo_mm(extendable_Settings.x[1],num_x),num_y*gf_pitch,(num_z+1)*gf_zpitch]);
       
-      if(extension_enabled.y[0]!=BinExtensionEnabled_disabled)
+      if(extendable_Settings.y[0]!=BinExtensionEnabled_disabled)
         color(color_wallcutout)
-        if(extension_enabled.y[0]==BinExtensionEnabled_front)
+        if(extendable_Settings.y[0]==BinExtensionEnabled_front)
           tz(-fudgeFactor)
-          cube([gf_pitch*num_x,unitPositionTo_mm(extension_enabled.y[1],num_y),(num_z+1)*gf_zpitch]);
+          cube([gf_pitch*num_x,unitPositionTo_mm(extendable_Settings.y[1],num_y),(num_z+1)*gf_zpitch]);
         else
-          translate([0,unitPositionTo_mm(extension_enabled.y[1],num_y),-fudgeFactor])
-          cube([gf_pitch*num_x,num_y*gf_pitch-unitPositionTo_mm(extension_enabled.y[1],num_y),(num_z+1)*gf_zpitch]);
+          translate([0,unitPositionTo_mm(extendable_Settings.y[1],num_y),-fudgeFactor])
+          cube([gf_pitch*num_x,num_y*gf_pitch-unitPositionTo_mm(extendable_Settings.y[1],num_y),(num_z+1)*gf_zpitch]);
 
       if(cutx > 0 && $preview)
         color(color_cut)
@@ -689,11 +694,11 @@ module gridfinity_cup(
           cube([num_x*gf_pitch,gf_pitch*cuty,(num_z+1)*gf_zpitch]);
     }
     
-    if((extension_enabled.x[0]!=BinExtensionEnabled_disabled || extension_enabled.y[0]!=BinExtensionEnabled_disabled) && extension_tabs_enabled) {
-      refTabHeight = extension_tab_size.x;
-      tabThickness = extension_tab_size.z == 0 ? 1.4 : extension_tab_size.z;//1.4; //This should be calculated
-      tabWidth = extension_tab_size.y;
-      tabStyle = extension_tab_size[3];
+    if((extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_disabled || extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_disabled) && extendable_Settings[iExtendableTabsEnabled]) {
+      refTabHeight = extendable_Settings[iExtendableTabSize].x;
+      tabThickness = extendable_Settings[iExtendableTabSize].z == 0 ? 1.4 : extendable_Settings[iExtendableTabSize].z;//1.4; //This should be calculated
+      tabWidth = extendable_Settings[iExtendableTabSize].y;
+      tabStyle = extendable_Settings[iExtendableTabSize][iExtendableTabSizeStyle];
       
       floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
       
@@ -710,26 +715,26 @@ module gridfinity_cup(
       tabsCount = max(floor(tabWorkingheight/refTabHeight),1);
       tabHeight = tabWorkingheight/tabsCount;
       if(IsHelpEnabled("debug")) echo("tabs", binHeight =num_z, tabHeight=tabHeight, floorHeight=floorHeight, cavity_floor_radius=cavity_floor_radius, tabThickness=tabThickness);
-      cutx = unitPositionTo_mm(extension_enabled.x[1],num_x);
-      cuty = unitPositionTo_mm(extension_enabled.y[1],num_y);
-      even = (extension_enabled.x[0]==BinExtensionEnabled_front && extension_enabled.y[0]!=BinExtensionEnabled_back) ?
+      cutx = extendable_Settings.x[iExtendablePositionmm];
+      cuty = extendable_Settings.y[iExtendablePositionmm];
+      even = (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_back) ?
                 [[0,180,90], [cutx,num_y*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight], "darkgreen"]
-              : (extension_enabled.y[0]==BinExtensionEnabled_front && extension_enabled.x[0]!=BinExtensionEnabled_front) ?
+              : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_front) ?
                 [[0,180,180], [wall_thickness+gf_tolerance/2,cuty,floorHeight], "green"]
-              : (extension_enabled.x[0]==BinExtensionEnabled_back && extension_enabled.y[0]!=BinExtensionEnabled_front) ?
+              : (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
                 [[0,180,270], [cutx,wall_thickness+gf_tolerance/2,floorHeight], "lime"]
-              : (extension_enabled.y[0]==BinExtensionEnabled_back && extension_enabled.y[0]!=BinExtensionEnabled_front) ?
+              : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
                 [[0,180,0], [num_x*gf_pitch-wall_thickness-gf_tolerance/2,cuty,floorHeight], "aqua"] 
-              : [[0,0,0],[0,0,0], extension_enabled, "grey"];
-      odd = (extension_enabled.x[0]==BinExtensionEnabled_front && extension_enabled.y[0]!=BinExtensionEnabled_front) ?
+              : [[0,0,0],[0,0,0], extendable_Settings, "grey"];
+      odd = (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
                 [[0,0,90], [cutx,wall_thickness+gf_tolerance/2,floorHeight], "pink"]
-            : (extension_enabled.y[0]==BinExtensionEnabled_front && extension_enabled.x[0]!=BinExtensionEnabled_back) ?
+            : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_back) ?
                 [[0,0,180], [num_x*gf_pitch-wall_thickness-gf_tolerance/2,cuty,floorHeight], "red"]
-            : (extension_enabled.x[0]==BinExtensionEnabled_back && extension_enabled.y[0]!=BinExtensionEnabled_back) ?
+            : (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_back) ?
                 [[0,0,270], [cutx,num_y*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight], "orange"]
-            : (extension_enabled.y[0]==BinExtensionEnabled_back && extension_enabled.y[0]!=BinExtensionEnabled_front) ?
+            : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
                 [[0,0,0], [wall_thickness+gf_tolerance/2,cuty,floorHeight], "yellow"]
-            : [[0,0,0],[0,0,0], extension_enabled, "grey"];
+            : [[0,0,0],[0,0,0], extendable_Settings, "grey"];
               
       for(i=[0:1:tabsCount-1])
       {
@@ -823,9 +828,7 @@ module gridfinity_cup(
         wallcutout_horizontal_angle,
         wallcutout_horizontal_height,
         wallcutout_horizontal_corner_radius]
-    ,"extension_enabled",extension_enabled
-    ,"extension_tabs_enabled",extension_tabs_enabled
-    ,"cutx",cutx
+    ,"extendable_Settings",extendable_Settings
     ,"cuty",cuty]
     ,IsHelpEnabled("info"));  
 }
@@ -875,7 +878,7 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
     label_size=default_label_size, label_relief=default_label_relief, label_walls=default_label_walls,
     fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     fingerslide_walls=default_fingerslide_walls,
-    magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
+    magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, magnet_easy_release=default_magnet_easy_release,
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, half_pitch=default_half_pitch,         chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_zClearance=default_chamber_wall_zClearance,
     vertical_separator_bend_position = default_vertical_separator_bend_position,
@@ -898,7 +901,7 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
     color(color_cupcavity)
     basic_cavity(num_x, num_y, num_z, 
     fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
-      screw_depth=screw_depth, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
+      screw_depth=screw_depth, magnet_easy_release=magnet_easy_release, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
       efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius, spacer=spacer, box_corner_attachments_only = box_corner_attachments_only, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
     
@@ -980,7 +983,7 @@ calculateSeparators(
   */                
 
 module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,
-    magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, 
+    magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, magnet_easy_release=default_magnet_easy_release, 
     floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
     efficient_floor=default_efficient_floor, half_pitch=default_half_pitch, 
     lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius, spacer=default_spacer, box_corner_attachments_only = default_box_corner_attachments_only,
@@ -1136,7 +1139,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                   floor_thickness = floor_thickness,
                   magnet_diameter=magnet_diameter,
                   screw_depth = screw_depth,
-                  wall_thickness = wall_thickness);
+                  wall_thickness = magnet_easy_release == MagnetEasyRelease_inner ? wall_thickness*2 : wall_thickness );
           }
         }
       }
@@ -1154,7 +1157,8 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   }}
   
   // cut away side lips if num_x is less than 1
-  if (num_x < 1) {
+  if(IsHelpEnabled("trace")) echo(str("cutaway input:", num_x, " rounded:", roundtoDecimal(num_x, sigFigs = 2), " numx<1:", num_x < 1," round<1:", roundtoDecimal(num_x, sigFigs = 2)<1, " numx=round:", num_x==roundtoDecimal(num_x, sigFigs = 2)));
+  if (roundtoDecimal(num_x,2) < 1) {
     top = num_z*gf_zpitch+gf_Lip_Height;
     height = top-lipBottomZ+fudgeFactor*2;
     

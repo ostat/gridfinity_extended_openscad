@@ -101,7 +101,16 @@ function validateFilledIn(value) =
   let(value = is_bool(value) ? value ? FilledIn_enabled : FilledIn_disabled : value)
   assert(list_contains(FilledIn_values, value), typeerror("FilledIn", value))
   value;
-  
+
+EfficientFloor_off = "off";
+EfficientFloor_on = "on";
+EfficientFloor_rounded = "rounded";
+EfficientFloor_smooth = "smooth";
+EfficientFloor_values = [EfficientFloor_off,EfficientFloor_on,EfficientFloor_rounded,EfficientFloor_smooth];
+function validateEfficientFloor(value) = 
+  assert(list_contains(EfficientFloor_values, value), typeerror("EfficientFloor", value))
+  value;
+
 LipStyle_normal = "normal";
 LipStyle_reduced = "reduced";
 LipStyle_minimum = "minimum";
@@ -110,7 +119,7 @@ LipStyle_values = [LipStyle_normal,LipStyle_reduced,LipStyle_minimum,LipStyle_no
 function validateLipStyle(value) = 
   assert(list_contains(LipStyle_values, value), typeerror("LipStyle", value))
   value;
-
+  
 Stackable_enabled = "enabled";
 Stackable_disabled = "disabled";
 Stackable_filllip = "filllip";
@@ -128,3 +137,17 @@ function validateBinExtensionEnabled(value) =
   assert(is_list(value) && len(value) == 2, "must be a list of length 2")
   [ is_bool(value.x) ? [value.x ? BinExtensionEnabled_front : BinExtensionEnabled_disabled, 0.5] : value.x,
     is_bool(value.y) ? [value.y ? BinExtensionEnabled_front : BinExtensionEnabled_disabled, 0.5] : value.y];
+    
+MagnetEasyRelease_off = "off";
+MagnetEasyRelease_auto = "auto";
+MagnetEasyRelease_inner = "inner"; 
+MagnetEasyRelease_outer = "outer"; 
+MagnetEasyRelease_values = [MagnetEasyRelease_off, MagnetEasyRelease_auto, MagnetEasyRelease_inner, MagnetEasyRelease_outer];
+  function validateMagnetEasyRelease(value, efficientFloorValue) = 
+  //Convert boolean to list value
+  let(value = is_bool(value) ? value ? MagnetEasyRelease_auto : MagnetEasyRelease_off : value,
+      autoValue = value == MagnetEasyRelease_auto 
+        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer 
+        : value) 
+  assert(list_contains(MagnetEasyRelease_values, autoValue), typeerror("MagnetEasyRelease", autoValue))
+  autoValue;

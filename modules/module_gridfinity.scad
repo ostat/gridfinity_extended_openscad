@@ -93,7 +93,7 @@ module grid_block(
           $gcci[2] == [-1, 1] ? 180 :
           $gcci[2] == [-1,-1] ? -90 :
           $gcci[2] == [ 1,-1] ? 0 : 0;
-        rotate([0,0,rdeg-45+(magnet_easy_release=="outer" ? 0 : 180)])
+        rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
         MagentAndScrewRecess(
           magnetDiameter = magnet_diameter,
           magnetThickness = gf_magnet_thickness+0.1,
@@ -101,7 +101,7 @@ module grid_block(
           screwDepth = screw_depth,
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagentRelease = magnet_easy_release != "off");
+          easyMagentRelease = magnet_easy_release != MagnetEasyRelease_off);
     }
   }
  
@@ -162,7 +162,7 @@ module cylsq2(d1, d2, h) {
 module pad_oversize(num_x=1, num_y=1, margins=0) {
   assert(!is_undef(num_x), "num_x is undefined");
   assert(!is_undef(num_y), "num_y is undefined");
-
+  if(IsHelpEnabled("trace")) echo("pad_oversize", num_x=num_x, num_y=num_y, margins= margins);
   pad_corner_position = gf_pitch/2 - 4; // must be 17 to be compatible
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
