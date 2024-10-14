@@ -54,7 +54,8 @@ module gridfinity_label(
     [0,0,180],
     vertical_separator_positions,
     //is reversed
-    true];
+    true,
+    "front"];
   back = [
     //width
     num_x*gf_pitch,
@@ -64,8 +65,8 @@ module gridfinity_label(
     [0,0,0],
     vertical_separator_positions,
     //is reversed
-    false];
-
+    false,
+    "back"];
   left = [
     //width
     num_y*gf_pitch,
@@ -75,7 +76,8 @@ module gridfinity_label(
     [0,0,90],
     horizontal_separator_positions,
     //is reversed
-    false];
+    false,
+    "left"];
   right = [
     //width
     num_y*gf_pitch,
@@ -85,11 +87,13 @@ module gridfinity_label(
     [0,0,270],
     horizontal_separator_positions,
     //is reversed
-    true];
+    true,
+    "right"];
     
   locations = [front, back, left, right];
  
   color(color_label)
+  //Loop the sides 
   for(l = [0:1:len(locations)-1]){
     location = locations[l];
     separator_positions = location[ilSeparatorConfig];//calculateSeparators(location[3]);
@@ -98,9 +102,9 @@ module gridfinity_label(
       [ 0, zpoint-labelCornerRadius ],
       [ 0, zpoint-labelCornerRadius-labelSize.z ]
     ];
-  
-    // calcualte list of chambers. 
     labelWidthmm = labelSize.x <=0 ? location[ilWidth] : labelSize.x * gf_pitch;
+    
+    // calcualte list of chambers. 
     chamberWidths = len(separator_positions) < 1 || 
       labelWidthmm == 0 ||
       label_position == "left" ||
@@ -109,55 +113,59 @@ module gridfinity_label(
         [ location[ilWidth] ] // single chamber equal to the bin length
         : [ for (i=[0:len(separator_positions)]) 
           (i==len(separator_positions) 
-            ? location[0]
+            ? location[ilWidth]
             : separator_positions[i][iSeperatorPosition]) - (i==0 ? 0 : separator_positions[i-1][iSeperatorPosition]) ];
-                
-    union()
-    if(label_walls[l] > 0)
+    
+    //if(IsHelpEnabled("trace")) 
+    echo("gridfinity_label", l=l, location = location, chamberWidths=chamberWidths, separator_positions = separator_positions);
+    #union()
+    if(label_walls[l] != 0)
       //patterns in the outer walls
-      translate(location[1])
-      rotate(location[2])     
-    for (i=[0:len(chamberWidths)-1]) {
-        chamberStart = i == 0 
-          ? 0 
-          : separator_positions[i-1][iSeperatorPosition] + 
-            separator_positions[i-1][iSeperatorBendSeparation]/2
-              *(separator_positions[i-1][iSeperatorBendAngle] < 0 ? -1 : 1)
-              *(location[ilReversed] ? -1 : 1);
-        chamberWidth = chamberWidths[i];
-        label_num_x = (labelWidthmm == 0 || labelWidthmm > chamberWidth) ? chamberWidth : labelWidthmm;
-        label_pos_x = ((label_position == "center" || label_position == "centerchamber" )? (chamberWidth - label_num_x) / 2 
-                        : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x 
-                        : 0);
-                  
-        translate([i == 0 ? 0 : ((chamberStart + label_pos_x)*(location[ilReversed] ? -1 : 1) + (location[ilReversed] ? location[ilWidth] : 0)),0,0])
-        difference(){
-          hull() for (y=[0, 1, 2])
-          translate([0, labelPoints[y][0], labelPoints[y][1]])
-            rotate([0, 90, 0])
-            union(){
-              //left
-              tz(abs(label_num_x))
-              sphere(r=labelCornerRadius, $fn=64);
-              //Right
-              sphere(r=labelCornerRadius, $fn=64);
-            }
-          
-          if(label_style == "click"){
-             translate([2.5,labelPoints[0][0]+1,zpoint])
-             LabelClick();
-          } else if(label_relief > 0){
-            translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
-              cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
+      translate(location[ilPosition])
+      rotate(location[ilRotation])     
+      for (i=[0:len(chamberWidths)-1]) {
+          chamberStart = i == 0 
+            ? 0 
+            : separator_positions[i-1][iSeperatorPosition] + 
+              separator_positions[i-1][iSeperatorBendSeparation]/2
+                *(separator_positions[i-1][iSeperatorBendAngle] < 0 ? -1 : 1)
+                *(location[ilReversed] ? -1 : 1);
+          chamberWidth = chamberWidths[i];
+          label_num_x = (labelWidthmm == 0 || labelWidthmm > chamberWidth) ? chamberWidth : labelWidthmm;
+          label_pos_x = ((label_position == "center" || label_position == "centerchamber" )? (chamberWidth - label_num_x) / 2 
+                          : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x 
+                          : 0);
+        
+        //if(IsHelpEnabled("trace")) 
+        echo("gridfinity_label", i=i, chamberStart=chamberStart, label_num_x=label_num_x, label_pos_x=label_pos_x,  separator_position=separator_positions[i-1]);
+                    
+          //translate([(chamberStart + label_pos_x)*(location[ilReversed] ? -1 : 1) + (location[ilReversed] ? location[ilWidth] : 0),0,0])
+          translate([(chamberStart + label_pos_x)+labelCornerRadius,-labelCornerRadius,0])
+          difference(){
+            hull() for (y=[0, 1, 2])
+            translate([0, labelPoints[y][0], labelPoints[y][1]])
+              rotate([0, 90, 0])
+              union(){
+                //left
+                tz(abs(label_num_x-labelCornerRadius*2))//tz(abs(label_num_x))
+                sphere(r=labelCornerRadius, $fn=64);
+                //Right
+                sphere(r=labelCornerRadius, $fn=64);
+              }
+            
+            if(label_style == "click"){
+               translate([2.5-labelCornerRadius,labelPoints[0][0]+0.25,zpoint])
+               LabelClick();
+            } else if(label_relief > 0){
+              translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
+                cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
+          }
         }
       }
-    }
   }
 }
 
-module LabelClick(
-  
-){
+module LabelClick(){
   clickSize= [36.7,11.3, 1.2];
   clickRadius = 0.25;
   translate([0,0,-clickSize.z])
