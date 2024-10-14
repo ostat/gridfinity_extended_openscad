@@ -93,14 +93,15 @@ module gridfinity_label(
   locations = [front, back, left, right];
  
   color(color_label)
+  tz(zpoint+fudgeFactor)
   //Loop the sides 
   for(l = [0:1:len(locations)-1]){
     location = locations[l];
     separator_positions = location[ilSeparatorConfig];//calculateSeparators(location[3]);
    
-    labelPoints = [[ 0-labelSize.y, zpoint-labelCornerRadius],
-      [ 0, zpoint-labelCornerRadius ],
-      [ 0, zpoint-labelCornerRadius-labelSize.z ]
+    labelPoints = [[ 0-labelSize.y, -labelCornerRadius],
+      [ 0, -labelCornerRadius ],
+      [ 0, -labelCornerRadius-labelSize.z ]
     ];
     labelWidthmm = labelSize.x <=0 ? location[ilWidth] : labelSize.x * gf_pitch;
     
@@ -118,7 +119,7 @@ module gridfinity_label(
     
     //if(IsHelpEnabled("trace")) 
     echo("gridfinity_label", l=l, location = location, chamberWidths=chamberWidths, separator_positions = separator_positions);
-    #union()
+    union()
     if(label_walls[l] != 0)
       //patterns in the outer walls
       translate(location[ilPosition])
@@ -154,10 +155,10 @@ module gridfinity_label(
               }
             
             if(label_style == "click"){
-               translate([2.5-labelCornerRadius,labelPoints[0][0]+0.25,zpoint])
+               translate([2.5-labelCornerRadius,labelPoints[0][0]+0.25,0])
                LabelClick();
             } else if(label_relief > 0){
-              translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),zpoint-label_relief-fudgeFactor])
+              translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),0-label_relief-fudgeFactor])
                 cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
           }
         }
