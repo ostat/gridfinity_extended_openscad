@@ -243,11 +243,13 @@ gridfinity_cup(
   wallcutout_horizontal_angle=wallcutout_horizontal_angle,
   wallcutout_horizontal_height=wallcutout_horizontal_height,
   wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
-  extension_enabled=[
-    [extension_x_enabled,extension_x_position],
-    [extension_y_enabled,extension_y_position]],
-  extension_tabs_enabled=extension_tabs_enabled,
-  extension_tab_size=extension_tab_size,
+  extendable_Settings = ExtendableSettings(
+    extendablexEnabled = extension_x_enabled, 
+    extendablexPosition = extension_x_position, 
+    extendableyEnabled = extension_y_enabled, 
+    extendableyPosition = extension_y_position, 
+    extendableTabsEnabled = extension_tabs_enabled, 
+    extendableTabSize = extension_tab_size),
   sliding_lid_enabled = sliding_lid_enabled, 
   sliding_lid_thickness = sliding_lid_thickness, 
   sliding_min_wall_thickness = sliding_min_wallThickness, 
