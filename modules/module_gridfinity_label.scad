@@ -166,7 +166,7 @@ module gridfinity_label(
                LabelClick(clickSize= clickSize);
             } else if(label_relief > 0){
               translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),0-label_relief-fudgeFactor])
-                cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
+                cube([abs(label_num_x)-labelCornerRadius*2,abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
           }
         }
       }
