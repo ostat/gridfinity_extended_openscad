@@ -4,6 +4,10 @@ ilRotation=2;
 ilSeparatorConfig=3;
 ilReversed=4;
 
+LabelPosition_left = "left";
+LabelPosition_center = "center";
+LabelPosition_right = "right";
+      
 function calculateLabelSize(label_size) = 
     assert(is_list(label_size), "label_size must be a list")
     let(
@@ -108,17 +112,16 @@ module gridfinity_label(
     // calcualte list of chambers. 
     chamberWidths = len(separator_positions) < 1 || 
       labelWidthmm == 0 ||
-      label_position == "left" ||
-      label_position == "center" ||
-      label_position == "right" ?
+      label_position == LabelPosition_left ||
+      label_position == LabelPosition_center ||
+      label_position == LabelPosition_right ?
         [ location[ilWidth] ] // single chamber equal to the bin length
         : [ for (i=[0:len(separator_positions)]) 
           (i==len(separator_positions) 
             ? location[ilWidth]
             : separator_positions[i][iSeperatorPosition]) - (i==0 ? 0 : separator_positions[i-1][iSeperatorPosition]) ];
     
-    //if(IsHelpEnabled("trace")) 
-    echo("gridfinity_label", l=l, location = location, chamberWidths=chamberWidths, separator_positions = separator_positions);
+    if(IsHelpEnabled("trace")) echo("gridfinity_label", l=l, location = location, chamberWidths=chamberWidths, separator_positions = separator_positions);
     union()
     if(label_walls[l] != 0)
       //patterns in the outer walls
@@ -137,10 +140,8 @@ module gridfinity_label(
                           : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x 
                           : 0);
         
-        //if(IsHelpEnabled("trace")) 
-        echo("gridfinity_label", i=i, chamberStart=chamberStart, label_num_x=label_num_x, label_pos_x=label_pos_x,  separator_position=separator_positions[i-1]);
+        if(IsHelpEnabled("trace")) echo("gridfinity_label", i=i, chamberStart=chamberStart, label_num_x=label_num_x, label_pos_x=label_pos_x,  separator_position=separator_positions[i-1]);
                     
-          //translate([(chamberStart + label_pos_x)*(location[ilReversed] ? -1 : 1) + (location[ilReversed] ? location[ilWidth] : 0),0,0])
           translate([(chamberStart + label_pos_x)+labelCornerRadius,-labelCornerRadius,0])
           difference(){
             hull() for (y=[0, 1, 2])
@@ -155,8 +156,14 @@ module gridfinity_label(
               }
             
             if(label_style == "click"){
-               translate([2.5-labelCornerRadius,labelPoints[0][0]+0.25,0])
-               LabelClick();
+              clickSize= [36.7,11.3, 1.2];
+              clickLeftPosition = 
+                label_position == LabelPosition_left ? 2.65 
+                : label_position == LabelPosition_right ? 2.65
+                : label_position == LabelPosition_center ? (label_num_x-clickSize.x)/2
+                : 2.65;
+               translate([clickLeftPosition-labelCornerRadius,labelPoints[0][0]+0.25,0])
+               LabelClick(clickSize= clickSize);
             } else if(label_relief > 0){
               translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),0-label_relief-fudgeFactor])
                 cube([abs(label_num_x),abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
@@ -166,9 +173,10 @@ module gridfinity_label(
   }
 }
 
-module LabelClick(){
-  clickSize= [36.7,11.3, 1.2];
-  clickRadius = 0.25;
+module LabelClick(
+    clickSize= [36.7,11.3, 1.2],
+    clickRadius = 0.25
+    ){
   translate([0,0,-clickSize.z])
   difference(){
     roundedCube(size=clickSize,sideRadius=clickRadius);
