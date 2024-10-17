@@ -424,7 +424,7 @@ module gridfinity_cup(
               }
             }
           }
-
+         
           if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
             for(wallcutout_location = wallcutout_locations)
               if(wallcutout_location[iwalcutout_enabled] == true)
@@ -508,19 +508,35 @@ module gridfinity_cup(
                       translate(left[1])
                       rotate(left[2])
                       render() //Render on vertical_separator pattern because detailed patters can be slow
-                      cutout_pattern(
-                        patternStyle = wallpattern_style,
-                        canvasSize = left[0], 
-                        customShape = false,
-                        circleFn = wallpattern_hole_sides,
-                        holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                        holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                        holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
-                        center=true,
-                        fill=wallpattern_fill, //"none", "space", "crop"
-                        voronoiNoise=wallpattern_voronoi_noise,
-                        voronoiRadius = wallpattern_voronoi_radius,
-                        help=help);
+                      difference(){
+                        //separator wall pattern
+                        cutout_pattern(
+                          patternStyle = wallpattern_style,
+                          canvasSize = left[0], 
+                          customShape = false,
+                          circleFn = wallpattern_hole_sides,
+                          holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                          holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                          holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
+                          center=true,
+                          fill=wallpattern_fill, //"none", "space", "crop"
+                          voronoiNoise=wallpattern_voronoi_noise,
+                          voronoiRadius = wallpattern_voronoi_radius,
+                          help=help);
+                        //subtract outer wall to outer wall cutout from separator pattern
+                          wallcutoutFront = wallcutouts_horizontal[0];
+                          wallcutoutFrontThickness = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation];
+                          
+                          if(wallcutoutFront[iwalcutout_enabled] == true && wallcutoutFront[0][iwalcutoutconfig_type] == "enabled" )
+                            translate([0,wallcutoutFront[iwalcutout_size].z/2,wallcutoutFrontThickness/2])
+                            rotate([270,0,0])
+                            WallCutout(
+                              lowerWidth=wallcutoutFront[iwalcutout_size].x+cutoutclearance,
+                              wallAngle=wallcutoutFront[iwalcutout_config][iwalcutoutconfig_angle],
+                              height=wallcutoutFront[iwalcutout_size].z+cutoutclearance,
+                              thickness=wallcutoutFrontThickness,
+                              cornerRadius=wallcutoutFront[iwalcutout_config][iwalcutoutconfig_cornerradius]);
+                      }
                   
                 if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
                   separators_generic(
@@ -538,19 +554,36 @@ module gridfinity_cup(
                       translate(front[1])
                       rotate(front[2])
                       render() //Render on horizontal_separator pattern because detailed patters can be slow
-                      cutout_pattern(
-                        patternStyle = wallpattern_style,
-                        canvasSize = front[0], 
-                        customShape = false,
-                        circleFn = wallpattern_hole_sides,
-                        holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                        holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                        holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
-                        center=true,
-                        fill=wallpattern_fill, //"none", "space", "crop"
-                        voronoiNoise=wallpattern_voronoi_noise,
-                        voronoiRadius = wallpattern_voronoi_radius,
-                        help=help);
+                      difference(){
+                      //separator wall pattern
+                        cutout_pattern(
+                          patternStyle = wallpattern_style,
+                          canvasSize = front[0], 
+                          customShape = false,
+                          circleFn = wallpattern_hole_sides,
+                          holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                          holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                          holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
+                          center=true,
+                          fill=wallpattern_fill, //"none", "space", "crop"
+                          voronoiNoise=wallpattern_voronoi_noise,
+                          voronoiRadius = wallpattern_voronoi_radius,
+                          help=help);
+                          
+                          //subtract outer wall to outer wall cutout from separator pattern
+                          wallcutoutLeft = wallcutouts_vertical[0];
+                          wallcutoutLeftThickness = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation];
+                          
+                          if(wallcutoutLeft[iwalcutout_enabled] == true && wallcutoutLeft[0][iwalcutoutconfig_type] == "enabled" )
+                            translate([0,wallcutoutLeft[iwalcutout_size].z/2,wallcutoutLeftThickness/2])
+                            rotate([270,0,0])
+                            WallCutout(
+                              lowerWidth=wallcutoutLeft[iwalcutout_size].x+cutoutclearance,
+                              wallAngle=wallcutoutLeft[iwalcutout_config][iwalcutoutconfig_angle],
+                              height=wallcutoutLeft[iwalcutout_size].z+cutoutclearance,
+                              thickness=wallcutoutLeftThickness,
+                              cornerRadius=wallcutoutLeft[iwalcutout_config][iwalcutoutconfig_cornerradius]);
+                      }
                 }
                 
                 //Subtract setback from wall pattern
@@ -624,7 +657,7 @@ module gridfinity_cup(
                 cut_depth = horizontal_separator_cut_depth,
                 seperator_config = horizontal_separator_positions);
 
-                //Subtract cutout from wall pattern
+              //Subtract cutout from wall pattern
               if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
                 for(wallcutout_location = wallcutout_locations)
                   if(wallcutout_location[iwalcutout_enabled] == true)
