@@ -79,16 +79,22 @@ flat_base = false;
 spacer = false;
 
 /* [Label] */
-label_style = "normal"; //[disabled: no label, normal:normal, click]
+label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interfere with stacking
-label_relief = 0; // 0.1
+label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 label_walls=[0,1,0,0];  //[0:1:1]
-
+label_settings=LabelSettings(
+    labelStyle=label_style, 
+    labelPosition=label_position, 
+    labelSize=label_size,
+    labelRelief=label_relief,
+    labelWalls=label_walls);
+    
 /* [Sliding Lid] */
 sliding_lid_enabled = false;
 // 0 = wall thickness *2
@@ -161,7 +167,13 @@ extension_y_position = 0.5;
 extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 extension_tab_size= [10,0,0,0];
-
+extension_settings = ExtendableSettings(
+    extendablexEnabled = extension_x_enabled, 
+    extendablexPosition = extension_x_position, 
+    extendableyEnabled = extension_y_enabled, 
+    extendableyPosition = extension_y_position, 
+    extendableTabsEnabled = extension_tabs_enabled, 
+    extendableTabSize = extension_tab_size);
 /* [debug] */
 //Slice along the x axis
 cutx = 0; //0.1
@@ -178,11 +190,7 @@ gridfinity_cup(
   width=width, depth=depth, height=height,
   position=position,
   filled_in=filled_in,
-  label_style=label_style,
-  label_position=label_position,
-  label_size=label_size,
-  label_relief=label_relief,
-  label_walls=label_walls,
+  label_settings=label_settings,
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   fingerslide_walls=fingerslide_walls,
@@ -243,13 +251,7 @@ gridfinity_cup(
   wallcutout_horizontal_angle=wallcutout_horizontal_angle,
   wallcutout_horizontal_height=wallcutout_horizontal_height,
   wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
-  extendable_Settings = ExtendableSettings(
-    extendablexEnabled = extension_x_enabled, 
-    extendablexPosition = extension_x_position, 
-    extendableyEnabled = extension_y_enabled, 
-    extendableyPosition = extension_y_position, 
-    extendableTabsEnabled = extension_tabs_enabled, 
-    extendableTabSize = extension_tab_size),
+  extendable_Settings = extension_settings,
   sliding_lid_enabled = sliding_lid_enabled, 
   sliding_lid_thickness = sliding_lid_thickness, 
   sliding_min_wall_thickness = sliding_min_wallThickness, 

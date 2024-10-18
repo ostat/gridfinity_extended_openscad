@@ -34,16 +34,21 @@ default_zClearance = 0; // 0.1
 
 /* [Label] */
 // Include overhang for labeling
-default_label_style = "normal"; //[disabled: no label, normal:normal, click]
-
+default_label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred, labels by pred, cullenect:Cullenect click labels]
 default_label_position = "left"; //[left: left aligned label, right: right aligned label, center: center aligned label, leftchamber: left aligned chamber label, rightchamber: right aligned chamber label, centerchamber: center aligned chamber label]
 // Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 default_label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interfere with stacking
-default_label_relief = 0; // 0.1
+// Creates space so the attached label wont interfere with stacking 
+default_label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 default_label_walls=[0,1,0,0];  //[0:1:1]
-
+default_label_settings=LabelSettings(
+    labelStyle=default_label_style, 
+    labelPosition=default_label_position, 
+    labelSize=default_label_size,
+    labelRelief=default_label_relief,
+    labelWalls=default_label_walls);
+    
 /* [Sliding Lid] */
 default_sliding_lid_enabled = false;
 // 0 = wall thickness *2
@@ -176,11 +181,7 @@ module gridfinity_cup(
   height=default_height,
   position=default_position,
   filled_in=default_filled_in,
-  label_style=default_label_style,
-  label_position=default_label_position,
-  label_size=default_label_size,
-  label_relief=default_label_relief,
-  label_walls=default_label_walls,
+  label_settings=default_label_settings,
   sliding_lid_enabled = default_sliding_lid_enabled,
   sliding_lid_thickness = default_sliding_lid_thickness,
   fingerslide=default_fingerslide,
@@ -265,6 +266,7 @@ module gridfinity_cup(
 
   magnet_easy_release = validateMagnetEasyRelease(magnet_easy_release, efficient_floor);
   filled_in = validateFilledIn(filled_in);
+  label_settings=ValidateLabelSettings(label_settings);
   extendable_Settings = ValidateExtendableSettings(extendable_Settings, num_x=num_x, num_y=num_y);
   echo(extendable_Settings=extendable_Settings, magnet_easy_release=magnet_easy_release);
   vertical_separator_positions = vertical_irregular_subdivisions 
@@ -322,11 +324,7 @@ module gridfinity_cup(
       union(){
         partitioned_cavity(
           num_x, num_y, num_z, 
-          label_style=label_style,
-          label_position=label_position,
-          label_size=label_size,
-          label_relief=label_relief,
-          label_walls=label_walls,
+          label_settings=label_settings,
           fingerslide=fingerslide, 
           fingerslide_radius=fingerslide_radius, 
           fingerslide_walls=fingerslide_walls,
@@ -451,40 +449,40 @@ module gridfinity_cup(
                : -gf_lip_height-1.8);
             z=wallpatternzpos+heightz/2;
             
-            labelSize = calculateLabelSize(label_size);
+            labelSize = calculateLabelSize(label_settings[iLabelSettings_size]);
             //Subtracting the wallpattern_thickness is a bit of a hack, its needed as the label extends in to the wall.
-            labelSizez = (label_style != "disabled" ? labelSize.z-wallpattern_thickness : 0);
+            labelSizez = (label_settings[iLabelSettings_style] != LabelStyle_disabled ? labelSize.z-wallpattern_thickness : 0);
             
             front = [
               //width,height
               [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
-                heightz - (label_walls[0] != 0 ? labelSizez : 0)],
+                heightz - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)],
               //Position
               [(num_x)*gf_pitch/2, 
                 wallpattern_thickness, 
-                z - (label_walls[0] != 0 ? labelSizez : 0)/2],
+                z - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)/2],
               //rotation
               [90,0,0]];
             back = [
               [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
-                heightz - (label_walls[1] != 0 ? labelSizez : 0)],
+                heightz - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)],
               [(num_x)*gf_pitch/2, 
                 (num_y)*gf_pitch, 
-                 z - (label_walls[1] != 0 ? labelSizez : 0)/2],
+                 z - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)/2],
               [90,0,0]];
             left = [
               [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
-                heightz - (label_walls[2] != 0 ? labelSizez : 0)],
+                heightz - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)],
               [0, 
                 (num_y)*gf_pitch/2, 
-                z - (label_walls[2] != 0 ? labelSizez : 0)/2],
+                z - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)/2],
               [90,0,90]];
             right = [
               [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
-                heightz - (label_walls[3] != 0 ? labelSizez : 0)],
+                heightz - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)],
               [(num_x)*gf_pitch-wallpattern_thickness,   
                 (num_y)*gf_pitch/2, 
-                z - (label_walls[3] != 0 ? labelSizez : 0)/2],
+                z - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)/2],
               [90,0,90]];
           
           locations = [front, back, left, right];
@@ -804,11 +802,7 @@ module gridfinity_cup(
     ,"num_z",num_z
     ,"position",position
     ,"filled_in",filled_in
-    ,"label_style",label_style
-    ,"label_position",label_position
-    ,"label_size",label_size
-    ,"label_relief",label_relief
-    ,"label_walls",label_walls
+    ,"label_settings",label_settings
     ,"fingerslide",fingerslide
     ,"fingerslide_radius",fingerslide_radius
     ,"fingerslide_walls",fingerslide_walls
@@ -907,8 +901,8 @@ module cutout_pattern(
   }
 }
 
-module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, label_position=default_label_position, 
-    label_size=default_label_size, label_relief=default_label_relief, label_walls=default_label_walls,
+module partitioned_cavity(num_x, num_y, num_z, 
+    label_settings=default_label_settings,
     fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     fingerslide_walls=default_fingerslide_walls,
     magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, magnet_easy_release=default_magnet_easy_release,
@@ -968,7 +962,7 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
       seperator_config = horizontal_separator_positions,
       separator_orentation = "horizontal");
       
-    if(label_style != "disabled"){
+    if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
       vertical_separator_positions = calculateSeparators(
           seperator_config = vertical_separator_positions, 
           length = gf_pitch*num_y,
@@ -994,12 +988,7 @@ module partitioned_cavity(num_x, num_y, num_z, label_style=default_label_style, 
         zpoint = zpoint,
         vertical_separator_positions = vertical_separator_positions,
         horizontal_separator_positions = horizontal_separator_positions,
-        label_size=label_size,
-        label_position = label_position,
-        label_style = label_style,
-        label_relief = label_relief,
-        label_walls=label_walls);
-        
+        label_settings=label_settings);
     }
   }
 }

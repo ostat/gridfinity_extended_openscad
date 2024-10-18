@@ -33,7 +33,7 @@ itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 
 /* [Item Holder - Custom Item] */
 // Should the grid be square or hex
-itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard","custom"]
+itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard","custom":custom shape - beta feature]
 // The number of sides for a round hole
 itemholder_hole_sides = 4; 
 // Diameter of the round hole
@@ -233,9 +233,9 @@ module mycustomshape(){
   //item spacing 4
   translate([4,0,0])
   union(){
-    chamferedSquare(size=[15,25,30], chamfer = 1, cornerRadius = 1);
-    translate([-4,5,25])
-    chamferedSquare(size=[5,15,5], chamfer = 1, cornerRadius = 1);
+    chamferedSquare(size=[9.9,25.3,30], chamfer = 1, cornerRadius = 1);
+    translate([-2.1,7.55,0])
+    chamferedSquare(size=[3,10,30], chamfer = 1, cornerRadius = 1);
   }
   
   //You can use any shapes but these are some example shapes
