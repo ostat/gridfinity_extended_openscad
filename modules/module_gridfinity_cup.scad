@@ -42,12 +42,6 @@ default_label_size = [0,14,0,0.6]; // 0.01
 default_label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 default_label_walls=[0,1,0,0];  //[0:1:1]
-default_label_settings=LabelSettings(
-    labelStyle=default_label_style, 
-    labelPosition=default_label_position, 
-    labelSize=default_label_size,
-    labelRelief=default_label_relief,
-    labelWalls=default_label_walls);
     
 /* [Sliding Lid] */
 default_sliding_lid_enabled = false;
@@ -181,7 +175,12 @@ module gridfinity_cup(
   height=default_height,
   position=default_position,
   filled_in=default_filled_in,
-  label_settings=default_label_settings,
+  label_settings=LabelSettings(
+    labelStyle=default_label_style, 
+    labelPosition=default_label_position, 
+    labelSize=default_label_size,
+    labelRelief=default_label_relief,
+    labelWalls=default_label_walls),
   sliding_lid_enabled = default_sliding_lid_enabled,
   sliding_lid_thickness = default_sliding_lid_thickness,
   fingerslide=default_fingerslide,

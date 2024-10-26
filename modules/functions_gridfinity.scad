@@ -129,15 +129,7 @@ Stackable_values = [Stackable_enabled,Stackable_disabled,Stackable_filllip];
   let(value = is_bool(value) ? value ? Stackable_enabled : Stackable_disabled : value) 
   assert(list_contains(Stackable_values, value), typeerror("Stackable", value))
   value;
-
-BinExtensionEnabled_disabled = "disabled";
-BinExtensionEnabled_front = "front";
-BinExtensionEnabled_back = "back";  
-function validateBinExtensionEnabled(value) = 
-  assert(is_list(value) && len(value) == 2, "must be a list of length 2")
-  [ is_bool(value.x) ? [value.x ? BinExtensionEnabled_front : BinExtensionEnabled_disabled, 0.5] : value.x,
-    is_bool(value.y) ? [value.y ? BinExtensionEnabled_front : BinExtensionEnabled_disabled, 0.5] : value.y];
-    
+ 
 MagnetEasyRelease_off = "off";
 MagnetEasyRelease_auto = "auto";
 MagnetEasyRelease_inner = "inner"; 
