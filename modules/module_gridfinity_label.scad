@@ -13,9 +13,10 @@ iLabelSettings_walls = 4;
 LabelStyle_disabled = "disabled";
 LabelStyle_normal = "normal";
 LabelStyle_cullenect = "cullenect";
+LabelStyle_cullenectlegacy = "cullenect_legacy";
 LabelStyle_gflabel = "gflabel";
 LabelStyle_pred = "pred";
-LabelStyle_values = [LabelStyle_disabled,LabelStyle_normal,LabelStyle_cullenect,LabelStyle_gflabel];
+LabelStyle_values = [LabelStyle_disabled,LabelStyle_normal,LabelStyle_cullenect,LabelStyle_cullenectlegacy,LabelStyle_gflabel,LabelStyle_pred];
 function validateLabelStyle(value) = 
   assert(list_contains(LabelStyle_values, value), typeerror("LabelStyle", value))
   value;
@@ -62,6 +63,12 @@ function LabelSettings(
     validatedResult = ValidateLabelSettings(result)
   ) validatedResult;
 
+ function CalcualteLabelSocketPosition(label_position, labelSocketSize, label_num_x, socketPadding =  2.65) =  
+                label_position == LabelPosition_left || label_position == LabelPosition_leftchamber  ? socketPadding 
+                : label_position == LabelPosition_right || label_position == LabelPosition_rightchamber ? label_num_x-labelSocketSize.x-socketPadding
+                : label_position == LabelPosition_center || label_position == LabelPosition_centerchamber ? (label_num_x-labelSocketSize.x)/2
+                : socketPadding;
+                
 function ValidateLabelSettings(settings) =
   assert(is_list(settings) && len(settings)== 5, "Label Settings must be a list of length 5")
   assert(is_list(settings[iLabelSettings_size]) && len(settings[iLabelSettings_size])==4, "Label Settings Size must length 4")
@@ -183,7 +190,7 @@ module gridfinity_label(
             : separator_positions[i-1][iSeperatorPosition] + 
               separator_positions[i-1][iSeperatorBendSeparation]/2
                 *(separator_positions[i-1][iSeperatorBendAngle] < 0 ? -1 : 1)
-                *(location[ilReversed] ? -1 : 1);
+                *(location[ilabelWall_Reversed] ? -1 : 1);
           chamberWidth = chamberWidths[i];
           label_num_x = (labelWidthmm == 0 || labelWidthmm > chamberWidth) ? chamberWidth : labelWidthmm;
           label_pos_x = ((label_position == "center" || label_position == "centerchamber" )? (chamberWidth - label_num_x) / 2 
@@ -211,20 +218,30 @@ module gridfinity_label(
                   cube([abs(label_num_x)*2,abs(labelPoints[0][0]-labelPoints[1][0])/2,label_relief+fudgeFactor]);
                 }
               }
-
-            if(label_style == LabelStyle_cullenect){
-              clickSize= [36.7,11.3, 1.2];
-              clickLeftPosition = 
-                label_position == LabelPosition_left ? 2.65 
-                : label_position == LabelPosition_right ? 2.65
-                : label_position == LabelPosition_center ? (label_num_x-clickSize.x)/2
-                : 2.65;
-               translate([clickLeftPosition-labelCornerRadius,labelPoints[0][0]+0.25,0])
-               LabelClick(clickSize= clickSize);
-             } else if(label_style == LabelStyle_pred){
-                translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),0-label_relief-fudgeFactor])
-                cube([abs(label_num_x)-labelCornerRadius*2,abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
-            } else if(label_style == LabelStyle_gflabel){
+            //Create Label Sockets 
+            if(label_style == LabelStyle_cullenectlegacy){
+              labelSize= [36.7,11.3, 1.2];
+              labelLeftPosition = CalcualteLabelSocketPosition(
+                label_position=label_position, 
+                labelSocketSize=labelSize, 
+                label_num_x=label_num_x);
+              translate([labelLeftPosition-labelCornerRadius,labelPoints[0][0]+0.25,0])
+              Label_cullenect_legacy_socket(clickSize= labelSize);
+            } 
+            else if(label_style == LabelStyle_cullenect){
+              labelSize = [label_relief.x == 0 ? label_num_x : label_relief.x,11,1.2];
+              labelLeftPosition = CalcualteLabelSocketPosition(
+                label_position=label_position, 
+                labelSocketSize=labelSize, 
+                label_num_x=label_num_x);
+              translate([labelLeftPosition-labelCornerRadius,labelPoints[0][0]+0.4,-labelSize.z])
+              cullenect_socket(labelSize=labelSize);
+            } 
+            else if(label_style == LabelStyle_pred){
+              translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),0-label_relief-fudgeFactor])
+              cube([abs(label_num_x)-labelCornerRadius*2,abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
+            } 
+            else if(label_style == LabelStyle_gflabel){
                    gflabelSize=[label_relief.x,label_relief.y,label_relief.z];
                    gflabelLeftPosition = 
                 label_position == LabelPosition_left ? 2.65 
@@ -232,7 +249,7 @@ module gridfinity_label(
                 : label_position == LabelPosition_center ? (label_num_x-gflabelSize.x)/2
                 : 2.65;
                translate([gflabelLeftPosition-labelCornerRadius,labelPoints[0][0]+0.25,0])
-              #Labelgflabel(
+              Labelgflabel_socket(
                 size=gflabelSize,
                 radius=label_relief[3]);
             } else if(label_style == LabelStyle_normal) {
@@ -245,7 +262,7 @@ module gridfinity_label(
     }
   }
 }
-module Labelgflabel(
+module Labelgflabel_socket(
     size= [36.7,11.3, 1.2],
     radius = 0.25
     ){
@@ -254,7 +271,7 @@ module Labelgflabel(
   roundedCube(size=size,sideRadius=radius);
 }
 
-module LabelClick(
+module Label_cullenect_legacy_socket(
     clickSize= [36.7,11.3, 1.2],
     clickRadius = 0.25
     ){
@@ -266,4 +283,40 @@ module LabelClick(
       rotate([90,210,0])
       cylinder(h=clickSize.y+fudgeFactor*2,r=.75, $fn=3);
     }}
+}
+
+// Generate negative volume of socket
+module cullenect_socket(
+  labelSize=[36.0,11,1.2],
+  latchX = 0.2, // Width of socket on label walls
+  latchZ = 0.6, // Z-height of wall socket
+  labelRadius = 0.5,
+  socket_offset = 0.3,
+  socket_walls = 2,
+  ribZ = 0.4
+){
+  fudgeFactor = 0.01;
+  socketX = labelSize.x + socket_offset;
+  socketY = labelSize.y + socket_offset;
+  difference(){
+    RoundedCube([socketX, socketY, labelSize.z], labelRadius);
+		translate([0,-fudgeFactor,0.2])
+      cube([socketX, latchX+fudgeFactor, ribZ]);
+		translate([0, socketY - latchX,0.4])
+      cube([socketX, latchX+fudgeFactor, ribZ]);
+	}
+}
+
+// Tool for rounded cubes
+ module RoundedCube(size, radius, r1, r2, $fn=64) {
+  r1 = is_num(radius) ? radius : r1;
+  r2 = is_num(radius) ? radius : r2;
+  maxr = max(r1,r2);
+  
+  translate([size.x/2, size.y/2,0])
+  hull()
+  for(x=[-1,1], y=[-1,1]){
+    translate([(size.x/2-maxr)*x, (size.y/2-maxr)*y,0])
+    cylinder(r1 = r1, r2=r2, h=size.z);
+  }
 }

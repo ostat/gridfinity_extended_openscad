@@ -94,13 +94,15 @@ flat_base = false;
 spacer = false;
 
 /* [Label] */
-label_style = "disabled"; //[disabled: no label, normal:normal, click]
+label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
-// Creates space so the attached label wont interfere with stacking
-label_relief = 0; // 0.1
+// Size in mm of relief where appropiate. Width, depth, height, radius
+label_relief = [0,0,0,0.6]; // 0.1
+// wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
+label_walls=[0,1,0,0];  //[0:1:1]
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -265,10 +267,12 @@ module gridfinity_tray(
   width=width, depth=depth, height=height,
   position=position,
   filled_in=filled_in,
-  label_style=label_style,
-  label_position=label_position,
-  label_size=label_size,
-  label_relief=label_relief,
+  label_settings=LabelSettings(
+    labelStyle=label_style, 
+    labelPosition=label_position, 
+    labelSize=label_size,
+    labelRelief=label_relief,
+    labelWalls=label_walls),
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   magnet_diameter=magnet_diameter,
@@ -339,7 +343,7 @@ module gridfinity_tray(
       width=width, depth=depth, height=height,
       position=position,
       filled_in=filled_in,
-      label_style=label_style,
+      label_settings=label_settings,
       label_position=label_position,
       label_size=label_size,
       label_relief=label_relief,
