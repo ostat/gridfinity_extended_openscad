@@ -2,7 +2,7 @@ include <module_utility.scad>
 include <functions_general.scad>
 include <gridfinity_constants.scad>
 include <functions_gridfinity.scad>
-        
+include <module_gridfinity_cup_base.scad>        
 
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
@@ -10,30 +10,32 @@ module grid_block(
   num_x=1, 
   num_y=2, 
   num_z=2, 
-  magnet_diameter=gf_magnet_diameter, 
-  screw_depth=gf_cupbase_screw_depth, 
   position = "zero",
-  hole_overhang_remedy=0, 
-  half_pitch=false, 
-  box_corner_attachments_only = false, 
-  flat_base=false, 
-  stackable = "enabled", //["enabled", "disabled", "filllip"]
-  center_magnet_diameter = 0,
-  center_magnet_thickness = 0,
-  magnet_easy_release = "off", //[off,inner,outer]
+  stackable = false,
+  cupbase_settings = [],
   $fn = 32,
   help)
 {
+
   assert_openscad_version();
-  
-  stackable = validateStackable(stackable);
+  cupbase_settings = ValidateCupBaseSettings(cupbase_settings);
+
+  //Legacy variables.
+  magnet_size=cupbase_settings[iCupBase_MagnetSize];
+  screw_size=cupbase_settings[iCupBase_ScrewSize];
+  hole_overhang_remedy=cupbase_settings[iCupBase_HoleOverhangRemedy];
+  box_corner_attachments_only = cupbase_settings[iCupBase_CornerAttachmentsOnly];
+  half_pitch=cupbase_settings[iCupBase_HalfPitch];
+  flat_base=cupbase_settings[iCupBase_FlatBase];
+  center_magnet_size = cupbase_settings[iCupBase_CenterMagnetSize];
+  magnet_easy_release = cupbase_settings[iCupBase_MagnetEasyRelease];
   
   outer_size = gf_pitch - gf_tolerance;  // typically 41.5
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
 
-  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
+  magnet_position = calculateMagnetPosition(magnet_size[iCylinderDimension_Diameter]);
    
-  overhang_fix = hole_overhang_remedy > 0 && magnet_diameter > 0 && screw_depth > 0 ? hole_overhang_remedy : 0;
+  overhang_fix = hole_overhang_remedy > 0 && magnet_size[iCylinderDimension_Diameter] > 0 && screw_size[iCylinderDimension_Diameter] > 0 ? hole_overhang_remedy : 0;
   overhang_fix_depth = 0.3;  // assume this is enough
   
   totalht=gf_zpitch*num_z+3.75;
@@ -56,7 +58,7 @@ module grid_block(
       cylinder(r=gf_cup_corner_radius, h=totalht+fudgeFactor*2, $fn=$fn);
     }
     
-    if(center_magnet_diameter> 0 && center_magnet_thickness>0){
+    if(center_magnet_size[iCylinderDimension_Diameter]){
       //Center Magnet
       for(x =[0:1:num_x-1])
       {
@@ -64,7 +66,7 @@ module grid_block(
         {
           color(color_basehole)
           translate([x*gf_pitch,y*gf_pitch,-fudgeFactor])
-            cylinder(h=center_magnet_thickness-fudgeFactor, d=center_magnet_diameter, $fn=$fn);
+            cylinder(h=center_magnet_size[iCylinderDimension_Height]-fudgeFactor, d=center_magnet_size[iCylinderDimension_Diameter], $fn=$fn);
         }
       }
     }
@@ -95,10 +97,10 @@ module grid_block(
           $gcci[2] == [ 1,-1] ? 0 : 0;
         rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
         MagentAndScrewRecess(
-          magnetDiameter = magnet_diameter,
-          magnetThickness = gf_magnet_thickness+0.1,
-          screwDiameter = gf_cupbase_screw_diameter,
-          screwDepth = screw_depth,
+          magnetDiameter = magnet_size[iCylinderDimension_Diameter],
+          magnetThickness = magnet_size[iCylinderDimension_Height]+0.1,
+          screwDiameter = screw_size[iCylinderDimension_Diameter],
+          screwDepth = screw_size[iCylinderDimension_Height],
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
           easyMagentRelease = magnet_easy_release != MagnetEasyRelease_off);
@@ -109,8 +111,8 @@ module grid_block(
     "num_x",num_x
     ,"num_y",num_y
     ,"num_z",num_z
-    ,"magnet_diameter",magnet_diameter
-    ,"screw_depth",screw_depth
+    ,"magnet_size",magnet_size
+    ,"screw_size",screw_size
     ,"position",position
     ,"hole_overhang_remedy",hole_overhang_remedy
     ,"half_pitch",half_pitch

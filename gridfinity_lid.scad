@@ -68,14 +68,14 @@ horizontal_irregular_subdivisions = false;
 horizontal_separator_config = "10.5|21|42|50|60";
       
 /* [Base] */
-// (Zack's design uses magnet diameter of 6.5)
-magnet_diameter = 0;  // .1
-// Create relief for magnet removal 
-magnet_easy_release = true;
-// (Zack's design uses depth of 6)
-screw_depth = 0;
-center_magnet_diameter =0;
-center_magnet_thickness = 0;
+//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+magnet_size = [6.5, 2.4];  // .1
+//create relief for magnet removal
+magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+//size of screw, diameter and height. Zacks original used 3 and 6
+screw_size = [3, 6]; // .1
+//size of center magnet, diameter and height. 
+center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
@@ -136,20 +136,33 @@ wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
 /* [Wall Cutout] */
-wallcutout_enabled=false;
+wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-wallcutout_walls=[1,0,0,0];  //0.1
+wallcutout_vertical_position=-2;  //0.1
 //default will be binwidth/2
-wallcutout_width=0;
-wallcutout_angle=70;
+wallcutout_vertical_width=0;
+wallcutout_vertical_angle=70;
 //default will be binHeight
-wallcutout_height=0;
-wallcutout_corner_radius=5;
+wallcutout_vertical_height=0;
+wallcutout_vertical_corner_radius=5;
+wallcutout_horizontal ="disabled"; //[disabled, enabled, wallsonly, leftonly, rightonly]
+// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_horizontal_position=-2;  //0.1
+//default will be binwidth/2
+wallcutout_horizontal_width=0;
+wallcutout_horizontal_angle=70;
+//default will be binHeight
+wallcutout_horizontal_height=0;
+wallcutout_horizontal_corner_radius=5;
 
 /* [Extendable] */
-extension_x_enabled = false;
-extension_y_enabled = false;
+extension_x_enabled = "disabled"; //[disabled, front, back]
+extension_x_position = 0.5; 
+extension_y_enabled = "disabled"; //[disabled, front, back]
+extension_y_position = 0.5; 
 extension_tabs_enabled = true;
+//Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
+extension_tab_size= [10,0,0,0];
 
 /* [debug] */
 //Slice along the x axis
@@ -176,16 +189,20 @@ if(mode == "both" || mode == "cup")
       labelWalls=label_walls),
     fingerslide=fingerslide,
     fingerslide_radius=fingerslide_radius,
-    magnet_diameter=magnet_diameter,
-    magnet_easy_release=magnet_easy_release,
-    screw_depth=screw_depth,
-    center_magnet_diameter=center_magnet_diameter,
-    center_magnet_thickness=center_magnet_thickness,
-    floor_thickness=floor_thickness,
-    cavity_floor_radius=cavity_floor_radius,
+    cupbase_settings = CupBaseSettings(
+      magnetSize = magnet_size, 
+      magnetEasyRelease = magnet_easy_release, 
+      centerMagnetSize = center_magnet_size, 
+      screwSize = screw_size, 
+      holeOverhangRemedy = hole_overhang_remedy, 
+      cornerAttachmentsOnly = box_corner_attachments_only,
+      floorThickness = floor_thickness,
+      cavityFloorRadius = cavity_floor_radius,
+      efficientFloor=efficient_floor,
+      halfPitch=half_pitch,
+      flatBase=flat_base,
+      spacer=spacer),
     wall_thickness=wall_thickness,
-    hole_overhang_remedy=hole_overhang_remedy,
-    efficient_floor=efficient_floor,
     chamber_wall_thickness=chamber_wall_thickness,
     vertical_chambers = vertical_chambers,
     vertical_separator_bend_position=vertical_separator_bend_position,
@@ -201,12 +218,8 @@ if(mode == "both" || mode == "cup")
     horizontal_separator_cut_depth=horizontal_separator_cut_depth,
     horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
     horizontal_separator_config=horizontal_separator_config, 
-    half_pitch=half_pitch,
     lip_style=lip_style,
     zClearance=zClearance,
-    box_corner_attachments_only=box_corner_attachments_only,
-    flat_base = flat_base,
-    spacer=spacer,
     tapered_corner=tapered_corner,
     tapered_corner_size = tapered_corner_size,
     tapered_setback = tapered_setback,
@@ -220,14 +233,25 @@ if(mode == "both" || mode == "cup")
     wallpattern_fill=wallpattern_fill,
     wallpattern_voronoi_noise=wallpattern_voronoi_noise,
     wallpattern_voronoi_radius = wallpattern_voronoi_radius,
-    wallcutout_enabled=wallcutout_enabled,
-    wallcutout_walls=wallcutout_walls,
-    wallcutout_width=wallcutout_width,
-    wallcutout_angle=wallcutout_angle,
-    wallcutout_height=wallcutout_height,
-    wallcutout_corner_radius=wallcutout_corner_radius,
-    extension_enabled=[extension_x_enabled,extension_y_enabled],
-    extension_tabs_enabled = extension_tabs_enabled,
+    wallcutout_vertical=wallcutout_vertical,
+    wallcutout_vertical_position=wallcutout_vertical_position,
+    wallcutout_vertical_width=wallcutout_vertical_width,
+    wallcutout_vertical_angle=wallcutout_vertical_angle,
+    wallcutout_vertical_height=wallcutout_vertical_height,
+    wallcutout_vertical_corner_radius=wallcutout_vertical_corner_radius,
+    wallcutout_horizontal=wallcutout_horizontal,
+    wallcutout_horizontal_position=wallcutout_horizontal_position,
+    wallcutout_horizontal_width=wallcutout_horizontal_width,
+    wallcutout_horizontal_angle=wallcutout_horizontal_angle,
+    wallcutout_horizontal_height=wallcutout_horizontal_height,
+    wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
+    extendable_Settings = ExtendableSettings(
+      extendablexEnabled = extension_x_enabled, 
+      extendablexPosition = extension_x_position, 
+      extendableyEnabled = extension_y_enabled, 
+      extendableyPosition = extension_y_position, 
+      extendableTabsEnabled = extension_tabs_enabled, 
+      extendableTabSize = extension_tab_size),
     sliding_lid_enabled = sliding_lid_enabled, 
     sliding_lid_thickness = sliding_lid_thickness, 
     sliding_min_wall_thickness = sliding_min_wall_thickness, 

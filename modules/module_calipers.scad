@@ -7,7 +7,7 @@ module ShowCalipers(
   cutx, cuty, 
   size, 
   lip_style, 
-  magnet_diameter, 
+  magnet_depth, 
   screw_depth, 
   floor_thickness, 
   filled_in,
@@ -20,7 +20,7 @@ module ShowCalipers(
   {
     translate([0,gf_pitch*cuty,0]) 
     rotate([90,0,0])
-    showCalipersForSide("width", size.x, size.z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
+    showCalipersForSide("width", size.x, size.z, lip_style, magnet_depth, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
   }  
   
   color(color_text)
@@ -28,17 +28,17 @@ module ShowCalipers(
   {
     translate([gf_pitch*cutx,gf_pitch*size.y,0]) 
     rotate([90,0,270])
-    showCalipersForSide("depth", size.y, size.z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
+    showCalipersForSide("depth", size.y, size.z, lip_style, magnet_depth, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
   }
 }
 
-module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_diameter, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
+module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_depth, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base){
     fontSize = 5;  
     gridHeight= gfBaseHeight();
-    baseClearanceHeight = cupBaseClearanceHeight(magnet_diameter, screw_depth,flat_base);
-    minFloorHeight  = calculateMinFloorHeight(magnet_diameter, screw_depth);
+    baseClearanceHeight = cupBaseClearanceHeight(magnet_depth, screw_depth,flat_base);
+    minFloorHeight  = calculateMinFloorHeight(magnet_depth, screw_depth);
     floorHeight = calculateFloorHeight(
-          magnet_diameter=magnet_diameter, 
+          magnet_depth=magnet_depth, 
           screw_depth=screw_depth, 
           floor_thickness=floor_thickness, 
           num_z=num_z, 
@@ -48,7 +48,7 @@ module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_diamete
     floorDepth = efficient_floor != "off"
       ? floor_thickness :
       floorHeight - baseClearanceHeight;
-      if(IsHelpEnabled("trace")) echo("showClippersForSide",floorHeight=floorHeight,magnet_diameter=magnet_diameter,screw_depth=screw_depth,floor_thickness=floor_thickness,num_z=num_z,filled_in=filled_in,efficient_floor=efficient_floor,flat_base=flat_base);
+      if(IsHelpEnabled("trace")) echo("showClippersForSide",floorHeight=floorHeight,magnet_depth=magnet_depth,screw_depth=screw_depth,floor_thickness=floor_thickness,num_z=num_z,filled_in=filled_in,efficient_floor=efficient_floor,flat_base=flat_base);
   wallTop = calculateWallTop(num_z, lip_style);
       
   isCutX = description == "depth";

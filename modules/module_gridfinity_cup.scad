@@ -8,6 +8,7 @@ include <module_divider_walls.scad>
 
 use <module_gridfinity.scad>
 use <module_item_holder.scad>
+include <module_gridfinity_cup_base.scad>
 use <module_gridfinity_efficient_floor.scad>
 use <module_attachement_clip.scad>
 use <module_calipers.scad>
@@ -36,13 +37,13 @@ default_zClearance = 0; // 0.1
 // Include overhang for labeling
 default_label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
-label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
+default_label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
-label_size = [0,14,0,0.6]; // 0.01
+default_label_size = [0,14,0,0.6]; // 0.01
 // Size in mm of relief where appropiate. Width, depth, height, radius
-label_relief = [0,0,0,0.6]; // 0.1
+default_label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
-label_walls=[0,1,0,0];  //[0:1:1]
+default_label_walls=[0,1,0,0];  //[0:1:1]
     
 /* [Sliding Lid] */
 default_sliding_lid_enabled = false;
@@ -87,13 +88,14 @@ default_horizontal_irregular_subdivisions = false;
 default_horizontal_separator_config = "10.5|21|42|50|60";
 
 /* [Base] */
-default_magnet_diameter = 6.5;  // .1
+//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+default_magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 default_magnet_easy_release = "auto";//["off","auto","inner","outer"] 
-// (Zack's design uses depth of 6)
-default_screw_depth = 6;
-default_center_magnet_diameter = 0;
-default_center_magnet_thickness = 0;
+//size of screw, diameter and height. Zacks original used 3 and 6
+default_screw_size = [3, 6]; // .1
+//size of center magnet, diameter and height. 
+default_center_magnet_size = [0,0];
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 default_floor_thickness = 1.2;
 default_cavity_floor_radius = -1;
@@ -187,18 +189,20 @@ module gridfinity_cup(
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   fingerslide_walls=default_fingerslide_walls,
-  magnet_diameter=default_magnet_diameter,
-  magnet_easy_release=default_magnet_easy_release,
-  screw_depth=default_screw_depth,
-  center_magnet_diameter = default_center_magnet_diameter,
-  center_magnet_thickness = default_center_magnet_thickness,
-  floor_thickness=default_floor_thickness,
-  cavity_floor_radius=default_cavity_floor_radius,
+  cupbase_settings = CupBaseSettings(
+    magnetSize = default_magnet_size, 
+    magnetEasyRelease = default_magnet_easy_release, 
+    centerMagnetSize = default_center_magnet_size, 
+    screwSize = default_screw_size, 
+    holeOverhangRemedy = default_hole_overhang_remedy, 
+    cornerAttachmentsOnly = default_box_corner_attachments_only,
+    floorThickness = default_floor_thickness,
+    cavityFloorRadius = default_cavity_floor_radius,
+    efficientFloor=default_efficient_floor,
+    halfPitch=default_half_pitch,
+    flatBase=default_flat_base,
+    spacer=default_spacer),
   wall_thickness=default_wall_thickness,
-  hole_overhang_remedy=default_hole_overhang_remedy,
-  efficient_floor=default_efficient_floor,
-  half_pitch=default_half_pitch,
-  spacer=default_spacer,
   chamber_wall_thickness=default_chamber_wall_thickness,
   chamber_wall_zClearance=default_chamber_wall_zClearance,
   vertical_chambers = default_vertical_chambers,
@@ -217,8 +221,6 @@ module gridfinity_cup(
   horizontal_separator_config = default_horizontal_separator_config,
   lip_style=default_lip_style,
   zClearance=default_zClearance,
-  box_corner_attachments_only=default_box_corner_attachments_only,
-  flat_base=default_flat_base,
   tapered_corner = default_tapered_corner,
   tapered_corner_size = default_tapered_corner_size,
   tapered_setback = default_tapered_setback,
@@ -264,11 +266,11 @@ module gridfinity_cup(
   num_y = calcDimensionDepth(depth, true);
   num_z = calcDimensionHeight(height, true);
 
-  magnet_easy_release = validateMagnetEasyRelease(magnet_easy_release, efficient_floor);
   filled_in = validateFilledIn(filled_in);
   label_settings=ValidateLabelSettings(label_settings);
   extendable_Settings = ValidateExtendableSettings(extendable_Settings, num_x=num_x, num_y=num_y);
-  echo(extendable_Settings=extendable_Settings, magnet_easy_release=magnet_easy_release);
+  cupbase_settings = ValidateCupBaseSettings(cupbase_settings);
+    
   vertical_separator_positions = vertical_irregular_subdivisions 
     ? vertical_separator_config 
     : splitChamber(vertical_chambers-1, num_x);
@@ -282,12 +284,6 @@ module gridfinity_cup(
   wallpattern_dividers_enabled = is_bool(wallpattern_dividers_enabled)
     ? wallpattern_dividers_enabled ? "vertical" : "disabled"
     : wallpattern_dividers_enabled;
-  
-  //If efficient_floor disable the base magnets and screws
-  center_magnet_thickness = efficient_floor != "off" ? 0 : center_magnet_thickness;
-  center_magnet_diameter = efficient_floor != "off" ? 0 : center_magnet_diameter;
-  //fingerslide = efficient_floor ? "none" : fingerslide;
-  cavity_floor_radius = efficient_floor != "off" ? 0 : cavity_floor_radius;
   
   //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
   wall_thickness = wallThickness(wall_thickness, num_z);
@@ -306,35 +302,23 @@ module gridfinity_cup(
   union(){
     difference() {
       grid_block(
-        num_x, num_y, num_z, 
-        magnet_diameter, 
-        screw_depth, 
-        center_magnet_diameter = center_magnet_diameter,
-        center_magnet_thickness = center_magnet_thickness,
-        hole_overhang_remedy=hole_overhang_remedy, 
-        half_pitch=half_pitch,
-        box_corner_attachments_only=box_corner_attachments_only, 
+        num_x, num_y, num_z,
+        cupbase_settings = cupbase_settings,
         stackable = 
           lip_style == LipStyle_none ? Stackable_disabled 
-          : filled_in == FilledIn_enabledfilllip ? Stackable_filllip : Stackable_enabled,
-        flat_base=flat_base,
-        magnet_easy_release = magnet_easy_release);
-
+          : filled_in == FilledIn_enabledfilllip ? Stackable_filllip : Stackable_enabled
+        );
+  
       if(filled_in == FilledIn_disabled) 
       union(){
         partitioned_cavity(
           num_x, num_y, num_z, 
           label_settings=label_settings,
+          cupbase_settings = cupbase_settings,
           fingerslide=fingerslide, 
           fingerslide_radius=fingerslide_radius, 
           fingerslide_walls=fingerslide_walls,
-          magnet_diameter=magnet_diameter,
-          screw_depth=screw_depth, 
-          magnet_easy_release = magnet_easy_release,
-          floor_thickness=floor_thickness, 
           wall_thickness=wall_thickness,
-          efficient_floor=efficient_floor, 
-          half_pitch=half_pitch,
           chamber_wall_thickness=chamber_wall_thickness,
           chamber_wall_zClearance=chamber_wall_zClearance,
           vertical_separator_bend_position = vertical_separator_bend_position,
@@ -349,17 +333,15 @@ module gridfinity_cup(
           horizontal_separator_positions = horizontal_separator_positions,
           lip_style=lip_style, 
           zClearance=zClearance,
-          flat_base=flat_base,
-          spacer=spacer,
-          cavity_floor_radius=cavity_floor_radius,
-          box_corner_attachments_only = box_corner_attachments_only,
-          sliding_lid_settings= slidingLidSettings
-          );
+          sliding_lid_settings= slidingLidSettings);
       
       color(color_wallcutout)
         union(){
-          floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
-          cavityFloorRadius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficient_floor);
+          floorHeight = calculateFloorHeight(
+              cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+              cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+              cupbase_settings[iCupBase_FloorThickness]);
+          cavityFloorRadius = calcualteCavityFloorRadius(cupbase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupbase_settings[iCupBase_EfficientFloor]);
           wallTop = calculateWallTop(num_z, lip_style);
           cutoutclearance = gf_cup_corner_radius/2;
 
@@ -731,7 +713,7 @@ module gridfinity_cup(
       tabWidth = extendable_Settings[iExtendableTabSize].y;
       tabStyle = extendable_Settings[iExtendableTabSize][iExtendableTabSizeStyle];
       
-      floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
+      floorHeight = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
       
       //todo need to correct this
       lipheight = lip_style == "none" ? tabThickness
@@ -806,14 +788,8 @@ module gridfinity_cup(
     ,"fingerslide",fingerslide
     ,"fingerslide_radius",fingerslide_radius
     ,"fingerslide_walls",fingerslide_walls
-    ,"magnet_diameter",magnet_diameter
-    ,"screw_depth",screw_depth
-    ,"floor_thickness",floor_thickness
-    ,"cavity_floor_radius",cavity_floor_radius
+    ,"cupbase_settings",cupbase_settings
     ,"wall_thickness",wall_thickness
-    ,"hole_overhang_remedy",hole_overhang_remedy
-    ,"efficient_floor",efficient_floor
-    ,"half_pitch",half_pitch
     ,"chamber_wall_thickness",chamber_wall_thickness
     ,"vertical_separator_bend_position",vertical_separator_bend_position
     ,"vertical_separator_bend_angle",vertical_separator_bend_angle
@@ -827,8 +803,6 @@ module gridfinity_cup(
     ,"horizontal_separator_cut_depth",horizontal_separator_cut_depth
     ,"lip_style",lip_style
     ,"zClearance",zClearance
-    ,"box_corner_attachments_only",box_corner_attachments_only
-    ,"flat_base",flat_base
     ,"tapered_corner",tapered_corner
     ,"tapered_corner_size",tapered_corner_size
     ,"tapered_setback",tapered_setback
@@ -902,12 +876,12 @@ module cutout_pattern(
 }
 
 module partitioned_cavity(num_x, num_y, num_z, 
-    label_settings=default_label_settings,
+    label_settings=[],
+    cupbase_settings=[],
     fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     fingerslide_walls=default_fingerslide_walls,
-    magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, magnet_easy_release=default_magnet_easy_release,
-    floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
-    efficient_floor=default_efficient_floor, half_pitch=default_half_pitch,         chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_zClearance=default_chamber_wall_zClearance,
+    wall_thickness=default_wall_thickness,
+    chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_zClearance=default_chamber_wall_zClearance,
     vertical_separator_bend_position = default_vertical_separator_bend_position,
     vertical_separator_bend_angle = default_vertical_separator_bend_angle,
     vertical_separator_bend_separation = default_vertical_separator_bend_separation,
@@ -918,18 +892,30 @@ module partitioned_cavity(num_x, num_y, num_z,
     horizontal_separator_bend_separation = default_horizontal_separator_bend_separation,
     horizontal_separator_cut_depth = default_horizontal_separator_cut_depth,
     horizontal_separator_positions = [],
-    lip_style=default_lip_style, zClearance=default_zClearance, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius,spacer=default_spacer, box_corner_attachments_only=default_box_corner_attachments_only,sliding_lid_settings=[]) {
+    lip_style=default_lip_style, zClearance=default_zClearance, 
+    sliding_lid_settings=[]) {
   
-  floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
-  
+  //Legacy variables
+  flat_base=cupbase_settings[iCupBase_FlatBase];
+  cavity_floor_radius=cupbase_settings[iCupBase_CavityFloorRadius];
+  spacer=cupbase_settings[iCupBase_Spacer];
+  box_corner_attachments_only=cupbase_settings[iCupBase_CornerAttachmentsOnly];
+  efficient_floor=cupbase_settings[iCupBase_EfficientFloor]; 
+  half_pitch=cupbase_settings[iCupBase_HalfPitch];        
+  magnet_diameter=cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
+  screw_depth=cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
+  magnet_easy_release=cupbase_settings[iCupBase_MagnetEasyRelease];
+  floor_thickness=cupbase_settings[iCupBase_FloorThickness];  
   zpoint = gf_zpitch*num_z-zClearance;
-  
+
+  floorHeight = calculateFloorHeight(cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], screw_depth, floor_thickness);
+    
   difference() {
     color(color_cupcavity)
     basic_cavity(num_x, num_y, num_z, 
-    fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_radius=fingerslide_radius, magnet_diameter=magnet_diameter,
-      screw_depth=screw_depth, magnet_easy_release=magnet_easy_release, floor_thickness=floor_thickness, wall_thickness=wall_thickness,
-      efficient_floor=efficient_floor, half_pitch=half_pitch, lip_style=lip_style, flat_base=flat_base, cavity_floor_radius=cavity_floor_radius, spacer=spacer, box_corner_attachments_only = box_corner_attachments_only, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
+    fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_radius=fingerslide_radius, cupbase_settings=cupbase_settings,
+      wall_thickness=wall_thickness,
+      lip_style=lip_style, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
     
     if(IsHelpEnabled("trace")) echo("partitioned_cavity", vertical_separator_positions=vertical_separator_positions);
@@ -991,28 +977,30 @@ module partitioned_cavity(num_x, num_y, num_z,
         label_settings=label_settings);
     }
   }
-}
-/*
-calculateSeparators(
-                  seperator_config, 
-                  length,
-                  height,
-                  wall_thickness = 0,
-                  bend_position = 0,
-                  bend_angle = 0,
-                  bend_separation = 0,
-                  cut_depth = 0)
-  */                
+}           
 
-module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,
-    magnet_diameter=default_magnet_diameter, screw_depth=default_screw_depth, magnet_easy_release=default_magnet_easy_release, 
-    floor_thickness=default_floor_thickness, wall_thickness=default_wall_thickness,
-    efficient_floor=default_efficient_floor, half_pitch=default_half_pitch, 
-    lip_style=default_lip_style, flat_base=default_flat_base, cavity_floor_radius=default_cavity_floor_radius, spacer=default_spacer, box_corner_attachments_only = default_box_corner_attachments_only,
+module basic_cavity(num_x, num_y, num_z, 
+    fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,
+    wall_thickness=default_wall_thickness,
+    lip_style=default_lip_style,
+    cupbase_settings=[],
     sliding_lid_settings = [],
     zClearance = 0) {
   
+  //Legacy variables
+  floor_thickness=cupbase_settings[iCupBase_FloorThickness]; 
+  magnet_diameter=cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
+  screw_depth=cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
+  magnet_easy_release=cupbase_settings[iCupBase_MagnetEasyRelease];
+  flat_base=cupbase_settings[iCupBase_FlatBase];
+  spacer=cupbase_settings[iCupBase_Spacer];
+  box_corner_attachments_only=cupbase_settings[iCupBase_CornerAttachmentsOnly];
+  half_pitch=cupbase_settings[iCupBase_HalfPitch];
+
+  //zpoint = gf_zpitch*num_z-zClearance;
+  
   AssertSlidingLidSettings(sliding_lid_settings);
+  
   seventeen = gf_pitch/2-4;
     
   reducedlipstyle = 
@@ -1025,7 +1013,12 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   filledInZ = gf_zpitch*num_z;
   zpoint = filledInZ-zClearance;
  
-  floorht = min(filledInZ,calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, efficient_floor=efficient_floor,flat_base=flat_base));
+  floorht = min(filledInZ, calculateFloorHeight(
+      cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+      cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+      cupbase_settings[iCupBase_FloorThickness], 
+      efficient_floor=cupbase_settings[iCupBase_EfficientFloor],
+      flat_base=cupbase_settings[iCupBase_FlatBase]));
 
   //Remove floor to create a vertical spacer.
   nofloor = spacer && fingerslide == "none";
@@ -1047,7 +1040,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
   
   cavityHeight= max(lipBottomZ-floorht,0);
-  cavity_floor_radius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor);
+  cavity_floor_radius = calcualteCavityFloorRadius(cupbase_settings[iCupBase_CavityFloorRadius], wall_thickness,cupbase_settings[iCupBase_EfficientFloor]);
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
@@ -1133,9 +1126,11 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
         seventeen=seventeen);
     }
 
-    if (efficient_floor != "off") {
+    if (cupbase_settings[iCupBase_EfficientFloor] != "off") {
       magnetPosition = calculateMagnetPosition(magnet_diameter);
-      magnetCoverHeight = max(magnet_diameter > 0 ? gf_magnet_thickness : 0, screw_depth);
+      magnetCoverHeight = max(
+        cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+        cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height]);
       hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
       efficientFloorGridHeight = max(magnetCoverHeight,gfBaseHeight())+floor_thickness;
       if(IsHelpEnabled("trace")) echo("basic_cavity", efficient_floor=efficient_floor, efficientFloorGridHeight=efficientFloorGridHeight,  floor_thickness=floor_thickness);
@@ -1146,7 +1141,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
         difference(){
           efficient_floor_grid(
             num_x, num_y, 
-            floorStyle = efficient_floor,
+            floorStyle = cupbase_settings[iCupBase_EfficientFloor],
             half_pitch=half_pitch, 
             flat_base=flat_base, 
             floor_thickness=floor_thickness,
@@ -1159,8 +1154,8 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
                 EfficientFloorAttachementCaps(
                   grid_copy_corner_index = $gcci,
                   floor_thickness = floor_thickness,
-                  magnet_diameter=magnet_diameter,
-                  screw_depth = screw_depth,
+                  magnet_size = cupbase_settings[iCupBase_MagnetSize], 
+                  screw_size = cupbase_settings[iCupBase_ScrewSize],
                   wall_thickness = magnet_easy_release == MagnetEasyRelease_inner ? wall_thickness*2 : wall_thickness );
           }
         }

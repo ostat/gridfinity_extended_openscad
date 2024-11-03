@@ -47,14 +47,14 @@ lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 position = "center"; //[default,center,zero]
 
 /* [Base] */
-// (Zack's design uses magnet diameter of 6.5)
-magnet_diameter = 0;  // .1
-// Create relief for magnet removal 
-magnet_easy_release = true;
-// (Zack's design uses depth of 6)
-screw_depth = 0;
-center_magnet_diameter =0;
-center_magnet_thickness = 0;
+//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+magnet_size = [6.5, 2.4];  // .1
+//create relief for magnet removal
+magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+//size of screw, diameter and height. Zacks original used 3 and 6
+screw_size = [3, 6]; // .1
+//size of center magnet, diameter and height. 
+center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
@@ -219,25 +219,28 @@ module Gridfinity_Divider(
   num_x = calcDimensionWidth(width);
   num_y = calcDimensionDepth(depth);
   num_z = calcDimensionHeight(height);
-  floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
+  floorHeight = calculateFloorHeight(magnet_size[1], screw_size[1], floor_thickness);
   
   gridfinity_cup(
     width=width, depth=depth, height=height,
     position=position,
-    filled_in=filled_in,
-    magnet_diameter=magnet_diameter,
-    magnet_easy_release=magnet_easy_release,
-    screw_depth=screw_depth,
-    floor_thickness=floor_thickness,
-    cavity_floor_radius=cavity_floor_radius,
+    cupbase_settings = CupBaseSettings(
+      magnetSize = magnet_size, 
+      magnetEasyRelease = magnet_easy_release, 
+      centerMagnetSize = center_magnet_size, 
+      screwSize = screw_size, 
+      holeOverhangRemedy = hole_overhang_remedy, 
+      cornerAttachmentsOnly = box_corner_attachments_only,
+      floorThickness = floor_thickness,
+      cavityFloorRadius = cavity_floor_radius,
+      efficientFloor=efficient_floor,
+      halfPitch=half_pitch,
+      flatBase=flat_base,
+      spacer=spacer),
     wall_thickness=wall_thickness,
-    hole_overhang_remedy=hole_overhang_remedy,
-    efficient_floor=efficient_floor,
-    half_pitch=half_pitch,
     lip_style=lip_style,
-    box_corner_attachments_only=box_corner_attachments_only,
-    flat_base = flat_base,
-    label_style = "disabled",
+    label_settings=LabelSettings(
+      labelStyle="disabled"),
     help = enable_help);
   
   for(i = [0 : divider_count-1]){

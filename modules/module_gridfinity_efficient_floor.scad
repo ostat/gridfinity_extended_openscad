@@ -1,5 +1,6 @@
 include <gridfinity_constants.scad>
 include <module_rounded_negative_champher.scad>
+include <module_gridfinity_cup_base.scad>
 use <module_gridfinity.scad>
 use <module_utility.scad>
 
@@ -50,16 +51,15 @@ module efficient_floor_grid(
 module EfficientFloorAttachementCaps(
   grid_copy_corner_index,
   floor_thickness,
-  magnet_diameter,
-  screw_depth,
+  magnet_size,
+  screw_size,
   cornerRadius,
-  wall_thickness
-)
+  wall_thickness)
 {
   assert(is_list(grid_copy_corner_index) && len(grid_copy_corner_index) >= 3, "grid_copy_corner_index must be a list of length > 3");
   
   fudgeFactor = 0.01; 
-  magnetPosition = calculateMagnetPosition(magnet_diameter);
+  magnetPosition = calculateMagnetPosition(magnet_size[iCylinderDimension_Diameter]);
   blockSize = gf_pitch/2-magnetPosition+wall_thickness;
     
   //$gcci=[trans,xi,yi,xx,yy];
@@ -69,21 +69,21 @@ module EfficientFloorAttachementCaps(
          : [0,0,0])
     tz(floor_thickness-fudgeFactor)
     hull(){
-      if(screw_depth > 0){
-        cornerRadius = gf_cupbase_screw_diameter/2+wall_thickness*2;
+      if(screw_size[iCylinderDimension_Diameter] > 0){
+        cornerRadius = screw_size[iCylinderDimension_Diameter]/2+wall_thickness*2;
         rotate([0,0,90])
           translate([-cornerRadius,-cornerRadius,0])
           CubeWithRoundedCorner(
-            size=[blockSize+cornerRadius,blockSize+cornerRadius,screw_depth], 
+            size=[blockSize+cornerRadius,blockSize+cornerRadius,screw_size[iCylinderDimension_Height]], 
             cornerRadius = cornerRadius,
             edgeRadius = wall_thickness);
       }
-      if(magnet_diameter > 0){
-        cornerRadius = magnet_diameter/2+wall_thickness*2;
+      if(magnet_size[iCylinderDimension_Diameter] > 0){
+        cornerRadius = magnet_size[iCylinderDimension_Diameter]/2+wall_thickness*2;
         rotate([0,0,90])
         translate([-cornerRadius,-cornerRadius,0])
         CubeWithRoundedCorner(
-          size=[blockSize+cornerRadius,blockSize+cornerRadius,gf_magnet_thickness], 
+          size=[blockSize+cornerRadius,blockSize+cornerRadius,magnet_size[iCylinderDimension_Height]], 
           cornerRadius = cornerRadius,
           edgeRadius = wall_thickness);
       }
@@ -107,7 +107,8 @@ module EfficientFloor(
   minEfficientPadSize = floorSmooth ? 0.3 : 0.15;
 
   cornerRadius = 1.15+margins;
-        
+  topChampherCornerRadius = cornerRadius;      
+  
   smoothVersion=2;
   //Less than minEfficientPadSize is to small and glitches the cut away
   if(num_x > minEfficientPadSize && num_y > minEfficientPadSize )
@@ -144,7 +145,6 @@ module EfficientFloor(
       
     // tapered top portion
       topChampherRadius = topSmoothTransition/2;
-      topChampherCornerRadius = cornerRadius;
       topChampherZBottom = wallStartHeight+wallTaper;
       translate([
         gf_pitch/2*num_x,

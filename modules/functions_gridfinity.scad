@@ -34,20 +34,19 @@ function calculateWallTop(num_z, lip_style) =
   gf_zpitch * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
   
 //Height to clear the voids in the base
-function cupBaseClearanceHeight(magnet_diameter, screw_depth, flat_base=false) = let (
-    mag_ht = magnet_diameter > 0 ? gf_magnet_thickness : 0)
+function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base=false) = 
     flat_base 
-      ? max(mag_ht, screw_depth) 
-      : max(mag_ht, screw_depth, gfBaseHeight());
+      ? max(magnet_depth, screw_depth) 
+      : max(magnet_depth, screw_depth, gfBaseHeight());
 
-function calculateMinFloorHeight(magnet_diameter,screw_depth) = 
-    cupBaseClearanceHeight(magnet_diameter,screw_depth) + gf_cup_floor_thickness;
+function calculateMinFloorHeight(magnet_depth,screw_depth) = 
+    cupBaseClearanceHeight(magnet_depth,screw_depth) + gf_cup_floor_thickness;
 function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
+function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
       assert(is_num(floor_thickness), "floor_thickness must be a number")
-      assert(is_num(magnet_diameter), "magnet_diameter must be a number")
+      assert(is_num(magnet_depth), "magnet_depth must be a number")
       assert(is_num(screw_depth), "screw_depth must be a number")
       assert(is_bool(flat_base), "flat_base must be a bool")
       let(
@@ -56,11 +55,11 @@ function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num
   filledin != FilledIn_disabled ? num_z * gf_zpitch 
     : efficient_floor != "off" 
       ? floorThickness
-      : max(3.5, cupBaseClearanceHeight(magnet_diameter,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
+      : max(3.5, cupBaseClearanceHeight(magnet_depth,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
     
 //Usable floor depth (florr height - min floor)
-function calculateFloorThickness(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) = 
-  calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) - cupBaseClearanceHeight(magnet_diameter, screw_depth);
+function calculateFloorThickness(magnet_depth, screw_depth, floor_thickness, num_z, filledin) = 
+  calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z, filledin) - cupBaseClearanceHeight(magnet_depth, screw_depth);
     
 // calculate the position of separators from the size
 function splitChamber(num_separators, num_x) = num_separators < 1 
@@ -91,6 +90,7 @@ function list_contains(list,value,index=0) =
     : index <= len(list)  ? list_contains(list,value,index+1)
     : false;
 function typeerror(type, value) = str("invalid value for type '" , type , "'; value '" , value ,"'");
+function typeerror_list(name, list, expectedLength) = str(name, " must be a list of length ", expectedLength, ", length:", is_list(list) ? len(list) : "not a list");
 
 FilledIn_disabled = "disabled";
 FilledIn_enabled = "enabled";
@@ -128,18 +128,4 @@ Stackable_values = [Stackable_enabled,Stackable_disabled,Stackable_filllip];
   //Convert boolean to list value
   let(value = is_bool(value) ? value ? Stackable_enabled : Stackable_disabled : value) 
   assert(list_contains(Stackable_values, value), typeerror("Stackable", value))
-  value;
- 
-MagnetEasyRelease_off = "off";
-MagnetEasyRelease_auto = "auto";
-MagnetEasyRelease_inner = "inner"; 
-MagnetEasyRelease_outer = "outer"; 
-MagnetEasyRelease_values = [MagnetEasyRelease_off, MagnetEasyRelease_auto, MagnetEasyRelease_inner, MagnetEasyRelease_outer];
-  function validateMagnetEasyRelease(value, efficientFloorValue) = 
-  //Convert boolean to list value
-  let(value = is_bool(value) ? value ? MagnetEasyRelease_auto : MagnetEasyRelease_off : value,
-      autoValue = value == MagnetEasyRelease_auto 
-        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer 
-        : value) 
-  assert(list_contains(MagnetEasyRelease_values, autoValue), typeerror("MagnetEasyRelease", autoValue))
-  autoValue;
+  value;  

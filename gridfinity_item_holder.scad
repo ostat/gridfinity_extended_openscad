@@ -546,7 +546,6 @@ module samplesholder(
     ,help);
 }
 
-
 // Generates the gridfinity bin with cutouts.
 // Runs the function without needing to pass the variables.
 module gridfinity_itemholder(
@@ -679,9 +678,10 @@ module gridfinity_itemholder(
           holeClearance = itemholder_hole_clearance);
 
   _depth = itemCalc[icHoleSize].z;
+  magnet_depth = magnet_diameter > 0 ? gf_magnet_thickness : 0;
   // min floor height
-  bch = cupBaseClearanceHeight(magnet_diameter, screw_depth);
-  mfh = calculateMinFloorHeight(magnet_diameter, screw_depth);
+  bch = cupBaseClearanceHeight(magnet_depth, screw_depth);
+  mfh = calculateMinFloorHeight(magnet_depth, screw_depth);
   
   //calculate the bin height. This math is not right
   height = !itemholder_auto_bin_height || _depth <=0 ? num_z

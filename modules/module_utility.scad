@@ -224,7 +224,8 @@ module SequentialBridgingDoubleHole(
   
   hasOuter = outerHoleRadius > 0 && outerHoleDepth >0;
   hasInner = innerHoleRadius > 0 && innerHoleDepth > 0;
-  overhangBridgeCount = hasOuter && hasInner ? overhangBridgeCount : 0;
+  bridgeRequired = hasOuter && hasInner && outerHoleRadius > innerHoleRadius && innerHoleDepth > outerHoleDepth;
+  overhangBridgeCount = bridgeRequired ? overhangBridgeCount : 0;
   overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
   outerPlusBridgeHeight = hasOuter ? outerHoleDepth + overhangBridgeHeight : 0;
   if(hasOuter || hasInner)
@@ -335,13 +336,6 @@ module MagentAndScrewRecess(
         
         totalReleaseLength = magnetDiameter/2+releaseLength+releaseWidth/2;
         
-        /*
-        union(){
-          cube([totalReleaseLength-champherRadius,releaseWidth,magnetThickness]);
-          translate([totalReleaseLength-champherRadius,releaseWidth/2,magnetThickness-champherRadius])
-          rotate([90,0,0])
-          cylinder(r=champherRadius, h=releaseWidth);
-        }*/
         translate([totalReleaseLength,-releaseWidth/2-fudgeFactor,magnetThickness])
         rotate([270,0,90])
         roundedCorner(

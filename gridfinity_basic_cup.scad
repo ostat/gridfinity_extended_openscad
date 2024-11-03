@@ -54,14 +54,14 @@ horizontal_irregular_subdivisions = false;
 horizontal_separator_config = "10.5|21|42|50|60";
 
 /* [Base] */
-// (Zack's design uses magnet diameter of 6.5) 
-magnet_diameter = 0;  // .1
-//create relief for magnet removal 
-magnet_easy_release  = "auto";//["off","auto","inner","outer"] 
-// (Zack's design uses depth of 6)
-screw_depth = 0;
-center_magnet_diameter =0;
-center_magnet_thickness = 0;
+//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+magnet_size = [6.5, 2.4];  // .1
+//create relief for magnet removal
+magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+//size of screw, diameter and height. Zacks original used 3 and 6
+screw_size = [3, 6]; // .1
+//size of center magnet, diameter and height. 
+center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
@@ -187,16 +187,20 @@ gridfinity_cup(
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   fingerslide_walls=fingerslide_walls,
-  magnet_diameter=magnet_diameter,
-  magnet_easy_release=magnet_easy_release,
-  screw_depth=screw_depth,
-  center_magnet_diameter=center_magnet_diameter,
-  center_magnet_thickness=center_magnet_thickness,
-  floor_thickness=floor_thickness,
-  cavity_floor_radius=cavity_floor_radius,
+  cupbase_settings = CupBaseSettings(
+    magnetSize = magnet_size, 
+    magnetEasyRelease = magnet_easy_release, 
+    centerMagnetSize = center_magnet_size, 
+    screwSize = screw_size, 
+    holeOverhangRemedy = hole_overhang_remedy, 
+    cornerAttachmentsOnly = box_corner_attachments_only,
+    floorThickness = floor_thickness,
+    cavityFloorRadius = cavity_floor_radius,
+    efficientFloor=efficient_floor,
+    halfPitch=half_pitch,
+    flatBase=flat_base,
+    spacer=spacer),
   wall_thickness=wall_thickness,
-  hole_overhang_remedy=hole_overhang_remedy,
-  efficient_floor=efficient_floor,
   chamber_wall_thickness=chamber_wall_thickness,
   chamber_wall_zClearance=chamber_wall_zClearance,
   vertical_chambers = vertical_chambers,
@@ -213,12 +217,8 @@ gridfinity_cup(
   horizontal_separator_cut_depth=horizontal_separator_cut_depth,
   horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
   horizontal_separator_config=horizontal_separator_config, 
-  half_pitch=half_pitch,
   lip_style=lip_style,
   zClearance=zClearance,
-  box_corner_attachments_only=box_corner_attachments_only,
-  flat_base = flat_base,
-  spacer=spacer,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
