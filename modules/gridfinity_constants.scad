@@ -81,7 +81,7 @@ fudgeFactor = 0.01;
 
 color_cup = "LightSlateGray";
 color_divider = "Gainsboro"; //LemonChiffon
-color_topcavity = "SteelBlue";
+color_topcavity = "Green";//"SteelBlue";
 color_label = "DarkCyan";
 color_cupcavity = "IndianRed";
 color_wallcutout = "SandyBrown";

@@ -46,11 +46,14 @@ function calculateLabelSize(label_size) =
         [labelx,labely,labelz,labelr];
 
 function LabelSettings(
-    labelStyle, 
-    labelPosition, 
-    labelSize,
-    labelRelief,
-    labelWalls) = 
+    labelStyle= "normal", 
+    labelPosition="left", 
+    // Width, Depth, Height, Radius.   
+    labelSize=[0,14,0,0.6],
+    // Size in mm of relief where appropiate. Width, depth, height, radius
+    labelRelief=[0,0,0,0.6],
+    // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
+    labelWalls=[0,1,0,0]) = 
   let(
     labelRelief = is_num(labelRelief) ? [0,0,labelRelief,0] : labelRelief,
     labelWalls = is_undef(labelWalls) ? [0,1,0,0] : labelWalls,
@@ -153,7 +156,7 @@ module gridfinity_label(
     
   wallLocations = [frontWall, backWall, leftWall, rightWall];
  
-  color(color_label)
+  color(getColour(color_label))
   tz(zpoint+fudgeFactor)
   //Loop the sides 
   for(l = [0:1:len(wallLocations)-1]){

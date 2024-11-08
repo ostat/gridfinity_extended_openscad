@@ -107,7 +107,33 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
       : arr[pos],
     strNext = createCustomConfig(arr, pos+1, sep)
   ) str(current, strNext!=""?str(sep, strNext):"");
-  
+
+module SetGridfinityEnvironment(
+  setColour = "preview",
+  help = false,
+  cutx = 0, 
+  cuty = 0){
+  $setColour = setColour;
+  $showHelp = help;
+  $cutx=cutx;
+  $cuty=cuty;
+  children();
+}
+
+function getCutx() = is_undef($cutx) || !is_num($cutx) ? 0 : $cutx;
+function getCuty() = is_undef($cuty) || !is_num($cuty) ? 0 : $cuty;
+          
+//set_colour = "preview"; //[disabled, preview, lip]
+function getColour(colour, isLip = false, fallBack = color_cup) = 
+    is_undef($setColour) 
+      ? $preview ? colour : fallBack
+      : is_string($setColour) 
+        ? $setColour == "enable" ? colour
+        : $setColour == "preview" && $preview ? colour
+          : $setColour == "lip" && isLip ? colour
+            : fallBack
+          : fallBack;
+          
 function IsHelpEnabled(level) = 
   is_string(level) && level == "force" ? true
     : is_undef($showHelp) ? false

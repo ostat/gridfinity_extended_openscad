@@ -15,17 +15,17 @@ module ShowCalipers(
   efficient_floor,
   flat_base){
   
-  color(color_text)
   if(cuty > 0 && $preview)
   {
+    color(color_text)
     translate([0,gf_pitch*cuty,0]) 
     rotate([90,0,0])
     showCalipersForSide("width", size.x, size.z, lip_style, magnet_depth, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
   }  
   
-  color(color_text)
   if(cutx > 0 && $preview)
   {
+    color(color_text)
     translate([gf_pitch*cutx,gf_pitch*size.y,0]) 
     rotate([90,0,270])
     showCalipersForSide("depth", size.y, size.z, lip_style, magnet_depth, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base);
@@ -158,7 +158,7 @@ module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_depth, 
         l=screw_depth, 
         txt2 = "screw");
 
-    if(magnet_diameter > 0)
+    if(magnet_depth > 0)
     translate(isCutX 
       ? [+gf_pitch*(gf_num)-10,0,0]
       : [6,0,0])
@@ -166,6 +166,6 @@ module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_depth, 
         h = 0.1, s = fontSize*.75,
         //translate=[-2,0,0],
         cx=1, end=0, in=2,
-        l=gf_magnet_thickness, 
+        l=magnet_depth, 
         txt2 = "magnet");
 }

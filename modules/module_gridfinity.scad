@@ -11,24 +11,27 @@ module grid_block(
   num_y=2, 
   num_z=2, 
   position = "zero",
-  stackable = false,
-  cupbase_settings = [],
+  lipStyle = "normal",    //"minimum" "none" "reduced" "normal"
+  filledin = "disabled", //[disabled, enabled, enabledfilllip]
+  wall_thickness = 1.2,
+  cupBase_settings = CupBaseSettings(),
   $fn = 32,
   help)
 {
+  lipHeight = 3.75;
 
   assert_openscad_version();
-  cupbase_settings = ValidateCupBaseSettings(cupbase_settings);
+  cupBase_settings = ValidateCupBaseSettings(cupBase_settings);
 
   //Legacy variables.
-  magnet_size=cupbase_settings[iCupBase_MagnetSize];
-  screw_size=cupbase_settings[iCupBase_ScrewSize];
-  hole_overhang_remedy=cupbase_settings[iCupBase_HoleOverhangRemedy];
-  box_corner_attachments_only = cupbase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupbase_settings[iCupBase_HalfPitch];
-  flat_base=cupbase_settings[iCupBase_FlatBase];
-  center_magnet_size = cupbase_settings[iCupBase_CenterMagnetSize];
-  magnet_easy_release = cupbase_settings[iCupBase_MagnetEasyRelease];
+  magnet_size=cupBase_settings[iCupBase_MagnetSize];
+  screw_size=cupBase_settings[iCupBase_ScrewSize];
+  hole_overhang_remedy=cupBase_settings[iCupBase_HoleOverhangRemedy];
+  box_corner_attachments_only = cupBase_settings[iCupBase_CornerAttachmentsOnly];
+  half_pitch=cupBase_settings[iCupBase_HalfPitch];
+  flat_base=cupBase_settings[iCupBase_FlatBase];
+  center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
+  magnet_easy_release = cupBase_settings[iCupBase_MagnetEasyRelease];
   
   outer_size = gf_pitch - gf_tolerance;  // typically 41.5
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
@@ -38,24 +41,41 @@ module grid_block(
   overhang_fix = hole_overhang_remedy > 0 && magnet_size[iCylinderDimension_Diameter] > 0 && screw_size[iCylinderDimension_Diameter] > 0 ? hole_overhang_remedy : 0;
   overhang_fix_depth = 0.3;  // assume this is enough
   
-  totalht=gf_zpitch*num_z+3.75;
+  tz(gf_zpitch*num_z-fudgeFactor*2)
+  if(filledin == "enabledfilllip"){
+      color(getColour(color_topcavity))
+        tz(-fudgeFactor)
+        hull() 
+        cornercopy(block_corner_position, num_x, num_y) 
+        cylinder(r=gf_cup_corner_radius, h=lipHeight, $fn=$fn);
+    } else {
+    cupLip(
+      num_x = num_x, 
+      num_y = num_y, 
+      lipStyle = lipStyle,
+      wall_thickness = wall_thickness);
+    }
+        
   translate(cupPosition(position,num_x,num_y))
   difference() {
+    baseHeight = 5;
     intersection() {
-      union() {
+      //Main cup outer shape
+      color(getColour(color_cup))
+        tz(-fudgeFactor)
+        hull() 
+        cornercopy(block_corner_position, num_x, num_y) 
+        cylinder(r=gf_cup_corner_radius, h=gf_zpitch*num_z+fudgeFactor*3, $fn=$fn);
+
+      union(){
         // logic for constructing odd-size grids of possibly half-pitch pads
-        color(color_base)
-        pad_grid(num_x, num_y, half_pitch, flat_base);
-        // main body will be cut down afterward
-        tz(5) 
-        cube([gf_pitch*num_x, gf_pitch*num_y, totalht-5]);
+        color(getColour(color_base))
+          pad_grid(num_x, num_y, half_pitch, flat_base);
+        
+        color(getColour(color_cup))
+        tz(baseHeight) 
+          cube([gf_pitch*num_x, gf_pitch*num_y, gf_zpitch*num_z]);
       }
-      
-      color(color_cup)
-      tz(-fudgeFactor)
-      hull() 
-      cornercopy(block_corner_position, num_x, num_y) 
-      cylinder(r=gf_cup_corner_radius, h=totalht+fudgeFactor*2, $fn=$fn);
     }
     
     if(center_magnet_size[iCylinderDimension_Diameter]){
@@ -64,30 +84,14 @@ module grid_block(
       {
         for(y =[0:1:num_y-1])
         {
-          color(color_basehole)
+          color(getColour(color_basehole))
           translate([x*gf_pitch,y*gf_pitch,-fudgeFactor])
             cylinder(h=center_magnet_size[iCylinderDimension_Height]-fudgeFactor, d=center_magnet_size[iCylinderDimension_Diameter], $fn=$fn);
         }
       }
     }
     
-    if(stackable == Stackable_enabled)
-    {
-      // remove top so XxY can fit on top
-      color(color_topcavity) 
-        tz(gf_zpitch*num_z) 
-        pad_oversize(num_x, num_y, 1);
-    }
-    else if (stackable == Stackable_filllip){
-      //do nothing
-    }
-    else{
-      color(color_topcavity) 
-        tz(gf_zpitch*num_z) 
-        cube([num_x*gf_pitch,num_y*gf_pitch, gf_zpitch]);
-    }
-    
-    color(color_basehole)
+    color(getColour(color_basehole))
     tz(-fudgeFactor)
     gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only){
         rdeg =
@@ -118,10 +122,10 @@ module grid_block(
     ,"half_pitch",half_pitch
     ,"box_corner_attachments_only",box_corner_attachments_only
     ,"flat_base",flat_base
-    ,"stackable",stackable]
+    ,"lipStyle",lipStyle
+    ,"filledin",filledin]
     ,help);
 }
-
 
 module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
   assert(!is_undef(num_x), "num_x is undefined");

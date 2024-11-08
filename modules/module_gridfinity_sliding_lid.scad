@@ -1,22 +1,37 @@
 include <gridfinity_constants.scad>
 include <module_gridfinity.scad>
+include <module_lip.scad>
 
 iSlidingLidEnabled=0;
 iSlidingLidThickness=1;
 iSlidingLidMinWallThickness=2;
 iSlidingLidMinSupport=3;
 iSlidingClearance=4;
+slidingLidLipEnabled=5;
 
-function SlidingLidSettings(slidingLidEnabled, slidingLidThickness, slidingMinWallThickness, slidingMinSupport, slidingClearance, wallThickness) = 
+function SlidingLidSettings(
+  slidingLidEnabled,
+  slidingLidThickness,
+  slidingMinWallThickness,
+  slidingMinSupport,
+  slidingClearance,
+  wallThickness,
+  slidingLidLipEnabled = false) = 
   let(
     thickness = slidingLidThickness > 0 ? slidingLidThickness : wallThickness*2,
     minWallThickness = slidingMinWallThickness > 0 ? slidingMinWallThickness : wallThickness/2,
     minSupport = slidingMinSupport > 0 ? slidingMinSupport : thickness/2
-  ) [slidingLidEnabled, thickness, minWallThickness, minSupport, slidingClearance];
+  ) [
+  slidingLidEnabled, 
+  thickness,
+  minWallThickness,
+  minSupport,
+  slidingClearance,
+  slidingLidLipEnabled];
 
 module AssertSlidingLidSettings(settings){
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==5, "SlidingLid Settings must length 5");
+  assert(len(settings)==6, "SlidingLid Settings must length 5");
 } 
 
 //SlidingLid(4,3,.8,0.1,1.6,0.8,0.4,true, true, [-2,-2],5,[0,0]);
@@ -30,10 +45,13 @@ module SlidingLid(
   lidMinSupport,
   lidMinWallThickness,
   limitHeight = false,
+  lipStyle = "normal",
+  addLiptoLid = true,
   cutoutEnabled = false,
   cutoutSize = [0,0],
   cutoutRadius = 0,
-  cutoutPosition = [0,0]
+  cutoutPosition = [0,0],
+  $fn=64
 ){
   innerWallRadius = gf_cup_corner_radius-wall_thickness-clearance;
   seventeen = gf_pitch/2-4;
@@ -45,14 +63,40 @@ module SlidingLid(
   height = limitHeight ? lidThickness : innerWallRadius+lidMinWallThickness-fudgeFactor;
   difference()
   {
-  hull() 
-    cornercopy(seventeen, num_x, num_y){
-    tz(lidThickness-lidMinSupport) 
-      cylinder(
-        r1=innerWallRadius+lidMinWallThickness,
-        r2=lidUpperRadius, 
-        h=limitHeight ? lidThickness/2 : innerWallRadius+lidMinWallThickness-fudgeFactor, $fn=32);
-      cylinder(r=lidLowerRadius, h=lidThickness/2, $fn=32);
+    union(){
+      if(addLiptoLid)
+      difference(){
+        translate([0,0,lidThickness-fudgeFactor*3])
+        cupLip(
+          num_x = num_x, 
+          num_y = num_y, 
+          lipStyle = lipStyle, 
+          wall_thickness = 1.2);
+        translate([0,lidLowerRadius,lidThickness-fudgeFactor*4])
+          cube([num_x*42,num_x*42,4+fudgeFactor*2]);
+      }
+
+      color(color_lid)
+      union(){
+        hull() 
+          cornercopy(seventeen, num_x, num_y){
+          tz(lidThickness-lidMinSupport) 
+            cylinder(
+              r1=innerWallRadius+lidMinWallThickness,
+              r2=lidUpperRadius, 
+              h=limitHeight ? lidThickness/2 : innerWallRadius+lidMinWallThickness-fudgeFactor);
+            cylinder(r=lidLowerRadius, h=lidThickness/2);
+        }
+        if(addLiptoLid)
+        difference(){
+          hull()
+            cornercopy(seventeen, num_x, num_y){
+              cylinder(r=gf_cup_corner_radius, h=lidThickness);
+          }         
+          translate([-fudgeFactor,lidLowerRadius,-fudgeFactor])
+            cube([num_x*gf_pitch+fudgeFactor*2,num_y*gf_pitch+fudgeFactor,lidThickness+fudgeFactor*2]);
+        }
+      }
   }
   
   if(IsHelpEnabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius );

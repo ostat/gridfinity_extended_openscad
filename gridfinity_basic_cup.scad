@@ -28,6 +28,8 @@ lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
+//assign colours to the bin, will may 
+set_colour = "enable"; //[disabled, enable, preview, lip]
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -98,6 +100,7 @@ sliding_min_wallThickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
 sliding_min_support = 0;//0.1
 sliding_clearance = 0.1;//0.1
+sliding_lid_lip_enabled = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -174,6 +177,11 @@ enable_help = false;
 module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
 
+SetGridfinityEnvironment(
+  setColour = set_colour,
+  help = enable_help,
+  cutx=cutx,
+  cuty=cuty)
 gridfinity_cup(
   width=width, depth=depth, height=height,
   position=position,
@@ -187,7 +195,7 @@ gridfinity_cup(
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   fingerslide_walls=fingerslide_walls,
-  cupbase_settings = CupBaseSettings(
+  cupBase_settings = CupBaseSettings(
     magnetSize = magnet_size, 
     magnetEasyRelease = magnet_easy_release, 
     centerMagnetSize = center_magnet_size, 
@@ -256,6 +264,4 @@ gridfinity_cup(
   sliding_min_wall_thickness = sliding_min_wallThickness, 
   sliding_min_support = sliding_min_support, 
   sliding_clearance = sliding_clearance,
-  cutx=cutx,
-  cuty=cuty,
-  help = enable_help);
+  sliding_lid_lip_enabled=sliding_lid_lip_enabled);

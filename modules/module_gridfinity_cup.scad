@@ -24,6 +24,8 @@ default_position = "default"; //["default","center","zero"]
 default_filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Might want to remove inner lip of cup
 default_lip_style = "normal"; //[normal, reduced, minimum, none]
+//assign colours to the bin, will may 
+default_set_colour = "preview"; //[disabled, preview, lip]
 
 // Thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 default_wall_thickness = 0;// 0.01
@@ -54,6 +56,7 @@ default_sliding_min_wallThickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
 default_sliding_min_support = 0;//0.1
 default_sliding_clearance = 0.1;//0.1
+default_sliding_lid_lip_enabled = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -165,8 +168,14 @@ default_cuty = 0;//0.01
 default_help = "info"; //["off","info","debug","trace"]
 
 module end_of_customizer_opts() {}
-
+/*
+SetGridfinityEnvironment(//execution point
+  setColour = default_set_colour,//execution point
+  help = default_help,//execution point
+  cutx=default_cutx,//execution point
+  cuty=default_cuty)//execution point
 gridfinity_cup();//execution point
+*/
 
 // It's recommended that all parameters other than x, y, z size should be specified by keyword 
 // and not by position.  The number of parameters makes positional parameters error prone, and
@@ -186,10 +195,11 @@ module gridfinity_cup(
     labelWalls=default_label_walls),
   sliding_lid_enabled = default_sliding_lid_enabled,
   sliding_lid_thickness = default_sliding_lid_thickness,
+  sliding_lid_lip_enabled=default_sliding_lid_lip_enabled,
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   fingerslide_walls=default_fingerslide_walls,
-  cupbase_settings = CupBaseSettings(
+  cupBase_settings = CupBaseSettings(
     magnetSize = default_magnet_size, 
     magnetEasyRelease = default_magnet_easy_release, 
     centerMagnetSize = default_center_magnet_size, 
@@ -257,11 +267,8 @@ module gridfinity_cup(
   sliding_lid_thickness = default_sliding_lid_thickness, 
   sliding_min_wall_thickness = default_sliding_min_wallThickness, 
   sliding_min_support = default_sliding_min_support, 
-  sliding_clearance = default_sliding_clearance,
-  cutx=default_cutx,
-  cuty=default_cuty,
-  help=default_help) {
-  $showHelp = help;
+  sliding_clearance = default_sliding_clearance) {
+  
   num_x = calcDimensionWidth(width, true);
   num_y = calcDimensionDepth(depth, true);
   num_z = calcDimensionHeight(height, true);
@@ -269,7 +276,7 @@ module gridfinity_cup(
   filled_in = validateFilledIn(filled_in);
   label_settings=ValidateLabelSettings(label_settings);
   extendable_Settings = ValidateExtendableSettings(extendable_Settings, num_x=num_x, num_y=num_y);
-  cupbase_settings = ValidateCupBaseSettings(cupbase_settings);
+  cupBase_settings = ValidateCupBaseSettings(cupBase_settings);
     
   vertical_separator_positions = vertical_irregular_subdivisions 
     ? vertical_separator_config 
@@ -294,7 +301,8 @@ module gridfinity_cup(
           sliding_min_wall_thickness, 
           sliding_min_support,
           sliding_clearance,
-          wall_thickness);
+          wall_thickness,
+          sliding_lid_lip_enabled);
           
   zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
   
@@ -303,18 +311,17 @@ module gridfinity_cup(
     difference() {
       grid_block(
         num_x, num_y, num_z,
-        cupbase_settings = cupbase_settings,
-        stackable = 
-          lip_style == LipStyle_none ? Stackable_disabled 
-          : filled_in == FilledIn_enabledfilllip ? Stackable_filllip : Stackable_enabled
-        );
+        cupBase_settings = cupBase_settings,
+        wall_thickness = wall_thickness,
+        lipStyle = lip_style,
+        filledin = filled_in);
   
       if(filled_in == FilledIn_disabled) 
       union(){
         partitioned_cavity(
           num_x, num_y, num_z, 
           label_settings=label_settings,
-          cupbase_settings = cupbase_settings,
+          cupBase_settings = cupBase_settings,
           fingerslide=fingerslide, 
           fingerslide_radius=fingerslide_radius, 
           fingerslide_walls=fingerslide_walls,
@@ -335,13 +342,13 @@ module gridfinity_cup(
           zClearance=zClearance,
           sliding_lid_settings= slidingLidSettings);
       
-      color(color_wallcutout)
+      color(getColour(color_wallcutout))
         union(){
           floorHeight = calculateFloorHeight(
-              cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-              cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
-              cupbase_settings[iCupBase_FloorThickness]);
-          cavityFloorRadius = calcualteCavityFloorRadius(cupbase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupbase_settings[iCupBase_EfficientFloor]);
+              cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+              cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+              cupBase_settings[iCupBase_FloorThickness]);
+          cavityFloorRadius = calcualteCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
           wallTop = calculateWallTop(num_z, lip_style);
           cutoutclearance = gf_cup_corner_radius/2;
 
@@ -679,7 +686,7 @@ module gridfinity_cup(
       }
       
       if(extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_disabled)
-        color(color_wallcutout)
+        color(getColour(color_wallcutout))
         if(extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_front)
         tz(-fudgeFactor)
           cube([unitPositionTo_mm(extendable_Settings.x[1],num_x),num_y*gf_pitch,(num_z+1)*gf_zpitch]);
@@ -688,7 +695,7 @@ module gridfinity_cup(
             cube([num_x*gf_pitch-unitPositionTo_mm(extendable_Settings.x[1],num_x),num_y*gf_pitch,(num_z+1)*gf_zpitch]);
       
       if(extendable_Settings.y[0]!=BinExtensionEnabled_disabled)
-        color(color_wallcutout)
+        color(getColour(color_wallcutout))
         if(extendable_Settings.y[0]==BinExtensionEnabled_front)
           tz(-fudgeFactor)
           cube([gf_pitch*num_x,unitPositionTo_mm(extendable_Settings.y[1],num_y),(num_z+1)*gf_zpitch]);
@@ -696,15 +703,15 @@ module gridfinity_cup(
           translate([0,unitPositionTo_mm(extendable_Settings.y[1],num_y),-fudgeFactor])
           cube([gf_pitch*num_x,num_y*gf_pitch-unitPositionTo_mm(extendable_Settings.y[1],num_y),(num_z+1)*gf_zpitch]);
 
-      if(cutx > 0 && $preview)
+      if(getCutx() > 0 && $preview)
         color(color_cut)
         tz(-fudgeFactor)
-          cube([gf_pitch*cutx,num_y*gf_pitch,(num_z+1)*gf_zpitch]);
+          cube([gf_pitch*getCutx(),num_y*gf_pitch,(num_z+1)*gf_zpitch]);
 
-      if(cuty > 0 && $preview)
+      if(getCuty() > 0 && $preview)
         color(color_cut)
         tz(-fudgeFactor)
-          cube([num_x*gf_pitch,gf_pitch*cuty,(num_z+1)*gf_zpitch]);
+          cube([num_x*gf_pitch,gf_pitch*getCuty(),(num_z+1)*gf_zpitch]);
     }
     
     if((extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_disabled || extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_disabled) && extendable_Settings[iExtendableTabsEnabled]) {
@@ -754,7 +761,6 @@ module gridfinity_cup(
         isOdd = i % 2;
         tabPos = isOdd == 0 ? even : odd;
         if(IsHelpEnabled("trace")) echo("tabs", i=i, isOdd=isOdd, tabPos=tabPos);
-        //color(tabPos[2])
         tz((i+0.5)*tabHeight)
         translate(tabPos[1])
           rotate(tabPos[0])
@@ -766,17 +772,17 @@ module gridfinity_cup(
   if(IsHelpEnabled("info"))
     translate(cupPosition(position,num_x,num_y))
     ShowCalipers(
-      cutx, 
-      cuty, 
+      getCutx(), 
+      getCuty(), 
       size=[num_x,num_y,num_z], 
       lip_style,
-      magnet_diameter, 
-      screw_depth, 
-      floor_thickness, 
+      cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+      cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+      floor_thickness = cupBase_settings[iCupBase_FloorThickness], 
       filled_in,
       wall_thickness,
-      efficient_floor,
-      flat_base); 
+      efficient_floor = cupBase_settings[iCupBase_EfficientFloor], 
+      flat_base = cupBase_settings[iCupBase_FlatBase]); 
       
   HelpTxt("gridfinity_cup",[
     "num_x",num_x
@@ -788,7 +794,7 @@ module gridfinity_cup(
     ,"fingerslide",fingerslide
     ,"fingerslide_radius",fingerslide_radius
     ,"fingerslide_walls",fingerslide_walls
-    ,"cupbase_settings",cupbase_settings
+    ,"cupBase_settings",cupBase_settings
     ,"wall_thickness",wall_thickness
     ,"chamber_wall_thickness",chamber_wall_thickness
     ,"vertical_separator_bend_position",vertical_separator_bend_position
@@ -830,7 +836,7 @@ module gridfinity_cup(
         wallcutout_horizontal_height,
         wallcutout_horizontal_corner_radius]
     ,"extendable_Settings",extendable_Settings
-    ,"cuty",cuty]
+    ]
     ,IsHelpEnabled("info"));  
 }
 
@@ -877,7 +883,7 @@ module cutout_pattern(
 
 module partitioned_cavity(num_x, num_y, num_z, 
     label_settings=[],
-    cupbase_settings=[],
+    cupBase_settings=[],
     fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     fingerslide_walls=default_fingerslide_walls,
     wall_thickness=default_wall_thickness,
@@ -896,31 +902,31 @@ module partitioned_cavity(num_x, num_y, num_z,
     sliding_lid_settings=[]) {
   
   //Legacy variables
-  flat_base=cupbase_settings[iCupBase_FlatBase];
-  cavity_floor_radius=cupbase_settings[iCupBase_CavityFloorRadius];
-  spacer=cupbase_settings[iCupBase_Spacer];
-  box_corner_attachments_only=cupbase_settings[iCupBase_CornerAttachmentsOnly];
-  efficient_floor=cupbase_settings[iCupBase_EfficientFloor]; 
-  half_pitch=cupbase_settings[iCupBase_HalfPitch];        
-  magnet_diameter=cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
-  screw_depth=cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
-  magnet_easy_release=cupbase_settings[iCupBase_MagnetEasyRelease];
-  floor_thickness=cupbase_settings[iCupBase_FloorThickness];  
+  flat_base=cupBase_settings[iCupBase_FlatBase];
+  cavity_floor_radius=cupBase_settings[iCupBase_CavityFloorRadius];
+  spacer=cupBase_settings[iCupBase_Spacer];
+  box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
+  efficient_floor=cupBase_settings[iCupBase_EfficientFloor]; 
+  half_pitch=cupBase_settings[iCupBase_HalfPitch];        
+  magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
+  screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
+  magnet_easy_release=cupBase_settings[iCupBase_MagnetEasyRelease];
+  floor_thickness=cupBase_settings[iCupBase_FloorThickness];  
   zpoint = gf_zpitch*num_z-zClearance;
 
-  floorHeight = calculateFloorHeight(cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], screw_depth, floor_thickness);
+  floorHeight = calculateFloorHeight(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], screw_depth, floor_thickness);
     
   difference() {
-    color(color_cupcavity)
+    color(getColour(color_cupcavity))
     basic_cavity(num_x, num_y, num_z, 
-    fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_radius=fingerslide_radius, cupbase_settings=cupbase_settings,
+    fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_radius=fingerslide_radius, cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
       lip_style=lip_style, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
     
     if(IsHelpEnabled("trace")) echo("partitioned_cavity", vertical_separator_positions=vertical_separator_positions);
     
-    color(color_divider)
+    color(getColour(color_divider))
     tz(sepFloorHeight-fudgeFactor)
     separators(  
       length=gf_pitch*num_y,
@@ -935,7 +941,7 @@ module partitioned_cavity(num_x, num_y, num_z,
 
     if(IsHelpEnabled("trace")) echo("partitioned_cavity", horizontal_separator_positions=horizontal_separator_positions);
     
-    color(color_divider)
+    color(getColour(color_divider))
     translate([gf_pitch*num_x, 0, sepFloorHeight-fudgeFactor])
     separators(  
       length=gf_pitch*num_x,
@@ -983,19 +989,19 @@ module basic_cavity(num_x, num_y, num_z,
     fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,
     wall_thickness=default_wall_thickness,
     lip_style=default_lip_style,
-    cupbase_settings=[],
+    cupBase_settings=[],
     sliding_lid_settings = [],
     zClearance = 0) {
   
   //Legacy variables
-  floor_thickness=cupbase_settings[iCupBase_FloorThickness]; 
-  magnet_diameter=cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
-  screw_depth=cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
-  magnet_easy_release=cupbase_settings[iCupBase_MagnetEasyRelease];
-  flat_base=cupbase_settings[iCupBase_FlatBase];
-  spacer=cupbase_settings[iCupBase_Spacer];
-  box_corner_attachments_only=cupbase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupbase_settings[iCupBase_HalfPitch];
+  floor_thickness=cupBase_settings[iCupBase_FloorThickness]; 
+  magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
+  screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
+  magnet_easy_release=cupBase_settings[iCupBase_MagnetEasyRelease];
+  flat_base=cupBase_settings[iCupBase_FlatBase];
+  spacer=cupBase_settings[iCupBase_Spacer];
+  box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
+  half_pitch=cupBase_settings[iCupBase_HalfPitch];
 
   //zpoint = gf_zpitch*num_z-zClearance;
   
@@ -1014,11 +1020,11 @@ module basic_cavity(num_x, num_y, num_z,
   zpoint = filledInZ-zClearance;
  
   floorht = min(filledInZ, calculateFloorHeight(
-      cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-      cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
-      cupbase_settings[iCupBase_FloorThickness], 
-      efficient_floor=cupbase_settings[iCupBase_EfficientFloor],
-      flat_base=cupbase_settings[iCupBase_FlatBase]));
+      cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+      cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+      cupBase_settings[iCupBase_FloorThickness], 
+      efficient_floor=cupBase_settings[iCupBase_EfficientFloor],
+      flat_base=cupBase_settings[iCupBase_FlatBase]));
 
   //Remove floor to create a vertical spacer.
   nofloor = spacer && fingerslide == "none";
@@ -1029,37 +1035,38 @@ module basic_cavity(num_x, num_y, num_z,
     : gf_lip_upper_taper_height + gf_lip_lower_taper_height- wall_thickness;
   lipHeight = (reducedlipstyle == "none") ? 0 : gf_Lip_Height-0.65;
   //bottom of the lip where it touches the wall
-  lipBottomZ = ((reducedlipstyle == "minimum" || reducedlipstyle == "none") ? gf_zpitch*num_z
-    : reducedlipstyle == "reduced" ? gf_zpitch*num_z
+  lipBottomZ = ((reducedlipstyle == "minimum" || reducedlipstyle == "none") ? gf_zpitch*num_z +fudgeFactor*3
+    : reducedlipstyle == "reduced" ? gf_zpitch*num_z+fudgeFactor*3
     : gf_zpitch*num_z-gf_lip_height-lipSupportThickness); 
-  
+  //lipBottomZ = gf_zpitch*num_z+fudgeFactor*3;
   innerLipRadius = gf_cup_corner_radius-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
   innerWallRadius = gf_cup_corner_radius-wall_thickness;
   
 
   aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
   
+  //cavityHeight= max(lipBottomZ-floorht,0);
   cavityHeight= max(lipBottomZ-floorht,0);
-  cavity_floor_radius = calcualteCavityFloorRadius(cupbase_settings[iCupBase_CavityFloorRadius], wall_thickness,cupbase_settings[iCupBase_EfficientFloor]);
+  cavity_floor_radius = calcualteCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,cupBase_settings[iCupBase_EfficientFloor]);
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
   // arount the top inside edge.
   q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
   
-  if(IsHelpEnabled("trace")) echo("basic_cavity", efficient_floor=efficient_floor, nofloor=nofloor, lipSupportThickness=lipSupportThickness, lipBottomZ=lipBottomZ, innerLipRadius=innerLipRadius, innerWallRadius=innerWallRadius, cavityHeight=cavityHeight, cavity_floor_radius=cavity_floor_radius);
+  if(IsHelpEnabled("trace")) echo("basic_cavity", efficient_floor=cupBase_settings[iCupBase_EfficientFloor], nofloor=nofloor, lipSupportThickness=lipSupportThickness, lipBottomZ=lipBottomZ, innerLipRadius=innerLipRadius, innerWallRadius=innerWallRadius, cavityHeight=cavityHeight, cavity_floor_radius=cavity_floor_radius);
   
   if(filledInZ>floorht) {
     union(){
     difference() {
     union() {
       if (reducedlipstyle == "minimum" || reducedlipstyle == "none") {
-        hull() cornercopy(seventeen, num_x, num_y)
+        /*hull() cornercopy(seventeen, num_x, num_y)
           tz(filledInZ-fudgeFactor) 
-          cylinder(r=innerWallRadius, h=gf_Lip_Height, $fn=32);   // remove entire lip
+          cylinder(r=innerWallRadius, h=gf_Lip_Height, $fn=32);   // remove entire lip*/
       } 
       else if (reducedlipstyle == "reduced") {
-        lowerTaperZ = filledInZ+gf_lip_lower_taper_height;
+        /*lowerTaperZ = filledInZ+gf_lip_lower_taper_height;
         hull() cornercopy(seventeen, num_x, num_y)
         union(){
           tz(lowerTaperZ) 
@@ -1071,18 +1078,18 @@ module basic_cavity(num_x, num_y, num_z,
           cylinder(
             r=innerWallRadius, 
             h=lowerTaperZ-filledInZ+fudgeFactor*2, $fn=32);
-        }
+        }*/
       } 
       else { // normal
         lowerTaperZ = filledInZ-gf_lip_height-lipSupportThickness;
         if(lowerTaperZ <= floorht){
           hull() cornercopy(seventeen, num_x, num_y)
             tz(floorht) 
-            cylinder(r=innerLipRadius, h=filledInZ-floorht+fudgeFactor*2, $fn=32); // lip
+            cylinder(r=innerLipRadius, h=filledInZ-floorht+fudgeFactor*4, $fn=32); // lip
         } else {
           hull() cornercopy(seventeen, num_x, num_y)
             tz(filledInZ-gf_lip_height-fudgeFactor) 
-            cylinder(r=innerLipRadius, h=gf_lip_height+fudgeFactor*2, $fn=32); // lip
+            cylinder(r=innerLipRadius, h=gf_lip_height+fudgeFactor*4, $fn=32); // lip
     
           hull() cornercopy(seventeen, num_x, num_y)
             tz(filledInZ-gf_lip_height-lipSupportThickness-fudgeFactor) 
@@ -1126,14 +1133,14 @@ module basic_cavity(num_x, num_y, num_z,
         seventeen=seventeen);
     }
 
-    if (cupbase_settings[iCupBase_EfficientFloor] != "off") {
+    if (cupBase_settings[iCupBase_EfficientFloor] != "off") {
       magnetPosition = calculateMagnetPosition(magnet_diameter);
       magnetCoverHeight = max(
-        cupbase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-        cupbase_settings[iCupBase_ScrewSize][iCylinderDimension_Height]);
+        cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+        cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height]);
       hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
       efficientFloorGridHeight = max(magnetCoverHeight,gfBaseHeight())+floor_thickness;
-      if(IsHelpEnabled("trace")) echo("basic_cavity", efficient_floor=efficient_floor, efficientFloorGridHeight=efficientFloorGridHeight,  floor_thickness=floor_thickness);
+      if(IsHelpEnabled("trace")) echo("basic_cavity", efficient_floor=cupBase_settings[iCupBase_EfficientFloor], efficientFloorGridHeight=efficientFloorGridHeight,  floor_thickness=floor_thickness);
       difference(){
         tz(-fudgeFactor)
           cube([num_x*gf_pitch, num_y*gf_pitch, efficientFloorGridHeight]);
@@ -1141,7 +1148,7 @@ module basic_cavity(num_x, num_y, num_z,
         difference(){
           efficient_floor_grid(
             num_x, num_y, 
-            floorStyle = cupbase_settings[iCupBase_EfficientFloor],
+            floorStyle = cupBase_settings[iCupBase_EfficientFloor],
             half_pitch=half_pitch, 
             flat_base=flat_base, 
             floor_thickness=floor_thickness,
@@ -1154,8 +1161,8 @@ module basic_cavity(num_x, num_y, num_z,
                 EfficientFloorAttachementCaps(
                   grid_copy_corner_index = $gcci,
                   floor_thickness = floor_thickness,
-                  magnet_size = cupbase_settings[iCupBase_MagnetSize], 
-                  screw_size = cupbase_settings[iCupBase_ScrewSize],
+                  magnet_size = cupBase_settings[iCupBase_MagnetSize], 
+                  screw_size = cupBase_settings[iCupBase_ScrewSize],
                   wall_thickness = magnet_easy_release == MagnetEasyRelease_inner ? wall_thickness*2 : wall_thickness );
           }
         }
@@ -1164,13 +1171,14 @@ module basic_cavity(num_x, num_y, num_z,
     
     //Sliding lid rebate.
     if(sliding_lid_settings[iSlidingLidEnabled])
-      tz(zpoint) 
+        tz(zpoint) 
         SlidingLidCavity(
           num_x = num_x, 
           num_y = num_y,
           wall_thickness = wall_thickness,
           sliding_lid_settings = sliding_lid_settings,
           aboveLidHeight = aboveLidHeight);
+
   }}
   
   // cut away side lips if num_x is less than 1
@@ -1356,15 +1364,21 @@ module SlidingLidCavity(
     lidMinWallThickness=sliding_lid_settings[iSlidingLidMinWallThickness],
     limitHeight = false);
   
-  //translate([-gf_pitch/2,-gf_pitch/2,zpoint]) 
-  //cube([num_x*gf_pitch,gf_cup_corner_radius,zClearance+gf_Lip_Height]);
-  //innerWallRadius = gf_cup_corner_radius-wall_thickness;
-  translate([0,gf_cup_corner_radius,aboveLidHeight]) 
-  rotate([270,0,0])
-  chamferedCorner(
-    cornerRadius = aboveLidHeight/4,
-    chamferLength = aboveLidHeight,
-    length=num_x*gf_pitch, 
-    height = aboveLidHeight,
-    width = gf_cup_corner_radius);
+  if(sliding_lid_settings[slidingLidLipEnabled])
+  {
+    translate([0,0,0])
+      cube([num_x*gf_pitch,gf_cup_corner_radius,aboveLidHeight+fudgeFactor*3]);
+  } else {
+    //translate([-gf_pitch/2,-gf_pitch/2,zpoint]) 
+    //cube([num_x*gf_pitch,gf_cup_corner_radius,zClearance+gf_Lip_Height]);
+    //innerWallRadius = gf_cup_corner_radius-wall_thickness;
+    translate([0,gf_cup_corner_radius,aboveLidHeight]) 
+    rotate([270,0,0])
+    chamferedCorner(
+      cornerRadius = aboveLidHeight/4,
+      chamferLength = aboveLidHeight,
+      length=num_x*gf_pitch, 
+      height = aboveLidHeight,
+      width = gf_cup_corner_radius);
+  }
 }
