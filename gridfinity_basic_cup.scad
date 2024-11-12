@@ -77,16 +77,16 @@ box_corner_attachments_only = true;
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "on";//[off,on,rounded,smooth] 
+efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = true;
+half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
 // Remove floor to create a vertical spacer
 spacer = false;
 
 /* [Label] */
-label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
+label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
@@ -109,9 +109,9 @@ sliding_lid_lip_enabled = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
-fingerslide = "rounded"; //[none, rounded, chamfered]
+fingerslide = "none"; //[none, rounded, chamfered]
 // Radius of the corner fillet
-fingerslide_radius = 10;
+fingerslide_radius = 8;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 fingerslide_walls=[1,0,0,0];  //[0:1:1]
 
