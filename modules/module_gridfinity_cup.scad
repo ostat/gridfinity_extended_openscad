@@ -973,14 +973,60 @@ module partitioned_cavity(num_x, num_y, num_z,
           bend_angle = horizontal_separator_bend_angle,
           bend_separation = horizontal_separator_bend_separation,
           cut_depth = horizontal_separator_cut_depth);
-          
-      gridfinity_label(
+      
+      label_size=calculateLabelSize(label_settings[iLabelSettings_size]);
+      labelCornerRadius = label_size[3];
+      clr = 0.05;
+      lipHeight = 3.75;
+      label_thickness = 3;
+      ratio=label_thickness/(label_size.y+labelCornerRadius);
+      cupLipOffset = -lipHeight/2-label_thickness/2-labelCornerRadius;
+      
+      intersection() {
+        translate([0, 0, cupLipOffset])
+          tz(gf_zpitch * num_z - fudgeFactor * 2)
+          cupLip(
+          num_x = num_x,
+          num_y = num_y,
+          lipStyle = lip_style,
+          wall_thickness = wall_thickness);
+      }
+      
+      difference() {
+        gridfinity_label(
         num_x = num_x,
         num_y = num_y,
         zpoint = zpoint,
         vertical_separator_positions = vertical_separator_positions,
         horizontal_separator_positions = horizontal_separator_positions,
-        label_settings=label_settings);
+        label_settings = label_settings);
+        
+        translate([0, 0, cupLipOffset])
+          tz(gf_zpitch * num_z - fudgeFactor * 2)
+          minkowski() {
+            cupLip(
+            num_x = num_x,
+            num_y = num_y,
+            lipStyle = lip_style,
+            wall_thickness = wall_thickness);
+            cylinder(h=0.001, r=clr);
+          }
+        
+        difference() {
+          grid_block(
+            num_x, num_y, num_z,
+            cupBase_settings = cupBase_settings,
+            wall_thickness = wall_thickness,
+            lipStyle = lip_style,
+            filledin = false);
+          
+          basic_cavity(num_x, num_y, num_z,
+          cupBase_settings=cupBase_settings,
+          wall_thickness=wall_thickness+clr,
+          lip_style=lip_style, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
+          
+        }
+      }
     }
   }
 }           

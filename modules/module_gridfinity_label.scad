@@ -158,14 +158,18 @@ module gridfinity_label(
  
   color(getColour(color_label))
   tz(zpoint+fudgeFactor)
-  //Loop the sides 
+  //Loop the sides
   for(l = [0:1:len(wallLocations)-1]){
     location = wallLocations[l];
     separator_positions = location[ilabelWall_SeparatorConfig];//calculateSeparators(location[3]);
-   
+
+    label_thickness = 3;
+    ratio=label_thickness/(label_size.y+labelCornerRadius);
+
     labelPoints = [[ 0-labelSize.y, -labelCornerRadius],
       [ 0, -labelCornerRadius ],
-      [ 0, -labelCornerRadius-labelSize.z ]
+      [ 0, -labelCornerRadius-labelSize.z*ratio ],
+      [ 0-labelSize.y*(1-ratio), -labelCornerRadius-labelSize.z*ratio ]
     ];
     labelWidthmm = labelSize.x <=0 ? location[ilabelWall_Width] : labelSize.x * gf_pitch;
     
@@ -176,8 +180,8 @@ module gridfinity_label(
       label_position == LabelPosition_center ||
       label_position == LabelPosition_right ?
         [ location[ilabelWall_Width] ] // single chamber equal to the bin length
-        : [ for (i=[0:len(separator_positions)]) 
-          (i==len(separator_positions) 
+        : [ for (i=[0:len(separator_positions)])
+          (i==len(separator_positions)
             ? location[ilabelWall_Width]
             : separator_positions[i][iSeperatorPosition]) - (i==0 ? 0 : separator_positions[i-1][iSeperatorPosition]) ];
     
@@ -186,26 +190,26 @@ module gridfinity_label(
     if(label_walls[l] != 0)
       //patterns in the outer walls
       translate(location[ilabelWall_Position])
-      rotate(location[ilabelWall_Rotation])     
+      rotate(location[ilabelWall_Rotation])
       for (i=[0:len(chamberWidths)-1]) {
-          chamberStart = i == 0 
-            ? 0 
-            : separator_positions[i-1][iSeperatorPosition] + 
+          chamberStart = i == 0
+            ? 0
+            : separator_positions[i-1][iSeperatorPosition] +
               separator_positions[i-1][iSeperatorBendSeparation]/2
                 *(separator_positions[i-1][iSeperatorBendAngle] < 0 ? -1 : 1)
                 *(location[ilabelWall_Reversed] ? -1 : 1);
           chamberWidth = chamberWidths[i];
           label_num_x = (labelWidthmm == 0 || labelWidthmm > chamberWidth) ? chamberWidth : labelWidthmm;
-          label_pos_x = ((label_position == "center" || label_position == "centerchamber" )? (chamberWidth - label_num_x) / 2 
-                          : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x 
+          label_pos_x = ((label_position == "center" || label_position == "centerchamber" )? (chamberWidth - label_num_x) / 2
+                          : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x
                           : 0);
         
         if(IsHelpEnabled("trace")) echo("gridfinity_label", i=i, chamberStart=chamberStart, label_num_x=label_num_x, label_pos_x=label_pos_x,  separator_position=separator_positions[i-1]);
-                    
+          
           translate([(chamberStart + label_pos_x)+labelCornerRadius,-labelCornerRadius,0])
           difference(){
             union(){
-              hull() for (y=[0, 1, 2])
+              hull() for (y=[0, 1, 2,3])
               translate([0, labelPoints[y][0], labelPoints[y][1]])
                 rotate([0, 90, 0])
                 union(){
@@ -221,33 +225,33 @@ module gridfinity_label(
                   cube([abs(label_num_x)*2,abs(labelPoints[0][0]-labelPoints[1][0])/2,label_relief+fudgeFactor]);
                 }
               }
-            //Create Label Sockets 
+            //Create Label Sockets
             if(label_style == LabelStyle_cullenectlegacy){
               labelSize= [36.7,11.3, 1.2];
               labelLeftPosition = CalcualteLabelSocketPosition(
-                label_position=label_position, 
-                labelSocketSize=labelSize, 
+                label_position=label_position,
+                labelSocketSize=labelSize,
                 label_num_x=label_num_x);
               translate([labelLeftPosition-labelCornerRadius,labelPoints[0][0]+0.25,0])
               Label_cullenect_legacy_socket(clickSize= labelSize);
-            } 
+            }
             else if(label_style == LabelStyle_cullenect){
               labelSize = [label_relief.x == 0 ? label_num_x : label_relief.x,11,1.2];
               labelLeftPosition = CalcualteLabelSocketPosition(
-                label_position=label_position, 
-                labelSocketSize=labelSize, 
+                label_position=label_position,
+                labelSocketSize=labelSize,
                 label_num_x=label_num_x);
               translate([labelLeftPosition-labelCornerRadius,labelPoints[0][0]+0.4,-labelSize.z])
               cullenect_socket(labelSize=labelSize);
-            } 
+            }
             else if(label_style == LabelStyle_pred){
               translate([0,labelPoints[0][0]+max(labelCornerRadius,label_relief+0.5),0-label_relief-fudgeFactor])
               cube([abs(label_num_x)-labelCornerRadius*2,abs(labelPoints[0][0]-labelPoints[1][0]),label_relief+fudgeFactor]);
-            } 
+            }
             else if(label_style == LabelStyle_gflabel){
                    gflabelSize=[label_relief.x,label_relief.y,label_relief.z];
-                   gflabelLeftPosition = 
-                label_position == LabelPosition_left ? 2.65 
+                   gflabelLeftPosition =
+                label_position == LabelPosition_left ? 2.65
                 : label_position == LabelPosition_right ? 2.65
                 : label_position == LabelPosition_center ? (label_num_x-gflabelSize.x)/2
                 : 2.65;

@@ -50,8 +50,8 @@ module grid_block(
         cylinder(r=gf_cup_corner_radius, h=lipHeight, $fn=$fn);
     } else {
     cupLip(
-      num_x = num_x, 
-      num_y = num_y, 
+      num_x = num_x,
+      num_y = num_y,
       lipStyle = lipStyle,
       wall_thickness = wall_thickness);
     }
