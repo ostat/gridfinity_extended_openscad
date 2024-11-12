@@ -319,11 +319,11 @@ module gridfinity_cup(
       if(filled_in == FilledIn_disabled) 
       union(){
         partitioned_cavity(
-          num_x, num_y, num_z, 
+          num_x, num_y, num_z,
           label_settings=label_settings,
           cupBase_settings = cupBase_settings,
-          fingerslide=fingerslide, 
-          fingerslide_radius=fingerslide_radius, 
+          fingerslide=fingerslide,
+          fingerslide_radius=fingerslide_radius,
           fingerslide_walls=fingerslide_walls,
           wall_thickness=wall_thickness,
           chamber_wall_thickness=chamber_wall_thickness,
@@ -338,22 +338,22 @@ module gridfinity_cup(
           horizontal_separator_cut_depth = horizontal_separator_cut_depth,
           vertical_separator_positions = vertical_separator_positions,
           horizontal_separator_positions = horizontal_separator_positions,
-          lip_style=lip_style, 
+          lip_style=lip_style,
           zClearance=zClearance,
           sliding_lid_settings= slidingLidSettings);
       
       color(getColour(color_wallcutout))
         union(){
           floorHeight = calculateFloorHeight(
-              cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-              cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+              cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height],
+              cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height],
               cupBase_settings[iCupBase_FloorThickness]);
           cavityFloorRadius = calcualteCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
           wallTop = calculateWallTop(num_z, lip_style);
           cutoutclearance = gf_cup_corner_radius/2;
 
           tapered_setback = tapered_setback < 0 ? gf_cup_corner_radius : tapered_setback;
-          tapered_corner_size = 
+          tapered_corner_size =
                 tapered_corner_size == -2 ? (wallTop - floorHeight)/2
               : tapered_corner_size < 0 ? wallTop - floorHeight //meant for -1, but also catch others
               : tapered_corner_size == 0 ? wallTop - floorHeight - cavityFloorRadius
@@ -399,14 +399,14 @@ module gridfinity_cup(
             union(){
               if(tapered_corner == "rounded"){
                 roundedCorner(
-                  radius = tapered_corner_size, 
-                  length=(num_x+1)*gf_pitch, 
+                  radius = tapered_corner_size,
+                  length=(num_x+1)*gf_pitch,
                   height = tapered_corner_size);
               }
               else if(tapered_corner == "chamfered"){
                 chamferedCorner(
-                  chamferLength = tapered_corner_size, 
-                  length=(num_x+1)*gf_pitch, 
+                  chamferLength = tapered_corner_size,
+                  length=(num_x+1)*gf_pitch,
                   height = tapered_corner_size);
               }
             }
@@ -584,14 +584,14 @@ module gridfinity_cup(
                   union()
                     if(tapered_corner == "rounded"){
                       roundedCorner(
-                        radius = tapered_corner_size-cutoutclearance, 
-                        length=(num_x+1)*gf_pitch, 
+                        radius = tapered_corner_size-cutoutclearance,
+                        length=(num_x+1)*gf_pitch,
                         height = tapered_corner_size);
                     }
                     else if(tapered_corner == "chamfered"){
                       chamferedCorner(
-                        chamferLength = tapered_corner_size-cutoutclearance, 
-                        length=(num_x+1)*gf_pitch, 
+                        chamferLength = tapered_corner_size-cutoutclearance,
+                        length=(num_x+1)*gf_pitch,
                         height = tapered_corner_size);
                     }
                     
@@ -918,7 +918,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     
   difference() {
     color(getColour(color_cupcavity))
-    basic_cavity(num_x, num_y, num_z, 
+    basic_cavity(num_x, num_y, num_z,
     fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_radius=fingerslide_radius, cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
       lip_style=lip_style, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
@@ -928,7 +928,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     
     color(getColour(color_divider))
     tz(sepFloorHeight-fudgeFactor)
-    separators(  
+    separators(
       length=gf_pitch*num_y,
       height=gf_zpitch*(num_z)-sepFloorHeight+fudgeFactor*2-max(zClearance, chamber_wall_zClearance),
       wall_thickness = chamber_wall_thickness,
@@ -943,7 +943,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     
     color(getColour(color_divider))
     translate([gf_pitch*num_x, 0, sepFloorHeight-fudgeFactor])
-    separators(  
+    separators(
       length=gf_pitch*num_x,
       height=gf_zpitch*(num_z)-sepFloorHeight+fudgeFactor*2-max(zClearance, chamber_wall_zClearance),
       wall_thickness = chamber_wall_thickness,
@@ -956,7 +956,7 @@ module partitioned_cavity(num_x, num_y, num_z,
       
     if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
       vertical_separator_positions = calculateSeparators(
-          seperator_config = vertical_separator_positions, 
+          seperator_config = vertical_separator_positions,
           length = gf_pitch*num_y,
           height = gf_zpitch*(num_z)-sepFloorHeight+fudgeFactor*2-max(zClearance, chamber_wall_zClearance),
           wall_thickness = chamber_wall_thickness,
@@ -965,7 +965,7 @@ module partitioned_cavity(num_x, num_y, num_z,
           bend_separation = vertical_separator_bend_separation,
           cut_depth = vertical_separator_cut_depth);
       horizontal_separator_positions = calculateSeparators(
-          seperator_config = horizontal_separator_positions, 
+          seperator_config = horizontal_separator_positions,
           length = gf_pitch*num_x,
           height = gf_zpitch*(num_z)-sepFloorHeight+fudgeFactor*2-max(zClearance, chamber_wall_zClearance),
           wall_thickness = chamber_wall_thickness,
@@ -1147,10 +1147,10 @@ module basic_cavity(num_x, num_y, num_z,
         
         difference(){
           efficient_floor_grid(
-            num_x, num_y, 
+            num_x, num_y,
             floorStyle = cupBase_settings[iCupBase_EfficientFloor],
-            half_pitch=half_pitch, 
-            flat_base=flat_base, 
+            half_pitch=half_pitch,
+            flat_base=flat_base,
             floor_thickness=floor_thickness,
             efficientFloorGridHeight=efficientFloorGridHeight,
             margins=q);
@@ -1161,7 +1161,7 @@ module basic_cavity(num_x, num_y, num_z,
                 EfficientFloorAttachementCaps(
                   grid_copy_corner_index = $gcci,
                   floor_thickness = floor_thickness,
-                  magnet_size = cupBase_settings[iCupBase_MagnetSize], 
+                  magnet_size = cupBase_settings[iCupBase_MagnetSize],
                   screw_size = cupBase_settings[iCupBase_ScrewSize],
                   wall_thickness = magnet_easy_release == MagnetEasyRelease_inner ? wall_thickness*2 : wall_thickness );
           }
@@ -1171,9 +1171,9 @@ module basic_cavity(num_x, num_y, num_z,
     
     //Sliding lid rebate.
     if(sliding_lid_settings[iSlidingLidEnabled])
-        tz(zpoint) 
+        tz(zpoint)
         SlidingLidCavity(
-          num_x = num_x, 
+          num_x = num_x,
           num_y = num_y,
           wall_thickness = wall_thickness,
           sliding_lid_settings = sliding_lid_settings,
@@ -1187,7 +1187,7 @@ module basic_cavity(num_x, num_y, num_z,
     top = num_z*gf_zpitch+gf_Lip_Height;
     height = top-lipBottomZ+fudgeFactor*2;
     
-    hull() 
+    hull()
     for (x=[1.5+0.25+wall_thickness, num_x*gf_pitch-1.5-0.25-wall_thickness]){
       for (y=[11, (num_y)*gf_pitch-seventeen])
       translate([x, y, top-height])
@@ -1198,9 +1198,9 @@ module basic_cavity(num_x, num_y, num_z,
   if (nofloor) {
     tz(-fudgeFactor)
       hull()
-      cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+      cornercopy(num_x=num_x, num_y=num_y, r=seventeen)
       cylinder(r=2, h=gf_cupbase_lower_taper_height+fudgeFactor, $fn=32);
-    gridcopy(1, 1) 
+    gridcopy(1, 1)
       EfficientFloor(num_x, num_y,-fudgeFactor, q);
   }
 }

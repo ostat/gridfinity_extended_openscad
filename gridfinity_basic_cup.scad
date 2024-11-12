@@ -56,7 +56,12 @@ horizontal_irregular_subdivisions = false;
 horizontal_separator_config = "10.5|21|42|50|60";
 
 /* [Base] */
-//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+
+// Enable magnets
+enable_magnets = true;
+// Enable screws
+enable_screws = true;
+//size of magnet, diameter and height. Zacks original used 6.5 and 2.4
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 magnet_easy_release = "auto";//["off","auto","inner","outer"] 
@@ -72,16 +77,16 @@ box_corner_attachments_only = true;
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//[off,on,rounded,smooth] 
+efficient_floor = "on";//[off,on,rounded,smooth] 
 // Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = false;
+half_pitch = true;
 // Removes the internal grid from base the shape
 flat_base = false;
 // Remove floor to create a vertical spacer
 spacer = false;
 
 /* [Label] */
-label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
+label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
@@ -104,9 +109,9 @@ sliding_lid_lip_enabled = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
-fingerslide = "none"; //[none, rounded, chamfered]
+fingerslide = "rounded"; //[none, rounded, chamfered]
 // Radius of the corner fillet
-fingerslide_radius = 8;
+fingerslide_radius = 10;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 fingerslide_walls=[1,0,0,0];  //[0:1:1]
 
@@ -196,10 +201,10 @@ gridfinity_cup(
   fingerslide_radius=fingerslide_radius,
   fingerslide_walls=fingerslide_walls,
   cupBase_settings = CupBaseSettings(
-    magnetSize = magnet_size, 
+    magnetSize = enable_magnets?magnet_size:[0,0],
     magnetEasyRelease = magnet_easy_release, 
     centerMagnetSize = center_magnet_size, 
-    screwSize = screw_size, 
+    screwSize = enable_screws?screw_size:[0,0],
     holeOverhangRemedy = hole_overhang_remedy, 
     cornerAttachmentsOnly = box_corner_attachments_only,
     floorThickness = floor_thickness,
