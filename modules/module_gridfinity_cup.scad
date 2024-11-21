@@ -10,7 +10,7 @@ use <module_gridfinity.scad>
 use <module_item_holder.scad>
 include <module_gridfinity_cup_base.scad>
 use <module_gridfinity_efficient_floor.scad>
-use <module_attachement_clip.scad>
+use <module_attachment_clip.scad>
 use <module_calipers.scad>
 
 // X dimension. grid units (multiples of 42mm) or mm.
@@ -764,7 +764,7 @@ module gridfinity_cup(
         tz((i+0.5)*tabHeight)
         translate(tabPos[1])
           rotate(tabPos[0])
-          attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, footingThickness=wall_thickness, tabStyle=tabStyle);
+          attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, footingThickness=wall_thickness, tabStyle=tabStyle);
       }
     }
   }  
@@ -1158,7 +1158,7 @@ module basic_cavity(num_x, num_y, num_z,
            //Screw and magnet covers required for efficient floor
            if(hasCornerAttachments)
              gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only)
-                EfficientFloorAttachementCaps(
+                EfficientFloorAttachmentCaps(
                   grid_copy_corner_index = $gcci,
                   floor_thickness = floor_thickness,
                   magnet_size = cupBase_settings[iCupBase_MagnetSize],
