@@ -815,11 +815,11 @@ module gridfinity_cup(
         if(!isOdd) {
           translate([gf_pitch*cut,num_y*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
             rotate([0,180,90])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+            attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else if(!extension_enabled.y) {
           translate([gf_pitch*cut,wall_thickness+gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
             rotate([0,0,90])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+            attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         }
       }
 
@@ -827,11 +827,11 @@ module gridfinity_cup(
         if(isOdd) {
           translate([num_x*gf_pitch-wall_thickness-gf_tolerance/2,gf_pitch*cut,floorHeight+(i+0.5)*tabHeight])
             rotate([0,0,180])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+            attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else if(!extension_enabled.x) {
           translate([wall_thickness+gf_tolerance/2,gf_pitch*cut,floorHeight+(i+0.5)*tabHeight])
             rotate([0,180,180])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+            attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         }
     }
     }
@@ -1215,7 +1215,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
            //Screw and magnet covers required for efficient floor
            if(hasCornerAttachments)
              gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only)
-                EfficientFloorAttachementCaps(
+                EfficientFloorAttachmentCaps(
                   grid_copy_corner_index = $gcci,
                   floor_thickness = floor_thickness,
                   magnet_diameter=magnet_diameter,
@@ -17544,7 +17544,7 @@ module efficient_floor_grid(
   }
 }
 
-module EfficientFloorAttachementCaps(
+module EfficientFloorAttachmentCaps(
   grid_copy_corner_index,
   floor_thickness,
   magnet_diameter,
@@ -17829,16 +17829,16 @@ module champheredSquare(size=0, radius = 0){
   }
 }
 //CombinedEnd from path module_rounded_negative_champher.scad
-//Combined from path module_attachement_clip.scad
+//Combined from path module_attachment_clip.scad
 
 // Creates an wall clip that is used when box is split
-module attachement_clip(
+module attachment_clip(
   height = 8,
   width = 0,
   thickness = gf_lip_support_taper_height,
   tabStyle = 0)
 {
-  if(IsHelpEnabled("debug")) echo("attachement_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
+  if(IsHelpEnabled("debug")) echo("attachment_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
   tabVersion = 0;
   width = width > 0 ? width : height/2;
   tabHeight=height-thickness*2;
@@ -17957,7 +17957,7 @@ module attachement_clip(
     }
   }
 }
-//CombinedEnd from path module_attachement_clip.scad
+//CombinedEnd from path module_attachment_clip.scad
 //Combined from path module_calipers.scad
 
 module ShowCalipers(

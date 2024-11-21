@@ -157,7 +157,7 @@ function getScenario(scenario) =
       ["off", [[iBottomGrid,false]]],
       ["on", [[iBottomGrid,true], [iBottomCornerAttachmentsOnly, false]]],
       ["corner Corner Attachments Only", [[iBottomGrid,true]]],
-      ["base attachement off", [[iBottomGrid,true],[iBottomMagnetDiameter,0],[iBottomScrewDepth,0]]],
+      ["base attachment off", [[iBottomGrid,true],[iBottomMagnetDiameter,0],[iBottomScrewDepth,0]]],
       ["base half pitch", [[iBottomGrid,true],[iBottomHalfPitch,true]]],
       ["base falt base", [[iBottomGrid,true],[iBottomFlatBase,true]]]
       ]//endscenario
