@@ -42,7 +42,7 @@ default_label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gf
 default_label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 default_label_size = [0,14,0,0.6]; // 0.01
-// Size in mm of relief where appropiate. Width, depth, height, radius
+// Size in mm of relief where appropriate. Width, depth, height, radius
 default_label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 default_label_walls=[0,1,0,0];  //[0:1:1]
@@ -91,11 +91,11 @@ default_horizontal_irregular_subdivisions = false;
 default_horizontal_separator_config = "10.5|21|42|50|60";
 
 /* [Base] */
-//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+//size of magnet, diameter and height. Zack's original used 6.5 and 2.4 
 default_magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 default_magnet_easy_release = "auto";//["off","auto","inner","outer"] 
-//size of screw, diameter and height. Zacks original used 3 and 6
+//size of screw, diameter and height. Zack's original used 3 and 6
 default_screw_size = [3, 6]; // .1
 //size of center magnet, diameter and height. 
 default_center_magnet_size = [0,0];
@@ -348,7 +348,7 @@ module gridfinity_cup(
               cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height],
               cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height],
               cupBase_settings[iCupBase_FloorThickness]);
-          cavityFloorRadius = calcualteCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
+          cavityFloorRadius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
           wallTop = calculateWallTop(num_z, lip_style);
           cutoutclearance = gf_cup_corner_radius/2;
 
@@ -722,7 +722,7 @@ module gridfinity_cup(
       tabWidth = extendable_Settings[iExtendableTabSize].y;
       tabStyle = extendable_Settings[iExtendableTabSize][iExtendableTabSizeStyle];
       
-      floorHeight = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
+      floorHeight = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness) + calculateCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
       
       //todo need to correct this
       lipheight = lip_style == "none" ? tabThickness
@@ -1049,7 +1049,7 @@ module basic_cavity(num_x, num_y, num_z,
   
   //cavityHeight= max(lipBottomZ-floorht,0);
   cavityHeight= max(lipBottomZ-floorht,0);
-  cavity_floor_radius = calcualteCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,cupBase_settings[iCupBase_EfficientFloor]);
+  cavity_floor_radius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,cupBase_settings[iCupBase_EfficientFloor]);
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
