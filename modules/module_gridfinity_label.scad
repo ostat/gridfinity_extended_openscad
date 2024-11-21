@@ -50,7 +50,7 @@ function LabelSettings(
     labelPosition="left", 
     // Width, Depth, Height, Radius.   
     labelSize=[0,14,0,0.6],
-    // Size in mm of relief where appropiate. Width, depth, height, radius
+    // Size in mm of relief where appropriate. Width, depth, height, radius
     labelRelief=[0,0,0,0.6],
     // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
     labelWalls=[0,1,0,0]) = 
