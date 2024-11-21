@@ -91,11 +91,11 @@ default_horizontal_irregular_subdivisions = false;
 default_horizontal_separator_config = "10.5|21|42|50|60";
 
 /* [Base] */
-//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+//size of magnet, diameter and height. Zack's original used 6.5 and 2.4 
 default_magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 default_magnet_easy_release = "auto";//["off","auto","inner","outer"] 
-//size of screw, diameter and height. Zacks original used 3 and 6
+//size of screw, diameter and height. Zack's original used 3 and 6
 default_screw_size = [3, 6]; // .1
 //size of center magnet, diameter and height. 
 default_center_magnet_size = [0,0];
