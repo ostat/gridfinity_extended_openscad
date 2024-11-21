@@ -13,7 +13,7 @@ function calcDimension(value, name, unitSize, shouldLog) =
     roundedCalcUnits = roundtoDecimal(calcUnits,4))
     (shouldLog ? echo(str("🟩",name,": ", calcUnits, "gf (",calcUnits*unitSize,"mm)"), input=value, roundedCalcUnits=roundedCalcUnits) roundedCalcUnits: roundedCalcUnits);
           
-function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
+function calculateCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
   //efficient floor has an effective radius of 0
 ) efficientFloor != "off" ? 0 

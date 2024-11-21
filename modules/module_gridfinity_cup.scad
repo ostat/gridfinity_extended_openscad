@@ -348,7 +348,7 @@ module gridfinity_cup(
               cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height],
               cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height],
               cupBase_settings[iCupBase_FloorThickness]);
-          cavityFloorRadius = calcualteCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
+          cavityFloorRadius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
           wallTop = calculateWallTop(num_z, lip_style);
           cutoutclearance = gf_cup_corner_radius/2;
 
@@ -720,7 +720,7 @@ module gridfinity_cup(
       tabWidth = extendable_Settings[iExtendableTabSize].y;
       tabStyle = extendable_Settings[iExtendableTabSize][iExtendableTabSizeStyle];
       
-      floorHeight = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
+      floorHeight = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness) + calculateCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
       
       //todo need to correct this
       lipheight = lip_style == "none" ? tabThickness
@@ -1047,7 +1047,7 @@ module basic_cavity(num_x, num_y, num_z,
   
   //cavityHeight= max(lipBottomZ-floorht,0);
   cavityHeight= max(lipBottomZ-floorht,0);
-  cavity_floor_radius = calcualteCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,cupBase_settings[iCupBase_EfficientFloor]);
+  cavity_floor_radius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,cupBase_settings[iCupBase_EfficientFloor]);
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip

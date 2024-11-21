@@ -505,7 +505,7 @@ module gridfinity_cup(
     color(color_wallcutout)
       union(){
         floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
-        cavityFloorRadius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficient_floor);
+        cavityFloorRadius = calculateCavityFloorRadius(cavity_floor_radius, wall_thickness, efficient_floor);
         wallTop = calculateWallTop(num_z, lip_style);
         cutoutclearance = gf_cup_corner_radius/2;
 
@@ -810,7 +810,7 @@ module gridfinity_cup(
     tabWidth = extension_tab_size.y;
     tabStyle = extension_tab_size[3];
     
-    floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
+    floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calculateCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
     
     //todo need to correct this
     lipheight = lip_style == "none" ? tabThickness
@@ -1125,7 +1125,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
   
   cavityHeight= max(lipBottomZ-floorht,0);
-  cavity_floor_radius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor);
+  cavity_floor_radius = calculateCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor);
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
@@ -1548,7 +1548,7 @@ module gridfinity_label(
       [ 0, zpoint-labelCornerRadius-labelSize.z ]
     ];
   
-    // calcualte list of chambers. 
+    // calculate list of chambers. 
     labelWidthmm = labelSize.x <=0 ? location[ilWidth] : labelSize.x * gf_pitch;
     chamberWidths = len(separator_positions) < 1 || 
       labelWidthmm == 0 ||
@@ -16925,7 +16925,7 @@ function calcDimension(value, name, unitSize, shouldLog) =
     let(calcUnits = value[1] != 0 ? value[1]/unitSize : value[0])
     (shouldLog ? echo(str("🟩",name,": ", calcUnits, "gf (",calcUnits*unitSize,"mm)"), input=value) calcUnits: calcUnits);
           
-function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
+function calculateCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
   //efficient floor has an effective radius of 0
 ) efficientFloor != "off" ? 0 
@@ -17233,7 +17233,7 @@ module GridItemHolder(
     : customShape ? holeSize[0]+holeSpacing[0]
     : sqrt((Ri*2+holeSpacing[0])^2-((calcHoledimensions[1]+holeSpacing[1])/2)^2);
     
-  //Calcualte the x and y items count for hexgrid
+  //Calculate the x and y items count for hexgrid
   eHexGrid = [
       holeGrid[0] !=0 ? holeGrid[0]
         : floor((_canvasSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
@@ -17241,7 +17241,7 @@ module GridItemHolder(
         : floor(((_canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
       ];
 
-  //Calcualte the x and y hex items count for squaregrid
+  //Calculate the x and y hex items count for squaregrid
   eSquareGrid = [
       holeGrid[0]!=0 ? holeGrid[0]
         : floor((_canvasSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
