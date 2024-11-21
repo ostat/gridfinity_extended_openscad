@@ -620,8 +620,8 @@ module gridfinity_cup(
                         help=help);
               
               // subtract dividers from outer wall pattern
-              _efficient_floor = cupbase_settings[8];
-              _floor_thickness = cupbase_settings[6];
+              _efficient_floor = cupBase_settings[8];
+              _floor_thickness = cupBase_settings[6];
               sepFloorHeight = (_efficient_floor != EfficientFloor_off ? _floor_thickness : floorHeight);
               translate([0, 0, sepFloorHeight-fudgeFactor])
               separators(
