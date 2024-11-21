@@ -598,8 +598,8 @@ module gridfinity_cup(
               }
             }
             difference(){
-              for(i = [0:1:len(locations)-1])
-                union()
+              union()
+                for(i = [0:1:len(locations)-1])
                   if(wallpattern_walls[i] > 0)
                     //patterns in the outer walls
                     translate(locations[i][1])
