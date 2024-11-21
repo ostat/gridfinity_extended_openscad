@@ -50,7 +50,7 @@ function LabelSettings(
     labelPosition="left", 
     // Width, Depth, Height, Radius.   
     labelSize=[0,14,0,0.6],
-    // Size in mm of relief where appropiate. Width, depth, height, radius
+    // Size in mm of relief where appropriate. Width, depth, height, radius
     labelRelief=[0,0,0,0.6],
     // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
     labelWalls=[0,1,0,0]) = 
@@ -66,7 +66,7 @@ function LabelSettings(
     validatedResult = ValidateLabelSettings(result)
   ) validatedResult;
 
- function CalcualteLabelSocketPosition(label_position, labelSocketSize, label_num_x, socketPadding =  2.65) =  
+ function CalculateLabelSocketPosition(label_position, labelSocketSize, label_num_x, socketPadding =  2.65) =  
                 label_position == LabelPosition_left || label_position == LabelPosition_leftchamber  ? socketPadding 
                 : label_position == LabelPosition_right || label_position == LabelPosition_rightchamber ? label_num_x-labelSocketSize.x-socketPadding
                 : label_position == LabelPosition_center || label_position == LabelPosition_centerchamber ? (label_num_x-labelSocketSize.x)/2
@@ -169,7 +169,7 @@ module gridfinity_label(
     ];
     labelWidthmm = labelSize.x <=0 ? location[ilabelWall_Width] : labelSize.x * gf_pitch;
     
-    // calcualte list of chambers. 
+    // calculate list of chambers. 
     chamberWidths = len(separator_positions) < 1 || 
       labelWidthmm == 0 ||
       label_position == LabelPosition_left ||
@@ -224,7 +224,7 @@ module gridfinity_label(
             //Create Label Sockets 
             if(label_style == LabelStyle_cullenectlegacy){
               labelSize= [36.7,11.3, 1.2];
-              labelLeftPosition = CalcualteLabelSocketPosition(
+              labelLeftPosition = CalculateLabelSocketPosition(
                 label_position=label_position, 
                 labelSocketSize=labelSize, 
                 label_num_x=label_num_x);
@@ -233,7 +233,7 @@ module gridfinity_label(
             } 
             else if(label_style == LabelStyle_cullenect){
               labelSize = [label_relief.x == 0 ? label_num_x : label_relief.x,11,1.2];
-              labelLeftPosition = CalcualteLabelSocketPosition(
+              labelLeftPosition = CalculateLabelSocketPosition(
                 label_position=label_position, 
                 labelSocketSize=labelSize, 
                 label_num_x=label_num_x);
