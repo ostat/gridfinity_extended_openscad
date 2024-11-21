@@ -619,10 +619,12 @@ module gridfinity_cup(
                         voronoiRadius = wallpattern_voronoi_radius,
                         help=help);
               
-              //subtract dividers from outer wall pattern
-              sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
+              // subtract dividers from outer wall pattern
+              _efficient_floor = cupbase_settings[8];
+              _floor_thickness = cupbase_settings[6];
+              sepFloorHeight = (_efficient_floor != EfficientFloor_off ? _floor_thickness : floorHeight);
               translate([0, 0, sepFloorHeight-fudgeFactor])
-              separators(  
+              separators(
                 length=gf_pitch*num_y,
                 height=gf_zpitch*(num_z)-sepFloorHeight+border*2+fudgeFactor*2,
                 wall_thickness = chamber_wall_thickness+cutoutclearance*2,
