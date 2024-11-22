@@ -802,9 +802,12 @@ module gridfinity_itemholder(
         sliding_lid_lip_enabled=sliding_lid_lip_enabled);
       /*<!!end gridfinity_basic_cup!!>*/
 
+      itemholder_z_bottom = max(bch, bch+floor_thickness-itemholder_hole_depth);
+      // echo(bch=bch, mfh=mfh, floor_thickness=floor_thickness, itemholder_hole_depth=itemholder_hole_depth, itemholder_z_bottom=itemholder_z_bottom)
+
       color(color_extension)
       translate(cupPosition(position,num_x,num_y))
-      translate([0,0,bch])
+      translate([0, 0, itemholder_z_bottom])
       itemholder(
         num_x=num_x, num_y=num_y, num_z=height,
         knowItemCode = itemholder_known_item,
