@@ -51,7 +51,7 @@ module GridItemHolder(
   //Ri=Rc * Cos(180/sides)
   Rc = circleFn<=2 || circleFn>16 ? holeSize[0]/2 : (holeSize[0]/2)/cos(180/circleFn);
   
-  //For hex in a hex grid we can optimize the spacing, otherwise its too hard      
+  //For hex in a hex grid we can optomise the spacing, otherwise its too hard      
   Ri = holeSize[0]/2;//(circleFn==6 && hexGrid) || (circleFn==4) ? (holeSize[0]/2) : Rc;
   
   _canvasSize = 
@@ -108,7 +108,7 @@ module GridItemHolder(
   //translate(rotateGrid && !center ?[canvasSize.x,0,0]:[0,0,0])
   rotate(rotateGrid?[0,0,90]:[0,0,0])
   intersection(){
-    //Crop to ensure that we don't go outside the bounds 
+    //Crop to ensure that we dont go outside the bounds 
     if(fill == "crop" || fill == "crophorizontal"  || fill == "cropvertical"  || fill ==  "crophorizontal_spacevertical"  || fill == "cropvertical_spacehorizontal")
       translate([-fudgeFactor,-fudgeFactor,(center?holeHeight/2:0)-fudgeFactor])
       cube([_canvasSize[0]+fudgeFactor*2,_canvasSize[1]+fudgeFactor*2,holeHeight+fudgeFactor*2], center = center);
@@ -263,7 +263,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   }
 }
 
-// Creates a slot with a small champer for easy insertion
+// Creates a slot with a small champer for easy insertertion
 //#slotCutout(100,20,40);
 //width = width of slot
 //depth = depth of slot

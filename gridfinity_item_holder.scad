@@ -14,7 +14,7 @@ itemholder_known_cards = "custom"; // [ "custom":Custom, "multicard":Multi card 
 itemholder_known_cartridges = "custom"; // [ "custom":Custom, "atari800":Atari 800, "atari2600":Atari 2600/7800/Colecovision, "atari5200":Atari 5200, "atari7800":Atari 7800, "commodore":Commodore Vic20, "magnavoxodyssey":Magnavox Odyssey, "magnavoxodysseymulticard":Magnavox Odyssey (multicard), "magnavoxodyssey2":Magnavox Odyssey2, "mattelintellivision":Mattel Intellivision I & II, "nintendofamicom":Nintendo Famicom, "nintendofamicomdisk":Nintendo Famicom Disk, "nintendosuperfamicom":Nintendo Super Famicom / SNES (Pal), "nes":NES, "snes":SNES, "nintendo64":Nintendo 64, "nintendogb":Nintendo GB, "nintendogbc":Nintendo GBC, "nintendogba":Nintendo GBA, "nintendods":Nintendo DS, "nintendo2ds":Nintendo 2DS/3DS, "nintendovb":Nintendo Virtual Boy, "nintendoswitch":Nintendo Switch, "segagamegear":Sega Game Gear, "segagenesis":Sega Genesis, "segagenesistall":Sega Genesis (tall cart), "segamegadrive":Sega MegaDrive, "segamegadrivecodemasters":Sega MegaDrive Codemasters, "segamastersystem":Sega Master System, "sega32x":Sega 32x, "segacard":Sega Card/TG16, "segapico":Sega Pico, "sonyumd":Sony UMD, "sonypsvita":Sony PS Vita, "sonypsvitamemcard":Sony PS Vita (Mem Card), "necpcehucard":NEC PCE HuCard, "snkneogeoaes":SNK Neo Geo AES, "snkneogeomvs":SNK Neo Geo MVS, "bandai":Bandai Wonderswan/Color, "msx":MSX]
 // Enlarge the holes by this amount for clearance
 itemholder_hole_clearance = 0.25;
-// Depth of hole, Overrides the know item depth. Limited by floor height
+// Depth of hole, Overrides the known item depth. Limited by floor height.
 itemholder_hole_depth = 0; //0.1
 // 45 deg chamfer added to the top of the hole (mm)
 itemholder_hole_chamfer = 1; //0.5
@@ -225,7 +225,7 @@ module end_of_customizer_opts() {}
 
 //Function for creating a custom shape.
 //To use this feature you need to define the require shape in the module below.
-//Then configure the options in the customiser, is the item is space approabiatly.
+//Then configure the options in the customiser, is the item is space appropriately.
 module mycustomshape(){ 
   //Example custom shape
   //settings needed
