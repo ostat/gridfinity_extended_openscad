@@ -15,5 +15,7 @@ $list | Group-Object -Property type | ForEach-Object {
     $category.Group | ForEach-Object {  Write-Host "  name == `"$($_.code.ToLower())`" ? [$($_.diameter), $($_.width), $($_.thickness), $($_.depthneeded), $($_.height), `"$($_.shape)`"] :" }
 
     Write-Host "$($category.Name) markdown"
-    $category.Group | ForEach-Object {  Write-Host "``$($_.code.ToLower())`` | $($_.diameter) | $($_.width) | $($_.thickness) | $($_.depthneeded) | $($_.height) | $($_.shape) | $($_.source) |" }}
+    $category.Group | ForEach-Object {  
+        $domain = $_.source | select-string -pattern ".*\:\/\/(?:(?:www|en)\.)?(.*)\..*" |  %{ $_.Matches[0].Groups[1].Value }
+        Write-Host "``$($_.code.ToLower())`` | $($_.diameter) | $($_.width) | $($_.thickness) | $($_.depthneeded) | $($_.height) | $($_.shape) | [$($domain)]($($_.source)){:target='_blank' white-space='nowrap'} |" }}
 
