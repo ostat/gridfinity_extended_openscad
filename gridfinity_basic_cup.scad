@@ -60,11 +60,11 @@ horizontal_separator_config = "10.5|21|42|50|60";
 enable_magnets = true;
 // Enable screws
 enable_screws = true;
-//size of magnet, diameter and height. Zacks original used 6.5 and 2.4
+//size of magnet, diameter and height. Zack's original used 6.5 and 2.4
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 magnet_easy_release = "auto";//["off","auto","inner","outer"] 
-//size of screw, diameter and height. Zacks original used 3 and 6
+//size of screw, diameter and height. Zack's original used 3 and 6
 screw_size = [3, 6]; // .1
 //size of center magnet, diameter and height. 
 center_magnet_size = [0,0];
@@ -90,7 +90,7 @@ label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel ba
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
-// Size in mm of relief where appropiate. Width, depth, height, radius
+// Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 label_walls=[0,1,0,0];  //[0:1:1]

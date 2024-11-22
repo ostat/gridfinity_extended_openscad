@@ -2,21 +2,21 @@ include <functions_general.scad>
 include <gridfinity_constants.scad>
 
 /*
-attachement_clip(height = 13,
+attachment_clip(height = 13,
   width = 0,
   thickness = 2,
   footingThickness= 2,
   tabStyle = 0);
 */
 // Creates an wall clip that is used when box is split
-module attachement_clip(
+module attachment_clip(
   height = 8,
   width = 0,
   thickness = gf_lip_support_taper_height,
   footingThickness= 1,
   tabStyle = 0)
 {
-  if(IsHelpEnabled("debug")) echo("attachement_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
+  if(IsHelpEnabled("debug")) echo("attachment_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
   tabVersion = 0;
   width = width > 0 ? width : height/2;
   tabHeight=height-thickness*2;

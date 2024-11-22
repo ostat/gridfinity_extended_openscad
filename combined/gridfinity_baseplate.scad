@@ -478,7 +478,7 @@ module gridfinity_cup(
     color(color_wallcutout)
       union(){
         floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness);
-        cavityFloorRadius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficient_floor);
+        cavityFloorRadius = calculateCavityFloorRadius(cavity_floor_radius, wall_thickness, efficient_floor);
         wallTop = calculateWallTop(num_z, lip_style);
         cutoutclearance = gf_cup_corner_radius/2;
 
@@ -783,7 +783,7 @@ module gridfinity_cup(
     tabWidth = extension_tab_size.y;
     tabStyle = extension_tab_size[3];
     
-    floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
+    floorHeight = calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness) + calculateCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor)-tabThickness;
     
     //todo need to correct this
     lipheight = lip_style == "none" ? tabThickness
@@ -807,11 +807,11 @@ module gridfinity_cup(
         if(!isOdd) {
           translate([gf_pitch*cut,num_y*gf_pitch-wall_thickness-gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
             rotate([0,180,90])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+            attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else if(!extension_enabled.y) {
           translate([gf_pitch*cut,wall_thickness+gf_tolerance/2,floorHeight+(i+0.5)*tabHeight])
             rotate([0,0,90])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+            attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         }
       }
 
@@ -819,11 +819,11 @@ module gridfinity_cup(
         if(isOdd) {
           translate([num_x*gf_pitch-wall_thickness-gf_tolerance/2,gf_pitch*cut,floorHeight+(i+0.5)*tabHeight])
             rotate([0,0,180])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+            attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         } else if(!extension_enabled.x) {
           translate([wall_thickness+gf_tolerance/2,gf_pitch*cut,floorHeight+(i+0.5)*tabHeight])
             rotate([0,180,180])
-            attachement_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
+            attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, tabStyle=tabStyle);
         }
     }
     }
@@ -1098,7 +1098,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
   aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
   
   cavityHeight= max(lipBottomZ-floorht,0);
-  cavity_floor_radius = calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor);
+  cavity_floor_radius = calculateCavityFloorRadius(cavity_floor_radius, wall_thickness,efficient_floor);
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
@@ -1207,7 +1207,7 @@ module basic_cavity(num_x, num_y, num_z, fingerslide=default_fingerslide,  finge
            //Screw and magnet covers required for efficient floor
            if(hasCornerAttachments)
              gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only)
-                EfficientFloorAttachementCaps(
+                EfficientFloorAttachmentCaps(
                   grid_copy_corner_index = $gcci,
                   floor_thickness = floor_thickness,
                   magnet_diameter=magnet_diameter,
@@ -1521,7 +1521,7 @@ module gridfinity_label(
       [ 0, zpoint-labelCornerRadius-labelSize.z ]
     ];
   
-    // calcualte list of chambers. 
+    // calculate list of chambers. 
     labelWidthmm = labelSize.x <=0 ? location[ilWidth] : labelSize.x * gf_pitch;
     chamberWidths = len(separator_positions) < 1 || 
       labelWidthmm == 0 ||
@@ -16898,7 +16898,7 @@ function calcDimension(value, name, unitSize, shouldLog) =
     let(calcUnits = value[1] != 0 ? value[1]/unitSize : value[0])
     (shouldLog ? echo(str("🟩",name,": ", calcUnits, "gf (",calcUnits*unitSize,"mm)"), input=value) calcUnits: calcUnits);
           
-function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
+function calculateCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
   //efficient floor has an effective radius of 0
 ) efficientFloor != "off" ? 0 
@@ -17206,7 +17206,7 @@ module GridItemHolder(
     : customShape ? holeSize[0]+holeSpacing[0]
     : sqrt((Ri*2+holeSpacing[0])^2-((calcHoledimensions[1]+holeSpacing[1])/2)^2);
     
-  //Calcualte the x and y items count for hexgrid
+  //Calculate the x and y items count for hexgrid
   eHexGrid = [
       holeGrid[0] !=0 ? holeGrid[0]
         : floor((_canvasSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
@@ -17214,7 +17214,7 @@ module GridItemHolder(
         : floor(((_canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
       ];
 
-  //Calcualte the x and y hex items count for squaregrid
+  //Calculate the x and y hex items count for squaregrid
   eSquareGrid = [
       holeGrid[0]!=0 ? holeGrid[0]
         : floor((_canvasSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),
@@ -17536,7 +17536,7 @@ module efficient_floor_grid(
   }
 }
 
-module EfficientFloorAttachementCaps(
+module EfficientFloorAttachmentCaps(
   grid_copy_corner_index,
   floor_thickness,
   magnet_diameter,
@@ -17821,16 +17821,16 @@ module champheredSquare(size=0, radius = 0){
   }
 }
 //CombinedEnd from path module_rounded_negative_champher.scad
-//Combined from path module_attachement_clip.scad
+//Combined from path module_attachment_clip.scad
 
 // Creates an wall clip that is used when box is split
-module attachement_clip(
+module attachment_clip(
   height = 8,
   width = 0,
   thickness = gf_lip_support_taper_height,
   tabStyle = 0)
 {
-  if(IsHelpEnabled("debug")) echo("attachement_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
+  if(IsHelpEnabled("debug")) echo("attachment_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
   tabVersion = 0;
   width = width > 0 ? width : height/2;
   tabHeight=height-thickness*2;
@@ -17949,7 +17949,7 @@ module attachement_clip(
     }
   }
 }
-//CombinedEnd from path module_attachement_clip.scad
+//CombinedEnd from path module_attachment_clip.scad
 //Combined from path module_calipers.scad
 
 module ShowCalipers(

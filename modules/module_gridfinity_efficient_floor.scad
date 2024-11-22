@@ -48,7 +48,7 @@ module efficient_floor_grid(
   }
 }
 
-module EfficientFloorAttachementCaps(
+module EfficientFloorAttachmentCaps(
   grid_copy_corner_index,
   floor_thickness,
   magnet_size,
