@@ -108,16 +108,45 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
     strNext = createCustomConfig(arr, pos+1, sep)
   ) str(current, strNext!=""?str(sep, strNext):"");
 
+//Set up the Environment, if not run object should still render
 module SetGridfinityEnvironment(
+  width,
+  depth,
   setColour = "preview",
   help = false,
+  render_position = "center", //[default,center,zero]
   cutx = 0, 
-  cuty = 0){
+  cuty = 0,
+  cutz = 0){
+  
+  //Set special variables, that child modules can use
   $setColour = setColour;
   $showHelp = help;
-  $cutx=cutx;
-  $cuty=cuty;
-  children();
+  $cutx = cutx;
+  $cuty = cuty;
+  $cutz = cutz;
+
+  num_x = calcDimensionWidth(width); 
+  num_y = calcDimensionWidth(depth); 
+
+  //Position the object
+  translate(gridfinityRenderPosition(render_position,num_x,num_y))
+  difference(){
+    //Render the object
+    children();
+    
+    //Render the cut, used for debugging
+    if(cutx > 0 && cutz > 0 && $preview){
+      color(color_cut)
+      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+        cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
+    }
+    if(cuty > 0 && cutz > 0 && $preview){
+      color(color_cut)
+      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+        cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
+    }
+  }
 }
 
 function getCutx() = is_undef($cutx) || !is_num($cutx) ? 0 : $cutx;

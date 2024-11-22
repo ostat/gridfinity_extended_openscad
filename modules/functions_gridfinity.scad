@@ -13,7 +13,7 @@ function calcDimension(value, name, unitSize, shouldLog) =
     roundedCalcUnits = roundtoDecimal(calcUnits,4))
     (shouldLog ? echo(str("🟩",name,": ", calcUnits, "gf (",calcUnits*unitSize,"mm)"), input=value, roundedCalcUnits=roundedCalcUnits) roundedCalcUnits: roundedCalcUnits);
           
-function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
+function CalculateCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
   //efficient floor has an effective radius of 0
 ) efficientFloor != "off" ? 0 
@@ -70,7 +70,8 @@ function LookupKnownShapes(name="round") =
   name == "square" ? 4 :
   name == "hex" ? 6 : 64;
   
-function cupPosition(position, num_x, num_y) = 
+function cupPosition(position, num_x, num_y) = gridfinityRenderPosition(position, num_x, num_y);
+function gridfinityRenderPosition(position, num_x, num_y) = 
     position == "center" ? [-(num_x)*gf_pitch/2, -(num_y)*gf_pitch/2, 0] 
     : position == "zero" ? [0, 0, 0] 
     : [-gf_pitch/2, -gf_pitch/2, 0]; 
