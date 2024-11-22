@@ -19,7 +19,7 @@ module cupLip(
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
-  // arount the top inside edge.
+  // around the top inside edge.
   q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
   lipHeight = 3.75;
   

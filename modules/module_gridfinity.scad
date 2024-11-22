@@ -101,14 +101,14 @@ module grid_block(
           $gcci[2] == [-1,-1] ? -90 :
           $gcci[2] == [ 1,-1] ? 0 : 0;
         rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
-        MagentAndScrewRecess(
+        MagnetAndScrewRecess(
           magnetDiameter = magnet_size[iCylinderDimension_Diameter],
           magnetThickness = magnet_size[iCylinderDimension_Height]+0.1,
           screwDiameter = screw_size[iCylinderDimension_Diameter],
           screwDepth = screw_size[iCylinderDimension_Height],
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagentRelease = magnet_easy_release != MagnetEasyRelease_off);
+          easyMagnetRelease = magnet_easy_release != MagnetEasyRelease_off);
     }
   }
  

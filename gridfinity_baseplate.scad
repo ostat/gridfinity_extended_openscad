@@ -29,15 +29,15 @@ Center_Screw_Enabled = true;
 //Enable cavity to place frame weights
 Enable_Weight = true;
 
-/* [Base Plate Clips - POC dont use yet]*/
-//This feature is not yet finalised, or working properly. 
+/* [Base Plate Clips - POC don't use yet]*/
+//This feature is not yet finalized, or working properly. 
 Butterfly_Clip_Enabled = false;
 Butterfly_Clip_Size = [6,6,1.5];
 Butterfly_Clip_Radius = 0.1;
 Butterfly_Clip_Tolerance = 0.1;
 Butterfly_Clip_Only = false;
 
-//This feature is not yet finalised, or working properly. 
+//This feature is not yet finalized, or working properly. 
 Filament_Clip_Enabled = false;
 Filament_Clip_Diameter = 2;
 Filament_Clip_Length = 8;

@@ -39,7 +39,7 @@ function calculateWallCutout(
         wallcutoutLowerWidth=wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, wall_length*gf_pitch/3) : wallcutout_width,
         closeThickness = fullEnabled ? opposite_wall_distance*gf_pitch : wallcutoutThickness,
               
-      //This could be more sprcific based on the base height, and the lip style.
+      //This could be more specific based on the base height, and the lip style.
       wallcutout_close = [
           [wallcutout_type, wallcutout_position, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius],
           closeEnabled || fullEnabled,
@@ -75,7 +75,7 @@ module WallCutout(
     translate([0,-height/2+topHeight/2,0])
     square([topWidth+cornerRadius*2,height+topHeight], true);
     
-    //Use tripple offset to fillet corners
+    //Use triple offset to fillet corners
     //https://www.reddit.com/r/openscad/comments/ut1n7t/quick_tip_simple_fillet_for_2d_shapes/
     offset(r=-cornerRadius)
     offset(r=2 * cornerRadius)

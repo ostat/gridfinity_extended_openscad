@@ -65,10 +65,10 @@ difference(){
       union(){
         translate([-cornerRadius-champherRadius, 0]) 
         rotate_extrude(angle=90, convexity=cornerRadius)
-           translate([cornerRadius+champherRadius, 0]) 
-           if(champher){
-              champheredSquare(champherRadius*2);
-           } else {
+          translate([cornerRadius+champherRadius, 0]) 
+          if(champher){
+              chamferedSquare(champherRadius*2);
+          } else {
             circle(champherRadius);
            }
            
@@ -76,8 +76,8 @@ difference(){
          rotate([90, 0, 0]) 
             if(champher){
             linear_extrude(height=pos[1]+eps*2)
-              champheredSquare(champherRadius*2);
-           } else {
+              chamferedSquare(champherRadius*2);
+          } else {
               cylinder(r=champherRadius, h=pos[1]+eps*2);
            }
         }    
@@ -86,7 +86,7 @@ difference(){
   }
 }
 
-module champheredSquare(size=0, radius = 0){
+module chamferedSquare(size=0, radius = 0){
   assert(is_num(size), "size must be a number");
   assert(is_num(radius), "radius must be a number");
   radius = radius <= 0 ? size/4 : radius;

@@ -112,7 +112,7 @@
             "half_pitch": "false",
             "handle_rotate": "true",
             "handle_size": "[4, 10, 5, -1]",
-            "handle_verticle_center": "true",
+            "handle_vertical_center": "true",
             "hole_overhang_remedy": "2",
             "magnet_diameter": "6.5",
             "mode": "everything",

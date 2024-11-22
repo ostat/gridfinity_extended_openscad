@@ -40,7 +40,7 @@ chest_drawer_slide_width = 10;
 /* [Drawer] */
 // Handle size width, depth, height, and radius. Height, less than 0 drawerHeight/abs(height). radius, -1 = depth/2. 
 handle_size = [4, 10, -1, -1];
-handle_verticle_center = false;
+handle_vertical_center = false;
 handle_rotate = false;
 drawer_wall_thickness = 2;
 drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and floor]
@@ -2059,14 +2059,14 @@ module grid_block(
           $gcci[2] == [-1,-1] ? -90 :
           $gcci[2] == [ 1,-1] ? 0 : 0;
         rotate([0,0,rdeg-45+(magnet_easy_release=="outer" ? 0 : 180)])
-        MagentAndScrewRecess(
+        MagnetAndScrewRecess(
           magnetDiameter = magnet_diameter,
           magnetThickness = gf_magnet_thickness+0.1,
           screwDiameter = gf_cupbase_screw_diameter,
           screwDepth = screw_depth,
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagentRelease = magnet_easy_release != "off");
+          easyMagnetRelease = magnet_easy_release != "off");
     }
   }
  
@@ -2570,14 +2570,14 @@ module CubeWithRoundedCorner(
   }
 }
 
-module MagentAndScrewRecess(
+module MagnetAndScrewRecess(
   magnetDiameter = 10,
   magnetThickness = 2,
   screwDiameter = 2,
   screwDepth = 6,
   overhangFixLayers = 3,
   overhangFixDepth = 0.2,
-  easyMagentRelease = true,
+  easyMagnetRelease = true,
   $fn = 64){
     fudgeFactor = 0.01;
     
@@ -2593,7 +2593,7 @@ module MagentAndScrewRecess(
         overhangBridgeCount = overhangFixLayers,
         overhangBridgeThickness = overhangFixDepth);
       
-      if(easyMagentRelease && magnetDiameter > 0)
+      if(easyMagnetRelease && magnetDiameter > 0)
       difference(){
         hull(){
           translate([0,-releaseWidth/2,0])  
@@ -17812,7 +17812,7 @@ difference(){
         rotate_extrude(angle=90, convexity=cornerRadius)
            translate([cornerRadius+champherRadius, 0]) 
            if(champher){
-              champheredSquare(champherRadius*2);
+              chamferedSquare(champherRadius*2);
            } else {
             circle(champherRadius);
            }
@@ -17821,7 +17821,7 @@ difference(){
          rotate([90, 0, 0]) 
             if(champher){
             linear_extrude(height=pos[1]+eps*2)
-              champheredSquare(champherRadius*2);
+              chamferedSquare(champherRadius*2);
            } else {
               cylinder(r=champherRadius, h=pos[1]+eps*2);
            }
@@ -17831,7 +17831,7 @@ difference(){
   }
 }
 
-module champheredSquare(size=0, radius = 0){
+module chamferedSquare(size=0, radius = 0){
   assert(is_num(size), "size must be a number");
   assert(is_num(radius), "radius must be a number");
   radius = radius <= 0 ? size/4 : radius;
@@ -18720,10 +18720,10 @@ function drawerPosition(
   index, 
   outerSizes, 
   clearance, 
-  sliderThickenss) = let(
+  sliderThickness) = let(
   drawersTotal = (index<1 ? 0 : sum(partial(outerSizes,0,index-1)).z),
   clearanceTotal = clearance.z*2*(index),
-  sliderThickenss = sliderThickenss*index) drawersTotal + clearanceTotal + sliderThickenss;
+  sliderThickness = sliderThickness*index) drawersTotal + clearanceTotal + sliderThickness;
   
 function sum(list, c = 0) = 
   c < len(list) - 1 
@@ -18741,7 +18741,7 @@ module drawers(
   drawerBase, // = drawerbase,
   wallThickness,// = wallthicknessInner,
   handleSize,
-  handleVerticleCenter,
+  handleVerticalCenter,
   handleRotate,
   ridgeDepth,
   startH,
@@ -18767,7 +18767,7 @@ module drawers(
         drawerBase=drawerBase,// = drawerbase,
         wallThickness=wallThickness,// = wallthicknessInner,
         handleSize=handleSize,
-        handleVerticleCenter=handleVerticleCenter,
+        handleVerticalCenter=handleVerticalCenter,
         handleRotate=handleRotate,
         innerSizes=innerSizes,
         outerSizes=outerSizes,
@@ -18782,7 +18782,7 @@ module drawer(
   drawerBase,// = drawerbase,
   wallThickness,// = wallthicknessInner,
   handleSize,
-  handleVerticleCenter,
+  handleVerticalCenter,
   handleRotate,
   innerSizes,// = drawerInnerSizes,
   outerSizes,// = drawerOuterSizes,
@@ -18840,7 +18840,7 @@ module drawer(
     translate([
         outerSizes[drawerIndex].x/2, 
         0, 
-        handleVerticleCenter 
+        handleVerticalCenter 
           ? outerSizes[drawerIndex].z/2  
           : handleRotate ? handleSize.x/2 : handelHeight/2])
       rotate(handleRotate ? [0,90,0] : [0,0,0])
@@ -19116,7 +19116,7 @@ module gridfinity_drawer(
     chestDrawerSlideThickness = chest_drawer_slide_thickness,
     chestDrawerSlideWidth = chest_drawer_slide_width,
     handleSize = handle_size,
-    handleVerticleCenter = handle_verticle_center,
+    handleVerticalCenter = handle_vertical_center,
     handleRotate = handle_rotate,
     drawerWallThickness = drawer_wall_thickness,
     drawerBase = drawer_base,
@@ -19227,7 +19227,7 @@ module gridfinity_drawer(
       drawerBase=drawerBase,
       wallThickness=drawerWallThickness,
       handleSize=handleSize,
-      handleVerticleCenter=handleVerticleCenter,
+      handleVerticalCenter=handleVerticalCenter,
       handleRotate=handleRotate,
       ridgeDepth=ridgeDepth,
       startH=startH,
@@ -19242,7 +19242,7 @@ module gridfinity_drawer(
       drawerBase= drawerBase,
       wallThickness = drawerWallThickness,
       handleSize = handleSize,
-      handleVerticleCenter=handleVerticleCenter,
+      handleVerticalCenter=handleVerticalCenter,
       handleRotate=handleRotate,
       innerSizes = drawerInnerSizes,
       outerSizes = drawerOuterSizes,

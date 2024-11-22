@@ -5,10 +5,10 @@ $list = @(Get-Content -Path $path | ConvertFrom-Csv)
 $list | Group-Object -Property type | ForEach-Object {
     $category = $_
     
-    #"custom":Custome, "multicard":Multi card slot
+    #"custom":Custom, "multicard":Multi card slot
     Write-Host "$($category.Name) Openscad customizer config"
     $options = [string]::Join(', ', ($category.Group | ForEach-Object { "`"$($_.code.ToLower())`":$($_.description.Replace(',','.')  -replace '[\:|\]|\[]', '')" }))
-    Write-Host "$($category.Name) = `"custom`"; // [ `"custom`":Custome, $($options)]"
+    Write-Host "$($category.Name) = `"custom`"; // [ `"custom`":Custom, $($options)]"
     
     Write-Host "$($category.Name) Openscad lookup"
     #   name == "aaaa" ? ["round", 8.3, 0] : 
