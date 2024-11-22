@@ -1,6 +1,6 @@
 include <functions_string.scad>
 
-//round a number to a decimal with a defined number of significent figures
+//round a number to a decimal with a defined number of significant figures
 function roundtoDecimal(value, sigFigs = 0) = 
   assert(is_num(value), "value must be a number")
   assert(is_num(sigFigs) && sigFigs >= 0, "sigFigs must be a number")

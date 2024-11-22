@@ -111,7 +111,7 @@ default_spacer = false;
 // Half-pitch base pads for offset stacking
 default_half_pitch = false;
 
-// Limit attachments (magnets and scres) to box corners for faster printing.
+// Limit attachments (magnets and screws) to box corners for faster printing.
 default_box_corner_attachments_only = true;
 // Removes the base grid from inside the shape
 default_flat_base = false;

@@ -57,7 +57,7 @@ function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=
       ? floorThickness
       : max(3.5, cupBaseClearanceHeight(magnet_depth,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
     
-//Usable floor depth (florr height - min floor)
+//Usable floor depth (floor height - min floor)
 function calculateFloorThickness(magnet_depth, screw_depth, floor_thickness, num_z, filledin) = 
   calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z, filledin) - cupBaseClearanceHeight(magnet_depth, screw_depth);
     
