@@ -645,7 +645,7 @@ module gridfinity_cup(
                 bend_angle = vertical_separator_bend_angle,
                 bend_separation = vertical_separator_bend_separation,
                 cut_depth = vertical_separator_cut_depth,
-                seperator_config = vertical_separator_positions);
+                seperator_config = calculated_vertical_separator_positions);
 
               translate([gf_pitch*num_x, 0, sepFloorHeight-fudgeFactor])
               rotate([0,0,90])
@@ -657,7 +657,7 @@ module gridfinity_cup(
                 bend_angle = horizontal_separator_bend_angle,
                 bend_separation = horizontal_separator_bend_separation,
                 cut_depth = horizontal_separator_cut_depth,
-                seperator_config = horizontal_separator_positions);
+                seperator_config = calculated_horizontal_separator_positions);
 
               //Subtract cutout from wall pattern
               if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
@@ -702,7 +702,7 @@ module gridfinity_cup(
       
       if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
         //generate the label sockets
-        #gridfinity_label(
+        gridfinity_label(
           num_x = num_x,
           num_y = num_y,
           zpoint = zpoint,

@@ -215,13 +215,15 @@ module baseplate_cavities(
             rotate([0,0,rdeg])
               //magnet retaining ring
               union(){
+              echo(magnetSupportWidth=magnetSupportWidth, supportDiameter=supportDiameter, minus4=-supportDiameter/4);
+                magnetSupportWidth = max(17/2,supportDiameter);
                 cylinder(d=supportDiameter, h=baseCavityHeight+fudgeFactor*4, $fn=48);
 
-                translate([supportDiameter/4, 0, baseCavityHeight/2]) 
-                  cube([supportDiameter/2,supportDiameter,baseCavityHeight+fudgeFactor*6],center = true);
+                translate([magnetSupportWidth/2, -magnetSupportWidth/2+supportDiameter/2, baseCavityHeight/2]) 
+                  cube([magnetSupportWidth,magnetSupportWidth,baseCavityHeight+fudgeFactor*6],center = true);
 
-                translate([0, -supportDiameter/4, baseCavityHeight/2]) 
-                  cube([supportDiameter,supportDiameter/2,baseCavityHeight+fudgeFactor*6],center = true);
+                translate([magnetSupportWidth/2-supportDiameter/2, -magnetSupportWidth/2, baseCavityHeight/2]) 
+                  cube([magnetSupportWidth,magnetSupportWidth,baseCavityHeight+fudgeFactor*6],center = true);
               }
             }
         }
