@@ -74,7 +74,7 @@ module GridItemHolder(
     : customShape ? holeSize[0]+holeSpacing[0]
     : sqrt((Ri*2+holeSpacing[0])^2-((calcHoledimensions[1]+holeSpacing[1])/2)^2);
     
-  //Calcualte the x and y items count for hexgrid
+  //Calculate the x and y items count for hexgrid
   eHexGrid = [
       holeGrid[0] !=0 ? holeGrid[0]
         : floor((_canvasSize[0]-calcHoledimensions[0])/hexxSpacing+1), 
@@ -82,7 +82,7 @@ module GridItemHolder(
         : floor(((_canvasSize[1]+holeSpacing[1])/(calcHoledimensions[1]+holeSpacing[1])-0.5)*2)/2
       ];
 
-  //Calcualte the x and y hex items count for squaregrid
+  //Calculate the x and y hex items count for squaregrid
   eSquareGrid = [
       holeGrid[0]!=0 ? holeGrid[0]
         : floor((_canvasSize[0]+holeSpacing[0])/(calcHoledimensions[0]+holeSpacing[0])),

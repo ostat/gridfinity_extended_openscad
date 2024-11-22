@@ -1,5 +1,4 @@
 include <gridfinity_constants.scad>
-use <module_gridfinity.scad>
 
 module cupLip(
   num_x = 2, 

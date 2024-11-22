@@ -115,14 +115,14 @@ horizontal_irregular_subdivisions = false;
 horizontal_separator_config = "10.5|21|42|50|60";
       
 /* [Base] */
-// (Zack's design uses magnet diameter of 6.5)
-magnet_diameter = 0;  // .1
-// Create relief for magnet removal 
-magnet_easy_release = true;
-// (Zack's design uses depth of 6)
-screw_depth = 0;
-center_magnet_diameter =0;
-center_magnet_thickness = 0;
+//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+magnet_size = [6.5, 2.4];  // .1
+//create relief for magnet removal
+magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+//size of screw, diameter and height. Zacks original used 3 and 6
+screw_size = [3, 6]; // .1
+//size of center magnet, diameter and height. 
+center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 // Only add attachments (magnets and screw) to box corners (prints faster).
@@ -703,16 +703,20 @@ module gridfinity_itemholder(
       label_settings=label_settings,
       fingerslide=fingerslide,
       fingerslide_radius=fingerslide_radius,
-      magnet_diameter=magnet_diameter,
-      magnet_easy_release=magnet_easy_release,
-      screw_depth=screw_depth,
-      center_magnet_diameter=center_magnet_diameter,
-      center_magnet_thickness=center_magnet_thickness,
-      floor_thickness=ft,
-      cavity_floor_radius=cavity_floor_radius,
+      cupBase_settings = CupBaseSettings(
+        magnetSize = magnet_size, 
+        magnetEasyRelease = magnet_easy_release, 
+        centerMagnetSize = center_magnet_size, 
+        screwSize = screw_size, 
+        holeOverhangRemedy = hole_overhang_remedy, 
+        cornerAttachmentsOnly = box_corner_attachments_only,
+        floorThickness = ft,
+        cavityFloorRadius = cavity_floor_radius,
+        efficientFloor=efficient_floor,
+        halfPitch=half_pitch,
+        flatBase=flat_base,
+        spacer=spacer),
       wall_thickness=wall_thickness,
-      hole_overhang_remedy=hole_overhang_remedy,
-      efficient_floor=efficient_floor,
       chamber_wall_thickness=chamber_wall_thickness,
       vertical_chambers = vertical_chambers,
       vertical_separator_bend_position=vertical_separator_bend_position,
@@ -731,9 +735,6 @@ module gridfinity_itemholder(
       half_pitch=half_pitch,
       lip_style=lip_style,
       zClearance=zClearance,
-      box_corner_attachments_only=box_corner_attachments_only,
-      flat_base = flat_base,
-      spacer=spacer,
       tapered_corner=tapered_corner,
       tapered_corner_size = tapered_corner_size,
       tapered_setback = tapered_setback,
@@ -759,13 +760,6 @@ module gridfinity_itemholder(
       wallcutout_horizontal_angle=wallcutout_horizontal_angle,
       wallcutout_horizontal_height=wallcutout_horizontal_height,
       wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
-      extendable_Settings=ExtendableSettings(
-        extendablexEnabled = extension_x_enabled, 
-        extendablexPosition = extension_x_position, 
-        extendableyEnabled = extension_y_enabled, 
-        extendableyPosition = extension_y_position, 
-        extendableTabsEnabled = extension_tabs_enabled, 
-        extendableTabSize = extension_tab_size),
       cutx=cutx,
       cuty=cuty,
       help = enable_help);

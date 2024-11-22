@@ -44,7 +44,52 @@ function calculateSeparators(
           ]]
       : [];
 
+module separators(
+  calculatedSeparators,
+  separator_orientation = "vertical")
+{
+  separators_generic(
+    calculatedSeparators = calculatedSeparators,
+    separator_orientation = separator_orientation)
+    bentWall(
+      length=$sepCfg[iSeperatorLength],
+      bendPosition=$sepCfg[iSeperatorBendPosition],
+      bendAngle=$sepCfg[iSeperatorBendAngle],
+      separation=$sepCfg[iSeperatorBendSeparation],
+      lowerBendRadius=$sepCfg[iSeperatorBendSeparation]/2,
+      upperBendRadius=$sepCfg[iSeperatorBendSeparation]/2,
+      height = $sepCfg[iSeperatorHeight],
+      wall_cutout_depth = $sepCfg[iSeperatorWallCutDepth],
+      wall_cutout_width = $sepCfg[iSeperatorWallCutoutWidth],
+      thickness = $sepCfg[iSeperatorWallThickness]);
+}
+
 module separators_generic(  
+  calculatedSeparators,
+  separator_orientation)
+{
+assert(separator_orientation == "horizontal" || separator_orientation == "vertical", "separator_orientation must be 'horizontal' or 'vertical'");
+
+  sepConfigs = calculatedSeparators;
+  if(IsHelpEnabled("trace")) echo("separators",sepConfigs=sepConfigs);
+ 
+  if(is_list(sepConfigs) && len(sepConfigs) > 0){
+    for (i=[0:len(sepConfigs)-1]) {
+      $sepCfg = sepConfigs[i];
+      if(separator_orientation == "vertical"){
+        translate([$sepCfg[iSeperatorPosition]-$sepCfg[iSeperatorWallThickness]/2,0,0])
+        children();
+      }
+      if(separator_orientation == "horizontal"){
+        translate([0,$sepCfg[iSeperatorPosition]-$sepCfg[iSeperatorWallThickness]/2,0])
+        rotate([0,0,90])
+        children();
+      }
+    }
+  }
+}
+
+module separators_generic_v1(  
   length,
   height,
   wall_thickness = 0,
@@ -53,9 +98,9 @@ module separators_generic(
   bend_separation = 0,
   cut_depth = 0,
   seperator_config = [],
-  separator_orentation)
+  separator_orientation)
 {
-assert(separator_orentation == "horizontal" || separator_orentation == "vertical", "separator_orentation must be 'horizontal' or 'vertical'");
+assert(separator_orientation == "horizontal" || separator_orientation == "vertical", "separator_orientation must be 'horizontal' or 'vertical'");
 
 sepConfigs = calculateSeparators(
     seperator_config = seperator_config, 
@@ -71,11 +116,11 @@ sepConfigs = calculateSeparators(
   if(is_list(sepConfigs) && len(sepConfigs) > 0){
     for (i=[0:len(sepConfigs)-1]) {
       $sepCfg = sepConfigs[i];
-      if(separator_orentation == "vertical"){
+      if(separator_orientation == "vertical"){
         translate([$sepCfg[iSeperatorPosition]-$sepCfg[iSeperatorWallThickness]/2,0,0])
         children();
       }
-      if(separator_orentation == "horizontal"){
+      if(separator_orientation == "horizontal"){
         translate([0,$sepCfg[iSeperatorPosition]-$sepCfg[iSeperatorWallThickness]/2,0])
         rotate([0,0,90])
         children();
@@ -84,7 +129,8 @@ sepConfigs = calculateSeparators(
   }
 }
 
-module separators(
+
+module separators_V2(
   length,
   height,
   wall_thickness = 0,
@@ -93,7 +139,7 @@ module separators(
   bend_separation = 0,
   cut_depth = 0,
   seperator_config = [],
-  separator_orentation = "vertical")
+  separator_orientation = "vertical")
 {
   separators_generic(
     seperator_config = seperator_config, 
@@ -104,7 +150,41 @@ module separators(
     bend_angle = bend_angle,
     bend_separation = bend_separation,
     cut_depth = cut_depth,
-    separator_orentation = separator_orentation)
+    separator_orientation = separator_orientation)
+    bentWall(
+      length=$sepCfg[iSeperatorLength],
+      bendPosition=$sepCfg[iSeperatorBendPosition],
+      bendAngle=$sepCfg[iSeperatorBendAngle],
+      separation=$sepCfg[iSeperatorBendSeparation],
+      lowerBendRadius=$sepCfg[iSeperatorBendSeparation]/2,
+      upperBendRadius=$sepCfg[iSeperatorBendSeparation]/2,
+      height = $sepCfg[iSeperatorHeight],
+      wall_cutout_depth = $sepCfg[iSeperatorWallCutDepth],
+      wall_cutout_width = $sepCfg[iSeperatorWallCutoutWidth],
+      thickness = $sepCfg[iSeperatorWallThickness]);
+}
+
+module separators_V2(
+  length,
+  height,
+  wall_thickness = 0,
+  bend_position = 0,
+  bend_angle = 0,
+  bend_separation = 0,
+  cut_depth = 0,
+  seperator_config = [],
+  separator_orientation = "vertical")
+{
+  separators_generic(
+    seperator_config = seperator_config, 
+    length = length,
+    height = height,
+    wall_thickness = wall_thickness,
+    bend_position = bend_position,
+    bend_angle = bend_angle,
+    bend_separation = bend_separation,
+    cut_depth = cut_depth,
+    separator_orientation = separator_orientation)
     bentWall(
       length=$sepCfg[iSeperatorLength],
       bendPosition=$sepCfg[iSeperatorBendPosition],

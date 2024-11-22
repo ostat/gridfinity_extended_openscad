@@ -25,7 +25,6 @@ filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
 //assign colours to the bin, will may 
@@ -171,6 +170,7 @@ extension_tabs_enabled = true;
 extension_tab_size= [10,0,0,0];
 
 /* [debug] */
+render_position = "center"; //[default,center,zero]
 //Slice along the x axis
 cutx = 0; //0.1
 //Slice along the y axis
@@ -183,13 +183,15 @@ module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
 
 SetGridfinityEnvironment(
-  setColour = set_colour,
+  width = width,
+  depth = depth,
+  render_position = render_position,
   help = enable_help,
-  cutx=cutx,
-  cuty=cuty)
+  cutx = cutx,
+  cuty = cuty,
+  cutz = calcDimensionHeight(height, true))
 gridfinity_cup(
   width=width, depth=depth, height=height,
-  position=position,
   filled_in=filled_in,
   label_settings=LabelSettings(
     labelStyle=label_style, 
