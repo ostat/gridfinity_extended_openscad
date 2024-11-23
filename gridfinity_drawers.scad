@@ -3,7 +3,7 @@
 //
 // Original OpenSCAD design was provided by @monniasza
 // Inspiration for their design was https://www.printables.com/pl/model/363389
-// The design has diveated sigficantly, I would not consider this compatiable with the orginal.
+// The design has deviated significantly, I would not consider this compatible with the original.
 
 use <modules/module_gridfinity_cup.scad>
 use <modules/module_gridfinity.scad>
@@ -34,7 +34,7 @@ drawer_clearance = [0.25,0.25,0.25];
 chest_clearance = [0.25,0.25,0.25];
 
 chest_wall_thickness = 2;
-//Thickness of drawer slies in mm. 0 is uses wall thickenss.
+//Thickness of drawer slies in mm. 0 is uses wall thickness.
 chest_drawer_slide_thickness = 0;
 //Width of drawer slies in mm. 0 is full chest width.
 chest_drawer_slide_width = 10; 
@@ -42,7 +42,7 @@ chest_drawer_slide_width = 10;
 /* [Drawer] */
 // Handle size width, depth, height, and radius. Height, less than 0 drawerHeight/abs(height). radius, -1 = depth/2. 
 handle_size = [4, 10, -1, -1];
-handle_verticle_center = false;
+handle_vertical_center = false;
 handle_rotate = false;
 drawer_wall_thickness = 2;
 drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and floor]
@@ -99,10 +99,10 @@ function drawerPosition(
   index, 
   outerSizes, 
   clearance, 
-  sliderThickenss) = let(
+  sliderThickness) = let(
   drawersTotal = (index<1 ? 0 : sum(partial(outerSizes,0,index-1)).z),
   clearanceTotal = clearance.z*2*(index),
-  sliderThickenss = sliderThickenss*index) drawersTotal + clearanceTotal + sliderThickenss;
+  sliderThickness = sliderThickness*index) drawersTotal + clearanceTotal + sliderThickness;
   
 function sum(list, c = 0) = 
   c < len(list) - 1 
@@ -120,7 +120,7 @@ module drawers(
   drawerBase, // = drawerbase,
   wallThickness,// = wallthicknessInner,
   handleSize,
-  handleVerticleCenter,
+  handleVerticalCenter,
   handleRotate,
   ridgeDepth,
   startH,
@@ -146,7 +146,7 @@ module drawers(
         drawerBase=drawerBase,// = drawerbase,
         wallThickness=wallThickness,// = wallthicknessInner,
         handleSize=handleSize,
-        handleVerticleCenter=handleVerticleCenter,
+        handleVerticalCenter=handleVerticalCenter,
         handleRotate=handleRotate,
         innerSizes=innerSizes,
         outerSizes=outerSizes,
@@ -161,7 +161,7 @@ module drawer(
   drawerBase,// = drawerbase,
   wallThickness,// = wallthicknessInner,
   handleSize,
-  handleVerticleCenter,
+  handleVerticalCenter,
   handleRotate,
   innerSizes,// = drawerInnerSizes,
   outerSizes,// = drawerOuterSizes,
@@ -219,7 +219,7 @@ module drawer(
     translate([
         outerSizes[drawerIndex].x/2, 
         0, 
-        handleVerticleCenter 
+        handleVerticalCenter 
           ? outerSizes[drawerIndex].z/2  
           : handleRotate ? handleSize.x/2 : handelHeight/2])
       rotate(handleRotate ? [0,90,0] : [0,0,0])
@@ -240,7 +240,7 @@ module drawerPull(width, depth, height, radius){
       rotate([0,90,0])
         difference(){
           cylinder(h=width, r=radius, $fn=64);
-          //Remove inner half so we dont get error when r<roundedr*2
+          //Remove inner half so we don't get error when r<roundedr*2
           translate([-radius,0,-fudgeFactor])
           cube([radius*2,radius*2,width+fudgeFactor*2]);
         }
@@ -496,7 +496,7 @@ module gridfinity_drawer(
     chestDrawerSlideThickness = chest_drawer_slide_thickness,
     chestDrawerSlideWidth = chest_drawer_slide_width,
     handleSize = handle_size,
-    handleVerticleCenter = handle_verticle_center,
+    handleVerticalCenter = handle_vertical_center,
     handleRotate = handle_rotate,
     drawerWallThickness = drawer_wall_thickness,
     drawerBase = drawer_base,
@@ -607,7 +607,7 @@ module gridfinity_drawer(
       drawerBase=drawerBase,
       wallThickness=drawerWallThickness,
       handleSize=handleSize,
-      handleVerticleCenter=handleVerticleCenter,
+      handleVerticalCenter=handleVerticalCenter,
       handleRotate=handleRotate,
       ridgeDepth=ridgeDepth,
       startH=startH,
@@ -622,7 +622,7 @@ module gridfinity_drawer(
       drawerBase= drawerBase,
       wallThickness = drawerWallThickness,
       handleSize = handleSize,
-      handleVerticleCenter=handleVerticleCenter,
+      handleVerticalCenter=handleVerticalCenter,
       handleRotate=handleRotate,
       innerSizes = drawerInnerSizes,
       outerSizes = drawerOuterSizes,

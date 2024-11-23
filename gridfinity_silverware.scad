@@ -21,7 +21,7 @@ utensil_12_wide = 32; utensil_12_narrow = 15; utensil_12_length = 191;
 utensil_13_wide = 32; utensil_13_narrow = 15; utensil_13_length = 150;
 utensil_14_wide = 24; utensil_14_narrow = 16; utensil_14_length = 180;
 
-/* [Other parametrs] */
+/* [Other parameters] */
 // Separation wall thickness
 separator_wall = 2;  // .1
 // Clearance on sides and ends of utensils
