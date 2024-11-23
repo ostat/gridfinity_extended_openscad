@@ -204,7 +204,7 @@ module baseplate_cavities(
         difference(){
           translate([-gf_pitch/2,-gf_pitch/2,0])
             cube([gf_pitch,gf_pitch,baseCavityHeight]);
-          
+          if((cornerScrewEnabled || magnetSize[0]> 0))
           translate([0, 0, -fudgeFactor*2]) 
           gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true) {
             rdeg =
