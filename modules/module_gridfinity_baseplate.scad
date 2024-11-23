@@ -38,6 +38,7 @@ module gridfinity_baseplate(
   num_y = 3,
   center_fill_grid_x = false,
   center_fill_grid_y = false,
+  plate_corner_radius=gf_cup_corner_radius,
   magnetSize = Default_Magnet_Size,
   reducedWallHeight = 0,
   cornerScrewEnabled  = false,
@@ -83,6 +84,7 @@ module gridfinity_baseplate(
               filamentClipEnabled = filamentClipEnabled,
               filamentClipDiameter = filamentClipDiameter,
               filamentClipLength = filamentClipLength,
+              plate_corner_radius = plate_corner_radius,
               roundedCorners = _gridPositions[xi][yi] == 1 ? 15 : _gridPositions[xi][yi] - 2);
           }
         }
@@ -103,6 +105,7 @@ module baseplate(
   centerScrewEnabled = false,
   weightedEnable = false,
   plateOptions = "default",
+  plate_corner_radius = gf_cup_corner_radius,
   roundedCorners = 15,
   butterflyClipEnabled  = Default_Butterfly_Clip_Enabled,
   butterflyClipSize = Default_Butterfly_Clip_Size,
@@ -133,6 +136,7 @@ module baseplate(
           centerScrewEnabled = centerScrewEnabled,
           cornerScrewEnabled = cornerScrewEnabled,
           weightHolder = weightedEnable,
+          cornerRadius = plate_corner_radius,
           roundedCorners=roundedCorners);
       }
     }

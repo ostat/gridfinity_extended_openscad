@@ -14,6 +14,7 @@ center_fill_grid_x = true;
 center_fill_grid_y = true;
 //Enable custom grid, you will configure this in the (Lid not supported)
 Custom_Grid_Enabled = false;
+plate_corner_radius = 3.75; //[0:0.01:3.75]
 
 /* [Base Plate Options] */
 // Enable magnets in the bin corner
@@ -90,6 +91,7 @@ else{
       num_y = calcDimensionWidth(Depth),
       center_fill_grid_x = center_fill_grid_x,
       center_fill_grid_y = center_fill_grid_y,
+      plate_corner_radius=plate_corner_radius,
       magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
       reducedWallHeight = Reduced_Wall_Height, 
       cornerScrewEnabled  = Corner_Screw_Enabled,

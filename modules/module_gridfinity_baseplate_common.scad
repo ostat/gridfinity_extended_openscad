@@ -78,7 +78,7 @@ module frame_plain(
       center_fill_grid_y = center_fill_grid_y,
       extra_down = extra_down, 
       frameLipHeight = frameLipHeight,
-      cornerRadius = cornerRadius,
+      cornerRadius = gf_cup_corner_radius,
       reducedWallHeight = reducedWallHeight,
       $fn = 44)
         children();
@@ -255,7 +255,7 @@ module outer_baseplate(
  //full outer material to build from
   hull() 
     cornercopy(corner_position, num_x, num_y) {
-      radius = bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? cornerRadius : 0.01;// 0.01 is almost zero....
+      radius = max(bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? cornerRadius : 0.01, 0.01);// 0.01 is almost zero to get a square edge....
       ctrn = [
         ($idx[0] == 0 ? -1 : 1)*(cornerRadius-radius), 
         ($idx[1] == 0 ? -1 : 1)*(cornerRadius-radius), -extendedDepth];
