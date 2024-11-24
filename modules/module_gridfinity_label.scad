@@ -181,7 +181,7 @@ module gridfinity_label(
         : [ for (i=[0:len(separator_positions)]) 
           (i==len(separator_positions) 
             ? wallLocation[ilabelWall_Width]
-            : separator_positions[i][iSeperatorPosition]) - (i==0 ? 0 : separator_positions[i-1][iSeperatorPosition]) ];
+            : separator_positions[i][iSeparatorPosition]) - (i==0 ? 0 : separator_positions[i-1][iSeparatorPosition]) ];
     
     if(IsHelpEnabled("trace")) echo("gridfinity_label", l=l, wallLocation = wallLocation, chamberWidths=chamberWidths, separator_positions = separator_positions);
     union()
@@ -191,9 +191,9 @@ module gridfinity_label(
       for (i=[0:len(chamberWidths)-1]) {
           chamberStart = i == 0 
             ? 0 
-            : separator_positions[i-1][iSeperatorPosition] + 
-              separator_positions[i-1][iSeperatorBendSeparation]/2
-                *(separator_positions[i-1][iSeperatorBendAngle] < 0 ? -1 : 1)
+            : separator_positions[i-1][iSeparatorPosition] + 
+              separator_positions[i-1][iSeparatorBendSeparation]/2
+                *(separator_positions[i-1][iSeparatorBendAngle] < 0 ? -1 : 1)
                 *(wallLocation[ilabelWall_Reversed] ? -1 : 1);
           chamberWidth = chamberWidths[i];
           label_num_x = (labelWidthmm == 0 || labelWidthmm > chamberWidth) ? chamberWidth : labelWidthmm;

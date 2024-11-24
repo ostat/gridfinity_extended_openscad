@@ -258,7 +258,6 @@ module gridcopy(num_x, num_y, pitch=gf_pitch, centerGridx = true, centerGridy = 
     (num_x - floor(num_x))/(centerGridx?2:1) : 0;
   yPadding = ceil(num_y) != num_y ? 
     (num_y - floor(num_y))/(centerGridy?2:1) : 0;
-  echo(xPadding=xPadding,yPadding=yPadding);
   xCount = ceil(num_x) + ((xPadding > 0 && centerGridx) ? 1 :0);
   yCount = ceil(num_y) + ((yPadding > 0 && centerGridy) ? 1 :0);
   $gc_count=[

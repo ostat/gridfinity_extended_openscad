@@ -288,7 +288,7 @@ module gridfinity_cup(
   sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
        
   calculated_vertical_separator_positions = calculateSeparators(
-    seperator_config = vertical_irregular_subdivisions 
+    separator_config = vertical_irregular_subdivisions 
       ? vertical_separator_config 
       : splitChamber(vertical_chambers-1, num_x), 
     length = gf_pitch*num_y,
@@ -299,7 +299,7 @@ module gridfinity_cup(
     bend_separation = vertical_separator_bend_separation,
     cut_depth = vertical_separator_cut_depth);
   calculated_horizontal_separator_positions = calculateSeparators(
-    seperator_config = horizontal_irregular_subdivisions 
+    separator_config = horizontal_irregular_subdivisions 
       ? horizontal_separator_config 
       : splitChamber(horizontal_chambers-1, num_y), 
     length = gf_pitch*num_x,
@@ -469,22 +469,28 @@ module gridfinity_cup(
               //rotation
               [90,0,0]];
             back = [
+              //width,height
               [num_x*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
                 heightz - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)],
+              //Position
               [(num_x)*gf_pitch/2, 
                 (num_y)*gf_pitch, 
                  z - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)/2],
               [90,0,0]];
             left = [
+              //width,height
               [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
                 heightz - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)],
+              //Position
               [0, 
                 (num_y)*gf_pitch/2, 
                 z - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)/2],
               [90,0,90]];
             right = [
+              //width,height
               [num_y*gf_pitch-gf_cup_corner_radius*2-wallpattern_thickness,
                 heightz - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)],
+              //Position
               [(num_x)*gf_pitch-wallpattern_thickness,   
                 (num_y)*gf_pitch/2, 
                 z - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)/2],
@@ -497,39 +503,34 @@ module gridfinity_cup(
             difference(){
               union(){
                 if(wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
-                  separators_generic(
-                    seperator_config = vertical_separator_positions, 
-                    length = left[0][1],
-                    height = left[0][0],
-                    wall_thickness = chamber_wall_thickness*2,
-                    bend_position = vertical_separator_bend_position,
-                    bend_angle = vertical_separator_bend_angle,
-                    bend_separation = vertical_separator_bend_separation,
-                    cut_depth = vertical_separator_cut_depth,
-                    separator_orientation = "vertical") 
-                      translate([-$sepCfg[iSeperatorBendSeparation]/2, 0, fudgeFactor]) 
-                      translate(left[1])
-                      rotate(left[2])
-                      render() //Render on vertical_separator pattern because detailed patters can be slow
-                      difference(){
-                        //separator wall pattern
-                        cutout_pattern(
-                          patternStyle = wallpattern_style,
-                          canvasSize = left[0], 
-                          customShape = false,
-                          circleFn = wallpattern_hole_sides,
-                          holeSize = [wallpattern_hole_size, wallpattern_hole_size],
-                          holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                          holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
-                          center=true,
-                          fill=wallpattern_fill, //"none", "space", "crop"
-                          voronoiNoise=wallpattern_voronoi_noise,
-                          voronoiRadius = wallpattern_voronoi_radius,
-                          help=help);
-                        //subtract outer wall to outer wall cutout from separator pattern
-                          wallcutoutFront = wallcutouts_horizontal[0];
-                          wallcutoutFrontThickness = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation];
+                  position_separators(
+                    calculatedSeparators = calculated_vertical_separator_positions, 
+                    separator_orientation = "vertical") {
+                        thickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2;
+                        translate([-thickness/2, 0, fudgeFactor]) 
+                        translate(left[1])
+                        rotate(left[2])
+                        render() //Render on vertical_separator pattern because detailed patters can be slow
+                        difference(){
+                          //separator wall pattern
+                          cutout_pattern(
+                            patternStyle = wallpattern_style,
+                            canvasSize = left[0], 
+                            customShape = false,
+                            circleFn = wallpattern_hole_sides,
+                            holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                            holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
+                            holeHeight = thickness,
+                            center=true,
+                            fill=wallpattern_fill, //"none", "space", "crop"
+                            voronoiNoise=wallpattern_voronoi_noise,
+                            voronoiRadius = wallpattern_voronoi_radius,
+                            help=help);
+                 
                           
+                          //subtract outer wall to outer wall cutout from separator pattern
+                          wallcutoutFront = wallcutouts_horizontal[0];
+                          wallcutoutFrontThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation];
                           if(wallcutoutFront[iwalcutout_enabled] == true && wallcutoutFront[0][iwalcutoutconfig_type] == "enabled" )
                             translate([0,wallcutoutFront[iwalcutout_size].z/2,wallcutoutFrontThickness/2])
                             rotate([270,0,0])
@@ -539,21 +540,17 @@ module gridfinity_cup(
                               height=wallcutoutFront[iwalcutout_size].z+cutoutclearance,
                               thickness=wallcutoutFrontThickness,
                               cornerRadius=wallcutoutFront[iwalcutout_config][iwalcutoutconfig_cornerradius]);
+                        }
                       }
-                  
+          
                 if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
-                  separators_generic(
-                    seperator_config = horizontal_separator_positions, 
-                    length = front[0][1],
-                    height = front[0][0],
-                    wall_thickness = chamber_wall_thickness*2,
-                    bend_position = horizontal_separator_bend_position,
-                    bend_angle = horizontal_separator_bend_angle,
-                    bend_separation = horizontal_separator_bend_separation,
-                    cut_depth = horizontal_separator_cut_depth,
-                    separator_orientation = "horizontal") 
+                  position_separators(
+                    calculatedSeparators = calculated_horizontal_separator_positions, 
+                    separator_orientation = "horizontal") {
+                      thickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2;
                       rotate([0,0,-90])
-                      translate([0,$sepCfg[iSeperatorBendSeparation]/2, fudgeFactor]) 
+                      //I dont know why -wallpattern_thickness is needed here and not in vertical
+                      translate([0,-wallpattern_thickness+thickness/2, fudgeFactor]) 
                       translate(front[1])
                       rotate(front[2])
                       render() //Render on horizontal_separator pattern because detailed patters can be slow
@@ -566,17 +563,16 @@ module gridfinity_cup(
                           circleFn = wallpattern_hole_sides,
                           holeSize = [wallpattern_hole_size, wallpattern_hole_size],
                           holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-                          holeHeight = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation],
+                          holeHeight = thickness,
                           center=true,
                           fill=wallpattern_fill, //"none", "space", "crop"
                           voronoiNoise=wallpattern_voronoi_noise,
                           voronoiRadius = wallpattern_voronoi_radius,
                           help=help);
-                          
+              
                           //subtract outer wall to outer wall cutout from separator pattern
                           wallcutoutLeft = wallcutouts_vertical[0];
-                          wallcutoutLeftThickness = $sepCfg[iSeperatorWallThickness]+$sepCfg[iSeperatorBendSeparation];
-                          
+                          wallcutoutLeftThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation];
                           if(wallcutoutLeft[iwalcutout_enabled] == true && wallcutoutLeft[0][iwalcutoutconfig_type] == "enabled" )
                             translate([0,wallcutoutLeft[iwalcutout_size].z/2,wallcutoutLeftThickness/2])
                             rotate([270,0,0])
@@ -587,6 +583,7 @@ module gridfinity_cup(
                               thickness=wallcutoutLeftThickness,
                               cornerRadius=wallcutoutLeft[iwalcutout_config][iwalcutoutconfig_cornerradius]);
                       }
+                    }
                 }
                 
                 //Subtract setback from wall pattern
@@ -613,6 +610,8 @@ module gridfinity_cup(
                     
               }
             }
+
+            //Wall pattern in outerwalls
             difference(){
               for(i = [0:1:len(locations)-1])
                 union()
@@ -637,28 +636,18 @@ module gridfinity_cup(
               
               //subtract dividers from outer wall pattern
               translate([0, 0, sepFloorHeight-fudgeFactor])
-              separators(  
-                length=gf_pitch*num_y,
-                height=gf_zpitch*(num_z)-sepFloorHeight+border*2+fudgeFactor*2,
-                wall_thickness = chamber_wall_thickness+cutoutclearance*2,
-                bend_position = vertical_separator_bend_position,
-                bend_angle = vertical_separator_bend_angle,
-                bend_separation = vertical_separator_bend_separation,
-                cut_depth = vertical_separator_cut_depth,
-                seperator_config = calculated_vertical_separator_positions);
-
+              separators(
+                calculatedSeparators = calculated_vertical_separator_positions,
+                separator_orientation = "vertical",
+                override_wall_thickness = chamber_wall_thickness+cutoutclearance*2);
+              
+              //subtract dividers from outer wall pattern
               translate([gf_pitch*num_x, 0, sepFloorHeight-fudgeFactor])
-              rotate([0,0,90])
-              separators(  
-                length=gf_pitch*num_x,
-                height=gf_zpitch*(num_z)-sepFloorHeight+border*2+fudgeFactor*2,
-                wall_thickness = chamber_wall_thickness+cutoutclearance*2,
-                bend_position = horizontal_separator_bend_position,
-                bend_angle = horizontal_separator_bend_angle,
-                bend_separation = horizontal_separator_bend_separation,
-                cut_depth = horizontal_separator_cut_depth,
-                seperator_config = calculated_horizontal_separator_positions);
-
+              separators(
+                calculatedSeparators = calculated_horizontal_separator_positions,
+                separator_orientation = "horizontal",
+                override_wall_thickness = chamber_wall_thickness+cutoutclearance*2);
+              
               //Subtract cutout from wall pattern
               if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
                 for(wallcutout_location = wallcutout_locations)
@@ -675,7 +664,6 @@ module gridfinity_cup(
         
               //Subtract setback from wall pattern
               if(tapered_corner == "rounded" || tapered_corner == "chamfered")
-                //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
                 translate([
                   -cutoutclearance,
                   +tapered_setback+gf_tolerance+cutoutclearance,
@@ -694,7 +682,6 @@ module gridfinity_cup(
                       length=(num_x+1)*gf_pitch, 
                       height = tapered_corner_size);
                   }
-                  
             }
           }
         }
@@ -791,7 +778,7 @@ module gridfinity_cup(
   }  
   
   if(IsHelpEnabled("info"))
-    translate(cupPosition(position,num_x,num_y))
+    //translate(cupPosition(position,num_x,num_y))
     ShowCalipers(
       getCutx(), 
       getCuty(), 
@@ -927,8 +914,6 @@ module partitioned_cavity(num_x, num_y, num_z,
   zpoint = gf_zpitch*num_z-zClearance;
 
   floorHeight = calculateFloorHeight(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], screw_depth, floor_thickness);
-  vertical_separator_positions = calculated_vertical_separator_positions;
-  horizontal_separator_positions = calculated_horizontal_separator_positions;
 
   difference() {
     color(getColour(color_cupcavity))
@@ -938,20 +923,20 @@ module partitioned_cavity(num_x, num_y, num_z,
       lip_style=lip_style, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
     
-    if(IsHelpEnabled("trace")) echo("partitioned_cavity", vertical_separator_positions=vertical_separator_positions);
+    if(IsHelpEnabled("trace")) echo("partitioned_cavity", vertical_separator_positions=calculated_vertical_separator_positions);
     
     color(getColour(color_divider))
     tz(sepFloorHeight-fudgeFactor)
     separators(
-      calculatedSeparators = vertical_separator_positions,  
+      calculatedSeparators = calculated_vertical_separator_positions,  
       separator_orientation = "vertical");
 
-    if(IsHelpEnabled("trace")) echo("partitioned_cavity", horizontal_separator_positions=horizontal_separator_positions);
+    if(IsHelpEnabled("trace")) echo("partitioned_cavity", horizontal_separator_positions=calculated_horizontal_separator_positions);
     
     color(getColour(color_divider))
     translate([gf_pitch*num_x, 0, sepFloorHeight-fudgeFactor])
     separators( 
-      calculatedSeparators = horizontal_separator_positions, 
+      calculatedSeparators = calculated_horizontal_separator_positions, 
       separator_orientation = "horizontal");
       
     if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
@@ -959,8 +944,8 @@ module partitioned_cavity(num_x, num_y, num_z,
         num_x = num_x,
         num_y = num_y,
         zpoint = zpoint,
-        vertical_separator_positions = vertical_separator_positions,
-        horizontal_separator_positions = horizontal_separator_positions,
+        vertical_separator_positions = calculated_vertical_separator_positions,
+        horizontal_separator_positions = calculated_horizontal_separator_positions,
         label_settings=label_settings,
         render_option = "labelwithsocket");
     }

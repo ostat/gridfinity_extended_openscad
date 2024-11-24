@@ -176,7 +176,7 @@ cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
 // enable loging of help messages during render.
-enable_help = false;
+enable_help = "disabled"; //[info,debug,trace]
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
