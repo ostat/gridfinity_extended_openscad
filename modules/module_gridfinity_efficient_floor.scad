@@ -184,7 +184,7 @@ module EfficientFloor(
       hull(){
         cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
         roundedCylinder(
-          h=2,
+          h=3,
           r=1,
           roundedr1=floorRadius);
       }
