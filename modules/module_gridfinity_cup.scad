@@ -162,6 +162,20 @@ default_extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 default_extension_tab_size= [10,0,0,0];
 
+/* [Bottom Text] */
+// Add bin size to bin bottom
+text_1 = true;
+// Size of text, in mm
+text_size = 6; // 0.1
+// Depth of text, in mm
+text_depth = 0.3; // 0.01
+// Font to use
+text_font = "Aldo";  // [Aldo, B612, "Open Sans", Ubuntu]
+// Add free-form text line to bin bottom (printing date, serial, etc)
+text_2 = false;
+// Actual text to add
+text_2_text = "Gridfinity";
+
 module end_of_customizer_opts() {}
 /*
 [debug] 
@@ -266,7 +280,13 @@ module gridfinity_cup(
   sliding_lid_thickness = default_sliding_lid_thickness, 
   sliding_min_wall_thickness = default_sliding_min_wallThickness, 
   sliding_min_support = default_sliding_min_support, 
-  sliding_clearance = default_sliding_clearance) {
+  sliding_clearance = default_sliding_clearance,
+  text_1 = text_1,
+  text_2 = text_2,
+  text_2_text = text_2_text,
+  text_size = text_size,
+  text_depth = text_depth
+) {
   
   num_x = calcDimensionWidth(width, true);
   num_y = calcDimensionDepth(depth, true);
@@ -698,6 +718,60 @@ module gridfinity_cup(
           label_settings=label_settings,
           render_option = "socket",
           socket_padding = [0,0,4]);
+
+        // add text to the bottom
+
+        _magnet_position = calculateMagnetPosition(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter]);
+        _text_x = wall_thickness + _magnet_position * 1/3;
+        _text_1_y = _magnet_position;
+        
+        if (text_1) {
+          _text_1_text = str(
+            str(num_x),
+            " x ",
+            str(num_y),
+            " x ",
+            str(num_z)
+          );
+
+          color(getColour(color_wallcutout))
+          translate([
+            _text_x,
+            _text_1_y,
+            -1 * text_depth
+          ])
+          linear_extrude(height = text_depth * 2) {
+            rotate(a = [0, 180, 180])
+            text(
+              text = _text_1_text,
+              size = text_size,
+              font = text_font,
+              halign = "left",
+              valign = "top"
+            );
+          }
+        }
+
+        if (text_2) {
+          _text_2_y = _text_1_y + text_size * 1.4;
+
+          color(getColour(color_wallcutout))
+          translate([
+            _text_x,
+            _text_2_y,
+            -1 * text_depth
+          ])
+          linear_extrude(height = text_depth * 2) {
+            rotate(a = [0, 180, 180])
+            text(
+              text = text_2_text,
+              size = text_size,
+              font = text_font,
+              halign = "left",
+              valign = "top"
+            );
+          }
+        }
     }
 
       if(extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_disabled)
