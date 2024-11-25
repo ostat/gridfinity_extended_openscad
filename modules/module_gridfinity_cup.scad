@@ -755,7 +755,7 @@ module gridfinity_cup(
       floorHeight = calculateFloorHeight(
         cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
         cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
-        floor_thickness) + CalculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,efficient_floor)-tabThickness;
+        floor_thickness) + calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,efficient_floor)-tabThickness;
       
       //todo need to correct this
       lipheight = lip_style == "none" ? tabThickness
