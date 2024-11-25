@@ -43,10 +43,14 @@ function decimaltobitwise(v1, v2) =
       v1==1 && v2 == 1 ? 8 : 0;  
 
 module frame_plain(
-    num_x, 
-    num_y, 
+    grid_num_x, 
+    grid_num_y, 
+    outer_num_x = 0,
+    outer_num_y = 0,
     center_fill_grid_x = false,
     center_fill_grid_y = false,
+    center_grid_in_outer_x = true,
+    center_grid_in_outer_y = true,
     extra_down=0, 
     trim=0, 
     baseTaper = 0, 
@@ -56,24 +60,44 @@ module frame_plain(
     roundedCorners = 15,
     $fn = 44) {
   frameLipHeight = extra_down > 0 ? height -0.6 : height;
-  
+  frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
+
+  centerGridPosition = [
+    center_grid_in_outer_x && outer_num_x > grid_num_x ? (outer_num_x-grid_num_x)/2*gf_pitch : 0,
+    center_grid_in_outer_y && outer_num_y > grid_num_y ? (outer_num_y-grid_num_y)/2*gf_pitch : 0,
+    0];
+
   difference() {
     color(color_cup)
-    //full outer material to build from
-    outer_baseplate(
-      num_x=num_x, 
-      num_y=num_y, 
-      extendedDepth=extra_down,
-      trim=trim, 
-      height=frameLipHeight,
-      cornerRadius = cornerRadius,
-      roundedCorners = roundedCorners);
+    union(){
+      //padded outer material
+      translate(centerGridPosition)
+      translate(reducedWallHeight > 0 ? [0,0,-extra_down] : [0,0,0])
+      outer_baseplate(
+        num_x  =max(grid_num_x, outer_num_x), 
+        num_y = max(grid_num_y, outer_num_y), 
+        extendedDepth = reducedWallHeight > 0 ? 0 : extra_down,
+        trim = trim, 
+        height = reducedWallHeight > 0 ? reducedWallHeight : frameLipHeight,
+        cornerRadius = cornerRadius,
+        roundedCorners = roundedCorners);
+      
+      //full outer material to build from
+      translate(centerGridPosition)
+      outer_baseplate(
+        num_x=grid_num_x, 
+        num_y=grid_num_y, 
+        extendedDepth=extra_down,
+        trim=trim, 
+        height=frameLipHeight,
+        cornerRadius = cornerRadius,
+        roundedCorners = roundedCorners);
+    }
     //Wall reduction
-    echo("frame_plain", num_x=num_x, num_y=num_y);
-    
+    translate(centerGridPosition)
     frame_cavity(
-      num_x=num_x, 
-      num_y=num_y, 
+      num_x=grid_num_x, 
+      num_y=grid_num_y, 
       center_fill_grid_x = center_fill_grid_x,
       center_fill_grid_y = center_fill_grid_y,
       extra_down = extra_down, 
@@ -102,7 +126,6 @@ module frame_cavity(
         num_y,
         centerGridx = center_fill_grid_x,
         centerGridy = center_fill_grid_y) {
-        echo("frame_plain", gci=$gci, gc_size=$gc_size, gc_position=$gc_position);
       if(frameWallReduction>0)
         for(side=[[0, [$gc_size.x, $gc_size.y]*gf_pitch],[90, [$gc_size.y, $gc_size.x]*gf_pitch]]){
         if(side[1].x >= gf_pitch/2)

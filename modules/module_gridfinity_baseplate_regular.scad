@@ -4,10 +4,14 @@ use <module_gridfinity.scad>
 use <module_gridfinity_baseplate_common.scad>
 
 module baseplate_regular(
-  num_x, 
-  num_y,  
-  center_fill_grid_x = true,
+  grid_num_x,
+  grid_num_y,
+  outer_num_x = 0,
+  outer_num_y = 0,
+  center_fill_grid_x = false,
   center_fill_grid_y = false,
+  center_grid_in_outer_x = true,
+  center_grid_in_outer_y = true,
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
   reducedWallHeight=0,
   centerScrewEnabled = true,
@@ -31,10 +35,16 @@ module baseplate_regular(
     magnetSize[1]);
     
     translate([0,0,frameBaseHeight])
-    frame_plain(num_x, num_y, 
-      extra_down=frameBaseHeight,
+    frame_plain(
+      grid_num_x = grid_num_x,
+      grid_num_y = grid_num_y,
+      outer_num_x = outer_num_x,
+      outer_num_y = outer_num_y,
       center_fill_grid_x = center_fill_grid_x,
       center_fill_grid_y = center_fill_grid_y,
+      center_grid_in_outer_x = center_grid_in_outer_x,
+      center_grid_in_outer_y = center_grid_in_outer_y,
+      extra_down=frameBaseHeight,
       cornerRadius = cornerRadius,
       reducedWallHeight=reducedWallHeight,
       roundedCorners = roundedCorners)

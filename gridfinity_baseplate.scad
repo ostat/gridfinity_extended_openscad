@@ -12,6 +12,13 @@ Depth = [1, 0]; //0.1
 oversize_method = "fill"; //[crop, fill]
 center_fill_grid_x = true;
 center_fill_grid_y = true;
+// X outer dimension. grid units (multiples of 42mm) or mm.
+outer_Width = [0, 0]; //0.1
+// Y outer dimension. grid units (multiples of 42mm) or mm.
+outer_Depth = [0, 0]; //0.1
+center_grid_in_outer_x = true;
+center_grid_in_outer_y = true;
+
 //Enable custom grid, you will configure this in the (Lid not supported)
 Custom_Grid_Enabled = false;
 plate_corner_radius = 3.75; //[0:0.01:3.75]
@@ -89,9 +96,13 @@ else{
     gridfinity_baseplate(
       num_x = calcDimensionWidth(Width),
       num_y = calcDimensionWidth(Depth),
+      outer_num_x = calcDimensionWidth(outer_Width),
+      outer_num_y = calcDimensionWidth(outer_Depth),
       center_fill_grid_x = center_fill_grid_x,
       center_fill_grid_y = center_fill_grid_y,
-      plate_corner_radius=plate_corner_radius,
+      center_grid_in_outer_x = center_grid_in_outer_x,
+      center_grid_in_outer_y = center_grid_in_outer_y,
+      plate_corner_radius = plate_corner_radius,
       magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
       reducedWallHeight = Reduced_Wall_Height, 
       cornerScrewEnabled  = Corner_Screw_Enabled,

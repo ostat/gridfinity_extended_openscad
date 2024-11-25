@@ -2,7 +2,6 @@
 include <gridfinity_constants.scad>
 use <module_gridfinity.scad>
 use <module_gridfinity_baseplate_common.scad>
-use <module_gridfinity_baseplate_regular.scad>
 use <module_gridfinity_baseplate_lid.scad>
 
 /* [Lid] */

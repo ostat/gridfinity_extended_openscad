@@ -36,8 +36,12 @@ gridfinity_baseplate(
 module gridfinity_baseplate(
   num_x = 2,
   num_y = 3,
+  outer_num_x = 0,
+  outer_num_y = 0,
   center_fill_grid_x = false,
   center_fill_grid_y = false,
+  center_grid_in_outer_x = true,
+  center_grid_in_outer_y = true,
   plate_corner_radius=gf_cup_corner_radius,
   magnetSize = Default_Magnet_Size,
   reducedWallHeight = 0,
@@ -70,8 +74,12 @@ module gridfinity_baseplate(
             baseplate(
               width = customGridEnabled ? 1 : width,
               depth = customGridEnabled ? 1 : depth,
+              outer_width = outer_num_x,
+              outer_depth = outer_num_y,
               center_fill_grid_x = center_fill_grid_x,
               center_fill_grid_y = center_fill_grid_y,
+              center_grid_in_outer_x = center_grid_in_outer_x,
+              center_grid_in_outer_y = center_grid_in_outer_y,
               magnetSize = magnetSize,
               reducedWallHeight=reducedWallHeight,
               cornerScrewEnabled = cornerScrewEnabled,
@@ -97,8 +105,12 @@ module gridfinity_baseplate(
 module baseplate(
   width = 2,
   depth = 1,
+  outer_width = 0,
+  outer_depth = 0,
   center_fill_grid_x = false,
   center_fill_grid_y = false,
+  center_grid_in_outer_x = true,
+  center_grid_in_outer_y = true,
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
   reducedWallHeight=0,
   cornerScrewEnabled = false,
@@ -127,10 +139,14 @@ module baseplate(
       }      
       else {
         baseplate_regular(
-          num_x=width, 
-          num_y=depth,
+          grid_num_x = width, 
+          grid_num_y = depth,
+          outer_num_x = outer_width,
+          outer_num_y = outer_depth,
           center_fill_grid_x = center_fill_grid_x,
           center_fill_grid_y = center_fill_grid_y,
+          center_grid_in_outer_x = center_grid_in_outer_x,
+          center_grid_in_outer_y = center_grid_in_outer_y,
           magnetSize = magnetSize,
           reducedWallHeight=reducedWallHeight,
           centerScrewEnabled = centerScrewEnabled,
@@ -144,7 +160,7 @@ module baseplate(
     if(butterflyClipEnabled || filamentClipEnabled){
       gridcopy(width, depth) 
       union(){
-        if(IsHelpEnabled("debug")) echo("frame_plain", gci=$gci);
+        if(IsHelpEnabled("debug")) echo("baseplate", gci=$gci);
         if(butterflyClipEnabled)
           AttachButterFly(size=butterflyClipSize,r=butterflyClipRadius,left=$gci.x==0,right=$gci.x==width-1,front=$gci.y==0,back=$gci.y==depth-1);
           
