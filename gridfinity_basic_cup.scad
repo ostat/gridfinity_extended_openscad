@@ -171,9 +171,9 @@ extension_tab_size= [10,0,0,0];
 
 /* [Bottom Text] */
 // Add bin size to bin bottom
-text_1 = true;
-// Size of text, in mm
-text_size = 6; // 0.1
+text_1 = false;
+// Font Size of text, in mm (0 will auto size)
+text_size = 0; // 0.1
 // Depth of text, in mm
 text_depth = 0.3; // 0.01
 // Font to use
@@ -181,7 +181,7 @@ text_font = "Aldo";  // [Aldo, B612, "Open Sans", Ubuntu]
 // Add free-form text line to bin bottom (printing date, serial, etc)
 text_2 = false;
 // Actual text to add
-text_2_text = "Gridfinity";
+text_2_text = "Gridfinity Extended";
 
 /* [debug] */
 render_position = "center"; //[default,center,zero]
@@ -199,6 +199,7 @@ module end_of_customizer_opts() {}
 SetGridfinityEnvironment(
   width = width,
   depth = depth,
+  height = height,
   render_position = render_position,
   help = enable_help,
   cutx = cutx,
@@ -286,9 +287,10 @@ gridfinity_cup(
   sliding_min_support = sliding_min_support, 
   sliding_clearance = sliding_clearance,
   sliding_lid_lip_enabled=sliding_lid_lip_enabled,
-  text_1 = text_1,
-  text_2 = text_2,
-  text_2_text = text_2_text,
-  text_size = text_size,
-  text_depth = text_depth
-);
+  cupBaseTextSettings = CupBaseTextSettings(
+    baseTextLine1Enabled = text_1,
+    baseTextLine2Enabled = text_2,
+    baseTextLine2Value = text_2_text,
+    baseTextFontSize = text_size,
+    baseTextFont = text_font,
+    baseTextDepth = text_depth));

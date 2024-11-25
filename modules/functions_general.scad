@@ -112,6 +112,7 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
 module SetGridfinityEnvironment(
   width,
   depth,
+  height = 0,
   setColour = "preview",
   help = false,
   render_position = "center", //[default,center,zero]
@@ -126,26 +127,38 @@ module SetGridfinityEnvironment(
   $cuty = cuty;
   $cutz = cutz;
 
+  $user_width = width;
+  $user_depth = depth;
+  $user_height = height;
   num_x = calcDimensionWidth(width); 
-  num_y = calcDimensionWidth(depth); 
+  num_y = calcDimensionDepth(depth); 
+  num_z = calcDimensionHeight(height); 
+  $num_x = num_x; 
+  $num_y = num_y; 
+  $num_z = num_z; 
 
   //Position the object
   translate(gridfinityRenderPosition(render_position,num_x,num_y))
-  difference(){
-    //Render the object
-    children();
-    
-    //Render the cut, used for debugging
-    if(cutx > 0 && cutz > 0 && $preview){
-      color(color_cut)
-      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
+  union(){
+    difference(){
+      //Render the object
+      children(0);
+      
+      //Render the cut, used for debugging
+      if(cutx > 0 && cutz > 0 && $preview){
+        color(color_cut)
+        translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+          cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
+      }
+      if(cuty > 0 && cutz > 0 && $preview){
+        color(color_cut)
+        translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+          cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
+      }
     }
-    if(cuty > 0 && cutz > 0 && $preview){
-      color(color_cut)
-      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
-    }
+
+    //Render the calipers
+    //children(1);
   }
 }
 

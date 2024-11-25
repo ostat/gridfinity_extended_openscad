@@ -89,5 +89,5 @@ color_basehole = "DarkSlateGray";
 color_base = "DimGray";
 color_extension = "lightpink";
 color_text = "Gold";
-color_cut = "Gray";
+color_cut = "Gold";
 color_lid = "MediumAquamarine";
