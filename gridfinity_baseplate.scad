@@ -10,17 +10,16 @@ Width = [2, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
 Depth = [1, 0]; //0.1
 oversize_method = "fill"; //[crop, fill]
-center_fill_grid_x = true;
-center_fill_grid_y = true;
+position_fill_grid_x = "near";//[near, center, far]
+position_fill_grid_y = "near";//[near, center, far]
 // X outer dimension. grid units (multiples of 42mm) or mm.
 outer_Width = [0, 0]; //0.1
 // Y outer dimension. grid units (multiples of 42mm) or mm.
 outer_Depth = [0, 0]; //0.1
-center_grid_in_outer_x = true;
-center_grid_in_outer_y = true;
-
-//Enable custom grid, you will configure this in the (Lid not supported)
-Custom_Grid_Enabled = false;
+position_grid_in_outer_x = "center";//[near, center, far]
+position_grid_in_outer_y = "center";//[near, center, far]
+//Reduce the frame wall size to this value
+Reduced_Wall_Height = 0; //0.1
 plate_corner_radius = 3.75; //[0:0.01:3.75]
 
 /* [Base Plate Options] */
@@ -28,8 +27,7 @@ plate_corner_radius = 3.75; //[0:0.01:3.75]
 Enable_Magnets = true;
 //size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
 Magnet_Size = [6.5, 2.4];  // .1
-//Reduce the frame wall size to this value
-Reduced_Wall_Height = 0; //0.1
+
 //Enable screws in the bin corner under the magnets
 Corner_Screw_Enabled = true;
 //Enable hold down screw in the center
@@ -49,6 +47,10 @@ Butterfly_Clip_Only = false;
 Filament_Clip_Enabled = false;
 Filament_Clip_Diameter = 2;
 Filament_Clip_Length = 8;
+
+/* [Custom Grid]*/
+//Enable custom grid, you will configure this in the (Lid not supported)
+Custom_Grid_Enabled = false;
 
 //Custom gid sizes
 //I am not sure it this is really useful, but its possible, so here we are.
@@ -98,10 +100,10 @@ else{
       num_y = calcDimensionWidth(Depth),
       outer_num_x = calcDimensionWidth(outer_Width),
       outer_num_y = calcDimensionWidth(outer_Depth),
-      center_fill_grid_x = center_fill_grid_x,
-      center_fill_grid_y = center_fill_grid_y,
-      center_grid_in_outer_x = center_grid_in_outer_x,
-      center_grid_in_outer_y = center_grid_in_outer_y,
+      position_fill_grid_x = position_fill_grid_x,
+      position_fill_grid_y = position_fill_grid_y,
+      position_grid_in_outer_x = position_grid_in_outer_x,
+      position_grid_in_outer_y = position_grid_in_outer_y,
       plate_corner_radius = plate_corner_radius,
       magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
       reducedWallHeight = Reduced_Wall_Height, 

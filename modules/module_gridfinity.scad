@@ -137,6 +137,7 @@ module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
   }
   else if (half_pitch) {
     gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
+      echo("pad_grid", gci=$gci);
       pad_oversize(
         ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
         ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5));
@@ -246,52 +247,46 @@ module pad_oversize(
   }
 }
 
+function vector_sum(v,start=0,end) = 
+  let(v=is_list(v)?v:[v], end = is_undef(end)?len(v)-1:min(len(v)-1,end) )
+    start<end? v[start]+ vSum(v,start+1,end):
+               v[start];             
+ 
 // make repeated copies of something(s) at the gridfinity spacing of 42mm
-module gridcopy(num_x, num_y, pitch=gf_pitch, centerGridx = true, centerGridy = true) {
-  //translate([pitch/2,pitch/2])
+module gridcopy(
+  num_x, 
+  num_y, 
+  pitch=gf_pitch, 
+  positionGridx = "near", 
+  positionGridy = "near") {
   assert(is_num(num_x) && num_x>=0, "num_x must be a number greater than 1");
   assert(is_num(num_y) && num_y>=0, "num_y must be a number greater than 1");
   assert(is_num(pitch) && pitch>=1, "pitch must be a number greater than 1");
   
-  //todo, might need to round here to account for floating
-  xPadding = ceil(num_x) != num_x ? 
-    (num_x - floor(num_x))/(centerGridx?2:1) : 0;
-  yPadding = ceil(num_y) != num_y ? 
-    (num_y - floor(num_y))/(centerGridy?2:1) : 0;
-  xCount = ceil(num_x) + ((xPadding > 0 && centerGridx) ? 1 :0);
-  yCount = ceil(num_y) + ((yPadding > 0 && centerGridy) ? 1 :0);
-  $gc_count=[
-    xCount,
-    yCount];
-
-  for (xi=[0:xCount-1]) 
-    for (yi=[0:yCount-1])
+  function num_to_list(num, positionGrid = "near") = 
+    let(
+      centerGrid = positionGrid == "center",
+      padding = ceil(num) != num ? (num - floor(num))/(centerGrid?2:1) : 0,
+      count = ceil(num) + ((padding > 0 && centerGrid) ? 1 :0))
+      [for (i = [ 0 : count - 1 ]) 
+        i == 0 && padding != 0 && (positionGrid == "center" || positionGrid == "near") ? padding
+          : i == count-1 && padding != 0 && (positionGrid == "center" || positionGrid == "far") ? padding
+          : 1];
+  
+  xCellsList = num_to_list(num_x, positionGridx);
+  yCellsList = num_to_list(num_y, positionGridy);
+  
+  $gc_count=[len(xCellsList), len(yCellsList)];
+  
+  for (xi=[0:len(xCellsList)-1]) 
+    for (yi=[0:len(yCellsList)-1])
     {
       $gci=[xi,yi,0];
-      $gc_size=[
-        (xPadding > 0 && ((centerGridx && xi==0) || xi == xCount-1)) ? xPadding : 1,
-        (yPadding > 0 && ((centerGridy && yi==0) || yi == yCount-1)) ? yPadding : 1,
-        0];
+      $gc_size=[xCellsList[xi], yCellsList[yi], 0];
       $gc_position=[
-        xi == 0 ? 0 : centerGridx && xPadding > 0 ? pitch*(xPadding + xi-1) : pitch*xi,
-        yi == 0 ? 0 : centerGridy && yPadding > 0 ? pitch*(yPadding + yi-1) : pitch*yi,
-        0];
-      translate([$gc_position.x,$gc_position.y,0])
-        children();
-    }
-}
-
-// make repeated copies of something(s) at the gridfinity spacing of 42mm
-module gridcopy_V1(num_x, num_y, pitch=gf_pitch) {
-  //translate([pitch/2,pitch/2])
-  assert(is_num(num_x) && num_x>=1, "num_x must be a number greater than 1");
-  assert(is_num(num_y) && num_y>=1, "num_y must be a number greater than 1");
-  assert(is_num(pitch) && pitch>=1, "pitch must be a number greater than 1");
-  for (xi=[0:num_x-1]) 
-    for (yi=[0:num_y-1])
-    {
-      $gci=[xi,yi,0];
-      translate([pitch*xi, pitch*yi, 0]) 
+        vector_sum(xCellsList, 0, xi)-xCellsList[xi], 
+        vector_sum(yCellsList, 0, yi)-yCellsList[yi], 0];
+      translate([$gc_position.x,$gc_position.y,0]*pitch)
         children();
     }
 }

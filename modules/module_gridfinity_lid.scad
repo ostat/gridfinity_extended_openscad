@@ -27,56 +27,28 @@ module gridfinity_lid(
   center_fill_grid_x = false,
   center_fill_grid_y = false,
   magnetSize = Default_Magnet_Size,
+  plateStyle = "lid",
   reducedWallHeight = 0,
   lidOptions = Default_Lid_Options,
   lidIncludeMagnets = Default_Lid_Include_Magnets,
   lidEfficientFloorThickness =Default_Lid_Efficient_Floor_Thickness,
   lidEfficientBaseHeight = Default_Lid_Efficient_Base_Height)
 {
-  lid(
-    width = num_x,
-    depth = num_y,
-    center_fill_grid_x = center_fill_grid_x,
-    center_fill_grid_y = center_fill_grid_y,
-    magnetSize = magnetSize,
-    reducedWallHeight=reducedWallHeight,
-    lidOptions = lidOptions,
-    lidIncludeMagnets = lidIncludeMagnets,
-    lidEfficientFloorThickness = lidEfficientFloorThickness,
-    lidEfficientBaseHeight = lidEfficientBaseHeight);
-    
-}
-    
-module lid(
-  width = 2,
-  depth = 1,
-  center_fill_grid_x = false,
-  center_fill_grid_y = false,
-  magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
-  reducedWallHeight=0,
-  plateStyle = "lid",
-  plateOptions = "default",
-  lidOptions = "default",
-  lidIncludeMagnets = Default_Lid_Include_Magnets,
-  lidEfficientFloorThickness = Default_Lid_Efficient_Floor_Thickness,
-  lidEfficientBaseHeight = Default_Lid_Efficient_Base_Height,
-  help = false)
-{
   assert_openscad_version();
 
   union(){
     if (plateStyle == "lid_legacy") {
       base_lid(
-        num_x=width, 
-        num_y=depth,
+        num_x=num_x, 
+        num_y=num_y,
         lidOptions=lidOptions,
         lidIncludeMagnets = lidIncludeMagnets, 
         lidEfficientFloorThickness = lidEfficientFloorThickness, 
         lidEfficientBaseHeight = lidEfficientBaseHeight);
     } else{
       baseplate_lid(
-        num_x=width, 
-        num_y=depth,
+        num_x=num_x, 
+        num_y=num_y,
         lidOptions=lidOptions,
         magnetSize = magnetSize,
         reducedWallHeight=reducedWallHeight,
@@ -84,5 +56,5 @@ module lid(
         lidEfficientFloorThickness = lidEfficientFloorThickness, 
         lidEfficientBaseHeight = lidEfficientBaseHeight);
     }
-  }
+  }  
 }

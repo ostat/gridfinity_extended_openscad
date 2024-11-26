@@ -47,10 +47,10 @@ module frame_plain(
     grid_num_y, 
     outer_num_x = 0,
     outer_num_y = 0,
-    center_fill_grid_x = false,
-    center_fill_grid_y = false,
-    center_grid_in_outer_x = true,
-    center_grid_in_outer_y = true,
+    position_fill_grid_x = "near",
+    position_fill_grid_y = "near",
+    position_grid_in_outer_x = "center",
+    position_grid_in_outer_y = "center",
     extra_down=0, 
     trim=0, 
     baseTaper = 0, 
@@ -63,15 +63,21 @@ module frame_plain(
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
 
   centerGridPosition = [
-    center_grid_in_outer_x && outer_num_x > grid_num_x ? (outer_num_x-grid_num_x)/2*gf_pitch : 0,
-    center_grid_in_outer_y && outer_num_y > grid_num_y ? (outer_num_y-grid_num_y)/2*gf_pitch : 0,
+    position_grid_in_outer_x == "near" || grid_num_x >= outer_num_x ? 0 
+      : position_grid_in_outer_x == "far" 
+        ? (outer_num_x-grid_num_x)*gf_pitch 
+        : (outer_num_x-grid_num_x)/2*gf_pitch,
+    position_grid_in_outer_y == "near" || grid_num_y >= outer_num_y ? 0 
+      : position_grid_in_outer_y == "far" 
+        ? (outer_num_y-grid_num_y)*gf_pitch 
+        : (outer_num_y-grid_num_y)/2*gf_pitch,
     0];
 
+    echo(grid_num_x=grid_num_x, position_grid_in_outer_x=position_grid_in_outer_x, centerGridPosition=centerGridPosition);
   difference() {
     color(color_cup)
     union(){
       //padded outer material
-      translate(centerGridPosition)
       translate(reducedWallHeight > 0 ? [0,0,-extra_down] : [0,0,0])
       outer_baseplate(
         num_x  =max(grid_num_x, outer_num_x), 
@@ -98,8 +104,8 @@ module frame_plain(
     frame_cavity(
       num_x=grid_num_x, 
       num_y=grid_num_y, 
-      center_fill_grid_x = center_fill_grid_x,
-      center_fill_grid_y = center_fill_grid_y,
+      position_fill_grid_x = position_fill_grid_x,
+      position_fill_grid_y = position_fill_grid_y,
       extra_down = extra_down, 
       frameLipHeight = frameLipHeight,
       cornerRadius = gf_cup_corner_radius,
@@ -112,8 +118,8 @@ module frame_plain(
 module frame_cavity(
     num_x, 
     num_y, 
-    center_fill_grid_x = false,
-    center_fill_grid_y = false,
+    position_fill_grid_x = "near",
+    position_fill_grid_y = "near",
     extra_down=0, 
     frameLipHeight = 4,
     cornerRadius = gf_cup_corner_radius,
@@ -124,8 +130,8 @@ module frame_cavity(
       gridcopy(
         num_x, 
         num_y,
-        centerGridx = center_fill_grid_x,
-        centerGridy = center_fill_grid_y) {
+        positionGridx = position_fill_grid_x,
+        positionGridy = position_fill_grid_y) {
       if(frameWallReduction>0)
         for(side=[[0, [$gc_size.x, $gc_size.y]*gf_pitch],[90, [$gc_size.y, $gc_size.x]*gf_pitch]]){
         if(side[1].x >= gf_pitch/2)
@@ -238,7 +244,6 @@ module baseplate_cavities(
             rotate([0,0,rdeg])
               //magnet retaining ring
               union(){
-              echo(magnetSupportWidth=magnetSupportWidth, supportDiameter=supportDiameter, minus4=-supportDiameter/4);
                 magnetSupportWidth = max(17/2,supportDiameter);
                 cylinder(d=supportDiameter, h=baseCavityHeight+fudgeFactor*4, $fn=48);
 

@@ -10,13 +10,12 @@ module baseplate_lid(
   lidIncludeMagnets = true,
   lidEfficientFloorThickness = 0.7,
   lidEfficientBaseHeight = 0.4,
-  center_fill_grid_x = false,
-  center_fill_grid_y = false,
+  position_fill_grid_x = "far",
+  position_fill_grid_y = "far",
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
   reducedWallHeight=0,
   cornerScrewEnabled = true,
   cornerRadius = gf_cup_corner_radius) {
-
   flat_base = lidOptions == "flat";
   half_pitch = lidOptions == "halfpitch";
   efficient_base = lidOptions == "efficient";
@@ -24,10 +23,10 @@ module baseplate_lid(
   tray = false;
   
   height = 
-          flat_base ? 0.7 : 
-          half_pitch ? 0.9 : 
-          efficient_base ? lidEfficientBaseHeight : 1;
-  echo(flat_base=flat_base, height=height,efficient_base=efficient_base, lidEfficientBaseHeight=lidEfficientBaseHeight );  
+    flat_base ? 0.7 : 
+    half_pitch ? 0.9 : 
+    efficient_base ? lidEfficientBaseHeight : 1;
+ 
   //These should be base constants
   minFloorThickness = 1;
   counterSinkDepth = 2.5;
@@ -39,22 +38,12 @@ module baseplate_lid(
   frameTop = 7*height;
   difference() {
     union(){
-    
-    /*
-      translate([0,0,frameTop])
-      /outer_baseplate(
-        num_x=num_x, 
-        num_y=num_y, 
-        height=frameLipHeight,
-        cornerRadius = cornerRadius);
-      */
       grid_block(
         num_x, 
         num_y, 
         efficient_base ? lidEfficientBaseHeight+0.6 : height, 
         lipStyle = "normal",    //"minimum" "none" "reduced" "normal"
         filledin = tray ? "enabled" : "enabledfilllip" , //[disabled, enabled, enabledfilllip]
-        //wall_thickness = 1.2,
         cupBase_settings = CupBaseSettings(
           flatBase=flat_base,
           halfPitch=half_pitch));
@@ -73,8 +62,8 @@ module baseplate_lid(
   frame_cavity(
     num_x=num_x, 
     num_y=num_y, 
-    center_fill_grid_x = center_fill_grid_x,
-    center_fill_grid_y = center_fill_grid_y,
+    position_fill_grid_x = position_fill_grid_x,
+    position_fill_grid_y = position_fill_grid_y,
     extra_down = frameBaseHeight, 
     frameLipHeight = frameLipHeight,
     cornerRadius = cornerRadius,
