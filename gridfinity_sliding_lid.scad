@@ -42,7 +42,7 @@ filled_in = false;
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-position = "center"; //[default,center,zero]
+Render_Position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
 //assign colours to the bin, will may 
@@ -179,16 +179,19 @@ module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
 
 SetGridfinityEnvironment(
+  width = width,
+  depth = depth,
+  height = height,
   setColour = set_colour,
   help = enable_help,
   cutx=cutx,
-  cuty=cuty)
+  cuty=cuty,
+  cutz = calcDimensionHeight(height, true))
   union(){
   if(mode == "both" || mode == "cup")
   {
     gridfinity_cup(
       width=width, depth=depth, height=height,
-      position=position,
       filled_in=filled_in,
       label_settings=LabelSettings(
         labelStyle=label_style, 
@@ -290,7 +293,6 @@ SetGridfinityEnvironment(
     filledInZ = gf_zpitch*num_z;
     zpoint = filledInZ-zClearance;
     
-    translate(cupPosition(position,num_x,num_y))
     tz(mode == "lid"? 0 : zpoint) 
     difference()
     {
