@@ -13,7 +13,8 @@ use <modules/module_gridfinity_cup.scad>
 use <modules/module_gridfinity.scad>
 
 /* [Sliding Lid] */
-mode = "both";//[both, lid, cup]
+// select what to render
+render_choice = "both";//[both, lid, cup]
 sliding_lid_enabled = true;
 // 0 = wall thickness *2
 sliding_lid_thickness = 0; //0.1
@@ -188,7 +189,7 @@ SetGridfinityEnvironment(
   cuty=cuty,
   cutz = calcDimensionHeight(height, true))
   union(){
-  if(mode == "both" || mode == "cup")
+  if(render_choice == "both" || render_choice == "cup")
   {
     gridfinity_cup(
       width=width, depth=depth, height=height,
@@ -272,7 +273,7 @@ SetGridfinityEnvironment(
       sliding_lid_lip_enabled=sliding_lid_lip_enabled);
   }
 
-  if(mode == "both" || mode == "lid")
+  if(render_choice == "both" || render_choice == "lid")
   {
     num_x = calcDimensionWidth(width);
     num_y = calcDimensionDepth(depth);
@@ -293,7 +294,10 @@ SetGridfinityEnvironment(
     filledInZ = gf_zpitch*num_z;
     zpoint = filledInZ-zClearance;
     
-    tz(mode == "lid"? 0 : zpoint) 
+    translate(
+      render_choice == "both" && !$preview 
+      ? [(num_x+0.5)*gf_pitch, 0, 0] 
+      : [0, 0, render_choice == "lid" ? 0 : zpoint])
     difference()
     {
       SlidingLid(

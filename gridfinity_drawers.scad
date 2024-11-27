@@ -12,7 +12,7 @@ include <modules/gridfinity_constants.scad>
 use <modules/module_item_holder.scad>
 
 /* [Render] */
-mode = "everything"; //[everything:Everything, onedrawer:Single Drawer, drawers:All drawers, chest:Chest]
+render_choice = "everything"; //[everything:Everything, onedrawer:Single Drawer, drawers:All drawers, chest:Chest]
 position="center"; //["center","zero"]
 
 /* [Chest] */
@@ -139,8 +139,10 @@ module drawers(
     zpos = startH + drawerPosition(i, outerSizes, chestClearance, ridgeDepth);
     //(clearance * i) + (i<1 ? 0 : sum(partial(drawerOuterSizes,0,i-1)).z);
     if(IsHelpEnabled("debug")) echo("drawers", i= i, StartH=StartH, clearance=clearance, height=drawerInnerHeights[i], zpos=zpos, drawerOuterz=drawerOuterSizes.z, drawerInnerz=drawerInnerSizes.z, drawerOuterSizes.z);
-      
-    translate([chestWallThickness+chestClearance.x, offsetW, zpos]) 
+    
+    translate($preview 
+      ? [chestWallThickness+chestClearance.x, offsetW, zpos] 
+      : [(innerUnitSize.x+0.5)*i*gf_pitch,0,0])
       drawer(drawerIndex=i,
         innerUnitSize=innerUnitSize,
         drawerBase=drawerBase,// = drawerbase,
@@ -207,7 +209,6 @@ module drawer(
           baseplate(
             width = innerUnitSize.x,
             depth = innerUnitSize.y,
-            plateStyle = "base",
             plateOptions = gridStyle);
       }
 
@@ -291,14 +292,18 @@ module chest(
           num_x=drawerInnerUnitSize.x, 
           num_y=drawerInnerUnitSize.y, 
           num_z=baseHeight, 
-          stackable=false, 
-          magnet_diameter=bottomMagnetDiameter, 
-          screw_depth=bottomScrewDepth,
-          hole_overhang_remedy=bottomHoleOverhangRemedy,
-          box_corner_attachments_only=bottomCornerAttachmentsOnly,
-          half_pitch = bottomHalfPitch,
-          flat_base = bottomFlatBase);
+          position = "zero",
+          lipStyle = "none",    //"minimum" "none" "reduced" "normal"
+          filledin = "disabled", //[disabled, enabled, enabledfilllip]
+          cupBase_settings = CupBaseSettings(
+            magnetSize=[bottomMagnetDiameter, 2.6], 
+            screwSize=[4,bottomScrewDepth],
+            holeOverhangRemedy=bottomHoleOverhangRemedy,
+            cornerAttachmentsOnly=bottomCornerAttachmentsOnly,
+            halfPitch = bottomHalfPitch,
+            flatBase = bottomFlatBase));
       }
+
       
       if(enableTopGrid) {
         translate(topGridOffset) 
@@ -306,7 +311,6 @@ module chest(
         baseplate(
           width = drawerInnerUnitSize.x,
           depth = drawerInnerUnitSize.y,
-          plateStyle = "base",
           plateOptions = topGridStyle);
       }
     }
@@ -482,7 +486,7 @@ module cutout_pattern(
 
 //render function
 module gridfinity_drawer(
-    mode = mode,
+    render_choice = render_choice,
     position = position,
     drawerInnerWidth = drawer_inner_width,
     drawerInnerDepth = drawer_inner_depth,
@@ -555,7 +559,7 @@ module gridfinity_drawer(
 
   translate(position == "center" ? [-outerChest.x/2,-outerChest.y/2,0] : [0,0,0])
   union(){
-  if(mode == "chest" || mode == "everything")      
+  if(render_choice == "chest" || render_choice == "everything")      
     chest(
       outerChest=outerChest, 
       totalH=totalH,
@@ -598,7 +602,10 @@ module gridfinity_drawer(
         wallPatternFill=wallPatternFill,
         wallPatternVoronoiNoise=wallPatternVoronoiNoise,
         wallPatternVoronoiRadius=wallPatternVoronoiNoise);
-  if(mode == "drawers" || mode == "everything")
+  if(render_choice == "drawers" || render_choice == "everything")
+    translate(render_choice == "everything" && !$preview 
+      ? [(drawerInnerUnitSize.x+0.5)*gf_pitch,0,0]
+      : [0,0,0])
     drawers(
       drawerCount=drawerCount,
       innerUnitSize=drawerInnerUnitSize,
@@ -615,7 +622,7 @@ module gridfinity_drawer(
       chestWallThickness=chestWallThickness,
       gridStyle=drawerGridStyle,
       drawerClearance=drawerClearance);
-  if(mode == "onedrawer")   
+  if(render_choice == "onedrawer")   
     drawer(
       drawerIndex=0,
       innerUnitSize=drawerInnerUnitSize,
