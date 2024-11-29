@@ -212,7 +212,7 @@ module EfficientFloor(
 
         translate([
           gf_pitch/2,
-          gf_pitch/2,
+          gf_pitch,
           efficientFloorGridHeight-taperTopPos > maxRoundOver ? efficientFloorGridHeight-taperTopPos-champherRadius : 0])
         roundedNegativeChampher(
           champherRadius = champherRadius, 
