@@ -300,6 +300,20 @@ module gridfinity_cup(
   extendable_Settings = ValidateExtendableSettings(extendable_Settings, num_x=num_x, num_y=num_y);
   cupBase_settings = ValidateCupBaseSettings(cupBase_settings);
   
+    //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
+  wall_thickness = wallThickness(wall_thickness, num_z);
+  
+  slidingLidSettings= SlidingLidSettings(
+          sliding_lid_enabled, 
+          sliding_lid_thickness, 
+          sliding_min_wall_thickness, 
+          sliding_min_support,
+          sliding_clearance,
+          wall_thickness,
+          sliding_lid_lip_enabled);
+          
+  zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
+  
   filledInZ = gf_zpitch*num_z;
   zpoint = filledInZ-zClearance;
   efficient_floor = cupBase_settings[iCupBase_EfficientFloor];
@@ -340,19 +354,6 @@ module gridfinity_cup(
     ? wallpattern_dividers_enabled ? "vertical" : "disabled"
     : wallpattern_dividers_enabled;
   
-  //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
-  wall_thickness = wallThickness(wall_thickness, num_z);
-  
-  slidingLidSettings= SlidingLidSettings(
-          sliding_lid_enabled, 
-          sliding_lid_thickness, 
-          sliding_min_wall_thickness, 
-          sliding_min_support,
-          sliding_clearance,
-          wall_thickness,
-          sliding_lid_lip_enabled);
-          
-  zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
 
   union(){
     difference() {
