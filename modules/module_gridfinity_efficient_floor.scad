@@ -11,7 +11,7 @@ module efficient_floor_grid(
   half_pitch=false, 
   flat_base=false, 
   floor_thickness, 
-  efficientFloorGridHeight=efficientFloorGridHeight,
+  efficientFloorGridHeight=0,
   margins=0) {
   if (flat_base) {
     EfficientFloor(num_x, num_y, 
@@ -97,9 +97,8 @@ module EfficientFloor(
   margins=0,
   floorRounded = true,
   floorSmooth = 0,
-  efficientFloorGridHeight=efficientFloorGridHeight,
+  efficientFloorGridHeight=0,
   $fn=64){
-  
   fudgeFactor = 0.01;
   floorRadius=floorRounded ? 1 : 0;
 
