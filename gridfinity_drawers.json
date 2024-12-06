@@ -360,7 +360,7 @@
             "wallpattern_voronoi_noise": "0.75",
             "wallpattern_voronoi_radius": "0.5"
         },
-        "Nowy zestaw 9": {
+        "Supportless Feet": {
             "chest_bottom_grid": "lugs",
             "chest_bottom_wallpattern_style": "none",
             "chest_clearance": "[0.25, 0.25, 0.25]",
