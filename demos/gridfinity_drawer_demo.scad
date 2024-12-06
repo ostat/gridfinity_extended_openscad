@@ -1,4 +1,4 @@
-// include <gridfinity_modules.scad>
+// include <module_gridfinity.scad>
 use <../gridfinity_drawers.scad>
 include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
@@ -46,8 +46,8 @@ iBottomFlatBase = iBottomHalfPitch+1;
 iWallPatternBorderWidth = iBottomFlatBase+1;
 iEfficientBack = iWallPatternBorderWidth+1;
 iWallPatternEnabled = iEfficientBack+1;
-iWallPatternStyle = iWallPatternEnabled+1; 
-iWallPatternDividersEnabled = iWallPatternStyle+1; 
+iWallpatternStyle = iWallPatternEnabled+1; 
+iWallPatternDividersEnabled = iWallpatternStyle+1; 
 iWallPatternHoleSides = iWallPatternDividersEnabled+1;
 iWallPatternHoleSize = iWallPatternHoleSides+1;
 iWallPatternFill = iWallPatternHoleSize+1; 
@@ -115,8 +115,8 @@ function getScenario(scenario) =
       ["4 drawers", [[iDrawerInnerHeight,3],[iDrawerCount, 4],[iChestEnableTopGrid,false]]],
       ["5x3", [[iDrawerInnerWidth, 5],[iDrawerInnerDepth,3],[iChestTopGridStyle,"magnet"],[iHandleSize, [25, 10, 5, 0]]]],
       ["chest custom", [[iDrawerEnableCustomSizes, true],[iDrawerCustomSizes,[4,4,2,1]],[iHandleSize, [4, 10, -1.5, 3]]]],
-      ["hex pattern ", [[iWallPatternEnabled,true], [iEfficientBack,true],[iWallPatternStyle,"hexgrid"],[iChestTopGridStyle,"magnet"]]],
-      ["veroni hex grid", [[iWallPatternEnabled,true],[iEfficientBack,true], [iWallPatternStyle,"voronoihexgrid"],[iDrawerEnableCustomSizes, true],[iDrawerCustomSizes,[5,4,2]],[iHandleSize, [4, 10, -1.5, -1]]]]
+      ["hex pattern ", [[iWallPatternEnabled,true], [iEfficientBack,true],[iWallpatternStyle,"hexgrid"],[iChestTopGridStyle,"magnet"]]],
+      ["veroni hex grid", [[iWallPatternEnabled,true],[iEfficientBack,true], [iWallpatternStyle,"voronoihexgrid"],[iDrawerEnableCustomSizes, true],[iDrawerCustomSizes,[5,4,2]],[iHandleSize, [4, 10, -1.5, -1]]]]
       ]//endscenario
 
   : scenario == "drawerGridStyle" ? [["Drawer Grid Style",2,[],[[iMode,"onedrawer"]]],
@@ -157,7 +157,7 @@ function getScenario(scenario) =
       ["off", [[iBottomGrid,false]]],
       ["on", [[iBottomGrid,true], [iBottomCornerAttachmentsOnly, false]]],
       ["corner Corner Attachments Only", [[iBottomGrid,true]]],
-      ["base attachement off", [[iBottomGrid,true],[iBottomMagnetDiameter,0],[iBottomScrewDepth,0]]],
+      ["base attachment off", [[iBottomGrid,true],[iBottomMagnetDiameter,0],[iBottomScrewDepth,0]]],
       ["base half pitch", [[iBottomGrid,true],[iBottomHalfPitch,true]]],
       ["base falt base", [[iBottomGrid,true],[iBottomFlatBase,true]]]
       ]//endscenario
@@ -167,10 +167,10 @@ function getScenario(scenario) =
       ["default", [[iEfficientBack,false]]],
       ["Efficient Back on", [[iEfficientBack,true]]],
       ["Border Width = 5", [[iEfficientBack,true],[iWallPatternBorderWidth,5]]],
-      ["hex pattern ", [[iWallPatternEnabled,true], [iWallPatternStyle,"hexgrid"]]],
-      ["veroni hex grid", [[iWallPatternEnabled,true], [iWallPatternStyle,"voronoihexgrid"]]],
-      ["veroni chaos", [[iWallPatternEnabled,true], [iWallPatternStyle,"voronoi"]]],
-      ["patern with Efficient Back", [[iEfficientBack,true],[iWallPatternEnabled,true], [iWallPatternStyle,"voronoihexgrid"]]],
+      ["hex pattern ", [[iWallPatternEnabled,true], [iWallpatternStyle,"hexgrid"]]],
+      ["veroni hex grid", [[iWallPatternEnabled,true], [iWallpatternStyle,"voronoihexgrid"]]],
+      ["veroni chaos", [[iWallPatternEnabled,true], [iWallpatternStyle,"voronoi"]]],
+      ["patern with Efficient Back", [[iEfficientBack,true],[iWallPatternEnabled,true], [iWallpatternStyle,"voronoihexgrid"]]],
     ]  //endscenario
 
       
@@ -179,8 +179,8 @@ function getScenario(scenario) =
       iWallPatternBorderWidth = iBottomFlatBase+1;
 iEfficientBack = iWallPatternBorderWidth+1;
 iWallPatternEnabled = iEfficientBack+1;
-iWallPatternStyle = iWallPatternEnabled+1; 
-iWallPatternDividersEnabled = iWallPatternStyle+1; 
+iWallpatternStyle = iWallPatternEnabled+1; 
+iWallPatternDividersEnabled = iWallpatternStyle+1; 
 iWallPatternHoleSides = iWallPatternDividersEnabled+1;
 iWallPatternHoleSize = iWallPatternHoleSides+1;
 iWallPatternFill = iWallPatternHoleSize+1; 
@@ -201,7 +201,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1, mult
 
   
   if(!isMulti(scenario) && len(selectedScenario)-1 != selectedScenario[0][1]){
-    echo("🟧RenderScenario - warning steps is not correct, update for PS script to function",scenarioStepsConfig = selectedScenario[0][1], steps=len(selectedScenario)-1);
+    echo("🟥RenderScenario - warning steps is not correct, update for PS script to function",scenarioStepsConfig = selectedScenario[0][1], steps=len(selectedScenario)-1);
   }
   if(showtext && $preview)
   color("DimGray")
@@ -243,7 +243,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1, mult
       wallPatternBorderWidth = currentStepSettings[iWallPatternBorderWidth],
       efficientBack = currentStepSettings[iEfficientBack],
       wallPatternEnabled = currentStepSettings[iWallPatternEnabled],
-      wallPatternStyle = currentStepSettings[iWallPatternStyle],
+      wallpatternStyle = currentStepSettings[iWallpatternStyle],
       wallPatternDividersEnabled = currentStepSettings[iWallPatternDividersEnabled],
       wallPatternHoleSides = currentStepSettings[iWallPatternHoleSides],
       wallPatternHoleSize = currentStepSettings[iWallPatternHoleSize],

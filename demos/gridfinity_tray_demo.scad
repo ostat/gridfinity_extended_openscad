@@ -1,6 +1,6 @@
-// include <gridfinity_modules.scad>
+// include <module_gridfinity.scad>
 use <../gridfinity_tray.scad>
-//use <modules/gridfinity_cup_modules.scad>
+//use <modules/module_gridfinity_cup.scad>
 include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
@@ -132,14 +132,19 @@ function getcustomVpf(scenarioVp) = iscustomVP(scenarioVp, 4) ? let(vpf = scenar
 function getScenario(scenario) = 
 //[0]: seenarioName,scenarioCount,[vpr,vpt,vpd,vpf],[[key,value]]
 //[1]: name,[[key,value]]
-  scenario == "demo" ? [["Tray",5,[],[]],
+  scenario == "demo" ? [["Tray",7,[],[]],
       ["catchall", [[itraycornerradius, 1],[ifloor_thickness, 10]]],
       ["parts holder", [[itraycornerradius, 5],[ifloor_thickness, 10],[itrayhorizontalcompartments, 2],[itrayverticalcompartments, 3]]],
       ["custom parts1", [[iwidth, 3],[idepth, 2],[iheight,2],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 0.5, 2, 2, 6|0.5, 0, 0.5, 2,2, 6|1, 0, 2, 1|1, 1, 2, 1"]]],
-      ["custom parts1", [[iwidth, 4],[idepth, 3],[iheight,1],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 2, 1.5, 1, 1|0, 1.5, 2, 1.5, 1, 1|2, 0, 2, 3,6"]]],
+      ["custom parts2", [[iwidth, 4],[idepth, 3],[iheight,1],[ifilled_in, "notstackable"],[itraycustomcompartments, "0, 0, 2, 1.5, 1, 1|0, 1.5, 2, 1.5, 1, 1|2, 0, 2, 3,6"]]],
+      ["custom parts3", [[iwidth, 3],[idepth, 2],[iheight,3],[ifilled_in, "notstackable"],[itraycustomcompartments, "0,0,0.5,1,2,7|0,1,0.5,1,2,7|0.5,0,0.5,1,2,7|0.5,1,0.5,1,2,7|1,1,0.5,1,2,7|1.5,1,0.5,1,2,7|2,1,0.5,1,2,7|2.5,1,0.5,1,2,7|1,0,2,1,2,3|1,0,2,2,2,12"]]],
       ["walled catchall ", [[itraycornerradius, 1],[ifloor_thickness, 10], [iheight,5],
       [iwallpattern_enabled,true],[iwallpattern_walls,[0,1,1,1]], [iwallpattern_hexgrid,true],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
           [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,90],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]
+          
+          
+          
+          
       
   : scenario == "traycornerradius" ? [["Tray Corner Radius", 3,[],[[ifilled_in, "notstackable"]]],
       ["1", [[itraycornerradius, 1]]],

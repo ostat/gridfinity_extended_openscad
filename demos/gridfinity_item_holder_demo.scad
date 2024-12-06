@@ -1,6 +1,6 @@
-// include <gridfinity_modules.scad>
+// include <module_gridfinity.scad>
 use <../gridfinity_item_holder.scad>
-//use <modules/gridfinity_cup_modules.scad>
+//use <modules/module_gridfinity_cup.scad>
 include <../modules/functions_general.scad>
 include <../modules/gridfinity_constants.scad>
 
@@ -97,9 +97,9 @@ iwallpattern_hole_size=iwallpattern_hole_sides+1;
 iwallpattern_hole_spacing=iwallpattern_hole_size+1;
 iwallpattern_voronoi_density_ratio = iwallpattern_hole_spacing+1;
 iwallpattern_voronoi_radius =iwallpattern_voronoi_density_ratio+1;
-iextention_enabled = iwallpattern_voronoi_radius+1;
-iextention_tabs_enabled = iextention_enabled+1;
-icutx=iextention_tabs_enabled+1;
+iextension_enabled = iwallpattern_voronoi_radius+1;
+iextension_tabs_enabled = iextension_enabled+1;
+icutx=iextension_tabs_enabled+1;
 icuty=icutx+1;
 ihelp=icuty+1;
 itranslate=ihelp+1;
@@ -163,7 +163,7 @@ defaultDemoSetting =
     false, [1,0,0,0], 0, 70, 0, 5, 
     //wallpattern_enabled, wallpattern_style, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing, wallpattern_voronoi_density_ratio, wallpattern_voronoi_radius 
     false, "hexgrid", [1,1,1,1], false, "none", 6, 5, 2, 50, 0.5,
-    //extention_enabled, extention_tabs_enabled
+    //extension_enabled, extension_tabs_enabled
     [false,false],false,
     //cutx,cuty,help,translate,rotate
     0, 0,false,[0,0,0],[0,0,0]];
@@ -273,7 +273,7 @@ function getScenario(scenario) =
       ["coaster",4,[gf_pitch*(2+multi_spacing.x)*2, gf_pitch*(2+multi_spacing.y), 0], -1]]   
 
      
- // [ custom:"Custome", 4hexshank:"4mm Hex Shank", 1/4hexshank:"1/4 Hex Shank", 1/4hexlongshank:"1/4 Hex Long Shank", 5/16hexshank:"5/16 Hex Shank", 3/8hexshank:"3/8 Hex Shank", "aaaa":"AAAA cell", "aaa":"AAA cell", "aa":"AA cell", "c":"C cell", "d":"d cell", "7540":"7540 cell", "8570":"8570 cell", "10180":"10180 cell", "10280":"10280 cell", "10440":"10440 cell", "10850":"10850 cell", "13400":"13400 cell", "14250":"14250 cell", "14300":"14300 cell", "14430":"14430 cell", "14500":"14500 cell", "14650":"14650 cell", "15270":"15270 cell", "16340":"16340 cell", "16650":"16650 cell", "17500":"17500 cell", "17650":"17650 cell", "17670":"17670 cell", "18350":"18350 cell", "18490":"18490 cell", "18500":"18500 cell", "18650":"18650 cell", "20700":"20700 cell", "21700":"21700 cell", "25500":"25500 cell", "26500":"26500 cell", "26650":"26650 cell", "26700":"26700 cell", "26800":"26800 cell", "32600":"32600 cell", "32650":"32650 cell", "32700":"32700 cell", "38120":"38120 cell", "38140":"38140 cell", "40152":"40152 cell", "4680":"4680 cell"]
+ // [ custom:"Custom", 4hexshank:"4mm Hex Shank", 1/4hexshank:"1/4 Hex Shank", 1/4hexlongshank:"1/4 Hex Long Shank", 5/16hexshank:"5/16 Hex Shank", 3/8hexshank:"3/8 Hex Shank", "aaaa":"AAAA cell", "aaa":"AAA cell", "aa":"AA cell", "c":"C cell", "d":"d cell", "7540":"7540 cell", "8570":"8570 cell", "10180":"10180 cell", "10280":"10280 cell", "10440":"10440 cell", "10850":"10850 cell", "13400":"13400 cell", "14250":"14250 cell", "14300":"14300 cell", "14430":"14430 cell", "14500":"14500 cell", "14650":"14650 cell", "15270":"15270 cell", "16340":"16340 cell", "16650":"16650 cell", "17500":"17500 cell", "17650":"17650 cell", "17670":"17670 cell", "18350":"18350 cell", "18490":"18490 cell", "18500":"18500 cell", "18650":"18650 cell", "20700":"20700 cell", "21700":"21700 cell", "25500":"25500 cell", "26500":"26500 cell", "26650":"26650 cell", "26700":"26700 cell", "26800":"26800 cell", "32600":"32600 cell", "32650":"32650 cell", "32700":"32700 cell", "38120":"38120 cell", "38140":"38140 cell", "40152":"40152 cell", "4680":"4680 cell"]
    : scenario == "battery" ? [["Battery", 12,[],[[iitemholder_auto_bin_height,true],[ifilled_in, "on"],[iitemholder_grid_style,"auto"],[iitemholder_compartment_fill,"space"],[iwidth, 3],[idepth, 2]]],
     ["AAAA", [[iitemholder_known_item,"aaaa"]]],
     ["AAA", [[iitemholder_known_item,"aaa"]]],
@@ -399,8 +399,8 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1, mult
       wallpattern_hole_spacing=currentStepSettings[iwallpattern_hole_spacing],
       wallpattern_voronoi_density_ratio=currentStepSettings[iwallpattern_voronoi_density_ratio],
       wallpattern_voronoi_radius=currentStepSettings[iwallpattern_voronoi_radius],
-      extention_enabled=currentStepSettings[iextention_enabled],
-      extention_tabs_enabled=currentStepSettings[iextention_tabs_enabled],
+      extension_enabled=currentStepSettings[iextension_enabled],
+      extension_tabs_enabled=currentStepSettings[iextension_tabs_enabled],
       cutx=currentStepSettings[icutx],
       cuty=currentStepSettings[icuty],
       help=help || currentStepSettings[ihelp]);

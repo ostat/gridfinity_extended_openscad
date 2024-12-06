@@ -1,42 +1,5 @@
 include <ub.scad>
-
-//Creates a rounded wall cutout to allow access to the items inside the gridfinity box.           
-module WallCutout2(
-  lowerWidth=50,
-  wallAngle=70,
-  height=21,
-  thickness=10,
-  cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  fudgeFactor = 0.01;
-  
-  rotate([90,0,0])
-  translate([0,topHeight,-thickness/2])
-  union(){
-  mirrors = [[0,0,0],[1,0,0]];
-  colours = ["red","blue"];
-  for(i = [0:1:len(mirrors)-1])
-  {
-    mirror(mirrors[i])
-      color(colours[i])
-      rotate([0,00,90])
-      translate([0,bottomWidth-fudgeFactor,0])
-      linear_extrude(thickness)
-      SBogen(
-        grad=wallAngle,
-        extrude=-(height/2+topHeight),
-        dist=height,
-        r1=cornerRadius,
-        r2=cornerRadius,
-        l1=bottomWidth,
-        l2=topWidth, $fn = fn);    
-    }
-  }
-}
+include <module_utility_wallcutout.scad>
 
 module bentWall(
   length=100,
@@ -54,27 +17,25 @@ module bentWall(
   
   fudgeFactor = 0.01;
   
-  render()
+  //#render()
   difference()
   {
-    union(){
-      if(separation != 0) { 
-        translate([thickness/2,bendPosition,0])
-        linear_extrude(height)
-        SBogen(
-          2D=thickness,
-          dist=separation,
-          //x0=true,
-          grad=bendAngle,
-          r1=lowerBendRadius <= 0 ? separation : lowerBendRadius,
-          r2=upperBendRadius <= 0 ? separation : upperBendRadius,
-          l1=bendPosition,
-          l2=length-bendPosition, $fn = fn);   
-      } else {
-        cube([thickness, length, height]);
-      }
-    }
-
+    if(separation != 0) { 
+      translate([thickness/2,bendPosition,0])
+      linear_extrude(height)
+      SBogen(
+        2D=thickness,
+        dist=separation,
+        //x0=true,
+        grad=bendAngle,
+        r1=lowerBendRadius <= 0 ? separation : lowerBendRadius,
+        r2=upperBendRadius <= 0 ? separation : upperBendRadius,
+        l1=bendPosition,
+        l2=length-bendPosition, $fn = fn);   
+    } else {
+      cube([thickness, length, height]);
+   }
+   
     cutoutHeight = 
       wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
         : wall_cutout_depth;
@@ -83,45 +44,18 @@ module bentWall(
         : wall_cutout_width == 0 ? length/2
         : wall_cutout_width;
     if(wall_cutout_depth != 0){
-      translate([0,length/2,height])
+      translate([thickness/2,length/2,height])
       rotate([0,0,90])
       WallCutout(
         height = cutoutHeight,
         lowerWidth = cutoutLength,
         cornerRadius = cutoutHeight,
-        thickness = (separation+thickness*2+fudgeFactor*2));
+        thickness = (separation+thickness+fudgeFactor*2),
+        topHeight = 1);
     }
-  }
-}
-
-module WallCutout(
-  lowerWidth=50,
-  wallAngle=70,
-  height=21,
-  thickness=10,
-  cornerRadius=5,
-  fn = 64){
-  topHeight = cornerRadius;
-  bottomWidth = lowerWidth/2-cornerRadius;
-  topWidth = lowerWidth/2;
-  
-  translate([0,thickness/2,thickness])
-  rotate([90,90,0])
-  linear_extrude(thickness)
-  Vollwelle(
-    r=[cornerRadius,cornerRadius],
-    mitte=lowerWidth-cornerRadius*2,
-    g2End=[1,1],
-    grad=wallAngle,
-    h=height,
-    extrude=thickness,
-    x0=-1,
-    xCenter=-1);
-}
-
-
-translate([-1.3/2,0,0.6])
-cube(size=1.3);
+   }
+ }
+ 
 
 //Creates a rounded cube
 //x=width in mm
@@ -150,10 +84,7 @@ module roundedCube(
   bottomRadius = bottomRadius > 0 ? bottomRadius : cornerRadius;
   sideRadius = sideRadius > 0 ? sideRadius : cornerRadius;
   
-  if(sideRadius < topRadius || sideRadius < bottomRadius)
-  {
-    echo("roundedCube", "Error, sideRadius must be >= than bottomRadius and topRadius", sideRadius=sideRadius, topRadius=topRadius, bottomRadius=bottomRadius);
-  }
+  //assert(sideRadius < topRadius || sideRadius < bottomRadius, "sideRadius must be >= than bottomRadius and topRadius");
     
   positions=[
      [sideRadius                    ,sideRadius                   ]
@@ -212,18 +143,20 @@ module roundedCorner(
   height,
   fn=64)
 {
+  assert(is_num(length), "length must be a number");
+  assert(is_num(height), "height must be a number");
+  assert(is_num(radius), "radius must be a number");
   difference(){
     union(){
       //main corner to be removed
       translate([0,-radius, -radius])
         cube([length, radius*2,  radius*2]);
-      //corner extention in y
+      //corner extension in y
       translate([0,0, -radius])
         cube([length, height, radius]);
-      //corner extention in x
+      //corner extension in x
       translate([0,-radius, 0])
         cube([length, radius, height]);
-
     }
     translate([-1,radius, radius])
       rotate([90, 0, 90])
@@ -241,19 +174,22 @@ module chamferedCorner(
   cornerRadius = 4, 
   length, 
   height,
+  width = 0,
   fn=64)
 {
+  width = width>0 ? width : chamferLength;
+ 
   difference(){
     union(){
       //main corner to be removed
-      translate([0,-1, -1])
-        cube([length, chamferLength+1,  chamferLength+1]);
-      //corner extention in y
-      translate([0,0, -chamferLength])
-        cube([length, height, chamferLength]);
-      //corner extention in x
-      translate([0,-chamferLength, 0])
-        cube([length, chamferLength, height]);
+      translate([0,-width, -width])
+        cube([length, chamferLength+width,  chamferLength+width]);
+      //corner extension in y
+      translate([0,0, -width])
+        cube([length, height, width]);
+      //corner extension in x
+      translate([0,-width, 0])
+        cube([length, width, height]);
 
     }
     hull(){
@@ -288,7 +224,8 @@ module SequentialBridgingDoubleHole(
   
   hasOuter = outerHoleRadius > 0 && outerHoleDepth >0;
   hasInner = innerHoleRadius > 0 && innerHoleDepth > 0;
-  overhangBridgeCount = hasOuter && hasInner ? overhangBridgeCount : 0;
+  bridgeRequired = hasOuter && hasInner && outerHoleRadius > innerHoleRadius && innerHoleDepth > outerHoleDepth;
+  overhangBridgeCount = bridgeRequired ? overhangBridgeCount : 0;
   overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
   outerPlusBridgeHeight = hasOuter ? outerHoleDepth + overhangBridgeHeight : 0;
   if(hasOuter || hasInner)
@@ -315,57 +252,111 @@ module SequentialBridgingDoubleHole(
   }
 }
 
-//sequential bridging for hanging hole. 
-//ref: https://hydraraptor.blogspot.com/2014/03/buried-nuts-and-hanging-holes.html
-//ref: https://www.youtube.com/watch?v=KBuWcT8XkhA
-module SequentialBridgingDoubleHole_v1_old(
-  outerHoleRadius = 0,
-  outerHoleDepth = 0,
-  innerHoleRadius = 0,
-  innerHoleDepth = 0,
-  overhangBridgeCount = 2,
-  overhangBridgeThickness = 0.3,
-  overhangBridgeCutin =0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
-  fn=64) 
-{
-  ff = 0.01;
+//Creates a cube with a single rounded corner.
+//Centered around the rounded corner
+module CubeWithRoundedCorner(
+  size=[10,10,10], 
+  cornerRadius = 2, 
+  edgeRadius = 0,
+  center=false,
+  $fn=64){
+  assert(is_list(size) && len(size)==3, "size should be a list of size 3");
+  assert(is_num(cornerRadius) && cornerRadius >= 0, "cornerRadius should be a number greater than 0");
+  assert(is_num(edgeRadius), "edgeRadius should be a number");
   
-  overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
-  //render() //this wont improve render time, but will use less memory in the viewer. This matters here are there can be many holes (x*y*4) on the one render.
-  union(){
+  fudgeFactor = 0.01;
   
-    if (outerHoleRadius > 0) {
-      cylinder(r=outerHoleRadius, h=outerHoleDepth+ff, $fn=fn);
+  translate(center ? -size/2 : [0,0,0])
+  if(edgeRadius <=0) {
+    hull(){
+      translate([cornerRadius,cornerRadius,0])
+      cylinder(r=cornerRadius, h=size.z+fudgeFactor);
+      translate([cornerRadius,0,0])
+        cube([size.x-cornerRadius,size.y,size.z+fudgeFactor]);
+      translate([0,cornerRadius,0])
+        cube([size.x,size.y-cornerRadius,size.z+fudgeFactor]);
     }
-    
-    if (innerHoleRadius > 0) {
-      //if(outerHoleRadius <=0)
-      translate([0,0,outerHoleDepth+overhangBridgeHeight-ff])
-      cylinder(r=innerHoleRadius, h=innerHoleDepth-outerHoleDepth-overhangBridgeHeight, $fn=fn);
-    }
-
-    if (overhangBridgeCount>0) {
-      translate([0,0,outerHoleDepth])
-      intersection(){
-        cylinder(r=outerHoleRadius, h=(overhangBridgeCount * overhangBridgeThickness), $fn=fn);
+  }
+  else{
+    hull(){
+      translate([cornerRadius,cornerRadius,0])
+      roundedCylinder(h=size.z+fudgeFactor,r=cornerRadius,roundedr2=edgeRadius);
+      
+      translate([(size.x+cornerRadius)/2,size.y/2,size.z/2])
+      rotate([0,90,0])
+      CubeWithRoundedCorner(
+        size=[size.z,size.y,size.x-cornerRadius], 
+        cornerRadius = edgeRadius,
+        edgeRadius=0,
+        center=true);
         
-        for(i = [0:overhangBridgeCount-1]) {
-          intersection_for(y = [0:i]) {
-              echo("intersection_for", i=i, y=y);
-              rotate([0,0,180/overhangBridgeCount*y])
-              translate([-outerHoleRadius, -(innerHoleRadius-overhangBridgeCutin/2), overhangBridgeThickness*i-ff]) 
-                cube([outerHoleRadius*2, innerHoleRadius*2-overhangBridgeCutin, overhangBridgeThickness+ff]);
-          }
-        }
-      }
+      translate([size.x/2,(size.y+cornerRadius)/2,size.z/2])
+      rotate([0,90,270])
+      CubeWithRoundedCorner(
+        size=[size.z,size.y,size.x-cornerRadius], 
+        cornerRadius = edgeRadius,
+        edgeRadius=0,
+        center=true);        
     }
   }
 }
 
+module MagnetAndScrewRecess(
+  magnetDiameter = 10,
+  magnetThickness = 2,
+  screwDiameter = 2,
+  screwDepth = 6,
+  overhangFixLayers = 3,
+  overhangFixDepth = 0.2,
+  easyMagnetRelease = true,
+  $fn = 64){
+    fudgeFactor = 0.01;
+    
+    releaseWidth = 1.3;
+    releaseLength = 1.5;
+    
+    union(){
+      SequentialBridgingDoubleHole(
+        outerHoleRadius = magnetDiameter/2,
+        outerHoleDepth = magnetThickness,
+        innerHoleRadius = screwDiameter/2,
+        innerHoleDepth = screwDepth > 0 ? screwDepth+fudgeFactor : 0,
+        overhangBridgeCount = overhangFixLayers,
+        overhangBridgeThickness = overhangFixDepth);
+      
+      if(easyMagnetRelease && magnetDiameter > 0)
+      difference(){
+        hull(){
+          translate([0,-releaseWidth/2,0])  
+            cube([magnetDiameter/2+releaseLength,releaseWidth,magnetThickness]);
+          translate([magnetDiameter/2+releaseLength,0,0])  
+            cylinder(d=releaseWidth, h=magnetThickness);
+        }
+        champherRadius = min(magnetThickness, releaseLength+releaseWidth/2);
+        
+        totalReleaseLength = magnetDiameter/2+releaseLength+releaseWidth/2;
+        
+        translate([totalReleaseLength,-releaseWidth/2-fudgeFactor,magnetThickness])
+        rotate([270,0,90])
+        roundedCorner(
+          radius = champherRadius, 
+          length = releaseWidth+2*fudgeFactor, 
+          height = totalReleaseLength,
+          fn=64);
+      }
+    };
+}
+
 module roundedCylinder(h,r,roundedr=0,roundedr1=0,roundedr2=0)
 {
+  assert(is_num(h), "h must have a value");
+  assert(is_num(r), "r must have a value");
   roundedr1 = roundedr1 > 0 ? roundedr1 : roundedr;
   roundedr2 = roundedr2 > 0 ? roundedr2 : roundedr;
+  
+  assert(is_num(roundedr1), "roundedr1 or roundedr must have a value");
+  assert(is_num(roundedr2), "roundedr2 or roundedr must have a value");
+  
   if(roundedr1 > 0 || roundedr2 > 0){
     hull(){
       if(roundedr1 > 0)
