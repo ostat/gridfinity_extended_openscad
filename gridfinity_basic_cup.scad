@@ -13,18 +13,18 @@ use <modules/gridfinity_modules.scad>
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
-// X dimension in grid units  (multiples of 42mm)
+// X dimension in grid units (multiples of 42mm)
 width = 2; //0.5
 // Y dimension in grid units (multiples of 42mm)
 depth = 1; //0.5
-// Z dimension (multiples of 7mm)
+// Z dimension excluding lip if enabled (multiples of 7mm)
 height = 3; //0.1
 // Fill in solid block (overrides all following options)
-filled_in = "off"; //["off","on","notstackable"]
+filled_in = false; 
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 // Remove some or all of lip
-lip_style = "normal";  // [ "normal", "reduced", "none" ]
+lip_style = "normal";  // [ "normal", "reduced", "minimum", none:not stackable ]
 position="default"; //["default","center","zero"]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
@@ -65,8 +65,8 @@ box_corner_attachments_only = true;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
-// Efficient floor option saves material and time, but the internal floor is not flat (only applies if no magnets, screws, or finger-slide used)
-efficient_floor = false;
+// Efficient floor option saves material and time, but the internal floor is not flat
+efficient_floor = "off";//["off","on","rounded","smooth"] 
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
@@ -75,9 +75,10 @@ flat_base = false;
 spacer = false;
 
 /* [Label] */
+label_style = "normal"; //[disabled: no label, normal:normal, click]
 // Include overhang for labeling (and specify left/right/center justification)
-label = "disabled"; // ["disabled", "left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
-// Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+label_position = "left"; // ["left", "right", "center", "leftchamber", "rightchamber", "centerchamber"]
+// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
 // Creates space so the attached label wont interferr with stacking
 label_relief = 0; // 0.1
@@ -116,8 +117,8 @@ wallpattern_voronoi_radius = 0.5;
 
 /* [Wall Cutout] */
 wallcutout_enabled=false;
-// wall to enable on, front, back, left, right.
-wallcutout_walls=[1,0,0,0]; 
+// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_walls=[1,0,0,0];  //0.1
 //default will be binwidth/2
 wallcutout_width=0;
 wallcutout_angle=70;
@@ -147,8 +148,9 @@ module gridfinity_basic_cup(
   depth = depth,
   height = height,
   position=position,
-  filled_in = filled_in,
-  label=label,
+  filled_in=filled_in,
+  label_style=label_style,
+  label_position=label_position,
   label_size=label_size,
   label_relief=label_relief,
   wall_thickness=wall_thickness,
@@ -213,7 +215,8 @@ module gridfinity_basic_cup(
       num_x=width, num_y=depth, num_z=height,
       position=position,
       filled_in=filled_in,
-      label_style=label,
+      label_style=label_style,
+      label_position=label_position,
       label_size=label_size,
       label_relief=label_relief,
       fingerslide=fingerslide,

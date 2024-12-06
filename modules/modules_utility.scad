@@ -120,6 +120,9 @@ module WallCutout(
 }
 
 
+translate([-1.3/2,0,0.6])
+cube(size=1.3);
+
 //Creates a rounded cube
 //x=width in mm
 //y=length in mm
@@ -128,18 +131,21 @@ module WallCutout(
 //topRadius = the radius of the top of the cube
 //bottomRadius = the radius of the top of the cube
 //sideRadius = the radius of the sides. This must be over 0.
-
 //fn = overrides the #fn function for the corners
 module roundedCube(
   x,
   y,
   z,
+  size=[],
   cornerRadius = 0,
   topRadius = 0,
   bottomRadius = 0,
   sideRadius = 0,
   fn = 64)
 {
+  assert(is_list(size), "size must be a list");
+  size = len(size) == 3 ? size : [x,y,z];
+  
   topRadius = topRadius > 0 ? topRadius : cornerRadius;
   bottomRadius = bottomRadius > 0 ? bottomRadius : cornerRadius;
   sideRadius = sideRadius > 0 ? sideRadius : cornerRadius;
@@ -151,16 +157,16 @@ module roundedCube(
     
   positions=[
      [sideRadius                    ,sideRadius                   ]
-    ,[max(x-sideRadius, sideRadius) ,sideRadius                   ]
-    ,[max(x-sideRadius, sideRadius) ,max(y-sideRadius, sideRadius)]
-    ,[sideRadius                    ,max(y-sideRadius, sideRadius)]
+    ,[max(size.x-sideRadius, sideRadius) ,sideRadius                   ]
+    ,[max(size.x-sideRadius, sideRadius) ,max(size.y-sideRadius, sideRadius)]
+    ,[sideRadius                         ,max(size.y-sideRadius, sideRadius)]
     ];
 
   hull(){
     for (i =[0:1:len(positions)-1])
     {
       translate(positions[i]) 
-        roundedCylinder(h=z,r=sideRadius,roundedr2=topRadius,roundedr1=bottomRadius,$fn=fn);
+        roundedCylinder(h=size.z,r=sideRadius,roundedr2=topRadius,roundedr1=bottomRadius,$fn=fn);
     }
   }
 }
