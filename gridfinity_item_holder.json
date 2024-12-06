@@ -1,7 +1,7 @@
 {
     "fileFormatVersion": "1",
     "parameterSets": {
-        "Nowy zestaw 1": {
+        "solder stand holder": {
             "box_corner_attachments_only": "false",
             "cavity_floor_radius": "-1",
             "center_magnet_diameter": "0",
@@ -9,7 +9,7 @@
             "chamber_wall_thickness": "1.2",
             "cutx": "0",
             "cuty": "0",
-            "depth": "1",
+            "depth": "4",
             "extention_tabs_enabled": "true",
             "extention_x_enabled": "false",
             "extention_y_enabled": "false",
@@ -40,7 +40,7 @@
             "itemholder_hole_gridx": "0",
             "itemholder_hole_gridy": "0",
             "itemholder_hole_sides": "4",
-            "itemholder_hole_size": "[10, 16]",
+            "itemholder_hole_size": "[73, 151]",
             "itemholder_hole_spacing": "2",
             "itemholder_known_cards": "custom",
             "itemholder_known_cartridges": "rect",
@@ -79,9 +79,9 @@
             "wallpattern_voronoi_density_ratio": "50",
             "wallpattern_voronoi_radius": "0.5",
             "wallpattern_walls": "[1, 1, 1, 1]",
-            "width": "1"
+            "width": "2"
         },
-        "Nowy zestaw 2": {
+        "lipsticks": {
             "box_corner_attachments_only": "false",
             "cavity_floor_radius": "-1",
             "center_magnet_diameter": "0",
@@ -89,7 +89,7 @@
             "chamber_wall_thickness": "1.2",
             "cutx": "0",
             "cuty": "0",
-            "depth": "1",
+            "depth": "2.5",
             "extention_tabs_enabled": "true",
             "extention_x_enabled": "false",
             "extention_y_enabled": "false",
@@ -97,7 +97,7 @@
             "flat_base": "false",
             "floor_thickness": "0.69999999999999996",
             "half_pitch": "false",
-            "height": "3",
+            "height": "7.2000000000000002",
             "help": "false",
             "hole_overhang_remedy": "2",
             "horizontal_chambers": "1",
@@ -111,20 +111,20 @@
             "itemholder_compartment_centered": "true",
             "itemholder_compartment_fill": "none",
             "itemholder_compartment_spacing": "3",
-            "itemholder_compartments": "[1, 1]",
+            "itemholder_compartments": "[2, 1]",
             "itemholder_customcompartments": "",
-            "itemholder_grid_style": "auto",
+            "itemholder_grid_style": "square",
             "itemholder_hole_chamfer": "1",
             "itemholder_hole_clearance": "0.65000000000000002",
-            "itemholder_hole_depth": "0",
+            "itemholder_hole_depth": "52",
             "itemholder_hole_gridx": "0",
             "itemholder_hole_gridy": "0",
             "itemholder_hole_sides": "4",
-            "itemholder_hole_size": "[10, 10]",
+            "itemholder_hole_size": "[24, 24]",
             "itemholder_hole_spacing": "2",
             "itemholder_known_cards": "custom",
             "itemholder_known_cartridges": "rect",
-            "itemholder_known_item": "1\/4hexshank",
+            "itemholder_known_item": "custom",
             "itemholder_multi_card_compact": "0.69999999999999996",
             "itemholder_multi_cards": "sd;USBA;microsd",
             "lip_style": "normal",
@@ -159,7 +159,7 @@
             "wallpattern_voronoi_density_ratio": "50",
             "wallpattern_voronoi_radius": "0.5",
             "wallpattern_walls": "[1, 1, 1, 1]",
-            "width": "2"
+            "width": "3"
         }
     }
 }
