@@ -12122,7 +12122,7 @@ R(180)VarioFill(dia=0,spiel=[.5,0],l=.5,fn=7);
 
 
 module PCBcase(
-pcb=[20,40,1],/*[breite×länge×höhe]*/
+pcb=[20,40,1],/*breite×länge×höhe*/
 h=20,/*höhe*/
 wand,/*Wandstärke */
 r2=3,/*Innenradius*/

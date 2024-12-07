@@ -1,10 +1,12 @@
-﻿$scriptFolder = (Split-Path -Parent $PSCommandPath)
-$outputFolder = Join-Path $scriptFolder '..\generated\demos'
-$demoFolder = Join-Path $scriptFolder '..\demos\'
-$script:ScadExePath = 'C:\Program Files\OpenSCAD\openscad.exe'
-$script:ImageMagickPath = 'C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe'
-# used to only run a single scenario
-$script:ScenarioFilter = ''
+﻿Param(
+    [string]$ScenarioFilter = 'demo', 
+    $renderOptions = @('text'),#@('png','text','stl')
+    [int]$scenarioCount = -1,
+    [string]$ScadExePath = 'C:\Program Files\OpenSCAD\openscad.exe',
+    [string]$ImageMagickPath = 'C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe',
+    [string]$ScadScriptPath = (Join-Path ((Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName) '\demos\gridfinity_item_holder_demo.scad'),
+    [string]$outputFolder = (Join-Path ((Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName) 'generated\demos')
+)
 
 function Create-Gifs($ParentFolderPath){ 
     Write-Host "Create Gifs for $ParentFolderPath"
@@ -16,7 +18,7 @@ function Create-Gifs($ParentFolderPath){
 
 function Create-Gif($FolderPath, $Name) 
 {
-    Write-Host "Createing Gif for folder $($FolderPath)"
+    Write-Host "Createing Gif '$($Name)' for folder $($FolderPath)"
     cd $FolderPath
     & $script:ImageMagickPath convert '*.png' -set delay 100 "$($Name).gif"
     #convert 'frame_*.png' -set delay 1x15 animation.gif 
@@ -67,6 +69,68 @@ function CreateFolderIfNeeded([string] $path) {
     }
 }
 
+function Start-ProcessWithOutputs
+{
+    param (
+        [Parameter(Mandatory=$false)] [string]$commandTitle,
+        [Parameter(Mandatory=$true)] [string]$commandPath,
+        [Parameter(Mandatory=$false)] [string[]]$ArgumentList
+    )
+
+    $StandardOutputSourceIdentifier = "StandardOutput$([Guid]::NewGuid())"
+    $StandardErrorSourceIdentifier = "StandardError$([Guid]::NewGuid())"
+    $messagedata = new-object psobject -property @{
+       StandardOutput= New-Object -TypeName System.Text.StringBuilder
+       StandardError = New-Object -TypeName System.Text.StringBuilder}
+
+    $pinfo = New-object System.Diagnostics.ProcessStartInfo 
+    $pinfo.FileName = $commandPath
+    $pinfo.CreateNoWindow = $true 
+    $pinfo.UseShellExecute = $false 
+    $pinfo.RedirectStandardOutput = $true 
+    $pinfo.RedirectStandardError = $true 
+    $pinfo.Arguments = $ArgumentList
+
+    $Process = New-Object System.Diagnostics.Process 
+    $Process.StartInfo = $pinfo 
+
+    $ProcessOutputEventAction = { 
+        if (![string]::IsNullOrEmpty($EventArgs.Data)){
+            $Event.MessageData.StandardOutput.AppendLine($EventArgs.Data)
+        }
+    }
+
+    $ProcessErrorEventAction = { 
+        if (![string]::IsNullOrEmpty($EventArgs.Data)){
+            $Event.MessageData.StandardError.AppendLine($EventArgs.Data)
+        }
+    }
+
+    $OutputDataReceivedEvent = Register-ObjectEvent -SourceIdentifier $StandardOutputSourceIdentifier -InputObject $Process -EventName "OutputDataReceived" -Action $ProcessOutputEventAction -messagedata $messagedata 
+    $ErrorDataReceivedEvent = Register-ObjectEvent -SourceIdentifier $StandardErrorSourceIdentifier -InputObject $Process -EventName "ErrorDataReceived" -Action $ProcessErrorEventAction -messagedata $messagedata 
+
+    $executionTime = Measure-Command {
+        $Process.Start() | Out-Null
+        $Process.BeginErrorReadLine()
+        $Process.BeginOutputReadLine()
+        $Process.WaitForExit()
+    }
+    
+    Start-Sleep -Milliseconds 200 
+
+    Unregister-Event -SourceIdentifier $StandardOutputSourceIdentifier
+    Unregister-Event -SourceIdentifier $StandardErrorSourceIdentifier
+
+    return [pscustomobject]@{
+        commandTitle = $commandTitle
+        ExitCode = $Process.ExitCode; 
+        stdout = $messagedata.StandardOutput.ToString(); 
+        stderr = $messagedata.StandardError.ToString(); 
+        ExitTime = $Process.ExitTime;
+        StartTime = $Process.StartTime;
+        executionTime = $executionTime
+    }
+}
 
 Class Scenario{
     [string]$ScenarioName
@@ -104,12 +168,12 @@ function Create-ImageForDemo(
     
     Write-Host "$($demoName) - Found $($Scenarios.Count) Scenarios" -ForegroundColor Green
 
-    $Scenarios | Where-Object{[string]::IsNullOrEmpty($ScenarioFilter) -or $_.ScenarioName -match $ScenarioFilter} | ForEach-Object {
+    $Scenarios | Where-Object{[string]::IsNullOrEmpty($ScenarioFilter) -or $_.ScenarioName -match $ScenarioFilter -or $demoName -eq $ScenarioFilter} | ForEach-Object {
         $scenario = $_
         $renderOptions | ForEach-Object {
             $option = $_
             $showtext = ($option -eq 'text')
-            $scenarioName =  "$($scenario.ScenarioName)_$($option)"
+            $scenarioName =  iif ($option -eq 'png') "$($scenario.ScenarioName)" "$($scenario.ScenarioName)_$($option)"
             $scenarioOutputFolder = Join-Path $demoOutputFolder "$($option)\$($scenarioName)"
         
             CreateFolderIfNeeded $scenarioOutputFolder
@@ -121,16 +185,20 @@ function Create-ImageForDemo(
 
             #invoke openscad
             $cmdArgs = "" 
-        
+            $animateCount = (($scenarioCount -eq -1) | IIF -Right ($scenario.Count) -Wrong ([Math]::Min($scenario.Count, $scenarioCount)))
+    
             $target = Join-Path $scenarioOutputFolder "$($scenario.ScenarioName).$($ext)"
             if($SetFilePath)
             {
                 $cmdArgs = "-o `"$($target)`""
                 #--camera=translatex,y,z,rotx,y,z,dist
                 $cmdArgs = $cmdArgs += " --imgsize 4096,3072"#" --imgsize 1024,768"4096,3072
-                $cmdArgs = $cmdArgs += " --animate $($scenario.Count)"
+                if($scenario.Count -gt 1)
+                {
+                    $cmdArgs = $cmdArgs += " --animate $($animateCount)"
+                }
                 #--csglimit arg               =n -stop rendering at n CSG elements when exporting png
-                $cmdArgs = $cmdArgs += " --csglimit 1000000"#" --imgsize 1024,768"4096,3072
+                $cmdArgs = $cmdArgs += " --csglimit 2000000"
             }
 
             $cmdArgs = $cmdArgs += " -D `"scenario=`"`"$($scenario.ScenarioName)`"`"`""
@@ -139,18 +207,29 @@ function Create-ImageForDemo(
         
             $cmdArgs += " $($scadScriptPath)"
             Write-Host  $cmdArgs
-            $executionTime =  $cmdArgs | Measure-Command { Start-Process $script:ScadExePath -ArgumentList $_ -wait }
-            Write-host "done $executionTime"
+            $executionResult = (Start-ProcessWithOutputs -commandTitle $scenarioName -commandPath $script:ScadExePath -ArgumentList $cmdArgs)
+                            write-warning  "stderr: $($executionResult.stderr)"
+            write-host "openscad executionTime: $($executionResult.executionTime)"
 
-            if($option -ne 'stl' -and $scenario.Count -gt 1)
-            {
-                Create-Gif -FolderPath $scenarioOutputFolder -Name "$($demoName)-$($scenarioName)"
+            if($executionResult.stderr -cmatch 'ERROR\:\s' -or $executionResult.ExitCode -ne 0){
+                write-warning "found error"
+                write-warning  "stderr: $($executionResult.stderr)"
+            }
+            else {
+                if($option -ne 'stl' -and $scenarioCount -eq -1)
+                {
+                    Create-Gif -FolderPath $scenarioOutputFolder -Name "$($demoName)-$($scenarioName)"
+                }
             }
         }
     }
 }
-$renderOptions = @('png','text') #@('png','text','stl')
-Create-ImageForDemo -ScadScriptPath  (Join-Path $demoFolder 'gridfinity_basic_cup_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter -renderOptions $renderOptions
-Create-ImageForDemo -ScadScriptPath  (Join-Path $demoFolder 'gridfinity_baseplate_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter -renderOptions $renderOptions
-Create-ImageForDemo -ScadScriptPath  (Join-Path $demoFolder 'gridfinity_item_holder_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter -renderOptions $renderOptions
-Create-ImageForDemo -ScadScriptPath  (Join-Path $demoFolder 'gridfinity_tray_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter -renderOptions $renderOptions
+
+Create-ImageForDemo -ScadScriptPath $ScadScriptPath -outputFolder $outputFolder  -ScenarioFilter $ScenarioFilter -renderOptions $renderOptions
+#Create-ImageForDemo -ScadScriptPath  (Join-Path $demoFolder 'gridfinity_drawer_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter -renderOptions $renderOptions
+#Create-ImageForDemo -ScadScriptPath  (Join-Path $demoFolder 'gridfinity_basic_cup_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter -renderOptions $renderOptions
+#Create-ImageForDemo -ScadScriptPath  (Join-Path $demoFolder 'gridfinity_baseplate_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter -renderOptions $renderOptions
+#Create-ImageForDemo -ScadScriptPath  (Join-Path $demoFolder 'gridfinity_item_holder_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter -renderOptions $renderOptions
+#Create-ImageForDemo -ScadScriptPath  (Join-Path $demoFolder 'gridfinity_tray_demo.scad') -outputFolder $outputFolder -ScenarioFilter $script:ScenarioFilter -renderOptions $renderOptions
+
+#Create-Gif '\\10.0.0.11\general\projects\3d_printing\gridfinity\generated\temp' 'floor_demo'

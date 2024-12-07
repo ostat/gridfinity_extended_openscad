@@ -1,4 +1,4 @@
-include <modules/gridfinity_modules.scad>
+include <modules/module_gridfinity.scad>
 
 // Select model
 part = "tile";  // [ board, tile, pawn, knight, bishop, rook, queen, king ]
@@ -142,7 +142,7 @@ module pawn() {
 
 module base() {
   difference() {
-    grid_block(1, 1, 0.72, magnet_diameter=0, screw_depth=0);
+    grid_block(1, 1, 0.72, magnet_diameter=0, screw_depth=0,position="center");
     difference() {
       cube([35, 35, 30], center=true);
       for (a=[45, 135]) rotate([0, 0, a]) cube([60, 2, 30], center=true);
@@ -161,7 +161,7 @@ module board() {  // 64 tiles in alternating colors
 
 
 module tile() {
-  grid_block(1, 1, 0.5, magnet_diameter=0, screw_depth=0);
+  grid_block(1, 1, 0.5, magnet_diameter=0, screw_depth=0,position="center");
 }
 
 

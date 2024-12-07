@@ -1,4 +1,4 @@
-include <modules/gridfinity_modules.scad>
+include <modules/module_gridfinity.scad>
 
 /* [Utensil count and measurements] */
 // Utensil definitions above this number are ignored
@@ -21,7 +21,7 @@ utensil_12_wide = 32; utensil_12_narrow = 15; utensil_12_length = 191;
 utensil_13_wide = 32; utensil_13_narrow = 15; utensil_13_length = 150;
 utensil_14_wide = 24; utensil_14_narrow = 16; utensil_14_length = 180;
 
-/* [Other parametrs] */
+/* [Other parameters] */
 // Separation wall thickness
 separator_wall = 2;  // .1
 // Clearance on sides and ends of utensils
@@ -32,6 +32,8 @@ height_in_mm = 35;
 /* [Gridfinity features] */
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
+// Create relief for magnet removal 
+magnet_easy_release = true;
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
@@ -85,7 +87,7 @@ width = ceil((silver_w + 5.7)/42);
 // Y dimension in gridfinity units
 depth = ceil((maxlen(silver_defs)+2*margin+5.7)/42);
 
-echo("maxlen: ", maxlen(silver_defs));
+if(IsHelpEnabled("debug")) echo("maxlen: ", maxlen(silver_defs));
 
 // ##### Top level model
 
