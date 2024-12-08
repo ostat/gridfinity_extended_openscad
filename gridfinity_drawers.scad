@@ -9,6 +9,7 @@ use <modules/module_gridfinity_cup.scad>
 use <modules/module_gridfinity.scad>
 use <modules/module_gridfinity_baseplate.scad>
 include <modules/gridfinity_constants.scad>
+include <modules/polyround.scad>
 use <modules/module_item_holder.scad>
 
 /* [Render] */
@@ -50,13 +51,15 @@ drawer_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
 
 /* [Chest Top Plate] */
 chest_top_wallpattern_style = "none"; //[none, grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
-chest_enable_top_grid = true;
 // Plate Style
-chest_top_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
+chest_top_grid_style = "default"; //[none: None, default:Default, magnet:Efficient magnet base, lugs: Supportless feet]
 
 /* [Chest Base] */
 chest_bottom_wallpattern_style = "none"; //[none, grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
-chest_bottom_grid = true;
+chest_bottom_grid = "none"; //[none: None, grid: Gridfinity grid, lugs: Supportless feet]
+//Fit clearance of chest feet
+chest_leg_clearance = 0.35; //.001
+
 // (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 6.5;  // .1
 // (Zack's design uses depth of 6)
@@ -270,7 +273,8 @@ module chest(
   drawerSlideThickness,
   drawerWallThickness,
   startH,
-  clearance
+  clearance,
+  chestLegClearance
 ){
   assert(is_list(clearance), "clearance must be a list");
   bottomGridOffset = [
@@ -284,11 +288,11 @@ module chest(
       color(colour_chest) 
       cube([outerChest.x, outerChest.y, totalH]);
       
-      if(bottomGrid) {
+      if(bottomGrid != "none") {
         baseHeight=0.7;
         translate(bottomGridOffset) 
         tz(-gf_zpitch*baseHeight+fudgeFactor)
-        grid_block(
+        if(bottomGrid == "grid") grid_block(
           num_x=drawerInnerUnitSize.x, 
           num_y=drawerInnerUnitSize.y, 
           num_z=baseHeight, 
@@ -302,16 +306,21 @@ module chest(
             cornerAttachmentsOnly=bottomCornerAttachmentsOnly,
             halfPitch = bottomHalfPitch,
             flatBase = bottomFlatBase));
+            //echo(x=drawerInnerUnitSize.x, y=drawerInnerUnitSize.y);
+         if(bottomGrid == "lugs") feet(drawerInnerUnitSize.x, drawerInnerUnitSize.y, outerChest.x);
       }
 
       
-      if(enableTopGrid) {
+      if(topGridStyle == "default" || topGridStyle == "magnet") {
         translate(topGridOffset) 
         tz(totalH-fudgeFactor) 
         baseplate(
           width = drawerInnerUnitSize.x,
           depth = drawerInnerUnitSize.y,
           plateOptions = topGridStyle);
+      }
+      if(topGridStyle == "lugs"){
+          translate([0, 0, totalH - fudgeFactor]) footrecess(drawerInnerUnitSize.x, drawerInnerUnitSize.y, outerChest.x, outerChest.y, widen = chestLegClearance);
       }
     }
     children();
@@ -505,7 +514,6 @@ module gridfinity_drawer(
     drawerWallThickness = drawer_wall_thickness,
     drawerBase = drawer_base,
     drawerGridStyle = drawer_grid_style,
-    chestEnableTopGrid = chest_enable_top_grid,
     chestTopWallPatternStyle=chest_top_wallpattern_style,
     chestTopGridStyle = chest_top_grid_style,
     bottomGrid = chest_bottom_grid,
@@ -525,7 +533,8 @@ module gridfinity_drawer(
     wallPatternHoleSize = wallpattern_hole_size,
     wallPatternFill = wallpattern_fill,
     wallPatternVoronoiNoise = wallpattern_voronoi_noise,
-    wallPatternVoronoiRadius = wallpattern_voronoi_radius){
+    wallPatternVoronoiRadius = wallpattern_voronoi_radius,
+    chestLegClearance = chest_leg_clearance){
 
   // Apply defaults
   drawerSlideThickness =chestDrawerSlideThickness == 0 ? chestWallThickness : chestDrawerSlideThickness;
@@ -564,7 +573,6 @@ module gridfinity_drawer(
       outerChest=outerChest, 
       totalH=totalH,
       chestWallThickness=chestWallThickness,
-      enableTopGrid=chestEnableTopGrid,
       topGridStyle=chestTopGridStyle,
       bottomGrid=bottomGrid,
       bottomMagnetDiameter=bottomMagnetDiameter,
@@ -579,7 +587,8 @@ module gridfinity_drawer(
       drawerSlideThickness=drawerSlideThickness,
       drawerWallThickness=drawerWallThickness,
       startH=startH,
-      clearance=chestClearance)
+      clearance=chestClearance,
+      chestLegClearance = chestLegClearance)
       chestCutouts(
         drawerCount=drawerCount, 
         drawerOuterSizes=drawerOuterSizes,
@@ -638,4 +647,49 @@ module gridfinity_drawer(
   }
 }
 
+//Supportless feet
+module feet(width, length, twidth, fin = true, widen = 0, thickness = 3){
+    actualSpacing = (width*42) - 21.68;
+
+    translate([13.888, 23.92, fudgeFactor]) foot(length, fin = fin, widen = widen, thickness = thickness);
+    translate([twidth - 13.888, 23.92, fudgeFactor]) foot(length, fin = fin, widen = widen, thickness = thickness);
+}
+
+module foot(length, fin = true, widen = 0, thickness = 3){
+    actualLength = (widen*2) + (length*42) - 47.84;
+    dx = 6.23 + widen;
+    dy = 7.33 + widen;
+    r1 = 0.223 + widen;
+    r2 = 5.91 + widen;
+    chamfer = 1;
+    
+    radiiPoints = [
+        [0, -widen, r1],
+        [dx, dy, r2],
+        [dx, actualLength-dy, r2],
+        [0.25, actualLength - 1, 0],
+        [-0.25, actualLength - 1, 0],
+        [-dx, actualLength-dy, r2],
+        [-dx, dy, r2]
+    ];
+    polyrounded = polyRound(radiiPoints);
+    minkowski(){
+        translate([0, 0, -thickness]) linear_extrude(thickness) polygon(polyrounded);
+        cylinder(chamfer, 0, chamfer);
+    }
+    
+    finheight = thickness - chamfer;
+    
+    //Support fin
+    if(fin) translate([0, actualLength, 0]) rotate([0, 90, 0]) linear_extrude(0.5, center=true) polygon([[finheight, 0], [0, 0], [0, finheight]]);
+}
+
+module footrecess(width, length, twidth, tlength, widen = 0.25){
+    difference(){
+        cube([twidth, tlength, 3.5 + widen]);
+        translate([0, 0, 3.5]) feet(width, length, twidth, fin=false, widen = widen, thickness = 3 + widen);
+    }
+}
+
 gridfinity_drawer();
+//foot(3);
