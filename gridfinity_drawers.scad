@@ -12,6 +12,7 @@ include <modules/gridfinity_constants.scad>
 use <modules/module_item_holder.scad>
 
 /* [Render] */
+// select what to render
 render_choice = "everything"; //[everything:Everything, onedrawer:Single Drawer, drawers:All drawers, chest:Chest]
 position="center"; //["center","zero"]
 
@@ -27,14 +28,13 @@ drawer_count = 3;
 drawer_enable_custom_sizes = false;
 //Inner height of drawer in Gridfinity units. Edit in script for more than 4 items.
 drawer_custom_sizes = [1,2,3,4];
-//clearance inside the drawers
+//Add clearance inside the drawers for the bins. Width, depth and height. Default is 0.25
 drawer_clearance = [0.25,0.25,0.25];
-
-//clearance inside the chest
+//Add clearance inside the chest for the drawer. width, depth and height. Default is 0.25
 chest_clearance = [0.25,0.25,0.25];
-
+//Wall thickness of the chest.
 chest_wall_thickness = 2;
-//Thickness of drawer slies in mm. 0 is uses wall thickness.
+//Thickness of drawer slides in mm. 0 is uses wall thickness.
 chest_drawer_slide_thickness = 0;
 //Width of drawer slies in mm. 0 is full chest width.
 chest_drawer_slide_width = 10; 
