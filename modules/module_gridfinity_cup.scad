@@ -2,6 +2,7 @@ include <gridfinity_constants.scad>
 include <module_gridfinity_label.scad>
 include <functions_general.scad>
 include <module_voronoi.scad>
+include <module_brick_pattern.scad>
 include <module_gridfinity_sliding_lid.scad>
 include <module_gridfinity_Extendable.scad>
 include <module_divider_walls.scad>
@@ -149,7 +150,7 @@ default_wallpattern_dividers_enabled ="disabled"; //["disabled", "horizontal", "
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0];  //[0:1:1]
 default_wallpattern_hole_sides = 6;
-default_wallpattern_hole_size = 10; //0.1
+default_wallpattern_hole_size = [10,10]; //0.1
 default_wallpattern_hole_spacing = 2; //0.1
 default_wallpattern_voronoi_noise = 0.75;
 default_wallpattern_voronoi_radius = 0.5;
@@ -347,6 +348,7 @@ module gridfinity_cup(
     bend_separation = horizontal_separator_bend_separation,
     cut_depth = horizontal_separator_cut_depth);
 
+  wallpattern_hole_size = is_list(wallpattern_hole_size) ? wallpattern_hole_size : [wallpattern_hole_size,wallpattern_hole_size];
   $gfc=[["num_x",num_x],["num_y",num_y],["num_z",num_z],["calculated_vertical_separator_positions",calculated_vertical_separator_positions],["calculated_horizontal_separator_positions",calculated_horizontal_separator_positions]];
      
   //Correct legacy values, values that used to work one way but were then changed.
@@ -539,7 +541,7 @@ module gridfinity_cup(
                             canvasSize = left[0], 
                             customShape = false,
                             circleFn = wallpattern_hole_sides,
-                            holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                            holeSize = wallpattern_hole_size,
                             holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
                             holeHeight = thickness,
                             center=true,
@@ -582,7 +584,7 @@ module gridfinity_cup(
                           canvasSize = front[0], 
                           customShape = false,
                           circleFn = wallpattern_hole_sides,
-                          holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                          holeSize = wallpattern_hole_size,
                           holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
                           holeHeight = thickness,
                           center=true,
@@ -646,7 +648,7 @@ module gridfinity_cup(
                         canvasSize = locations[i][0],
                         customShape = false,
                         circleFn = wallpattern_hole_sides,
-                        holeSize = [wallpattern_hole_size, wallpattern_hole_size],
+                        holeSize = wallpattern_hole_size,
                         holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
                         holeHeight = wallpattern_thickness,
                         center=true,
@@ -913,6 +915,20 @@ module cutout_pattern(
       noise=voronoiNoise,
       radius = voronoiRadius,
       center=center);
+  }
+  else if(patternStyle == "brick" || patternStyle == "brickrotated" ||
+          patternStyle == "brickoffset" || patternStyle == "brickoffsetrotated"){
+    if(IsHelpEnabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
+    brick_pattern(
+      canvis_size=[canvasSize.x,canvasSize.y],
+      thickness = holeHeight,
+      spacing=holeSpacing.x,
+      cell_size = holeSize,
+      corner_radius = voronoiRadius,
+      center_weight = voronoiNoise,
+      rotateGrid = (patternStyle == "brickrotated" || patternStyle == "brickoffsetrotated"),
+      offset_layers = (patternStyle == "brickoffset" || patternStyle == "brickoffsetrotated")
+    );
   }
 }
 

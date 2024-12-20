@@ -82,8 +82,9 @@ module roundedCube(
   
   topRadius = topRadius > 0 ? topRadius : cornerRadius;
   bottomRadius = bottomRadius > 0 ? bottomRadius : cornerRadius;
-  sideRadius = sideRadius > 0 ? sideRadius : cornerRadius;
-  
+  sideRadius = 
+    let(sr = sideRadius > 0 ? sideRadius : cornerRadius)
+    min(sr, size.x/2, size.y/2);
   //assert(sideRadius < topRadius || sideRadius < bottomRadius, "sideRadius must be >= than bottomRadius and topRadius");
     
   positions=[

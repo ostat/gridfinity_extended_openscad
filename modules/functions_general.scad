@@ -1,5 +1,12 @@
 include <functions_string.scad>
 
+function sum(list, c = 0, end) = 
+  let(end = is_undef(end) ? len(list) : end)
+  c < 0 || end < 0 ? 0 : 
+  c < len(list) - 1 && c < end
+    ? list[c] + sum(list, c + 1, end=end) 
+    : list[c];
+    
 //round a number to a decimal with a defined number of significant figures
 function roundtoDecimal(value, sigFigs = 0) = 
   assert(is_num(value), "value must be a number")
@@ -37,7 +44,7 @@ function DictSet(list, keyValue) =
   assert(len(keyValue)==2, str("DictSet(keyValueArray, arr) - keyValueArray is not a list. keyValue:",keyValue))
   let(matchResults = search([keyValue[0]],list,1),
     matchIndex = is_list(matchResults) && len(matchResults)==1 && is_num(matchResults[0]) ? matchResults[0] : undef)
-  assert(!is_undef(matchIndex), str("count not find key in list key:'", keyValue[0], "'", DictToString(list)))
+  assert(!is_undef(matchIndex), str("count not find key in list, key:'", keyValue[0], "'", DictToString(list)))
     replace(list, matchIndex, keyValue);
 
 module DictDisplay(list, name = ""){
