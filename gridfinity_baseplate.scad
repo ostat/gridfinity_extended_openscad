@@ -16,10 +16,13 @@ position_fill_grid_y = "near";//[near, center, far]
 outer_Width = [0, 0]; //0.1
 // Y outer dimension. grid units (multiples of 42mm) or mm.
 outer_Depth = [0, 0]; //0.1
+// z outer dimension. mm.
+outer_Height = 0; //0.1
 position_grid_in_outer_x = "center";//[near, center, far]
 position_grid_in_outer_y = "center";//[near, center, far]
 //Reduce the frame wall size to this value
 Reduced_Wall_Height = 0; //0.1
+Reduced_Wall_Taper = false; 
 plate_corner_radius = 3.75; //[0:0.01:3.75]
 
 /* [Base Plate Options] */
@@ -100,6 +103,7 @@ else{
       num_y = calcDimensionWidth(Depth),
       outer_num_x = calcDimensionWidth(outer_Width),
       outer_num_y = calcDimensionWidth(outer_Depth),
+      outer_height = outer_Height,
       position_fill_grid_x = position_fill_grid_x,
       position_fill_grid_y = position_fill_grid_y,
       position_grid_in_outer_x = position_grid_in_outer_x,
@@ -107,6 +111,7 @@ else{
       plate_corner_radius = plate_corner_radius,
       magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
       reducedWallHeight = Reduced_Wall_Height, 
+      reduceWallTaper = Reduced_Wall_Taper, 
       cornerScrewEnabled  = Corner_Screw_Enabled,
       centerScrewEnabled = Center_Screw_Enabled,
       weightedEnable = Enable_Weight,

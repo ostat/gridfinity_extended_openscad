@@ -103,15 +103,6 @@ function validateFilledIn(value) =
   assert(list_contains(FilledIn_values, value), typeerror("FilledIn", value))
   value;
 
-EfficientFloor_off = "off";
-EfficientFloor_on = "on";
-EfficientFloor_rounded = "rounded";
-EfficientFloor_smooth = "smooth";
-EfficientFloor_values = [EfficientFloor_off,EfficientFloor_on,EfficientFloor_rounded,EfficientFloor_smooth];
-function validateEfficientFloor(value) = 
-  assert(list_contains(EfficientFloor_values, value), typeerror("EfficientFloor", value))
-  value;
-
 LipStyle_normal = "normal";
 LipStyle_reduced = "reduced";
 LipStyle_minimum = "minimum";

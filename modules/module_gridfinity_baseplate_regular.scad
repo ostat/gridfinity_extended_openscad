@@ -8,12 +8,14 @@ module baseplate_regular(
   grid_num_y,
   outer_num_x = 0,
   outer_num_y = 0,
+  outer_height = 0,
   position_fill_grid_x = "near",
   position_fill_grid_y = "near",
   position_grid_in_outer_x = "center",
   position_grid_in_outer_y = "center",
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
   reducedWallHeight=0,
+  reduceWallTaper = false,
   centerScrewEnabled = true,
   cornerScrewEnabled = true,
   weightHolder = true,
@@ -40,6 +42,7 @@ module baseplate_regular(
       grid_num_y = grid_num_y,
       outer_num_x = outer_num_x,
       outer_num_y = outer_num_y,
+      outer_height = outer_height,
       position_fill_grid_x = position_fill_grid_x,
       position_fill_grid_y = position_fill_grid_y,
       position_grid_in_outer_x = position_grid_in_outer_x,
@@ -47,6 +50,7 @@ module baseplate_regular(
       extra_down=frameBaseHeight,
       cornerRadius = cornerRadius,
       reducedWallHeight=reducedWallHeight,
+      reduceWallTaper=reduceWallTaper,
       roundedCorners = roundedCorners)
         difference(){
           translate([fudgeFactor,fudgeFactor,0])

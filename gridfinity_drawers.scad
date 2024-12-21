@@ -47,12 +47,20 @@ handle_vertical_center = false;
 handle_rotate = false;
 drawer_wall_thickness = 2;
 drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and floor]
-drawer_grid_style = "default";//[default:Default, magnet:Efficient magnet base]
+drawer_enable_magnet = true;
+drawer_magnet_size = [6.5, 2.4];  // .1
 
 /* [Chest Top Plate] */
 chest_top_wallpattern_style = "none"; //[none, grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
 // Plate Style
-chest_top_grid_style = "default"; //[none: None, default:Default, magnet:Efficient magnet base, lugs: Supportless feet]
+chest_top_style = "none"; //[none: None, baseplate:Base Plate, lugs: Supportless feet]
+// Enable magnets in the bin corner
+chest_top_base_plate_enable_magnets = true;
+// (Zack's design uses magnet diameter of 6.5, 2.4)
+chest_top_base_plate_magnet_size = [6.5, 2.4];  // .1
+//Reduce the frame wall size to this value
+chest_top_base_plate_reduced_wall_height = 0; //0.1
+chest_top_base_plate_reduced_wall_taper = false; 
 
 /* [Chest Base] */
 chest_bottom_wallpattern_style = "none"; //[none, grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
@@ -129,7 +137,7 @@ module drawers(
   startH,
   chestClearance,
   chestWallThickness,
-  gridStyle,
+  magnetSize = [0,0],
   drawerClearance)
 {
   assert(is_list(chestClearance) && len(chestClearance) == 3, "chestClearance must be a list of length 3");
@@ -155,7 +163,7 @@ module drawers(
         handleRotate=handleRotate,
         innerSizes=innerSizes,
         outerSizes=outerSizes,
-        gridStyle=gridStyle,
+        magnetSize=magnetSize,
         clearance=drawerClearance);
   }
 }
@@ -170,7 +178,7 @@ module drawer(
   handleRotate,
   innerSizes,// = drawerInnerSizes,
   outerSizes,// = drawerOuterSizes,
-  gridStyle,
+  magnetSize = [0,0],
   clearance)
 {
   assert(is_list(clearance) && len(clearance) == 3, "clearance must be a list of length 3");
@@ -206,13 +214,16 @@ module drawer(
       
       if(drawerBase == "default" || drawerBase == "grid"){
         translate([
-          wallThickness+clearance.x/2,
-          wallThickness+clearance.y/2, 
+          wallThickness,
+          wallThickness, 
           (drawerFloor ? floorThickness-fudgeFactor : 0)-fudgeFactor*2]) 
           baseplate(
             width = innerUnitSize.x,
             depth = innerUnitSize.y,
-            plateOptions = gridStyle);
+            outer_width = innerUnitSize.x+clearance.x/gf_pitch,
+            outer_depth = innerUnitSize.y+clearance.y/gf_pitch,
+            plateOptions = "default",
+            magnetSize = magnetSize);
       }
 
     handelHeight = handleSize.z == 0 ? outerSizes[drawerIndex].z/2
@@ -259,7 +270,11 @@ module chest(
   totalH,
   chestWallThickness,
   enableTopGrid,
-  topGridStyle,
+  topStyle,
+  topWallPatternStyle,
+  topBasePlateMagnetSize,
+  topBasePlateReducedWallHeight,
+  topBasePlateReducedWallTaper,
   bottomGrid,
   bottomMagnetDiameter,
   bottomScrewDepth,
@@ -309,17 +324,22 @@ module chest(
             //echo(x=drawerInnerUnitSize.x, y=drawerInnerUnitSize.y);
          if(bottomGrid == "lugs") feet(drawerInnerUnitSize.x, drawerInnerUnitSize.y, outerChest.x);
       }
-
-      
-      if(topGridStyle == "default" || topGridStyle == "magnet") {
-        translate(topGridOffset) 
+  
+      if(topStyle == "baseplate") {
+        //translate(topGridOffset) 
         tz(totalH-fudgeFactor) 
         baseplate(
           width = drawerInnerUnitSize.x,
           depth = drawerInnerUnitSize.y,
-          plateOptions = topGridStyle);
-      }
-      if(topGridStyle == "lugs"){
+          outer_width = outerChest.x/gf_pitch,
+          outer_depth = outerChest.y/gf_pitch,
+          outer_height = topBasePlateReducedWallHeight,
+          magnetSize = topBasePlateMagnetSize,
+          plateOptions = "default",
+          plate_corner_radius = 0,
+          //reducedWallHeight = ,
+          reduceWallTaper = topBasePlateReducedWallTaper);
+      } else if(topStyle == "lugs"){
           translate([0, 0, totalH - fudgeFactor]) footrecess(drawerInnerUnitSize.x, drawerInnerUnitSize.y, outerChest.x, outerChest.y, widen = chestLegClearance);
       }
     }
@@ -513,9 +533,12 @@ module gridfinity_drawer(
     handleRotate = handle_rotate,
     drawerWallThickness = drawer_wall_thickness,
     drawerBase = drawer_base,
-    drawerGridStyle = drawer_grid_style,
+    drawerMagnetSize = drawer_enable_magnet ? drawer_magnet_size : [0,0],
+    chestTopStyle = chest_top_style,
     chestTopWallPatternStyle=chest_top_wallpattern_style,
-    chestTopGridStyle = chest_top_grid_style,
+    chestTopBasePlateMagnetSize = chest_top_base_plate_enable_magnets? chest_top_base_plate_magnet_size : [0,0],
+    chestTopBasePlateReducedWallHeight = chest_top_base_plate_reduced_wall_height,
+    chestTopBasePlateReducedWallTaper = chest_top_base_plate_reduced_wall_taper,
     bottomGrid = chest_bottom_grid,
     bottomWallpatternStyle = chest_bottom_wallpattern_style,
     bottomMagnetDiameter = magnet_diameter,
@@ -548,9 +571,9 @@ module gridfinity_drawer(
   drawerInnerSizes = [for(i = [0:drawerCount-1]) [
     (drawerInnerWidth*gf_pitch) + drawerClearance.x,
     (drawerInnerDepth*gf_pitch) + drawerClearance.y,
-    (drawerInnerHeights[i]*gf_zpitch) + drawerClearance.z + 4.25 + (drawerGridStyle == "magnet" ? gf_baseplate_magnet_thickness : 0)
+    (drawerInnerHeights[i]*gf_zpitch) + drawerClearance.z + 4.25 + (drawerBase == "default" ? drawerMagnetSize.y : 0)
   ]];
-    
+
   drawerOuterSizes = [for(i = [0:drawerCount-1]) [
     drawerInnerSizes[i].x + (drawerWallThickness * 2),
     drawerInnerSizes[i].y + (drawerWallThickness * 2),
@@ -573,7 +596,11 @@ module gridfinity_drawer(
       outerChest=outerChest, 
       totalH=totalH,
       chestWallThickness=chestWallThickness,
-      topGridStyle=chestTopGridStyle,
+      topStyle=chestTopStyle,
+      topWallPatternStyle=chestTopWallPatternStyle,
+      topBasePlateMagnetSize=chestTopBasePlateMagnetSize,
+      topBasePlateReducedWallHeight=chestTopBasePlateReducedWallHeight,
+      topBasePlateReducedWallTaper=chestTopBasePlateReducedWallTaper,
       bottomGrid=bottomGrid,
       bottomMagnetDiameter=bottomMagnetDiameter,
       bottomScrewDepth=bottomScrewDepth,
@@ -629,21 +656,21 @@ module gridfinity_drawer(
       startH=startH,
       chestClearance=chestClearance,
       chestWallThickness=chestWallThickness,
-      gridStyle=drawerGridStyle,
+      magnetSize = drawerMagnetSize,
       drawerClearance=drawerClearance);
   if(render_choice == "onedrawer")   
     drawer(
-      drawerIndex=0,
-      innerUnitSize=drawerInnerUnitSize,
-      drawerBase= drawerBase,
+      drawerIndex = 0,
+      innerUnitSize = drawerInnerUnitSize,
+      drawerBase = drawerBase,
       wallThickness = drawerWallThickness,
       handleSize = handleSize,
-      handleVerticalCenter=handleVerticalCenter,
-      handleRotate=handleRotate,
+      handleVerticalCenter = handleVerticalCenter,
+      handleRotate = handleRotate,
       innerSizes = drawerInnerSizes,
       outerSizes = drawerOuterSizes,
-      gridStyle=drawerGridStyle,
-      clearance=drawerClearance);
+      magnetSize = drawerMagnetSize,
+      clearance = drawerClearance);
   }
 }
 

@@ -47,6 +47,7 @@ module frame_plain(
     grid_num_y, 
     outer_num_x = 0,
     outer_num_y = 0,
+    outer_height = 0,
     position_fill_grid_x = "near",
     position_fill_grid_y = "near",
     position_grid_in_outer_x = "center",
@@ -58,6 +59,7 @@ module frame_plain(
     cornerRadius = gf_cup_corner_radius,
     reducedWallHeight = 0,
     roundedCorners = 15,
+    reduceWallTaper = false,
     $fn = 44) {
   frameLipHeight = extra_down > 0 ? height -0.6 : height;
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
@@ -76,29 +78,43 @@ module frame_plain(
     echo(grid_num_x=grid_num_x, position_grid_in_outer_x=position_grid_in_outer_x, centerGridPosition=centerGridPosition);
   difference() {
     color(color_cup)
+    translate([0,0,-extra_down])
     union(){
       //padded outer material
-      translate(reducedWallHeight > 0 ? [0,0,-extra_down] : [0,0,0])
-      outer_baseplate(
-        num_x  =max(grid_num_x, outer_num_x), 
-        num_y = max(grid_num_y, outer_num_y), 
-        extendedDepth = reducedWallHeight > 0 ? 0 : extra_down,
-        trim = trim, 
-        height = reducedWallHeight > 0 ? reducedWallHeight : frameLipHeight,
-        cornerRadius = cornerRadius,
-        roundedCorners = roundedCorners);
-      
+      hull_conditional(reduceWallTaper){
+        //padded outer lower
+        outer_baseplate(
+          num_x  =max(grid_num_x, outer_num_x), 
+          num_y = max(grid_num_y, outer_num_y), 
+          trim = trim, 
+          height = outer_height > 0 
+            ? outer_height 
+            : reducedWallHeight > 0 ? extra_down+reducedWallHeight : extra_down+frameLipHeight,
+          cornerRadius = cornerRadius,
+          roundedCorners = roundedCorners);
+        
+        //padded outer upper
+        translate(centerGridPosition)
+        outer_baseplate(
+          num_x=grid_num_x, 
+          num_y=grid_num_y, 
+          trim=trim, 
+          height=extra_down + (reducedWallHeight > 0 ? reducedWallHeight : frameLipHeight),
+          cornerRadius = cornerRadius,
+          roundedCorners = roundedCorners);
+      }
+    
       //full outer material to build from
       translate(centerGridPosition)
       outer_baseplate(
         num_x=grid_num_x, 
         num_y=grid_num_y, 
-        extendedDepth=extra_down,
         trim=trim, 
-        height=frameLipHeight,
+        height=extra_down+frameLipHeight,
         cornerRadius = cornerRadius,
         roundedCorners = roundedCorners);
     }
+    
     //Wall reduction
     translate(centerGridPosition)
     frame_cavity(
@@ -113,6 +129,22 @@ module frame_plain(
       $fn = 44)
         children();
   }
+}
+
+module hull_conditional(enabled = true)
+{
+  echo("hull_conditional", enabled=enabled)
+  if(enabled){
+    hull(){
+      children();
+    }
+  }
+  else{
+    union(){
+      children();
+    }
+  }
+
 }
 
 module frame_cavity(
