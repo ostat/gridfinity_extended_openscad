@@ -152,7 +152,7 @@ module drawers(
     if(IsHelpEnabled("debug")) echo("drawers", i= i, StartH=StartH, clearance=clearance, height=drawerInnerHeights[i], zpos=zpos, drawerOuterz=drawerOuterSizes.z, drawerInnerz=drawerInnerSizes.z, drawerOuterSizes.z);
     
     translate($preview 
-      ? [chestWallThickness+chestClearance.x, offsetW, zpos] 
+      ? [chestWallThickness+chestClearance.x, ((drawerCount-i)/(drawerCount+1)*-innerUnitSize.y*gf_pitch/(1.5))+offsetW, zpos] 
       : [(innerUnitSize.x+0.5)*i*gf_pitch,0,0])
       drawer(drawerIndex=i,
         innerUnitSize=innerUnitSize,
