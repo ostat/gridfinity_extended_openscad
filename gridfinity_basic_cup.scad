@@ -84,7 +84,7 @@ flat_base = false;
 // Remove floor to create a vertical spacer
 spacer = false;
 //Pads smaller than this will not be rendered as it interferes with the baseplate. Ensure appropriate support is added in slicer.
-minium_printable_pad_size = 0.2;
+minimum_printable_pad_size = 0.2;
 
 /* [Label] */
 label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
@@ -115,7 +115,7 @@ fingerslide = "none"; //[none, rounded, chamfered]
 fingerslide_radius = 8;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 fingerslide_walls=[1,0,0,0];  //[0:1:1]
-//Allign the fingerslide with the lip
+//Align the fingerslide with the lip
 fingerslide_lip_aligned=true; 
 
 /* [Tapered Corner] */
@@ -236,7 +236,7 @@ gridfinity_cup(
     halfPitch=half_pitch,
     flatBase=flat_base,
     spacer=spacer,
-    minimumPrintablePadSize=minium_printable_pad_size),
+    minimumPrintablePadSize=minimum_printable_pad_size),
   wall_thickness=wall_thickness,
   chamber_wall_thickness=chamber_wall_thickness,
   chamber_wall_zClearance=chamber_wall_zClearance,
