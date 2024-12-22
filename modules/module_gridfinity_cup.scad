@@ -67,6 +67,7 @@ default_fingerslide = "none"; //[none, rounded, chamfered]
 default_fingerslide_radius = 8;
 // wall to enable on, front, back, left, right.  0: disabled; 1: enabled;
 default_fingerslide_walls=[1,0,0,0]; //[0:1:1]
+defailt_fingerslide_lip_aligned = true;
 
 /* [Subdivisions] */
 // X dimension subdivisions
@@ -214,6 +215,7 @@ module gridfinity_cup(
   fingerslide=default_fingerslide,
   fingerslide_radius=default_fingerslide_radius,
   fingerslide_walls=default_fingerslide_walls,
+  fingerslide_lip_aligned=default_fingerslide_lip_aligned,
   cupBase_settings = CupBaseSettings(
     magnetSize = default_magnet_size, 
     magnetEasyRelease = default_magnet_easy_release, 
@@ -375,6 +377,7 @@ module gridfinity_cup(
           fingerslide=fingerslide,
           fingerslide_radius=fingerslide_radius,
           fingerslide_walls=fingerslide_walls,
+          fingerslide_lip_aligned=fingerslide_lip_aligned,
           wall_thickness=wall_thickness,
           chamber_wall_thickness=chamber_wall_thickness,
           chamber_wall_zClearance=chamber_wall_zClearance,
@@ -831,6 +834,7 @@ module gridfinity_cup(
     ,"fingerslide",fingerslide
     ,"fingerslide_radius",fingerslide_radius
     ,"fingerslide_walls",fingerslide_walls
+    ,"fingerslide_lip_aligned",fingerslide_lip_aligned
     ,"cupBase_settings",cupBase_settings
     ,"wall_thickness",wall_thickness
     ,"chamber_wall_thickness",chamber_wall_thickness
@@ -937,6 +941,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     cupBase_settings=[],
     fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     fingerslide_walls=default_fingerslide_walls,
+    fingerslide_lip_aligned=fingerslide_lip_aligned,
     wall_thickness=default_wall_thickness,
     chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_zClearance=default_chamber_wall_zClearance,
     calculated_vertical_separator_positions=calculated_vertical_separator_positions,
@@ -962,7 +967,7 @@ module partitioned_cavity(num_x, num_y, num_z,
   difference() {
     color(getColour(color_cupcavity))
     basic_cavity(num_x, num_y, num_z,
-    fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_radius=fingerslide_radius, cupBase_settings=cupBase_settings,
+    fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_lip_aligned=fingerslide_lip_aligned, fingerslide_radius=fingerslide_radius, cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
       lip_style=lip_style, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
@@ -997,7 +1002,7 @@ module partitioned_cavity(num_x, num_y, num_z,
 }           
 
 module basic_cavity(num_x, num_y, num_z, 
-    fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,
+    fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,fingerslide_lip_aligned=default_fingerslide_lip_aligned,
     wall_thickness=default_wall_thickness,
     lip_style=default_lip_style,
     cupBase_settings=[],
@@ -1136,6 +1141,7 @@ module basic_cavity(num_x, num_y, num_z,
         num_y = num_y,
         num_z = num_z,
         fingerslide_walls=fingerslide_walls,
+        lipAligned=fingerslide_lip_aligned,
         fingerslide=fingerslide,
         fingerslide_radius=fingerslide_radius,
         reducedlipstyle=reducedlipstyle,
@@ -1227,6 +1233,7 @@ module FingerSlide(
         reducedlipstyle=reducedlipstyle,
         wall_thickness=wall_thickness,
         floorht=floorht,
+        lipAligned = true,
         seventeen=seventeen) {
   assert(is_num(num_x), "num_x must be a number");
   assert(is_num(num_y), "num_y must be a number");
@@ -1237,6 +1244,7 @@ module FingerSlide(
   assert(is_string(reducedlipstyle), "reducedlipstyle must be a string");
   assert(is_num(wall_thickness), "wall_thickness must be a number");
   assert(is_num(floorht), "floorht must be a number");
+  assert(is_bool(lipAligned), "lipAligned must be a bool");
   assert(is_num(seventeen), "seventeen must be a number");
   
   echo("fingerslide", fingerslide_walls=fingerslide_walls, fingerslide=fingerslide);
@@ -1277,23 +1285,23 @@ module FingerSlide(
         //patterns in the outer walls
         translate(locations[i][1])
         rotate(locations[i][2])                  
-  translate([0, 
-        reducedlipstyle == "reduced" ? - gf_lip_lower_taper_height
-        : reducedlipstyle =="none" ? seventeen+1.15-gf_pitch/2+0.25+wall_thickness
-        : 0, 0])
-    translate([0,-seventeen-1.15+gf_pitch/2, floorht])
+      translate([0, 
+        lipAligned && reducedlipstyle =="normal" ? -seventeen-1.15+gf_pitch/2
+        : lipAligned && reducedlipstyle == "reduced" ? -seventeen-1.15+gf_pitch/2-gf_lip_lower_taper_height
+        : 0.25+wall_thickness, floorht])
+    //translate([0,-seventeen-1.15+gf_pitch/2, floorht])
       union(){
         if(fingerslide == "rounded"){
           roundedCorner(
             radius = fingerslide_radius, 
             length=locations[i][0], 
-            height = gf_zpitch*num_z);
+            height = gf_zpitch*num_z-floorht+fudgeFactor);
         }
         else if(fingerslide == "chamfered"){
           chamferedCorner(
             chamferLength = fingerslide_radius, 
             length=locations[i][0],
-            height = gf_zpitch*num_z);
+            height = gf_zpitch*num_z-floorht+fudgeFactor);
       }
     }
 }
