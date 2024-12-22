@@ -71,7 +71,7 @@ module grid_block(
       union(){
         // logic for constructing odd-size grids of possibly half-pitch pads
         color(getColour(color_base))
-          pad_grid(num_x, num_y, half_pitch, flat_base);
+          pad_grid(num_x, num_y, half_pitch, flat_base, cupBase_settings[iCupBase_MinimumPrintablePadSize]);
         
         color(getColour(color_cup))
         tz(baseHeight) 
@@ -128,7 +128,7 @@ module grid_block(
     ,help);
 }
 
-module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
+module pad_grid(num_x, num_y, half_pitch=false, flat_base=false, minimium_size = 0.2) {
   assert(!is_undef(num_x), "num_x is undefined");
   assert(!is_undef(num_y), "num_y is undefined");
 
@@ -137,18 +137,26 @@ module pad_grid(num_x, num_y, half_pitch=false, flat_base=false) {
   }
   else if (half_pitch) {
     gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
-      echo("pad_grid", gci=$gci);
-      pad_oversize(
-        ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
-        ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5));
+      //Calculate pad size, last cells might not be 100%
+      cellSize = [          
+          ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
+          ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5)];
+      echo("pad_grid_half_pitch", gci=$gci, cellSize=cellSize);
+      if(cellSize.x >= minimium_size && cellSize.y >= minimium_size) {
+        pad_oversize(cellSize.x, cellSize.y);
+      }
     }
   }
   else {
     gridcopy(ceil(num_x), ceil(num_y)) {
-      pad_oversize(
-        //Calculate pad size, last cells might not be 100%
-        ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
-        ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1));
+      //Calculate pad size, last cells might not be 100%
+      cellSize = [
+          ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
+          ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1)];
+      echo("pad_grid", gci=$gci, cellSize=cellSize);
+      if(cellSize.x >= minimium_size && cellSize.y >= minimium_size) {
+        pad_oversize(cellSize.x, cellSize.y);
+      }
     }
   }
 }

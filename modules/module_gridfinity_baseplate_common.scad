@@ -164,27 +164,29 @@ module frame_cavity(
         num_y,
         positionGridx = position_fill_grid_x,
         positionGridy = position_fill_grid_y) {
-      if(frameWallReduction>0)
-        for(side=[[0, [$gc_size.x, $gc_size.y]*gf_pitch],[90, [$gc_size.y, $gc_size.x]*gf_pitch]]){
-        if(side[1].x >= gf_pitch/2)
-         translate([$gc_size.x/2*gf_pitch,$gc_size.y/2*gf_pitch,frameLipHeight])
-         rotate([0,0,side[0]])
-          WallCutout(
-            lowerWidth=side[1].x-15,
-            wallAngle=80,
-            height=frameWallReduction,
-            thickness=side[1].y+fudgeFactor*2,
-            cornerRadius=frameWallReduction,
-            topHeight=1,
-            $fn = 64);
-          }
-          
-        pad_oversize(
-          margins=1,
-          extend_down=extra_down,
-          $gc_size.x,
-          $gc_size.y)
-              children();
+      if($gc_size.x > 0.2 && $gc_size.y >= 0.2){
+        if(frameWallReduction>0)
+          for(side=[[0, [$gc_size.x, $gc_size.y]*gf_pitch],[90, [$gc_size.y, $gc_size.x]*gf_pitch]]){
+          if(side[1].x >= gf_pitch/2)
+           translate([$gc_size.x/2*gf_pitch,$gc_size.y/2*gf_pitch,frameLipHeight])
+           rotate([0,0,side[0]])
+            WallCutout(
+              lowerWidth=side[1].x-15,
+              wallAngle=80,
+              height=frameWallReduction,
+              thickness=side[1].y+fudgeFactor*2,
+              cornerRadius=frameWallReduction,
+              topHeight=1,
+              $fn = 64);
+            }
+            
+          pad_oversize(
+            margins=1,
+            extend_down=extra_down,
+            $gc_size.x,
+            $gc_size.y)
+                children();
+    }
   }
 }
 

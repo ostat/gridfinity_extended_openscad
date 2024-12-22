@@ -137,9 +137,9 @@ module SetGridfinityEnvironment(
   $user_width = width;
   $user_depth = depth;
   $user_height = height;
-  num_x = calcDimensionWidth(width); 
-  num_y = calcDimensionDepth(depth); 
-  num_z = calcDimensionHeight(height); 
+  num_x = calcDimensionWidth(width, true); 
+  num_y = calcDimensionDepth(depth, true); 
+  num_z = calcDimensionHeight(height, true); 
   $num_x = num_x; 
   $num_y = num_y; 
   $num_z = num_z; 
