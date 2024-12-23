@@ -209,7 +209,8 @@ SetGridfinityEnvironment(
   help = enable_help,
   cutx = cutx,
   cuty = cuty,
-  cutz = calcDimensionHeight(height, true))
+  cutz = calcDimensionHeight(height, true),
+  setColour = set_colour)
 gridfinity_cup(
   width=width, depth=depth, height=height,
   filled_in=filled_in,
