@@ -44,18 +44,18 @@ module grid_block(
   
   tz(gf_zpitch*num_z-fudgeFactor*2)
   if(filledin == "enabledfilllip"){
-      color(getColour(color_topcavity))
-        tz(-fudgeFactor)
-        hull() 
-        cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=gf_cup_corner_radius, h=lipHeight, $fn=$fn);
-    } else {
+    color(getColour(color_topcavity))
+      tz(-fudgeFactor)
+      hull() 
+      cornercopy(block_corner_position, num_x, num_y) 
+      cylinder(r=gf_cup_corner_radius, h=lipHeight, $fn=$fn);
+  } else {
     cupLip(
       num_x = num_x, 
       num_y = num_y, 
       lipStyle = lipStyle,
       wall_thickness = wall_thickness);
-    }
+  }
         
   translate(cupPosition(position,num_x,num_y))
   difference() {
@@ -129,36 +129,13 @@ module grid_block(
 }
 
 module pad_grid(num_x, num_y, half_pitch=false, flat_base=false, minimium_size = 0.2) {
-  assert(!is_undef(num_x), "num_x is undefined");
-  assert(!is_undef(num_y), "num_y is undefined");
-
-  if (flat_base) {
-    pad_oversize(num_x, num_y);
-  }
-  else if (half_pitch) {
-    gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
-      //Calculate pad size, last cells might not be 100%
-      cellSize = [          
-          ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
-          ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5)];
-      echo("pad_grid_half_pitch", gci=$gci, cellSize=cellSize);
-      if(cellSize.x >= minimium_size && cellSize.y >= minimium_size) {
-        pad_oversize(cellSize.x, cellSize.y);
-      }
-    }
-  }
-  else {
-    gridcopy(ceil(num_x), ceil(num_y)) {
-      //Calculate pad size, last cells might not be 100%
-      cellSize = [
-          ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
-          ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1)];
-      echo("pad_grid", gci=$gci, cellSize=cellSize);
-      if(cellSize.x >= minimium_size && cellSize.y >= minimium_size) {
-        pad_oversize(cellSize.x, cellSize.y);
-      }
-    }
-  }
+  pad_copy(
+    num_x = num_x, 
+    num_y = num_y, 
+    half_pitch = half_pitch, 
+    flat_base = flat_base, 
+    minimium_size = minimium_size)
+      pad_oversize($pad_copy_size.x, $pad_copy_size.y);
 }
 
 // like a cylinder but produces a square solid instead of a round one
@@ -260,6 +237,43 @@ function vector_sum(v,start=0,end) =
     start<end? v[start]+ vSum(v,start+1,end):
                v[start];             
  
+ 
+module pad_copy(num_x, num_y, half_pitch=false, flat_base=false, minimium_size = 0.2) {
+  assert(!is_undef(num_x), "num_x is undefined");
+  assert(!is_undef(num_y), "num_y is undefined");
+
+  if (flat_base) {
+    $pad_copy_size = [num_x, num_y];
+    if(IsHelpEnabled("debug")) echo("pad_grid_flat_base", pad_copy_size=$pad_copy_size);
+    if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
+      children();
+    }
+  }
+  else if (half_pitch) {
+    gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
+      //Calculate pad size, last cells might not be 100%
+      $pad_copy_size = [          
+          ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
+          ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5)];
+      if(IsHelpEnabled("debug")) echo("pad_grid_half_pitch", gci=$gci, pad_copy_size=$pad_copy_size);
+      if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
+         children();      }
+    }
+  }
+  else {
+    gridcopy(ceil(num_x), ceil(num_y)) {
+      //Calculate pad size, last cells might not be 100%
+      $pad_copy_size = [
+          ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
+          ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1)];
+      if(IsHelpEnabled("debug")) echo("pad_grid", gci=$gci, pad_copy_size=$pad_copy_size);
+      if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
+        children();
+      }
+    }
+  }
+}
+
 // make repeated copies of something(s) at the gridfinity spacing of 42mm
 module gridcopy(
   num_x, 

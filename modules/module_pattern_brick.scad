@@ -10,6 +10,17 @@ module brick_pattern(
   center = true,
   rotateGrid = false){
   
+  assert(is_list(canvis_size) && len(canvis_size) == 2, "canvis_size must be a list of len 2");
+  assert(is_num(thickness), "thickness must be a number");
+  assert(is_num(spacing), "spacing must be a number");
+  assert(is_num(border), "border must be a number");
+  assert(is_list(cell_size) && len(cell_size) == 2, "cell_size must be a list of len 2");
+  assert(is_num(corner_radius), "corner_radius must be a number");
+  assert(is_num(center_weight), "center_weight must be a number");
+  assert(is_bool(offset_layers), "offset_layers must be a bool");
+  assert(is_bool(center), "center must be a bool");
+  assert(is_bool(rotateGrid), "rotateGrid must be a bool");
+  
   working_canvis_size = 
     let (cs = rotateGrid ? [canvis_size.y,canvis_size.x] : canvis_size)
     border > 0 ? [cs.x-border*2,cs.y-border*2] : cs;

@@ -129,7 +129,6 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 wallpattern_enabled=false;
 // Style of the pattern
 wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
-
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -144,6 +143,23 @@ wallpattern_hole_size = [5,5]; //0.1
 wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
+
+/* [Floor Pattern] */
+// enable Grid floor patter
+floorpattern_enabled=false;
+// Style of the pattern
+floorpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+// Spacing between pattern
+floorpattern_hole_spacing = 2; //0.1
+//Number of sides of the hole op
+floorpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
+//Size of the hole
+floorpattern_hole_size = [5,5]; //0.1
+floorpattern_hole_radius = 0.5;
+// pattern fill mode
+floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+//veroni: noise, brick: center weight
+floorpattern_pattern_variable = 0.75;
 
 /* [Wall Cutout] */
 wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
@@ -270,6 +286,16 @@ gridfinity_cup(
   wallpattern_fill=wallpattern_fill,
   wallpattern_voronoi_noise=wallpattern_voronoi_noise,
   wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+  floor_pattern_settings = PatternSettings(
+    patternEnabled = floorpattern_enabled, 
+    patternStyle = floorpattern_style, 
+    patternFill = floorpattern_fill,
+    patternBorder = floorpattern_hole_spacing, 
+    patternHoleSize = floorpattern_hole_size, 
+    patternHoleSides = floorpattern_hole_sides,
+    patternHoleSpacing = floorpattern_hole_spacing, 
+    patternHoleRadius = floorpattern_hole_radius,
+    patternVariable = floorpattern_pattern_variable), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,
   wallcutout_vertical_width=wallcutout_vertical_width,
