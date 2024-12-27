@@ -179,6 +179,7 @@ default_text_2_text = "Gridfinity";
 
 module end_of_customizer_opts() {}
 
+/*
 //[debug] 
 default_cutx = 0;//0.01
 default_cuty = 0;//0.01
@@ -194,7 +195,7 @@ SetGridfinityEnvironment(//execution point
   cuty=default_cuty,
   cutz = calcDimensionHeight(default_height, true))//execution point
 gridfinity_cup();//execution point
-
+*/
 
 // It's recommended that all parameters other than x, y, z size should be specified by keyword 
 // and not by position.  The number of parameters makes positional parameters error prone, and
