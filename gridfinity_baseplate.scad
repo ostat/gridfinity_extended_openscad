@@ -24,6 +24,10 @@ position_grid_in_outer_y = "center";//[near, center, far]
 Reduced_Wall_Height = 0; //0.1
 Reduced_Wall_Taper = false; 
 plate_corner_radius = 3.75; //[0:0.01:3.75]
+/* [Printer bed options] */
+build_plate_enabled = "disabled";//[disabled, enabled, unique]
+//Will split the plate in to the 
+build_plate_size = [200,250];
 
 /* [Base Plate Options] */
 // Enable magnets in the bin corner
@@ -79,7 +83,84 @@ enable_help = false;
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
+   
+function split_dimention(gf_size, gf_outer_size, plate_size, position_fill_grid, position_grid_in_outer) =
+  assert(is_num(gf_size), "gf_size must be a number")
+  assert(is_num(gf_outer_size), "gf_outer_size must be a number")
+  assert(is_num(plate_size), "plate_size must be a number")
+  assert(is_string(position_fill_grid), "position_fill_grid must be a string")
+  assert(is_string(position_grid_in_outer), "position_grid_in_outer must be a string")
+  let(
+    outerSize = gf_outer_size > gf_size ? gf_outer_size : gf_size,
+    outerDelta = outerSize - gf_size,
+    outerPrefix =
+      position_grid_in_outer == "far" ? outerDelta : 
+      position_grid_in_outer == "center" ? outerDelta/2 : 0,
+    gridPrefix=
+      position_fill_grid == "near" ? gf_size - floor(gf_size) : 
+      position_fill_grid == "center" ? (gf_size - floor(gf_size))/2 : 0,
+    size1 = outerSize <= plate_size ? gf_size : gridPrefix + floor(plate_size-max(outerPrefix,gridPrefix)),
+    outer1 = outerSize <= plate_size ? outerSize : outerPrefix + floor(plate_size-outerPrefix),
+    remSize = max(0, gf_size - size1),
+    remOuter = max(0, outerSize - max(outer1, size1)))
+  let(
+    next = remSize > 0 || remOuter > 0 ? split_dimention(remSize, remOuter, plate_size, "far", "near"): [],
+    posOuter = position_grid_in_outer == "center" && gf_size > plate_size ? "far" : position_grid_in_outer,
+    posGrid = position_fill_grid == "center" && gf_size > plate_size ? "near" : position_fill_grid
+  )
+  concat([[size1, posGrid, outer1 <= size1 ? 0 : outer1, posOuter]], next);
 
+function split_plate(num_x, num_y,
+    outer_num_x,
+    outer_num_y,
+    position_fill_grid_x,
+    position_fill_grid_y,
+    position_grid_in_outer_x,
+    position_grid_in_outer_y,
+    build_plate_size) =
+  let(
+    max_x = build_plate_size.x/gf_pitch,
+    max_y = build_plate_size.y/gf_pitch,
+    list_x = split_dimention(num_x, outer_num_x, max_x, position_fill_grid_x, position_grid_in_outer_x),
+    list_y = split_dimention(num_y, outer_num_y, max_y, position_fill_grid_y, position_grid_in_outer_y),
+    list = [for(iy=[0:len(list_y)-1]) [for(ix=[0:len(list_x)-1]) [[ix,iy], [list_x[ix],list_y[iy]]]]])
+    [for(iy=[0:len(list)-1]) [for(ix=[0:len(list[iy])-1]) let(plate = list[iy][ix]) [plate[0], plate[1], check_plate_duplicate_y(plate, list)]]];
+
+
+function check_plate_duplicate_y(plate, plate_list, y = 0, end) = 
+  assert(is_list(plate), "plate must be a list")
+  assert(is_list(plate_list), "plate_list must be a list")
+  assert(is_num(y), "y must be a number")
+  let(end = is_undef(end) ? len(plate_list) : end)
+    y > len(plate_list) - 1 || y > end ? false 
+    : check_plate_duplicate_x(plate, plate_list[y]) 
+    || check_plate_duplicate_y(plate, plate_list, y = y+1);
+    
+function check_plate_duplicate_x(plate, plate_list_y, x = 0, end) = 
+  assert(is_list(plate), "plate must be a list")
+  assert(is_list(plate_list_y), "plate_list_y must be a list")
+  assert(is_num(x), "x must be a number")
+  //echo("check_plate_duplicate_x", plate=plate)
+  let(end = is_undef(end) ? len(plate_list_y) : end)
+  x > len(plate_list_y) - 1 || x > end ? false 
+  : let(comparePlate = plate_list_y[x],
+    isDupe = (comparePlate[0][0] < plate[0][0] || 
+      (comparePlate[0][0] == plate[0][0] && comparePlate[0][1] < plate[0][1])) && 
+      plate[1][0][iPlate_size] == comparePlate[1][0][iPlate_size] && 
+      (plate[1][0][iPlate_size] == floor(plate[1][0][iPlate_size]) || plate[1][0][iPlate_posGrid] == comparePlate[1][0][iPlate_posGrid]) && 
+      plate[1][0][iPlate_outerSize] == comparePlate[1][0][iPlate_outerSize] && 
+      (plate[1][0][iPlate_outerSize] == 0 || plate[1][0][iPlate_posOuter] == comparePlate[1][0][iPlate_posOuter]) &&
+      plate[1][1][iPlate_size] == comparePlate[1][1][iPlate_size] && 
+      (plate[1][1][iPlate_size] == floor(plate[1][1][iPlate_size]) || plate[1][1][iPlate_posGrid] == comparePlate[1][1][iPlate_posGrid]) && 
+      plate[1][1][iPlate_outerSize] == comparePlate[1][1][iPlate_outerSize] && 
+      (plate[1][1][iPlate_outerSize] == 0 || plate[1][1][iPlate_posOuter] == comparePlate[1][1][iPlate_posOuter]))
+    isDupe || check_plate_duplicate_x(plate, plate_list_y, x = x+1, end);
+
+iPlate_size = 0;
+iPlate_posGrid = 1;
+iPlate_outerSize = 2;
+iPlate_posOuter = 3;
+    
 if(Butterfly_Clip_Only)
 {
   ButterFly(
@@ -89,25 +170,58 @@ if(Butterfly_Clip_Only)
       Butterfly_Clip_Size.z],
     r=Butterfly_Clip_Radius);
 }
-else{
+else 
+{
+
+  plate_list = let(
+      num_x=calcDimensionWidth(Width), 
+      num_y=calcDimensionDepth(Depth),
+      outer_num_x = calcDimensionWidth(outer_Width),
+      outer_num_y = calcDimensionWidth(outer_Depth))
+    (build_plate_enabled == "disabled" || build_plate_size.x <= 0 || build_plate_size.y <= 0) 
+    ? [[[[0,0], [[num_x, position_fill_grid_x, outer_num_x, position_grid_in_outer_x], 
+       [num_y, position_fill_grid_y, outer_num_y, position_grid_in_outer_y]], false]]]
+    :split_plate(
+      num_x=num_x, 
+      num_y=num_y,
+      outer_num_x = outer_num_x,
+      outer_num_y = outer_num_y,
+      position_fill_grid_x = position_fill_grid_x,
+      position_fill_grid_y = position_fill_grid_y,
+      position_grid_in_outer_x = position_grid_in_outer_x,
+      position_grid_in_outer_y = position_grid_in_outer_y,
+      build_plate_size= build_plate_size);
+    
+  for(iy=[0:len(plate_list)-1])
+  let(listy = plate_list[iy])
+  for(ix=[0:len(listy)-1]) {
+  plate = listy[ix];
+  pos = [
+    ix*build_plate_size.x+ix*5,
+    iy*build_plate_size.y+iy*5,
+    0];
+  if(build_plate_enabled == "unique" && !plate[2] || build_plate_enabled != "unique")
+  conditional_color(true, plate[2] ? "#00640050" : "#006400")
+  translate(pos)
+  conditional_render(true)//plate[2])
   SetGridfinityEnvironment(
-    width = Width,
-    depth = Depth,
+    width = plate[1].x[iPlate_size],
+    depth = plate[1].y[iPlate_size],
     render_position = Render_Position,
     help = enable_help,
     cutx = cutx,
     cuty = cuty,
     cutz = 2)
     gridfinity_baseplate(
-      num_x = calcDimensionWidth(Width),
-      num_y = calcDimensionWidth(Depth),
-      outer_num_x = calcDimensionWidth(outer_Width),
-      outer_num_y = calcDimensionWidth(outer_Depth),
+      num_x = plate[1].x[iPlate_size],//calcDimensionWidth(Width),
+      num_y = plate[1].y[iPlate_size],//calcDimensionWidth(Depth),
+      outer_num_x = plate[1].x[iPlate_outerSize], //calcDimensionWidth(outer_Width),
+      outer_num_y = plate[1].y[iPlate_outerSize], //calcDimensionWidth(outer_Depth),
       outer_height = outer_Height,
-      position_fill_grid_x = position_fill_grid_x,
-      position_fill_grid_y = position_fill_grid_y,
-      position_grid_in_outer_x = position_grid_in_outer_x,
-      position_grid_in_outer_y = position_grid_in_outer_y,
+      position_fill_grid_x = plate[1].x[iPlate_posGrid], //position_fill_grid_x,
+      position_fill_grid_y = plate[1].y[iPlate_posGrid], //position_fill_grid_y,
+      position_grid_in_outer_x = plate[1].x[iPlate_posOuter], //position_grid_in_outer_x,
+      position_grid_in_outer_y = plate[1].y[iPlate_posOuter], //position_grid_in_outer_y,
       plate_corner_radius = plate_corner_radius,
       magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
       reducedWallHeight = Reduced_Wall_Height, 
@@ -125,4 +239,22 @@ else{
       filamentClipEnabled=Filament_Clip_Enabled,
       filamentClipDiameter=Filament_Clip_Diameter,
       filamentClipLength=Filament_Clip_Length);
+  }
+}
+
+module conditional_color(enable=true, c){
+  if(enable)
+  color(c)
+    children();
+  else
+    children();
+}
+
+module conditional_render(enable=true){
+  if(enable)
+  render()
+    children();
+  else
+  union()
+    children();
 }
