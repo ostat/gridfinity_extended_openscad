@@ -26,21 +26,23 @@ Reduced_Wall_Taper = false;
 plate_corner_radius = 3.75; //[0:0.01:3.75]
 /* [Printer bed options] */
 build_plate_enabled = "disabled";//[disabled, enabled, unique]
+//spread out the plates, use if last row is small.
+average_plate_sizes = false;
 //Will split the plate in to the 
 build_plate_size = [200,250];
 
 /* [Base Plate Options] */
 // Enable magnets in the bin corner
-Enable_Magnets = true;
+Enable_Magnets = false;
 //size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
 Magnet_Size = [6.5, 2.4];  // .1
 
 //Enable screws in the bin corner under the magnets
-Corner_Screw_Enabled = true;
+Corner_Screw_Enabled = false;
 //Enable hold down screw in the center
-Center_Screw_Enabled = true;
+Center_Screw_Enabled = false;
 //Enable cavity to place frame weights
-Enable_Weight = true;
+Enable_Weight = false;
 
 /* [Base Plate Clips - POC don't use yet]*/
 //This feature is not yet finalized, or working properly. 
@@ -84,7 +86,7 @@ enable_help = false;
 /* [Hidden] */
 module end_of_customizer_opts() {}
    
-function split_dimention(gf_size, gf_outer_size, plate_size, position_fill_grid, position_grid_in_outer) =
+function split_dimention(gf_size, gf_outer_size, plate_size, position_fill_grid, position_grid_in_outer, average_plate_sizes = false) =
   assert(is_num(gf_size), "gf_size must be a number")
   assert(is_num(gf_outer_size), "gf_outer_size must be a number")
   assert(is_num(plate_size), "plate_size must be a number")
@@ -92,19 +94,24 @@ function split_dimention(gf_size, gf_outer_size, plate_size, position_fill_grid,
   assert(is_string(position_grid_in_outer), "position_grid_in_outer must be a string")
   let(
     outerSize = gf_outer_size > gf_size ? gf_outer_size : gf_size,
-    outerDelta = outerSize - gf_size,
+    outerDelta = gf_outer_size <= 0 ? 0 : outerSize - gf_size,
     outerPrefix =
       position_grid_in_outer == "far" ? outerDelta : 
       position_grid_in_outer == "center" ? outerDelta/2 : 0,
     gridPrefix=
       position_fill_grid == "near" ? gf_size - floor(gf_size) : 
       position_fill_grid == "center" ? (gf_size - floor(gf_size))/2 : 0,
-    size1 = outerSize <= plate_size ? gf_size : gridPrefix + floor(plate_size-max(outerPrefix,gridPrefix)),
-    outer1 = outerSize <= plate_size ? outerSize : outerPrefix + floor(plate_size-outerPrefix),
+    platesRemaining = ceil(outerSize/plate_size),
+    avgSize = platesRemaining > 1 && average_plate_sizes ? gf_size/platesRemaining : plate_size,
+    avgOuter = platesRemaining > 1 && average_plate_sizes ? outerSize/platesRemaining : plate_size,
+    size1 = outerSize <= plate_size ? gf_size : gridPrefix + floor(avgSize-max(outerPrefix,gridPrefix)),
+    outer1 = outerSize <= plate_size ? outerSize : max(outerPrefix,gridPrefix) + floor(avgOuter-max(outerPrefix,gridPrefix)),
     remSize = max(0, gf_size - size1),
     remOuter = max(0, outerSize - max(outer1, size1)))
+  //echo("split_dimention", gf_size=gf_size, plate_size=plate_size, platesRemaining=platesRemaining, avgSize=avgSize, gridPrefix=gridPrefix, size1=size1, remSize=remSize)
+  //echo("split_dimention", gf_outer_size=gf_outer_size, plate_size=plate_size, platesRemaining=platesRemaining, avgOuter=avgOuter, outerPrefix=outerPrefix, outer1=outer1, remOuter=remOuter)
   let(
-    next = remSize > 0 || remOuter > 0 ? split_dimention(remSize, remOuter, plate_size, "far", "near"): [],
+    next = remSize > 0 || remOuter > 0 ? split_dimention(remSize, remOuter, plate_size, "far", "near", average_plate_sizes): [],
     posOuter = position_grid_in_outer == "center" && gf_size > plate_size ? "far" : position_grid_in_outer,
     posGrid = position_fill_grid == "center" && gf_size > plate_size ? "near" : position_fill_grid
   )
@@ -117,12 +124,13 @@ function split_plate(num_x, num_y,
     position_fill_grid_y,
     position_grid_in_outer_x,
     position_grid_in_outer_y,
-    build_plate_size) =
+    build_plate_size,
+    average_plate_sizes) =
   let(
     max_x = build_plate_size.x/gf_pitch,
     max_y = build_plate_size.y/gf_pitch,
-    list_x = split_dimention(num_x, outer_num_x, max_x, position_fill_grid_x, position_grid_in_outer_x),
-    list_y = split_dimention(num_y, outer_num_y, max_y, position_fill_grid_y, position_grid_in_outer_y),
+    list_x = split_dimention(num_x, outer_num_x, max_x, position_fill_grid_x, position_grid_in_outer_x, average_plate_sizes),
+    list_y = split_dimention(num_y, outer_num_y, max_y, position_fill_grid_y, position_grid_in_outer_y, average_plate_sizes),
     list = [for(iy=[0:len(list_y)-1]) [for(ix=[0:len(list_x)-1]) [[ix,iy], [list_x[ix],list_y[iy]]]]])
     [for(iy=[0:len(list)-1]) [for(ix=[0:len(list[iy])-1]) let(plate = list[iy][ix]) [plate[0], plate[1], check_plate_duplicate_y(plate, list)]]];
 
@@ -190,7 +198,8 @@ else
       position_fill_grid_y = position_fill_grid_y,
       position_grid_in_outer_x = position_grid_in_outer_x,
       position_grid_in_outer_y = position_grid_in_outer_y,
-      build_plate_size= build_plate_size);
+      build_plate_size= build_plate_size,
+      average_plate_sizes=average_plate_sizes);
     
   for(iy=[0:len(plate_list)-1])
   let(listy = plate_list[iy])
@@ -201,7 +210,7 @@ else
     iy*build_plate_size.y+iy*5,
     0];
   if(build_plate_enabled == "unique" && !plate[2] || build_plate_enabled != "unique")
-  conditional_color(true, plate[2] ? "#00640050" : "#006400")
+  conditional_color(len(plate_list) > 1, plate[2] ? "#404040" : "#006400")
   translate(pos)
   conditional_render(true)//plate[2])
   SetGridfinityEnvironment(

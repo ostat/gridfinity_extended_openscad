@@ -131,7 +131,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   
   let(
     efficientFloor = validateEfficientFloor(settings[iCupBase_EfficientFloor]),
-    magnetEasyRelease = validateMagnetEasyRelease(settings[iCupBase_MagnetEasyRelease], efficientFloor),
+    magnetEasyRelease = validateMagnetEasyRelease(settings[iCupBase_MagnetEasyRelease], efficientFloor)
   ) [
       settings[iCupBase_MagnetSize],
       magnetEasyRelease,
