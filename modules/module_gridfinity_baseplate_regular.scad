@@ -14,6 +14,7 @@ module baseplate_regular(
   position_grid_in_outer_x = "center",
   position_grid_in_outer_y = "center",
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
+  magnetZOffset=0,
   reducedWallHeight=0,
   reduceWallTaper = false,
   centerScrewEnabled = true,
@@ -34,7 +35,7 @@ module baseplate_regular(
     cornerScrewEnabled ? screwDepth : 0,
     cornerScrewEnabled ? magnetSize[1] + counterSinkDepth + minFloorThickness : 0,
     weightHolder ? weightDepth+minFloorThickness : 0,
-    magnetSize[1]);
+    magnetSize.y+magnetZOffset);
     
     translate([0,0,frameBaseHeight])
     frame_plain(
@@ -54,17 +55,19 @@ module baseplate_regular(
       roundedCorners = roundedCorners)
         difference(){
           translate([fudgeFactor,fudgeFactor,0])
-            cube([gf_pitch-fudgeFactor*2,gf_pitch-fudgeFactor*2,frameBaseHeight-fudgeFactor*2]);
+            cube([gf_pitch-fudgeFactor*2,gf_pitch-fudgeFactor*2,frameBaseHeight]);
             
           baseplate_cavities(
             num_x = $gc_size.x,
             num_y = $gc_size.y,
             baseCavityHeight=frameBaseHeight,
             magnetSize = magnetSize,
-            centerScrewEnabled = centerScrewEnabled,
+            magnetZOffset=magnetZOffset,
+            centerScrewEnabled = centerScrewEnabled && $gc_is_corner.x && $gc_is_corner.y,
             cornerScrewEnabled = cornerScrewEnabled,
             weightHolder = weightHolder,
             cornerRadius = cornerRadius,
-            roundedCorners = roundedCorners);
+            roundedCorners = roundedCorners,
+            reverseAlignment = [$gci.x == 0, $gci.y==0]);
         }
 }

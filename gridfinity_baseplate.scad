@@ -36,6 +36,8 @@ build_plate_size = [200,250];
 Enable_Magnets = false;
 //size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
 Magnet_Size = [6.5, 2.4];  // .1
+//raises the magnet, and creates a floor (for gluding)
+Magnet_Z_Offset = 0;  // .1
 
 //Enable screws in the bin corner under the magnets
 Corner_Screw_Enabled = false;
@@ -233,6 +235,7 @@ else
       position_grid_in_outer_y = plate[1].y[iPlate_posOuter], //position_grid_in_outer_y,
       plate_corner_radius = plate_corner_radius,
       magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
+      magnetZOffset = Magnet_Z_Offset,
       reducedWallHeight = Reduced_Wall_Height, 
       reduceWallTaper = Reduced_Wall_Taper, 
       cornerScrewEnabled  = Corner_Screw_Enabled,

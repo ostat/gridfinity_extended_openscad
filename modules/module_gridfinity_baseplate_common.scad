@@ -75,7 +75,7 @@ module frame_plain(
         : (outer_num_y-grid_num_y)/2*gf_pitch,
     0];
 
-    echo(grid_num_x=grid_num_x, position_grid_in_outer_x=position_grid_in_outer_x, centerGridPosition=centerGridPosition);
+  echo(grid_num_x=grid_num_x, position_grid_in_outer_x=position_grid_in_outer_x, centerGridPosition=centerGridPosition);
   difference() {
     color(color_cup)
     translate([0,0,-extra_down])
@@ -195,22 +195,24 @@ module baseplate_cavities(
   num_y,  
   baseCavityHeight,
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
+  magnetZOffset = 0,
   magnetSouround = true,
   centerScrewEnabled = false,
   cornerScrewEnabled = false,
   weightHolder = false,
   cornerRadius = gf_cup_corner_radius,
-  roundedCorners = 15) {
+  roundedCorners = 15,
+  reverseAlignment = [false, false]) {
 
   assert(is_num(num_x) && num_x >= 0 && num_x <=1, "num_x must be a number between 0 and 1");
   assert(is_num(num_y) && num_y >= 0 && num_y <=1, "num_y must be a number between 0 and 1");
   assert(is_num(baseCavityHeight), "baseCavityHeight must be a number");
   
-  
-    overSize = 1;
-    minFloorThickness = 1;
+  echo("baseplate_cavities", baseCavityHeight=baseCavityHeight, magnetSize=magnetSize, magnetZOffset=magnetZOffset);
+    //overSize = 1;
+    //minFloorThickness = 1;
     counterSinkDepth = 2.5;
-    screwDepth = counterSinkDepth+3.9;
+    //screwDepth = counterSinkDepth+3.9;
     screwOuterChamfer = 8.5;
     weightDepth = 4;
   
@@ -220,11 +222,13 @@ module baseplate_cavities(
     _centerScrewEnabled = centerScrewEnabled && num_x >= 1 && num_y >=1;
     _weightHolder = weightHolder && num_x >= 1 && num_y >=1;
     
-    translate([gf_pitch/2,gf_pitch/2])
+    translate([
+      (reverseAlignment.x ? (-1/2+num_x) : 1/2)*gf_pitch,
+      (reverseAlignment.y ? (-1/2+num_y) : 1/2)*gf_pitch, 0])
     union(){
-      gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true) {
-        translate([0, 0, baseCavityHeight-magnetSize[1]-fudgeFactor*3]) 
-        cylinder(d=magnetSize[0], h=magnetSize[1]+fudgeFactor*2, $fn=48);
+      gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
+        translate([0, 0, baseCavityHeight-magnetSize.y]) 
+        cylinder(d=magnetSize[0], h=magnetSize.y, $fn=48);
 
         // counter-sunk holes in the bottom
         if(cornerScrewEnabled){
@@ -236,7 +240,7 @@ module baseplate_cavities(
       
       if(_weightHolder){
         translate([-10.7, -10.7, -fudgeFactor]) 
-          cube([21.4, 21.4, weightDepth + 0.01]);
+          cube([21.4, 21.4, weightDepth + fudgeFactor]);
           
          for (a2=[0,90]) {
           rotate([0, 0, a2])
@@ -259,6 +263,7 @@ module baseplate_cavities(
         }
       }
       
+      //rounded souround for the magnet
       if(magnetSouround && !_centerScrewEnabled && !_weightHolder){
         supportDiameter = max(
           cornerScrewEnabled ? 8.5 : 0,
@@ -269,7 +274,7 @@ module baseplate_cavities(
             cube([gf_pitch,gf_pitch,baseCavityHeight]);
           if((cornerScrewEnabled || magnetSize[0]> 0))
           translate([0, 0, -fudgeFactor*2]) 
-          gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true) {
+          gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
             rdeg =
               $gcci[2] == [ 1, 1] ? 90 :
               $gcci[2] == [-1, 1] ? 180 :

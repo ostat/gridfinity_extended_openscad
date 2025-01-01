@@ -178,7 +178,10 @@ module pad_oversize(
   
   // female parts are a bit oversize for a nicer fit
   radialgap = margins ? 0.25 : 0;  // oversize cylinders for a bit of clearance
-  axialdown = margins ? 0.1 : 0;   // a tiny bit of axial clearance present in Zack's design
+  //axialdown = margins ? 0.1 : 0;   // a tiny bit of axial clearance present in Zack's design
+  //remove axialdown as it messes up the placement of the attachements 
+  axialdown =0;
+  fudgeFactor = 0.01;
   
   translate([0, 0, -axialdown])
   difference() {
@@ -214,10 +217,10 @@ module pad_oversize(
         hull() 
         cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
-            cylsq(d=1.6+2*radialgap, h=margins+extend_down+0.1);
+            cylsq(d=1.6+2*radialgap, h=extend_down);
           }
           else {
-            cylinder(d=1.6+2*radialgap, h=margins+extend_down+0.1, $fn=24);
+            cylinder(d=1.6+2*radialgap, h=extend_down, $fn=24);
           }
         }
         //for baseplate patterns
@@ -231,12 +234,6 @@ module pad_oversize(
     }
   }
 }
-
-function vector_sum(v,start=0,end) = 
-  let(v=is_list(v)?v:[v], end = is_undef(end)?len(v)-1:min(len(v)-1,end) )
-    start<end? v[start]+ vSum(v,start+1,end):
-               v[start];             
- 
  
 module pad_copy(num_x, num_y, half_pitch=false, flat_base=false, minimium_size = 0.2) {
   assert(!is_undef(num_x), "num_x is undefined");
@@ -289,32 +286,52 @@ module gridcopy(
     let(
       centerGrid = positionGrid == "center",
       padding = ceil(num) != num ? (num - floor(num))/(centerGrid?2:1) : 0,
-      count = ceil(num) + ((padding > 0 && centerGrid) ? 1 :0))
+      count = ceil(num) + ((padding > 0 && centerGrid) ? 1 :0),
+      hasPrePad = padding != 0 && (positionGrid == "center" || positionGrid == "near"),
+      hasPostPad = padding != 0 && (positionGrid == "center" || positionGrid == "far"))
       [for (i = [ 0 : count - 1 ]) 
-        i == 0 && padding != 0 && (positionGrid == "center" || positionGrid == "near") ? padding
-          : i == count-1 && padding != 0 && (positionGrid == "center" || positionGrid == "far") ? padding
-          : 1];
-  
+        i == 0 && hasPrePad ? [padding,false]
+          : i == count-1 && hasPostPad ? [padding,false]
+          : [1, 
+            (i == 0 && !hasPrePad) ||
+            (i == 1 && hasPrePad) ||
+            (i == (count-1) && !hasPostPad) ||
+            (i == (count-2) && hasPostPad)]];    
+    
   xCellsList = num_to_list(num_x, positionGridx);
   yCellsList = num_to_list(num_y, positionGridy);
   
   $gc_count=[len(xCellsList), len(yCellsList)];
   
+  if(IsHelpEnabled("debug")) echo("gridcopy", xCellsList=xCellsList, yCellsList=yCellsList);
+  
   for (xi=[0:len(xCellsList)-1]) 
     for (yi=[0:len(yCellsList)-1])
     {
       $gci=[xi,yi,0];
-      $gc_size=[xCellsList[xi], yCellsList[yi], 0];
+      $gc_size=[xCellsList[xi][0], yCellsList[yi][0], 0];
+      $gc_is_corner=[xCellsList[xi][1], yCellsList[yi][1]];
       $gc_position=[
-        vector_sum(xCellsList, 0, xi)-xCellsList[xi], 
-        vector_sum(yCellsList, 0, yi)-yCellsList[yi], 0];
+        vector_sum(xCellsList, 0, xi,0)-xCellsList[xi][0], 
+        vector_sum(yCellsList, 0, yi,0)-yCellsList[yi][0], 0];
       translate([$gc_position.x,$gc_position.y,0]*pitch)
         children();
     }
 }
 
+function vector_sum(v, start=0, end, itemIndex) = 
+  let(v=is_list(v)?v:[v], end = is_undef(end)?len(v)-1:min(len(v)-1,end))
+  is_num(itemIndex) 
+    ? start<end ? v[start][itemIndex] + vector_sum(v, start+1, end, itemIndex) : v[start][itemIndex]
+    : start<end ? v[start] + vector_sum(v, start+1, end, itemIndex) : v[start];             
+  
 // similar to cornercopy, can only copy to box corners
-module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch, center = false) {
+// r, position of the corner from the center for a full sized. Must be less than half of pitch (normally 17 for gridfinity) .
+// num_x, num_y, size of the cube in units of pitch.
+// pitch, size of one unit.
+// center, center the grid
+// reverseAlignment, reverse the alignment of the corners
+module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch, center = false, reverseAlignment=[false,false]) {
   assert(!is_undef(r), "r is undefined");
   assert(!is_undef(num_x), "num_x is undefined");
   assert(!is_undef(num_y), "num_y is undefined");
@@ -327,9 +344,13 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch, 
       gridPosition = [cell.x+(quadrent.x == -1 ? -0.5 : 0), cell.y+(quadrent.y == -1 ? -0.5 : 0)];
       trans = [pitch*(cell.x-1)+quadrent.x*r, pitch*(cell.y-1)+ quadrent.y*r, 0];
       $gcci=[trans,cell,quadrent];
-      if(IsHelpEnabled("info")) echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, gridPosition=gridPosition);
+
+      cornerVisible = 
+        (!reverseAlignment.x && gridPosition.x <= num_x || reverseAlignment.x && 1.5-gridPosition.x <= num_x) && 
+        (!reverseAlignment.y && gridPosition.y <= num_y || reverseAlignment.y && 1.5-gridPosition.y <= num_y);
+      if(IsHelpEnabled("info")) echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, gridPosition=gridPosition, reverseAlignment=reverseAlignment, cornerVisible=cornerVisible);
       //only copy if the cell is atleast half size
-      if(gridPosition.x <= num_x && gridPosition.y <= num_y)
+      if(cornerVisible)
         //only box corners or every cell corner
         if(!onlyBoxCorners || 
           ((cell.x == 1 && quadrent.x == -1) && (cell.y == 1  && quadrent.y == -1)) ||

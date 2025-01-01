@@ -41,6 +41,7 @@ module gridfinity_baseplate(
   position_grid_in_outer_y = "center",
   plate_corner_radius=gf_cup_corner_radius,
   magnetSize = Default_Magnet_Size,
+  magnetZOffset=0,
   reducedWallHeight = 0,
   reduceWallTaper = false,
   cornerScrewEnabled  = false,
@@ -90,6 +91,7 @@ module gridfinity_baseplate(
               position_grid_in_outer_x = position_grid_in_outer_x,
               position_grid_in_outer_y = position_grid_in_outer_y,
               magnetSize = magnetSize,
+              magnetZOffset=magnetZOffset,
               reducedWallHeight = reducedWallHeight,
               reduceWallTaper = reduceWallTaper,
               cornerScrewEnabled = cornerScrewEnabled,
@@ -123,6 +125,7 @@ module baseplate(
   position_grid_in_outer_x = true,
   position_grid_in_outer_y = true,
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
+  magnetZOffset=0,
   reducedWallHeight = 0,
   reduceWallTaper = false,
   cornerScrewEnabled = false,
@@ -147,6 +150,7 @@ module baseplate(
           num_x=width, 
           num_y=depth,
           magnetSize=magnetSize, 
+          magnetZOffset=magnetZOffset,
           roundedCorners=roundedCorners);
       }      
       else {
@@ -161,6 +165,7 @@ module baseplate(
           position_grid_in_outer_x = position_grid_in_outer_x,
           position_grid_in_outer_y = position_grid_in_outer_y,
           magnetSize = magnetSize,
+          magnetZOffset=magnetZOffset,
           reducedWallHeight=reducedWallHeight,
           reduceWallTaper=reduceWallTaper,
           centerScrewEnabled = centerScrewEnabled,

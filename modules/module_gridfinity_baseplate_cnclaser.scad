@@ -10,10 +10,8 @@ BasePlateSettings_cnclaser = ["cnclaser", [
 */
 
 //cncmagnet_baseplate(1,2, magnetSize = [0,0]);
-  baseplate_cnclaser(
-    num_x = 1.5, 
-    num_y = 2.8,
-    magnetSize=[6,7]);
+//baseplate_cnclaser(num_x = 1.5, num_y = 2.8, magnetSize=[6,7]);
+
 module baseplate_cnclaser(
   num_x, 
   num_y,
