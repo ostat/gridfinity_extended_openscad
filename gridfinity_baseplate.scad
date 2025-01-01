@@ -214,7 +214,7 @@ else
   if(build_plate_enabled == "unique" && !plate[2] || build_plate_enabled != "unique")
   conditional_color(len(plate_list) > 1, plate[2] ? "#404040" : "#006400")
   translate(pos)
-  conditional_render(true)//plate[2])
+  conditional_render(len(plate_list) > 1)//plate[2])
   SetGridfinityEnvironment(
     width = plate[1].x[iPlate_size],
     depth = plate[1].y[iPlate_size],

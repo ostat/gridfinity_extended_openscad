@@ -217,10 +217,10 @@ module pad_oversize(
         hull() 
         cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
-            cylsq(d=1.6+2*radialgap, h=extend_down);
+            cylsq(d=1.6+2*radialgap, h=extend_down+fudgeFactor);
           }
           else {
-            cylinder(d=1.6+2*radialgap, h=extend_down, $fn=24);
+            cylinder(d=1.6+2*radialgap, h=extend_down+fudgeFactor, $fn=24);
           }
         }
         //for baseplate patterns

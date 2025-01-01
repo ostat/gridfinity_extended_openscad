@@ -53,9 +53,10 @@ module baseplate_regular(
       reducedWallHeight=reducedWallHeight,
       reduceWallTaper=reduceWallTaper,
       roundedCorners = roundedCorners)
+        translate([0,0,fudgeFactor])
         difference(){
-          translate([fudgeFactor,fudgeFactor,0])
-            cube([gf_pitch-fudgeFactor*2,gf_pitch-fudgeFactor*2,frameBaseHeight]);
+          translate([fudgeFactor,fudgeFactor,fudgeFactor])
+            cube([gf_pitch-fudgeFactor*2,gf_pitch-fudgeFactor*2,frameBaseHeight+fudgeFactor*2]);
             
           baseplate_cavities(
             num_x = $gc_size.x,
