@@ -98,7 +98,7 @@ module gridfinity_sieve(
     labelSize=label_size,
     labelRelief=label_relief,
     labelWalls=label_walls),
-  cupbase_settings = CupBaseSettings(
+  cupBase_settings = CupBaseSettings(
     magnetSize = [0,0], 
     centerMagnetSize = [0,0], 
     screwSize = [0,0], 
@@ -126,7 +126,7 @@ module gridfinity_sieve(
       position=position,
       label_settings=label_settings,
       filled_in=false,
-      cupbase_settings=cupbase_settings,
+      cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
       lip_style=lip_style,
       zClearance=zClearance,

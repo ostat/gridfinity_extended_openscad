@@ -186,21 +186,25 @@ module Gridfinity_Divider(
   width=width, depth=depth, height=height,
   position=position,
   filled_in=filled_in,
-  magnet_diameter=magnet_diameter,
-  magnet_easy_release=magnet_easy_release,
-  screw_depth=screw_depth,
-  floor_thickness=floor_thickness,
+  cupBase_settings = CupBaseSettings(
+    magnetSize = magnet_size, 
+    magnetEasyRelease = magnet_easy_release, 
+    centerMagnetSize = center_magnet_size, 
+    screwSize = screw_size, 
+    holeOverhangRemedy = hole_overhang_remedy, 
+    cornerAttachmentsOnly = box_corner_attachments_only,
+    floorThickness = floor_thickness,
+    cavityFloorRadius = cavity_floor_radius,
+    efficientFloor=efficient_floor,
+    halfPitch=half_pitch,
+    flatBase=flat_base),
   wall_thickness=wall_thickness,
-  hole_overhang_remedy=hole_overhang_remedy,
-  half_pitch=half_pitch,
   lip_style=lip_style,
-  box_corner_attachments_only=box_corner_attachments_only,
-  flat_base=flat_base,
-
-  dividercount=divider_count,
-  dividerheight=divider_height,
+  
+  dividerCount=divider_count,
+  dividerHeight=divider_height,
   baseHeight=divider_base_height,
-  dividerwidth=divider_width,
+  dividerWidth=divider_width,
   radius=divider_radius,
   frontTopInset=divider_front_top_inset,
   frontTopAngle=divider_front_top_angle,
@@ -224,19 +228,7 @@ module Gridfinity_Divider(
   gridfinity_cup(
     width=width, depth=depth, height=height,
     position=position,
-    cupbase_settings = CupBaseSettings(
-      magnetSize = magnet_size, 
-      magnetEasyRelease = magnet_easy_release, 
-      centerMagnetSize = center_magnet_size, 
-      screwSize = screw_size, 
-      holeOverhangRemedy = hole_overhang_remedy, 
-      cornerAttachmentsOnly = box_corner_attachments_only,
-      floorThickness = floor_thickness,
-      cavityFloorRadius = cavity_floor_radius,
-      efficientFloor=efficient_floor,
-      halfPitch=half_pitch,
-      flatBase=flat_base,
-      spacer=spacer),
+    cupBase_settings=cupBase_settings,
     wall_thickness=wall_thickness,
     lip_style=lip_style,
     label_settings=LabelSettings(
@@ -244,14 +236,14 @@ module Gridfinity_Divider(
     help = enable_help);
   
   for(i = [0 : divider_count-1]){
-    ypos = (num_y*gf_pitch-gf_cup_corner_radius*2-dividerwidth)/(divider_count-1)*i;
+    ypos = (num_y*gf_pitch-gf_cup_corner_radius*2-dividerWidth)/(divider_count-1)*i;
     translate(cupPosition(position,num_x,num_y))
-    translate([0.25,gf_cup_corner_radius+dividerwidth+ypos,floorHeight])
+    translate([0.25,gf_cup_corner_radius+dividerWidth+ypos,floorHeight])
     PatternedDivider(
-      height = dividerheight,
+      height = dividerHeight,
       length = num_x*gf_pitch-0.5,
       baseHeight = baseHeight,
-      width = dividerwidth,
+      width = dividerWidth,
       radius = radius,
       frontTopInset=frontTopInset,
       frontTopAngle=frontTopAngle,

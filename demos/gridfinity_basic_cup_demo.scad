@@ -21,75 +21,93 @@ setViewPort=true;
 multi_spacing = [0.25,0.25];
 
 /* [Hidden] */
-iwidth=0;
-idepth=iwidth+1;
-iheight=idepth+1;
-iposition=iheight+1;
-ifilled_in=iposition+1;
-ilabel=ifilled_in+1;
-ilabel_size=ilabel+1;
-ilabel_relief=ilabel_size+1;
-iwall_thickness=ilabel_relief+1;
-ilip_style=iwall_thickness+1;
-izClearance=ilip_style+1;
-ichamber_wall_thickness=izClearance+1;
-ivertical_chambers=ichamber_wall_thickness+1;
-ivertical_separator_bend_position=ivertical_chambers+1;
-ivertical_separator_bend_angle=ivertical_separator_bend_position+1;
-ivertical_separator_bend_separation=ivertical_separator_bend_angle+1;
-ivertical_separator_cut_depth=ivertical_separator_bend_separation+1;
-ivertical_irregular_subdivisions=ivertical_separator_cut_depth+1;
-ivertical_separator_config=ivertical_irregular_subdivisions+1;
-ihorizontal_chambers=ivertical_separator_config+1;
-ihorizontal_separator_bend_position=ihorizontal_chambers+1;
-ihorizontal_separator_bend_angle=ihorizontal_separator_bend_position+1;
-ihorizontal_separator_bend_separation=ihorizontal_separator_bend_angle+1;
-ihorizontal_separator_cut_depth=ihorizontal_separator_bend_separation +1;
-ihorizontal_irregular_subdivisions=ihorizontal_separator_cut_depth+1;
-ihorizontal_separator_config=ihorizontal_irregular_subdivisions+1;
-imagnet_diameter=ihorizontal_separator_config+1;
-iscrew_depth=imagnet_diameter+1;
-icenter_magnet_diameter=iscrew_depth+1;
-icenter_magnet_thickness=icenter_magnet_diameter+1;
-ihole_overhang_remedy=icenter_magnet_thickness+1;
-ibox_corner_attachments_only=ihole_overhang_remedy+1;
-ifloor_thickness=ibox_corner_attachments_only+1;
-icavity_floor_radius=ifloor_thickness+1;
-iefficient_floor=icavity_floor_radius+1;
-ihalf_pitch=iefficient_floor+1;
-iflat_base=ihalf_pitch+1;
-ispacer=iflat_base+1;
-ifingerslide=ispacer+1;
-ifingerslide_radius=ifingerslide+1;
-itapered_corner=ifingerslide_radius+1;
-itapered_corner_size=itapered_corner+1;
-itapered_setback=itapered_corner_size+1;
-iwallcutout_enabled=itapered_setback+1;
-iwallcutout_walls=iwallcutout_enabled+1;
-iwallcutout_width=iwallcutout_walls+1;
-iwallcutout_angle=iwallcutout_width+1;
-iwallcutout_height=iwallcutout_angle+1;
-iwallcutout_corner_radius=iwallcutout_height+1;
-iwallpattern_enabled=iwallcutout_corner_radius+1;
-iwallpattern_style=iwallpattern_enabled+1;
-iwallpattern_walls=iwallpattern_style+1;
-iwallpattern_dividers_enabled=iwallpattern_walls+1;
-iwallpattern_fill=iwallpattern_dividers_enabled+1;
-iwallpattern_hole_sides=iwallpattern_fill+1;
-iwallpattern_hole_size=iwallpattern_hole_sides+1;
-iwallpattern_hole_spacing=iwallpattern_hole_size+1;
-iwallpattern_voronoi_noise = iwallpattern_hole_spacing+1;
-iwallpattern_voronoi_radius = iwallpattern_voronoi_noise+1;
-iextension_enabled = iwallpattern_voronoi_radius+1;
-iextension_tabs_enabled = iextension_enabled+1;
-icutx=iextension_tabs_enabled+1;
-icuty=icutx+1;
-ihelp=icuty+1;
-itranslate=ihelp+1;
-irotate=itranslate+1;
-itranslate_rotate=irotate+1;
-iscale=itranslate_rotate+1;
-icolor=iscale+1;
+iwidth="width";
+idepth="depth";
+iheight="height";
+iposition="position";
+ifilled_in="filled_in";
+
+ilabel_style="label_style";
+ilabel_position="label_position";
+ilabel_size="label_size";
+ilabel_relief="label_relief";
+label_walls="label_walls";
+
+iwall_thickness="wall_thickness";
+ilip_style="lip_style";
+izClearance="zClearance";
+ichamber_wall_thickness="chamber_wall_thickness";
+ivertical_chambers="vertical_chambers";
+ivertical_separator_bend_position="vertical_separator_bend_position";
+ivertical_separator_bend_angle="vertical_separator_bend_angle";
+ivertical_separator_bend_separation="vertical_separator_bend_separation";
+ivertical_separator_cut_depth="vertical_separator_cut_depth";
+ivertical_irregular_subdivisions="vertical_irregular_subdivisions";
+ivertical_separator_config="vertical_separator_config";
+ihorizontal_chambers="horizontal_chambers";
+ihorizontal_separator_bend_position="horizontal_separator_bend_position";
+ihorizontal_separator_bend_angle="horizontal_separator_bend_angle";
+ihorizontal_separator_bend_separation="horizontal_separator_bend_separation";
+ihorizontal_separator_cut_depth="horizontal_separator_cut_depth";
+ihorizontal_irregular_subdivisions="horizontal_irregular_subdivisions";
+ihorizontal_separator_config="horizontal_separator_config";
+imagnet_diameter="magnet_diameter";
+iscrew_depth="screw_depth";
+icenter_magnet_diameter="center_magnet_diameter";
+icenter_magnet_thickness="center_magnet_thickness";
+ihole_overhang_remedy="hole_overhang_remedy";
+ibox_corner_attachments_only="box_corner_attachments_only";
+ifloor_thickness="floor_thickness";
+icavity_floor_radius="cavity_floor_radius";
+iefficient_floor="efficient_floor";
+ihalf_pitch="half_pitch";
+iflat_base="flat_base";
+ispacer="spacer";
+ifingerslide="fingerslide";
+ifingerslide_radius="fingerslide_radius";
+itapered_corner="tapered_corner";
+itapered_corner_size="tapered_corner_size";
+itapered_setback="tapered_setback";
+
+iwallcutout_vertical="wallcutout_vertical";
+iwallcutout_vertical_position="wallcutout_vertical_position";
+iwallcutout_vertical_width="wallcutout_vertical_width";
+iwallcutout_vertical_angle="wallcutout_vertical_angle";
+iwallcutout_vertical_height="wallcutout_vertical_height";
+iwallcutout_vertical_corner_radius="wallcutout_vertical_corner_radius";
+iwallcutout_horizontal="wallcutout_horizontal";
+iwallcutout_horizontal_position="wallcutout_horizontal_position";
+iwallcutout_horizontal_width="wallcutout_horizontal_width";
+iwallcutout_horizontal_angle="wallcutout_horizontal_angle";
+iwallcutout_horizontal_height="wallcutout_horizontal_height";
+iwallcutout_horizontal_corner_radius="wallcutout_horizontal_corner_radius";
+
+iwallpattern_enabled="wallpattern_enabled";
+iwallpattern_style="wallpattern_style";
+iwallpattern_walls="wallpattern_walls";
+iwallpattern_dividers_enabled="wallpattern_dividers_enabled";
+iwallpattern_fill="wallpattern_fill";
+iwallpattern_hole_sides="wallpattern_hole_sides";
+iwallpattern_hole_size="wallpattern_hole_size";
+iwallpattern_hole_spacing="wallpattern_hole_spacing";
+iwallpattern_voronoi_noise="wallpattern_voronoi_noise";
+iwallpattern_voronoi_radius="wallpattern_voronoi_radius";
+    
+iextension_x_enabled="extension_x_enabled"; 
+iextension_x_position="extension_x_position";
+iextension_y_enabled="extension_y_enabled";
+iextension_y_position="extension_y_position";
+iextension_tabs_enabled="iextension_tabs_enabled";
+iextension_tab_size="iextension_tab_size";
+
+icutx="cutx";
+icuty="cuty";
+ihelp="help";
+itranslate="translate";
+irotate="rotate";
+itranslate_rotate="translate_rotate";
+iscale="scale";
+icolor="color";
 
 iscenarioName=0;
 iscenarioCount=1;
@@ -100,7 +118,9 @@ istepName=0;
 istepkv=1;
 
 selectedScenario = getDerviedScenario(scenario);
-echo(selectedScenario=selectedScenario);
+//echo(selectedScenario=selectedScenario);
+
+
 vp=selectedScenario[0][iscenarioVp];
 $vpr = setViewPort ? let(vpr = getcustomVpr(vp)) is_list(vpr) ? vpr : [60,0,320] : $vpr;
 //shows translation (i.e. won't be affected by rotate and zoom)
@@ -114,38 +134,43 @@ module end_of_customizer_opts() {}
 
 echo("start",vp=vp, vpr = getcustomVpr(vp), vpt = getcustomVpt(vp), vpd = getcustomVpd(vp), vpf = getcustomVpf(vp));
 
+   
 //Basic cup default settings for demo
-defaultDemoSetting = 
-    //width, depth, height, position, filled_in, label, label_size, label_relief
-    [3,2,5,"default",false,"disabled",[1.5,14,0], 0,
-    //wall_thickness, lip_style, zClearance, chamber_wall_thickness
-    0.95, "normal", 0, 1.2,
-    //vertical_chambers, vertical_separator_bend_position, vertical_separator_bend_angle, vertical_separator_bend_separation,
-    1, 0,45,0,0,
-    //vertical_separator_cut_depth, vertical_irregular_subdivisionsvertical_separator_config
-    false,"10.5|21|42|50|60",
-    //horizontal_chambers, horizontal_separator_bend_position, horizontal_separator_bend_angle, horizontal_separator_bend_separation
-    1, 0,45,0,0,
-    //horizontal_separator_cut_depth, horizontal_irregular_subdivisions, horizontal_separator_config
-    false,"10.5|21|42|50|60",
-    //magnet_diameter, screw_depth, center_magnet_diameter, center_magnet_thickness, hole_overhang_remedy, box_corner_attachments_only
-    6.5, 6, 0, 0, 2, true, 
-    //floor_thickness, cavity_floor_radius, efficient_floor, half_pitch, flat_base
-    0.7, -1, "off", false, false, 
-    //spacer, fingerslide,fingerslide_radius,
-    false, "none", 8,
-    //tapered_corner, tapered_corner_size, tapered_setback
-    "none", 10, -1,
-    //wallcutout_enabled, wallcutout_walls, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius
-    false, [1,0,0,0], 0, 70, 0, 5, 
+defaultDemoSetting = [
+    [iwidth,3], [idepth,2], [iheight,5], [iposition,"default"], [ifilled_in, false],
+    [iwall_thickness,0.95], [ilip_style,"normal"], [izClearance,0], 
     
-    //wallpattern_enabled, wallpattern_style, wallpattern_walls, wallpattern_dividers_enabled, wallpattern_fill, wallpattern_hole_sides, wallpattern_hole_size, wallpattern_hole_spacing, wallpattern_voronoi_noise, wallpattern_voronoi_radius 
-    false, "hexgrid", [1,1,1,1], false, "none", 6, 5, 2, 0.6, 0.5,
-    //extension_enabled, extension_tabs_enabled
-    [false,false],false,
-    //cutx,cuty,help,translate,rotate,scale,colour
-    0, 0,false,[0,0,0],[0,0,0],[0,0,0],[1,1,1],""];
+    [ilabel_style,"disabled"], [ilabel_position,"left"], [ilabel_size,[[0],[14],[0],[0.6]]], [ilabel_relief,[[0],[0],[0],[0.6]]], [label_walls,[[0],[1],[0],[0]]],
     
+    [ichamber_wall_thickness,1.2],
+    [ivertical_chambers,1], [ivertical_separator_bend_position,0], [ivertical_separator_bend_angle,45], [ivertical_separator_bend_separation,0], [ivertical_separator_cut_depth,0],
+    [ivertical_separator_cut_depth,false], [ivertical_separator_config, "10.5|21|42|50|60"],
+    [ihorizontal_chambers,1], [ihorizontal_separator_bend_position,0],[ihorizontal_separator_bend_angle,45], [ihorizontal_separator_bend_separation,0], [ihorizontal_separator_cut_depth,0],
+    [ihorizontal_irregular_subdivisions,false], [ihorizontal_separator_config,"10.5|21|42|50|60"],
+    
+    [imagnet_diameter, 6.5], [iscrew_depth, 6], [icenter_magnet_diameter, 0], [icenter_magnet_thickness, 0], [ihole_overhang_remedy, 2], [ibox_corner_attachments_only, true], 
+    
+    [ifloor_thickness, 0.7], [icavity_floor_radius, -1], [iefficient_floor, "off"], [ihalf_pitch, false], [iflat_base, false], 
+    [ispacer, false], [ifingerslide, "none"], [ifingerslide_radius, 8],
+    
+    //tapered corners
+    [itapered_corner,"none"], [itapered_corner_size,10], [itapered_setback,-1],
+    
+    //Wallcutout
+    [iwallcutout_vertical,"disabled"], [iwallcutout_vertical_position,-2], [iwallcutout_vertical_width,0], [iwallcutout_vertical_angle,70], [iwallcutout_vertical_height,0], [iwallcutout_vertical_corner_radius,5], 
+    [iwallcutout_horizontal,"disabled"], [iwallcutout_horizontal_position,-2], [iwallcutout_horizontal_width,0], [iwallcutout_horizontal_angle,70], [iwallcutout_horizontal_height,0], [iwallcutout_horizontal_corner_radius,5], 
+    
+    [iwallpattern_enabled,false], [iwallpattern_style,"hexgrid"], [iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled,false], [iwallpattern_fill,"none"], 
+    [iwallpattern_hole_sides,6], [iwallpattern_hole_size,5], [iwallpattern_hole_spacing,2], [iwallpattern_voronoi_noise,0.6], [iwallpattern_voronoi_radius,0.5],
+    [iextension_enabled,false],[iextension_tabs_enabled,false],
+    
+    [iextension_x_enabled,false], [iextension_x_position,0.5],
+    [iextension_y_enabled,false], [iextension_y_position,0.5],
+    [iextension_tabs_enabled,false], [iextension_tab_size,[10,0,0,0]],
+
+    [icutx,0], [icuty,0], [ihelp,false], [itranslate,[0,0,0]], [irotate,[0,0,0]], [itranslate_rotate,[0,0,0]], [iscale,[1,1,1]], [icolor,""]
+  ];
+  
 function isMulti(scenario) = search("multi",scenario) == [0, 1, 2, 3, 4];
 function iscustomVP(scenarioVp, length = 0) = is_list(scenarioVp) && len(scenarioVp) >= length;
 function getcustomVpr(scenarioVp) = iscustomVP(scenarioVp, 1) ? let(vpr = scenarioVp[0]) is_list(vpr) && len(vpr)==3 ? vpr : false : false;
@@ -167,27 +192,26 @@ function getScenario(scenario) =
      ["Demo", [
           [iefficient_floor,"on"],[ihalf_pitch, true],[ivertical_irregular_subdivisions, true], [ivertical_separator_config, "31.5|94.5"],
           [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_dividers_enabled, true],[iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,64],[iwallpattern_fill,"none"],
-          [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]],
+          [iwallcutout_vertical, "enabled"], [iwallcutout_vertical_width,0],[iwallcutout_vertical_angle,70],[iwallcutout_vertical_height,-1],[iwallcutout_vertical_corner_radius,5]]],
       ["Simple", []],
       ["Multi Chamber 3x2", [[ivertical_chambers, 3], [ihorizontal_chambers, 2]]],
       ["Multi Chamber custom", [[ivertical_irregular_subdivisions, true], [ivertical_separator_config, "35,0,0,-3|70,0,0,-3|110,15,-30,-3|160,15,30,-3|215,15,-30,-3"]]],
       ["Efficient Floor", [[iefficient_floor,"on"]]],
       ["Half Pitch with Efficient Floor", [[ihalf_pitch, true], [iefficient_floor,"on"]]],
-      ["Label Full", [[ilabel, "center"],[ilabel_size, [3,14,0]],[ivertical_chambers, 0]]],
-      ["Label Left", [[ilabel, "left"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
-      ["Label Right", [[ilabel, "right"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
-      ["Label Center", [[ilabel, "center"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
-      ["Label Center", [[ilabel, "center"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 3]]],
-      ["Label Center Chamber", [[ilabel, "centerchamber"],[ilabel_size, [0.5,14,0]],[ivertical_chambers, 3]]], 
+      ["Label Full", [[ilabel_position, "center"],[ilabel_size, [3,14,0]],[ivertical_chambers, 0]]],
+      ["Label Left", [[ilabel_position, "left"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
+      ["Label Right", [[ilabel_position, "right"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
+      ["Label Center", [[ilabel_position, "center"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 0]]],
+      ["Label Center", [[ilabel_position, "center"],[ilabel_size, [1.5,14,0]],[ivertical_chambers, 3]]],
+      ["Label Center Chamber", [[ilabel_position, "centerchamber"],[ilabel_size, [0.5,14,0]],[ivertical_chambers, 3]]], 
       ["Wall Cutout", [[ifloor_thickness, 1], [icavity_floor_radius, 0],
-          [iwallcutout_enabled, true], [iwallcutout_walls,[1,1,0,0]],[iwallcutout_width,70],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]],
+          [iwallcutout_vertical, "enabled"],[iwallcutout_vertical_width,70],[iwallcutout_vertical_angle,70],[iwallcutout_vertical_height,-1],[iwallcutout_vertical_corner_radius,5]]],
       ["Chamfered", [[ivertical_irregular_subdivisions, true], [ivertical_separator_config, "21|42|84"],
       [itapered_corner, "rounded"],[itapered_corner_size,25],[itapered_setback,-1]]],
       ["Demo 3", [[ifloor_thickness, 2], [icavity_floor_radius, -1],
           [iwallpattern_enabled,true],[iwallpattern_walls,[1,1,1,1]], [iwallpattern_style,"voronoihexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"],
-          [iwallcutout_enabled, true], [iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,-1],[iwallcutout_corner_radius,5]]]]
-  
-  
+          [iwallcutout_vertical, "enabled"],[iwallcutout_vertical_width,0],[iwallcutout_vertical_angle,70],[iwallcutout_vertical_height,-1],[iwallcutout_vertical_corner_radius,5]]]]
+
   : scenario == "basiccup" ? [["Basic Cup",1,[],[]],
       ["simple", []]]
       
@@ -354,19 +378,20 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
      ["20mm x 5mm", [[itranslate_rotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]], [icenter_magnet_diameter, 20], [icenter_magnet_thickness, 5]]],
      ["off", [[itranslate_rotate, [180,0,0]], [itranslate, [0,-gf_pitch,-gf_pitch]]]]]
      
-   : scenario == "wallcutout" ? [["Wall Cutout",11,[],[[iwallcutout_enabled, true],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,0],[iwallcutout_corner_radius,5]]],
-      ["front", [[iwallcutout_walls,[1,0,0,0]]]],
-      ["back", [[iwallcutout_walls,[0,1,0,0]]]],
-      ["left", [[iwallcutout_walls,[0,0,1,0]]]],
-      ["right", [[iwallcutout_walls,[0,0,0,1]]]],
-      ["all sides", [[iwallcutout_walls,[1,1,1,1]]]],
-      ["floor height", [[iwallcutout_walls,[1,0,0,0]],[iwallcutout_height,-1]]],
-      ["width 75mm", [[iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,75]]],
-      ["width 75mm", [[iwallcutout_walls,[1,0,0,0]],[iwallcutout_width,75]]],
-      ["45deg angle", [[iwallcutout_walls,[1,0,0,0]],[iwallcutout_angle,45]]],
-      ["corner radius 10mm", [[iwallcutout_walls,[1,0,0,0]],[iwallcutout_corner_radius,10]]],
-      ["depth 20mm", [[iwallcutout_walls,[1,0,0,0]],[iwallcutout_height,20]]]]
+   : scenario == "wallcutout" ? [["Wall Cutout",11,[],[[iwallcutout_vertical, "enabled"],[iwallcutout_vertical_width,0],[iwallcutout_vertical_angle,70],[iwallcutout_vertical_height,0],[iwallcutout_vertical_corner_radius,5]]],
+      ["enabled", [[iwallcutout_vertical, "enabled"]]],
+      ["wallsonly", [[iwallcutout_vertical, "wallsonly"]]],
+      ["frontonly", [[iwallcutout_vertical, "frontonly"]]],
+      ["backonly", [[iwallcutout_vertical, "backonly"]]],
+      ["floor height", [[iwallcutout_vertical, "enabled"]],[iwallcutout_vertical_height,-1]],
+      ["width 75mm", [[iwallcutout_vertical, "enabled"]],[iwallcutout_vertical_width,75]],
+      ["width 75mm", [[iwallcutout_vertical, "enabled"]],[iwallcutout_vertical_width,75]],
+      ["45deg angle", [[iwallcutout_vertical, "enabled"]],[iwallcutout_vertical_angle,45]],
+      ["corner radius 10mm", [[iwallcutout_vertical, "enabled"]],[iwallcutout_vertical_corner_radius,10]],
+      ["depth 20mm", [[iwallcutout_vertical, "enabled"]],[iwallcutout_vertical_height,20]]]
       
+
+
    : scenario == "wallpattern" ? [["Wall Pattern",16,[],[[iwallpattern_enabled,true],[iwallpattern_hole_spacing, 2], [iwallpattern_hole_size,5]]],
       ["front", [[iwallpattern_walls,[1,0,0,0]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
       ["back", [[iwallpattern_walls,[0,1,0,0]], [iwallpattern_style,"hexgrid"],[iwallpattern_hole_sides,6],[iwallpattern_fill,"none"]]],
@@ -401,10 +426,10 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
       ["space", [[iwallpattern_fill,"space"]]],
       ["crop", [[iwallpattern_fill,"crop"]]],
       ["crophorizontal", [[iwallpattern_fill,"crophorizontal"]]],
-      ["cropverticle", [[iwallpattern_fill,"cropverticle"]]],
-      ["crophorizontal_spaceverticle", [[iwallpattern_fill,"crophorizontal_spaceverticle"]]],
-      ["cropverticle_spacehorizontal", [[iwallpattern_fill,"cropverticle_spacehorizontal"]]],
-      ["spaceverticle", [[iwallpattern_fill,"spaceverticle"]]],
+      ["cropvertical", [[iwallpattern_fill,"cropvertical"]]],
+      ["crophorizontal_spacevertical", [[iwallpattern_fill,"crophorizontal_spacevertical"]]],
+      ["cropvertical_spacehorizontal", [[iwallpattern_fill,"cropvertical_spacehorizontal"]]],
+      ["spacevertical", [[iwallpattern_fill,"spacevertical"]]],
       ["spacehorizontal", [[iwallpattern_fill,"spacehorizontal"]]]]
       
    : scenario == "taperedcorner" ? [["Tapered Box",9,[],[]],
@@ -434,7 +459,7 @@ idepth,6],[iheight,6], [ichamber_wall_thickness,2]]],
       ["demo",14,[gf_pitch*(3+multi_spacing.x), gf_pitch*(2+multi_spacing.y), 0], 8],
       ["demo",13,[gf_pitch*(3+multi_spacing.x)*2, gf_pitch*(2+multi_spacing.y), 0], 8]]
 
-   : scenario == "multi_cutout" ? [["Multi Cutout",1,[[60,0,0],[140,0,90],650],[[iwallcutout_enabled, true],[iwallcutout_width,0],[iwallcutout_angle,70],[iwallcutout_height,0],[iwallcutout_corner_radius,5], [iefficient_floor,"off"]]],
+   : scenario == "multi_cutout" ? [["Multi Cutout",1,[[60,0,0],[140,0,90],650],[[iwallcutout_vertical, "enabled"],[iwallcutout_vertical_width,0],[iwallcutout_vertical_angle,70],[iwallcutout_vertical_height,0],[iwallcutout_vertical_corner_radius,5], [iefficient_floor,"off"]]],
       ["",[[iheight,2], [iwidth,1],[idepth,4+multi_spacing.y],[iwallcutout_walls,[0,0,1,1]]]],
       ["",[[iwidth,1],[idepth,4+multi_spacing.y],[iwallcutout_walls,[0,0,1,1]],[itranslate, [gf_pitch*(1+multi_spacing.x), 0, 0]]]],
       ["",[[iwidth,2],[itranslate, [gf_pitch*(2+multi_spacing.x*2), 0, 0]],[iwallcutout_walls,[1,0,0,0]]]],
@@ -621,10 +646,12 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
   scenarioDefaults = selectedScenario[0];
   stepIndex = stepIndex > -1 ? stepIndex+1 : min(round($t*(len(selectedScenario)-1))+1,len(selectedScenario)-1);
   animationStep = (len(selectedScenario) >= stepIndex ? selectedScenario[stepIndex] : selectedScenario[1]);  
-  currentStepSettings = replace_Items(concat(scenarioDefaults[iscenariokv],animationStep[istepkv]), defaultDemoSetting);
+  currentStepSettings = DictSetRange(defaultDemoSetting, concat(scenarioDefaults[iscenariokv],animationStep[istepkv]));
+   
+  echo("🟧RenderScenario",scenario = scenario, stepIndex=stepIndex, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1), scenarioDefaults=scenarioDefaults, animationStep=animationStep);
+  echo(DictToString(currentStepSettings)); 
 
-  echo("🟧RenderScenario",scenario = scenario, stepIndex=stepIndex, steps=len(selectedScenario)-1, t=$t, time=$t*(len(selectedScenario)-1), scenarioDefaults=scenarioDefaults, animationStep=animationStep, currentStepSettings=currentStepSettings);
-
+  
   if(showtext && $preview)
   color("DimGray")
   translate($vpt)
@@ -632,79 +659,94 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
   translate([0,-45,60])
    linear_extrude(height = 0.1)
    text(str(scenarioDefaults[iscenarioName], " - ", animationStep[istepName]), size=5,halign="center");
-   
-  echo(wallcutout_walls=currentStepSettings[iwallcutout_walls], efficient_floor=currentStepSettings[iefficient_floor], iwallcutout_walls=iwallcutout_walls, iefficient_floor=iefficient_floor);
+   echo(itranslate=DictGet(currentStepSettings, itranslate));
   if(scenarioDefaults[iscenarioName] != "unknown scenario")
-    color(currentStepSettings[icolor])
-    rotate(currentStepSettings[itranslate_rotate]) 
-    translate(currentStepSettings[itranslate])
-    rotate(currentStepSettings[irotate]) 
-    scale(currentStepSettings[iscale])
-    gridfinity_basic_cup(
-      width = width > -1 ? width : currentStepSettings[iwidth],
-      depth = depth > -1 ? depth : currentStepSettings[idepth],
-      height = height > -1 ? height : currentStepSettings[iheight],
-      position = currentStepSettings[iposition],
-      filled_in = currentStepSettings[ifilled_in],
-      label=currentStepSettings[ilabel],
-      label_size=currentStepSettings[ilabel_size],
-      label_relief=currentStepSettings[ilabel_relief],
-      wall_thickness=currentStepSettings[iwall_thickness],
-      lip_style=currentStepSettings[ilip_style],
-      zClearance=currentStepSettings[izClearance],
-      chamber_wall_thickness=currentStepSettings[ichamber_wall_thickness],
-      vertical_chambers=currentStepSettings[ivertical_chambers],
-      vertical_separator_bend_position=currentStepSettings[ivertical_separator_bend_position],
-      vertical_separator_bend_angle=currentStepSettings[ivertical_separator_bend_angle],
-      vertical_separator_bend_separation=currentStepSettings[ivertical_separator_bend_separation],
-      vertical_separator_cut_depth=currentStepSettings[ivertical_separator_cut_depth],
-      vertical_irregular_subdivisions=currentStepSettings[ivertical_irregular_subdivisions],
-      vertical_separator_config=currentStepSettings[ivertical_separator_config],
-      horizontal_chambers=currentStepSettings[ihorizontal_chambers],
-      horizontal_separator_bend_position=currentStepSettings[ihorizontal_separator_bend_position],
-      horizontal_separator_bend_angle=currentStepSettings[ihorizontal_separator_bend_angle],
-      horizontal_separator_bend_separation=currentStepSettings[ihorizontal_separator_bend_separation],
-      horizontal_separator_cut_depth=currentStepSettings[ihorizontal_separator_cut_depth],
-      horizontal_irregular_subdivisions=currentStepSettings[ihorizontal_irregular_subdivisions],
-      horizontal_separator_config=currentStepSettings[ihorizontal_separator_config],
-      magnet_diameter=currentStepSettings[imagnet_diameter],
-      screw_depth=currentStepSettings[iscrew_depth],
-      center_magnet_diameter=currentStepSettings[icenter_magnet_diameter],
-      center_magnet_thickness=currentStepSettings[icenter_magnet_thickness],
-      hole_overhang_remedy=currentStepSettings[ihole_overhang_remedy],
-      box_corner_attachments_only=currentStepSettings[ibox_corner_attachments_only],
-      floor_thickness=currentStepSettings[ifloor_thickness],
-      cavity_floor_radius=currentStepSettings[icavity_floor_radius],
-      efficient_floor=currentStepSettings[iefficient_floor],
-      half_pitch=currentStepSettings[ihalf_pitch],
-      flat_base=currentStepSettings[iflat_base],
-      spacer=currentStepSettings[ispacer],
-      fingerslide=currentStepSettings[ifingerslide],
-      fingerslide_radius=currentStepSettings[ifingerslide_radius],
-      tapered_corner=currentStepSettings[itapered_corner],
-      tapered_corner_size=currentStepSettings[itapered_corner_size],
-      tapered_setback=currentStepSettings[itapered_setback],
-      wallcutout_enabled=currentStepSettings[iwallcutout_enabled],
-      wallcutout_walls=currentStepSettings[iwallcutout_walls],
-      wallcutout_width=currentStepSettings[iwallcutout_width],
-      wallcutout_angle=currentStepSettings[iwallcutout_angle],
-      wallcutout_height=currentStepSettings[iwallcutout_height],
-      wallcutout_corner_radius=currentStepSettings[iwallcutout_corner_radius],
-      wallpattern_enabled=currentStepSettings[iwallpattern_enabled],
-      wallpattern_style=currentStepSettings[iwallpattern_style],
-      wallpattern_walls=currentStepSettings[iwallpattern_walls],
-      wallpattern_dividers_enabled=currentStepSettings[iwallpattern_dividers_enabled],
-      wallpattern_fill=currentStepSettings[iwallpattern_fill],
-      wallpattern_hole_sides=currentStepSettings[iwallpattern_hole_sides],
-      wallpattern_hole_size=currentStepSettings[iwallpattern_hole_size],
-      wallpattern_hole_spacing=currentStepSettings[iwallpattern_hole_spacing],
-      wallpattern_voronoi_noise=currentStepSettings[iwallpattern_voronoi_noise],
-      wallpattern_voronoi_radius=currentStepSettings[iwallpattern_voronoi_radius],
-      extension_enabled=currentStepSettings[iextension_enabled],
-      extension_tabs_enabled=currentStepSettings[iextension_tabs_enabled],
-      cutx=currentStepSettings[icutx],
-      cuty=currentStepSettings[icuty],
-      help=help || currentStepSettings[ihelp]);
+    color(DictGet(currentStepSettings, icolor))
+    rotate(DictGet(currentStepSettings, itranslate_rotate)) 
+    translate(DictGet(currentStepSettings, itranslate))
+    rotate(DictGet(currentStepSettings, irotate)) 
+    scale(DictGet(currentStepSettings, iscale))
+    gridfinity_cup(
+      width = width > -1 ? width : DictGet(currentStepSettings, iwidth),
+      depth = depth > -1 ? depth : DictGet(currentStepSettings, idepth),
+      height = height > -1 ? height : DictGet(currentStepSettings, iheight),
+      position = DictGet(currentStepSettings, iposition),
+      filled_in = DictGet(currentStepSettings, ifilled_in),
+      label_settings=LabelSettings(
+        labelStyle=DictGet(currentStepSettings, ilabel_style), 
+        labelPosition=DictGet(currentStepSettings, ilabel_position), 
+        labelSize=DictGet(currentStepSettings, ilabel_size),
+        labelRelief=DictGet(currentStepSettings, ilabel_relief),
+        labelWalls=DictGet(currentStepSettings, label_walls)),
+      wall_thickness=DictGet(currentStepSettings, iwall_thickness),
+      zClearance=DictGet(currentStepSettings, izClearance),
+      chamber_wall_thickness=DictGet(currentStepSettings, ichamber_wall_thickness),
+      vertical_chambers=DictGet(currentStepSettings, ivertical_chambers),
+      vertical_separator_bend_position=DictGet(currentStepSettings, ivertical_separator_bend_position),
+      vertical_separator_bend_angle=DictGet(currentStepSettings, ivertical_separator_bend_angle),
+      vertical_separator_bend_separation=DictGet(currentStepSettings, ivertical_separator_bend_separation),
+      vertical_separator_cut_depth=DictGet(currentStepSettings, ivertical_separator_cut_depth),
+      vertical_irregular_subdivisions=DictGet(currentStepSettings, ivertical_irregular_subdivisions),
+      vertical_separator_config=DictGet(currentStepSettings, ivertical_separator_config),
+      horizontal_chambers=DictGet(currentStepSettings, ihorizontal_chambers),
+      horizontal_separator_bend_position=DictGet(currentStepSettings, ihorizontal_separator_bend_position),
+      horizontal_separator_bend_angle=DictGet(currentStepSettings, ihorizontal_separator_bend_angle),
+      horizontal_separator_bend_separation=DictGet(currentStepSettings, ihorizontal_separator_bend_separation),
+      horizontal_separator_cut_depth=DictGet(currentStepSettings, ihorizontal_separator_cut_depth),
+      horizontal_irregular_subdivisions=DictGet(currentStepSettings, ihorizontal_irregular_subdivisions),
+      horizontal_separator_config=DictGet(currentStepSettings, ihorizontal_separator_config),
+      magnet_diameter=DictGet(currentStepSettings, imagnet_diameter),
+      screw_depth=DictGet(currentStepSettings, iscrew_depth),
+      center_magnet_diameter=DictGet(currentStepSettings, icenter_magnet_diameter),
+      center_magnet_thickness=DictGet(currentStepSettings, icenter_magnet_thickness),
+      hole_overhang_remedy=DictGet(currentStepSettings, ihole_overhang_remedy),
+      box_corner_attachments_only=DictGet(currentStepSettings, ibox_corner_attachments_only),
+      floor_thickness=DictGet(currentStepSettings, ifloor_thickness),
+      cavity_floor_radius=DictGet(currentStepSettings, icavity_floor_radius),
+      efficient_floor=DictGet(currentStepSettings, iefficient_floor),
+      half_pitch=DictGet(currentStepSettings, ihalf_pitch),
+      flat_base=DictGet(currentStepSettings, iflat_base),
+      spacer=DictGet(currentStepSettings, ispacer),
+      fingerslide=DictGet(currentStepSettings, ifingerslide),
+      fingerslide_radius=DictGet(currentStepSettings, ifingerslide_radius),
+      tapered_corner=DictGet(currentStepSettings, itapered_corner),
+      tapered_corner_size=DictGet(currentStepSettings, itapered_corner_size),
+      tapered_setback=DictGet(currentStepSettings, itapered_setback),
+  
+      wallcutout_vertical=DictGet(currentStepSettings, iwallcutout_vertical),
+      wallcutout_vertical_position=DictGet(currentStepSettings, iwallcutout_vertical_position),
+      wallcutout_vertical_width=DictGet(currentStepSettings, iwallcutout_vertical_width),
+      wallcutout_vertical_angle=DictGet(currentStepSettings, iwallcutout_vertical_angle),
+      wallcutout_vertical_height=DictGet(currentStepSettings, iwallcutout_vertical_height),
+      wallcutout_vertical_corner_radius=DictGet(currentStepSettings, iwallcutout_vertical_corner_radius),
+
+      wallcutout_horizontal=DictGet(currentStepSettings, iwallcutout_horizontal),
+      wallcutout_horizontal_position=DictGet(currentStepSettings, iwallcutout_horizontal_position),
+      wallcutout_horizontal_width=DictGet(currentStepSettings, iwallcutout_horizontal_width),
+      wallcutout_horizontal_angle=DictGet(currentStepSettings, iwallcutout_horizontal_angle),
+      wallcutout_horizontal_height=DictGet(currentStepSettings, iwallcutout_horizontal_height),
+      wallcutout_horizontal_corner_radius=DictGet(currentStepSettings, iwallcutout_horizontal_corner_radius),
+
+      wallpattern_enabled=DictGet(currentStepSettings, iwallpattern_enabled),
+      wallpattern_style=DictGet(currentStepSettings, iwallpattern_style),
+      wallpattern_walls=DictGet(currentStepSettings, iwallpattern_walls),
+      wallpattern_dividers_enabled=DictGet(currentStepSettings, iwallpattern_dividers_enabled),
+      wallpattern_fill=DictGet(currentStepSettings, iwallpattern_fill),
+      wallpattern_hole_sides=DictGet(currentStepSettings, iwallpattern_hole_sides),
+      wallpattern_hole_size=DictGet(currentStepSettings, iwallpattern_hole_size),
+      wallpattern_hole_spacing=DictGet(currentStepSettings, iwallpattern_hole_spacing),
+      wallpattern_voronoi_noise=DictGet(currentStepSettings, iwallpattern_voronoi_noise),
+      wallpattern_voronoi_radius=DictGet(currentStepSettings, iwallpattern_voronoi_radius),
+      extendable_Settings = ExtendableSettings(
+        extendablexEnabled = DictGet(currentStepSettings, iextension_x_enabled), 
+        extendablexPosition = DictGet(currentStepSettings, iextension_x_position), 
+        extendableyEnabled = DictGet(currentStepSettings, iextension_y_enabled), 
+        extendableyPosition = DictGet(currentStepSettings, iextension_y_position), 
+        extendableTabsEnabled = DictGet(currentStepSettings, iextension_tabs_enabled), 
+        extendableTabSize = DictGet(currentStepSettings, iextension_tab_size)),
+      cutx=DictGet(currentStepSettings, icutx),
+      cuty=DictGet(currentStepSettings, icuty),
+      help=help || DictGet(currentStepSettings, ihelp));
 }
 
 function getDerviedScenario(scenario) = 

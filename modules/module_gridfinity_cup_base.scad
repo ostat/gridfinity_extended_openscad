@@ -38,6 +38,7 @@ iCupBase_EfficientFloor=8;
 iCupBase_HalfPitch=9;
 iCupBase_FlatBase=10;
 iCupBase_Spacer=11;
+iCupBase_MinimumPrintablePadSize=12;
 
 iCylinderDimension_Diameter=0;
 iCylinderDimension_Height=1;
@@ -80,7 +81,9 @@ function CupBaseSettings(
     efficientFloor = EfficientFloor_off,
     halfPitch = false,
     flatBase = false,
-    spacer = false) = 
+    spacer = false,
+    minimumPrintablePadSize = 0
+    ) = 
   let(
     magnetSize = 
       is_num(magnetSize) 
@@ -107,12 +110,13 @@ function CupBaseSettings(
       validateEfficientFloor(efficientFloor),
       halfPitch,
       flatBase,
-      spacer],
+      spacer,
+      minimumPrintablePadSize],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
   
 function ValidateCupBaseSettings(settings, num_x, num_y) =
-  assert(is_list(settings) && len(settings) == 12, typeerror_list("CupBase Settings", settings, 12))
+  assert(is_list(settings) && len(settings) == 13, typeerror_list("CupBase Settings", settings, 13))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_CenterMagnetSize]) && len(settings[iCupBase_CenterMagnetSize])==2, "CenterMagnet Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_ScrewSize]) && len(settings[iCupBase_ScrewSize])==2, "ScrewSize Magnet Setting must be a list of length 2")
@@ -123,10 +127,11 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_bool(settings[iCupBase_HalfPitch]), "CupBase HalfPitch Settings must be a boolean")
   assert(is_bool(settings[iCupBase_FlatBase]), "CupBase FlatBase Settings must be a boolean")
   assert(is_bool(settings[iCupBase_Spacer]), "CupBase Spacer Settings must be a boolean")
+  assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
   
   let(
     efficientFloor = validateEfficientFloor(settings[iCupBase_EfficientFloor]),
-    magnetEasyRelease = validateMagnetEasyRelease(settings[iCupBase_MagnetEasyRelease], efficientFloor),
+    magnetEasyRelease = validateMagnetEasyRelease(settings[iCupBase_MagnetEasyRelease], efficientFloor)
   ) [
       settings[iCupBase_MagnetSize],
       magnetEasyRelease,
@@ -139,5 +144,6 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       efficientFloor,
       settings[iCupBase_HalfPitch],
       settings[iCupBase_FlatBase],
-      settings[iCupBase_Spacer]
+      settings[iCupBase_Spacer],
+      settings[iCupBase_MinimumPrintablePadSize]
       ];

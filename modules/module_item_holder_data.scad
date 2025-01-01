@@ -11,7 +11,7 @@ function LookupKnownShapes(name="round", default = 64) =
   name == "round" ? 64 :
   default;
   
-// result is dimensions for commnly know items
+// result is dimensions for commonly know items
 //[diameter, x, y, z, item height, shape]
 //x=diameter on round, flat to flat on hex, corner diameter in square.
 //x=width for square

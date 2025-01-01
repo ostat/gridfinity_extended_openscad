@@ -76,7 +76,7 @@ module SlidingLid(
           cube([num_x*42,num_x*42,4+fudgeFactor*2]);
       }
 
-      color(color_lid)
+      color(getColour(color_lid))
       union(){
         hull() 
           cornercopy(seventeen, num_x, num_y){
@@ -131,4 +131,100 @@ module SlidingLid(
   
   if(IsHelpEnabled("debug")) echo("SlidingLid", num_x=num_x, num_y=num_y, wall_thickness=wall_thickness, clearance=clearance, lidThickness=lidThickness, lidMinSupport=lidMinSupport, lidMinWallThickness=lidMinWallThickness);
   if(IsHelpEnabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius, cutoutPosition=cutoutPosition);
+}
+
+module SlidingLidSupportMaterial(
+  num_x, 
+  num_y,
+  wall_thickness,
+  sliding_lid_settings,
+  innerWallRadius,
+  zpoint){
+  
+  seventeen = gf_pitch/2-4;
+    
+  aboveLipHeight = sliding_lid_settings[iSlidingLidThickness];
+  belowLedgeHeight = sliding_lid_settings[iSlidingLidThickness]/4;
+  belowRampHeight = sliding_lid_settings[iSlidingLidMinSupport];
+
+  belowLipHeight = belowLedgeHeight+belowRampHeight;
+  slidingLidEdge = gf_cup_corner_radius-sliding_lid_settings[iSlidingLidMinWallThickness]; 
+   
+  //Sliding lid lower support lip
+  tz(zpoint-belowLipHeight) 
+  difference(){
+    hull() 
+      cornercopy(seventeen, num_x, num_y)
+      cylinder(r=innerWallRadius, h=belowLipHeight, $fn=32); 
+      
+        union(){
+        hull() cornercopy(seventeen, num_x, num_y)
+          tz(belowRampHeight-fudgeFactor)
+          cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowLedgeHeight+fudgeFactor*2, $fn=32);
+          
+        hull() cornercopy(seventeen, num_x, num_y)
+        tz(-fudgeFactor)
+        cylinder(r1=slidingLidEdge, r2=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowRampHeight+fudgeFactor, $fn=32);
+     }
+   }
+
+  //Sliding lid upper lip
+  tz(zpoint) 
+  difference(){
+    hull() 
+      cornercopy(seventeen, num_x, num_y)
+      tz(fudgeFactor) 
+      cylinder(r=slidingLidEdge, h=aboveLipHeight, $fn=32); 
+    union(){
+    hull() 
+      cornercopy(seventeen, num_x, num_y)
+      tz(fudgeFactor) 
+      cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=aboveLipHeight+fudgeFactor, $fn=32); 
+      
+    *SlidingLid(
+      num_x=num_x, 
+      num_y=num_y,
+      wall_thickness,
+      clearance = 0,
+      slidingLidThickness=sliding_lid_settings[iSlidingLidThickness],
+      slidingLidMinSupport=sliding_lid_settings[iSlidingLidMinSupport],
+      slidingLidMinWallThickness=sliding_lid_settings[iSlidingLidMinWallThickness]);
+    }
+  }
+}
+
+module SlidingLidCavity(
+  num_x, 
+  num_y,
+  wall_thickness,
+  sliding_lid_settings,
+  aboveLidHeight
+){
+  SlidingLid(
+    num_x=num_x, 
+    num_y=num_y,
+    wall_thickness,
+    clearance = 0,
+    lidThickness=sliding_lid_settings[iSlidingLidThickness],
+    lidMinSupport=sliding_lid_settings[iSlidingLidMinSupport],
+    lidMinWallThickness=sliding_lid_settings[iSlidingLidMinWallThickness],
+    limitHeight = false);
+  
+  if(sliding_lid_settings[slidingLidLipEnabled])
+  {
+    translate([0,0,0])
+      cube([num_x*gf_pitch,gf_cup_corner_radius,aboveLidHeight+fudgeFactor*3]);
+  } else {
+    //translate([-gf_pitch/2,-gf_pitch/2,zpoint]) 
+    //cube([num_x*gf_pitch,gf_cup_corner_radius,zClearance+gf_Lip_Height]);
+    //innerWallRadius = gf_cup_corner_radius-wall_thickness;
+    translate([0,gf_cup_corner_radius,aboveLidHeight]) 
+    rotate([270,0,0])
+    chamferedCorner(
+      cornerRadius = aboveLidHeight/4,
+      chamferLength = aboveLidHeight,
+      length=num_x*gf_pitch, 
+      height = aboveLidHeight,
+      width = gf_cup_corner_radius);
+  }
 }

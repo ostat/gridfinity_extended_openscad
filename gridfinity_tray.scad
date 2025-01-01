@@ -141,7 +141,7 @@ wallpattern_voronoi_radius = 0.5;
 wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
 wallcutout_vertical_position=-2;  //0.1
-//default will be binwidth/2
+//default will be bin width/2
 wallcutout_vertical_width=0;
 wallcutout_vertical_angle=70;
 //default will be binHeight
@@ -150,7 +150,7 @@ wallcutout_vertical_corner_radius=5;
 wallcutout_horizontal ="disabled"; //[disabled, enabled, wallsonly, leftonly, rightonly]
 // wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
 wallcutout_horizontal_position=-2;  //0.1
-//default will be binwidth/2
+//default will be bin width/2
 wallcutout_horizontal_width=0;
 wallcutout_horizontal_angle=70;
 //default will be binHeight
@@ -171,7 +171,7 @@ extension_tab_size= [10,0,0,0];
 cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
-// enable loging of help messages during render.
+// enable logging of help messages during render.
 enable_help = false;
 /*<!!end gridfinity_basic_cup!!>*/
 
@@ -179,12 +179,12 @@ enable_help = false;
 module end_of_customizer_opts() {}
 
 //Index for custom config arrays
-ixpos = 0;
-iypos = 1;
-ixsize = 2;
-iysize = 3;
-icornerradius = 4;
-idepth = 5;
+ixPos = 0;
+iyPos = 1;
+ixSize = 2;
+iySize = 3;
+iCornerRadius = 4;
+iDepth = 5;
 
 // module to build the tray cutouts
 // This is what will be executed by external scripts
@@ -247,12 +247,12 @@ module tray(
       for (x =[0:1:len(compartments)-1])
       {
           comp =csv_parse(compartments[x]);
-          xpos = comp[ixpos];
-          ypos = comp[iypos];
-          xsize = comp[ixsize];
-          ysize = comp[iysize];
-          radius = len(comp) >= 5 ? comp[icornerradius] : cornerRadius;
-          depth = baseHeight+(len(comp) >= 6 ? comp[idepth] : max(trayZpos,floorThickness));
+          xpos = comp[ixPos];
+          ypos = comp[iyPos];
+          xsize = comp[ixSize];
+          ysize = comp[iySize];
+          radius = len(comp) >= 5 ? comp[iCornerRadius] : cornerRadius;
+          depth = baseHeight+(len(comp) >= 6 ? comp[iDepth] : max(trayZpos,floorThickness));
         
           translate([cellSpacing+xpos*gf_pitch,cellSpacing+ypos*gf_pitch,depth])
           roundedCube(
@@ -289,7 +289,7 @@ module gridfinity_tray(
     labelWalls=label_walls),
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
-  cupbase_settings = CupBaseSettings(
+  cupBase_settings = CupBaseSettings(
     magnetSize = magnet_size, 
     magnetEasyRelease = magnet_easy_release, 
     centerMagnetSize = center_magnet_size, 
@@ -370,7 +370,7 @@ module gridfinity_tray(
       position=position,
       filled_in=filled_in,
       label_settings=label_settings,
-      cupbase_settings = cupbase_settings,
+      cupBase_settings = cupBase_settings,
       fingerslide_radius=fingerslide_radius,
       wall_thickness=wall_thickness,
       chamber_wall_thickness=chamber_wall_thickness,
@@ -442,14 +442,14 @@ module gridfinity_tray(
       horizontalCompartments = tray_horizontal_compartments,
       customCompartments = tray_custom_compartments);
       
-      //This seems like a complciated way to do this, but it guarantees order will be correct.
+      //This seems like a complicated way to do this, but it guarantees order will be correct.
       configArray = [
-        [ixpos, 0], 
-        [iypos, 0], 
-        [ixsize, num_z], 
-        [iysize, num_x], 
-        [icornerradius, tray_corner_radius], 
-        [idepth, num_z]];
+        [ixPos, 0], 
+        [iyPos, 0], 
+        [ixSize, num_z], 
+        [iySize, num_x], 
+        [iCornerRadius, tray_corner_radius], 
+        [iDepth, num_z]];
 
       if(IsHelpEnabled("info")) echo(outputCustomConfig("tray", replace_Items(configArray, [])));
   }

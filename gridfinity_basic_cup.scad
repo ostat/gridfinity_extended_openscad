@@ -25,7 +25,6 @@ filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
 //assign colours to the bin, will may 
@@ -84,6 +83,8 @@ half_pitch = false;
 flat_base = false;
 // Remove floor to create a vertical spacer
 spacer = false;
+//Pads smaller than this will not be rendered as it interferes with the baseplate. Ensure appropriate support is added in slicer.
+minimum_printable_pad_size = 0.2;
 
 /* [Label] */
 label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
@@ -114,6 +115,8 @@ fingerslide = "none"; //[none, rounded, chamfered]
 fingerslide_radius = 8;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 fingerslide_walls=[1,0,0,0];  //[0:1:1]
+//Align the fingerslide with the lip
+fingerslide_lip_aligned=true; 
 
 /* [Tapered Corner] */
 tapered_corner = "none"; //[none, rounded, chamfered]
@@ -125,7 +128,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid]
+wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -135,11 +138,28 @@ wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
-wallpattern_hole_size = 5; //0.1
+wallpattern_hole_size = [5,5]; //0.1
 // pattern fill mode
 wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
+
+/* [Floor Pattern] */
+// enable Grid floor patter
+floorpattern_enabled=false;
+// Style of the pattern
+floorpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+// Spacing between pattern
+floorpattern_hole_spacing = 2; //0.1
+//Number of sides of the hole op
+floorpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
+//Size of the hole
+floorpattern_hole_size = [5,5]; //0.1
+floorpattern_hole_radius = 0.5;
+// pattern fill mode
+floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+//veroni: noise, brick: center weight
+floorpattern_pattern_variable = 0.75;
 
 /* [Wall Cutout] */
 wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
@@ -170,26 +190,45 @@ extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 extension_tab_size= [10,0,0,0];
 
+/* [Bottom Text] */
+// Add bin size to bin bottom
+text_1 = false;
+// Font Size of text, in mm (0 will auto size)
+text_size = 0; // 0.1
+// Depth of text, in mm
+text_depth = 0.3; // 0.01
+// Font to use
+text_font = "Aldo";  // [Aldo, B612, "Open Sans", Ubuntu]
+// Add free-form text line to bin bottom (printing date, serial, etc)
+text_2 = false;
+// Actual text to add
+text_2_text = "Gridfinity Extended";
+
 /* [debug] */
+render_position = "center"; //[default,center,zero]
 //Slice along the x axis
 cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
 // enable loging of help messages during render.
-enable_help = false;
+enable_help = "disabled"; //[info,debug,trace]
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
 
 SetGridfinityEnvironment(
-  setColour = set_colour,
+  width = width,
+  depth = depth,
+  height = height,
+  render_position = render_position,
   help = enable_help,
-  cutx=cutx,
-  cuty=cuty)
+  cutx = cutx,
+  cuty = cuty,
+  cutz = calcDimensionHeight(height, true),
+  setColour = set_colour)
 gridfinity_cup(
   width=width, depth=depth, height=height,
-  position=position,
   filled_in=filled_in,
   label_settings=LabelSettings(
     labelStyle=label_style, 
@@ -200,6 +239,7 @@ gridfinity_cup(
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   fingerslide_walls=fingerslide_walls,
+  fingerslide_lip_aligned=fingerslide_lip_aligned,
   cupBase_settings = CupBaseSettings(
     magnetSize = enable_magnets?magnet_size:[0,0],
     magnetEasyRelease = magnet_easy_release, 
@@ -212,7 +252,8 @@ gridfinity_cup(
     efficientFloor=efficient_floor,
     halfPitch=half_pitch,
     flatBase=flat_base,
-    spacer=spacer),
+    spacer=spacer,
+    minimumPrintablePadSize=minimum_printable_pad_size),
   wall_thickness=wall_thickness,
   chamber_wall_thickness=chamber_wall_thickness,
   chamber_wall_zClearance=chamber_wall_zClearance,
@@ -245,6 +286,16 @@ gridfinity_cup(
   wallpattern_fill=wallpattern_fill,
   wallpattern_voronoi_noise=wallpattern_voronoi_noise,
   wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+  floor_pattern_settings = PatternSettings(
+    patternEnabled = floorpattern_enabled, 
+    patternStyle = floorpattern_style, 
+    patternFill = floorpattern_fill,
+    patternBorder = floorpattern_hole_spacing, 
+    patternHoleSize = floorpattern_hole_size, 
+    patternHoleSides = floorpattern_hole_sides,
+    patternHoleSpacing = floorpattern_hole_spacing, 
+    patternHoleRadius = floorpattern_hole_radius,
+    patternVariable = floorpattern_pattern_variable), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,
   wallcutout_vertical_width=wallcutout_vertical_width,
@@ -269,4 +320,11 @@ gridfinity_cup(
   sliding_min_wall_thickness = sliding_min_wallThickness, 
   sliding_min_support = sliding_min_support, 
   sliding_clearance = sliding_clearance,
-  sliding_lid_lip_enabled=sliding_lid_lip_enabled);
+  sliding_lid_lip_enabled=sliding_lid_lip_enabled,
+  cupBaseTextSettings = CupBaseTextSettings(
+    baseTextLine1Enabled = text_1,
+    baseTextLine2Enabled = text_2,
+    baseTextLine2Value = text_2_text,
+    baseTextFontSize = text_size,
+    baseTextFont = text_font,
+    baseTextDepth = text_depth));

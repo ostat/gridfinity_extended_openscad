@@ -82,8 +82,9 @@ module roundedCube(
   
   topRadius = topRadius > 0 ? topRadius : cornerRadius;
   bottomRadius = bottomRadius > 0 ? bottomRadius : cornerRadius;
-  sideRadius = sideRadius > 0 ? sideRadius : cornerRadius;
-  
+  sideRadius = 
+    let(sr = sideRadius > 0 ? sideRadius : cornerRadius)
+    min(sr, size.x/2, size.y/2);
   //assert(sideRadius < topRadius || sideRadius < bottomRadius, "sideRadius must be >= than bottomRadius and topRadius");
     
   positions=[
@@ -253,7 +254,7 @@ module SequentialBridgingDoubleHole(
 }
 
 //Creates a cube with a single rounded corner.
-//Centered around the counded corner
+//Centered around the rounded corner
 module CubeWithRoundedCorner(
   size=[10,10,10], 
   cornerRadius = 2, 
@@ -301,14 +302,14 @@ module CubeWithRoundedCorner(
   }
 }
 
-module MagentAndScrewRecess(
+module MagnetAndScrewRecess(
   magnetDiameter = 10,
   magnetThickness = 2,
   screwDiameter = 2,
   screwDepth = 6,
   overhangFixLayers = 3,
   overhangFixDepth = 0.2,
-  easyMagentRelease = true,
+  easyMagnetRelease = true,
   $fn = 64){
     fudgeFactor = 0.01;
     
@@ -324,7 +325,7 @@ module MagentAndScrewRecess(
         overhangBridgeCount = overhangFixLayers,
         overhangBridgeThickness = overhangFixDepth);
       
-      if(easyMagentRelease && magnetDiameter > 0)
+      if(easyMagnetRelease && magnetDiameter > 0)
       difference(){
         hull(){
           translate([0,-releaseWidth/2,0])  

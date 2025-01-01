@@ -57,7 +57,7 @@ function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=
       ? floorThickness
       : max(3.5, cupBaseClearanceHeight(magnet_depth,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
     
-//Usable floor depth (florr height - min floor)
+//Usable floor depth (floor height - min floor)
 function calculateFloorThickness(magnet_depth, screw_depth, floor_thickness, num_z, filledin) = 
   calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z, filledin) - cupBaseClearanceHeight(magnet_depth, screw_depth);
     
@@ -70,7 +70,8 @@ function LookupKnownShapes(name="round") =
   name == "square" ? 4 :
   name == "hex" ? 6 : 64;
   
-function cupPosition(position, num_x, num_y) = 
+function cupPosition(position, num_x, num_y) = gridfinityRenderPosition(position, num_x, num_y);
+function gridfinityRenderPosition(position, num_x, num_y) = 
     position == "center" ? [-(num_x)*gf_pitch/2, -(num_y)*gf_pitch/2, 0] 
     : position == "zero" ? [0, 0, 0] 
     : [-gf_pitch/2, -gf_pitch/2, 0]; 
@@ -100,15 +101,6 @@ function validateFilledIn(value) =
   //Convert boolean to list value
   let(value = is_bool(value) ? value ? FilledIn_enabled : FilledIn_disabled : value)
   assert(list_contains(FilledIn_values, value), typeerror("FilledIn", value))
-  value;
-
-EfficientFloor_off = "off";
-EfficientFloor_on = "on";
-EfficientFloor_rounded = "rounded";
-EfficientFloor_smooth = "smooth";
-EfficientFloor_values = [EfficientFloor_off,EfficientFloor_on,EfficientFloor_rounded,EfficientFloor_smooth];
-function validateEfficientFloor(value) = 
-  assert(list_contains(EfficientFloor_values, value), typeerror("EfficientFloor", value))
   value;
 
 LipStyle_normal = "normal";
