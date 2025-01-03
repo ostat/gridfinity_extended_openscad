@@ -30,6 +30,8 @@ module cupLip(
 
   if(lipStyle != "none")
   color(getColour(color_topcavity, isLip = true))
+
+    tz(-fudgeFactor*2)
     difference() {
       //Lip outer shape
       tz(fudgeFactor*2)

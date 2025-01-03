@@ -16,7 +16,7 @@ module grid_block(
   filledin = "disabled", //[disabled, enabled, enabledfilllip]
   wall_thickness = 1.2,
   cupBase_settings = CupBaseSettings(),
-  $fn = 32,
+  $fn = 64,
   help)
 {
   lipHeight = 3.75;
@@ -54,7 +54,8 @@ module grid_block(
       num_x = num_x, 
       num_y = num_y, 
       lipStyle = lipStyle,
-      wall_thickness = wall_thickness);
+      wall_thickness = wall_thickness,
+      $fn=$fn);
   }
         
   translate(cupPosition(position,num_x,num_y))
