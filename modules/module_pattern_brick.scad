@@ -47,7 +47,7 @@ module brick_pattern(
       for(ix=[0:len(bricks)-1]) {
         pos = sum(bricks, end = ix-1) + spacing*ix;
         size = [bricks[ix], h, thickness];
-        if(size.x > 0.5 && size.y > 0.5)
+        if(size.x > min(cell_size.x,cell_size.y)*0.5 && size.y > min(cell_size.x,cell_size.y)*0.5)
           translate([pos,0])
           roundedCube(size = size, sideRadius = corner_radius);
       }
