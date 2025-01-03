@@ -32,11 +32,13 @@ module GridItemHolder(
   assert(is_bool(customShape), "customShape must be bool");    
   assert(is_num(circleFn), "circleFn must be number");    
   assert(is_list(holeSize) && len(holeSize)>=2, "holeSize must be list of len 2");
+  assert(is_num(holeSize[0]), "holeSize[0] must be list of number");
+  assert(is_num(holeSize[1]), "holeSize[1] must be list of number");
   assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
   assert(is_list(holeGrid) && len(holeGrid)==2, "canvasSize must be list of len 2");  
   assert(is_num(holeHeight), "holeHeight must be number");    
-  assert(is_num(holeChamfer), "holeChamfer must be number");    
   assert(is_num(holeChamfer), "holeChamfer must be number");  
+  assert(is_num(border), "border must be number");    
   assert(is_string(fill), "fill must be a string");
   assert(is_bool(rotateGrid), "rotateGrid must be bool");  
 

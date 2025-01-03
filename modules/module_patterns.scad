@@ -54,7 +54,7 @@ function PatternSettings(
     patternHoleSides,
     patternHoleSpacing, 
     patternHoleRadius,
-    patternVariable) = 
+    patternVariable = 0) = 
   let(
     result = [
       patternEnabled,
@@ -92,7 +92,7 @@ module cutout_pattern(
   holeHeight,
   center,
   fill,
-  patternVariable,
+  patternVariable=0,
   holeRadius,
   border = 0,
   help){
@@ -117,6 +117,7 @@ module cutout_pattern(
         fill=fill, //"none", "space", "crop"
         rotateGrid = (patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
         //border = border,
+        holeChamfer=patternVariable,
         help=help);
     }
     else if(patternStyle == PatternStyle_voronoi || patternStyle == PatternStyle_voronoigrid || patternStyle == "voronoihexgrid"){
