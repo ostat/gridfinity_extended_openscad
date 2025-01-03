@@ -88,6 +88,6 @@ color_wallcutout = "SandyBrown";
 color_basehole = "DarkSlateGray";
 color_base = "DimGray";
 color_extension = "lightpink";
-color_text = "Gold";
+color_text = "Black";
 color_cut = "Gold";
 color_lid = "MediumAquamarine";

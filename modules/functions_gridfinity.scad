@@ -59,7 +59,12 @@ function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=
     
 //Usable floor depth (floor height - min floor)
 function calculateFloorThickness(magnet_depth, screw_depth, floor_thickness, num_z, filledin) = 
-  calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z, filledin) - cupBaseClearanceHeight(magnet_depth, screw_depth);
+let(
+    cfh = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z, filledin),
+    cbch = cupBaseClearanceHeight(magnet_depth, screw_depth))
+  IsHelpEnabled("info") ? 
+  echo("calculateFloorThickness", cfh=cfh, cbch=cbch,num_z=num_z,magnet_depth=magnet_depth,screw_depth=screw_depth,floor_thickness=floor_thickness,filledin=filledin) cfh - cbch :
+  cfh - cbch;
     
 // calculate the position of separators from the size
 function splitChamber(num_separators, num_x) = num_separators < 1 
