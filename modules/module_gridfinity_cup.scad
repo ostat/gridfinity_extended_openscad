@@ -1,14 +1,14 @@
 include <gridfinity_constants.scad>
-include <module_gridfinity_label.scad>
 include <functions_general.scad>
 include <module_patterns.scad>
+include <module_gridfinity_label.scad>
 include <module_gridfinity_sliding_lid.scad>
 include <module_gridfinity_Extendable.scad>
+include <module_gridfinity_cup_base_text.scad>
+include <module_gridfinity_cup_base.scad>
 include <module_divider_walls.scad>
 
 use <module_gridfinity.scad>
-include <module_gridfinity_cup_base_text.scad>
-include <module_gridfinity_cup_base.scad>
 use <module_gridfinity_efficient_floor.scad>
 use <module_attachment_clip.scad>
 use <module_calipers.scad>
@@ -265,7 +265,7 @@ module gridfinity_cup(
   wallpattern_voronoi_noise=default_wallpattern_voronoi_noise,
   wallpattern_voronoi_radius = default_wallpattern_voronoi_radius,
   floor_pattern_settings = PatternSettings(
-    patternEnabled = true, 
+    patternEnabled = false, 
     patternStyle = default_wallpattern_style, 
     patternFill = default_wallpattern_fill,
     patternBorder = default_wallpattern_hole_spacing, 
@@ -372,7 +372,7 @@ module gridfinity_cup(
     ? wallpattern_dividers_enabled ? "vertical" : "disabled"
     : wallpattern_dividers_enabled;
   
-
+  difference() {
   union(){
     difference() {
       grid_block(
@@ -854,6 +854,35 @@ module gridfinity_cup(
     }
   }  
   
+  cutx = getCutx();
+  cuty = getCuty();
+  cutz = getCutz();
+  //Render the cut, used for debugging
+  if(cutx > 0 && cutz > 0 && $preview){
+    color(color_cut)
+    translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+      cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
+  }
+  if(cuty > 0 && cutz > 0 && $preview){
+    color(color_cut)
+    translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+      cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
+  }
+  }
+  
+  /*if(IsHelpEnabled("info")){
+    $calipersize = [num_x,num_y,num_z];
+    $caliperlip_style = lip_style;
+    $caliperMagnetSize = cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height];
+    $caliperScrewSize = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
+    $caliperfloor_thickness = cupBase_settings[iCupBase_FloorThickness];
+    $caliperfilled_in = filled_in;
+    $caliperwall_thickness = wall_thickness;
+    $caliperefficient_floor = cupBase_settings[iCupBase_EfficientFloor];
+    $caliperflat_base = cupBase_settings[iCupBase_FlatBase];
+    $caliperzClearance = zClearance;
+    children();
+  }*/
   if(IsHelpEnabled("info"))
     //translate(cupPosition(position,num_x,num_y))
     ShowCalipers(
@@ -868,7 +897,7 @@ module gridfinity_cup(
       wall_thickness,
       efficient_floor = cupBase_settings[iCupBase_EfficientFloor], 
       flat_base = cupBase_settings[iCupBase_FlatBase]); 
-      
+    
   HelpTxt("gridfinity_cup",[
     "num_x",num_x
     ,"num_y",num_y

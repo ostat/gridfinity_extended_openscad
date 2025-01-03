@@ -152,6 +152,7 @@ module SetGridfinityEnvironment(
       children(0);
       
       //Render the cut, used for debugging
+      /*
       if(cutx > 0 && cutz > 0 && $preview){
         color(color_cut)
         translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
@@ -161,17 +162,17 @@ module SetGridfinityEnvironment(
         color(color_cut)
         translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
           cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
-      }
+      }*/
     }
 
-    //Render the calipers
     //children(1);
   }
 }
 
 function getCutx() = is_undef($cutx) || !is_num($cutx) ? 0 : $cutx;
 function getCuty() = is_undef($cuty) || !is_num($cuty) ? 0 : $cuty;
-          
+function getCutz() = is_undef($cutz) || !is_num($cutz) ? 0 : $cutz;
+
 //set_colour = "preview"; //[disabled, preview, lip]
 function getColour(colour, isLip = false, fallBack = color_cup) = 
     is_undef($setColour) 
