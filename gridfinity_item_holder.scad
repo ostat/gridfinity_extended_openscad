@@ -88,7 +88,7 @@ filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-position = "center"; //[default,center,zero]
+render_position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
 //assign colours to the bin, will may 
@@ -252,7 +252,7 @@ cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
 // enable loging of help messages during render.
-enable_help = false;
+enable_help = "disabled"; //[info,debug,trace]
 /*<!!end gridfinity_basic_cup!!>*/
 
 /* [Hidden] */
@@ -614,7 +614,6 @@ module gridfinity_itemholder(
       
   //gridfinity settings
   width=width, depth=depth, height=height,
-  position=position,
   filled_in=filled_in,
   label_settings=LabelSettings(
     labelStyle=label_style, 
@@ -713,19 +712,22 @@ module gridfinity_itemholder(
           holeDepth = itemholder_hole_depth,
           holeClearance = itemholder_hole_clearance);
 
-  _depth = itemCalc[icHoleSize].z;
+  calculatedItemDepth = itemCalc[icHoleSize].z;
+
   // min floor height
-  bch = cupBaseClearanceHeight(magnet_depth, screw_depth);
-  mfh = calculateMinFloorHeight(magnet_depth, screw_depth);
+  baseClearanceHeight = cupBaseClearanceHeight(magnet_depth, screw_depth);
+  minFloorHeight = calculateMinFloorHeight(magnet_depth, screw_depth);
   
   //calculate the bin height. This math is not right
-  height = !itemholder_auto_bin_height || _depth <=0 ? num_z
-      : filled_in
-        ? (mfh+_depth)/gf_zpitch
-        : ceil((mfh+_depth)/gf_zpitch);
-  if(IsHelpEnabled("info")) echo("gridfinity_itemholder", _depth=_depth, bch=bch, height=height); 
+  height = !itemholder_auto_bin_height || calculatedItemDepth <=0 ? num_z
+      : filled_in != "disabled"
+        ? (minFloorHeight + calculatedItemDepth)/gf_zpitch
+        : ceil((minFloorHeight + calculatedItemDepth)/gf_zpitch);
   // calculate floor thickness
-  ft = calculateFloorThickness(magnet_diameter, screw_depth, _depth+gf_cup_floor_thickness, height, filled_in);  
+  calculatedFloorThickness = calculateFloorThickness(magnet_depth, screw_depth, calculatedItemDepth + gf_cup_floor_thickness, height, filled_in);  
+
+  if(IsHelpEnabled("info")) ;
+  echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedFloorThickness=calculatedFloorThickness, minFloorHeight=minFloorHeight, baseClearanceHeight=baseClearanceHeight, height=height); 
 
   if(itemholder_enable_sample == false)
   {
@@ -733,7 +735,6 @@ module gridfinity_itemholder(
       /*<!!start gridfinity_basic_cup!!>*/
       gridfinity_cup(
         width=width, depth=depth, height=height,
-        position=position,
         filled_in=filled_in,
         label_settings=LabelSettings(
           labelStyle=label_style, 
@@ -751,7 +752,7 @@ module gridfinity_itemholder(
           screwSize = enable_screws?screw_size:[0,0],
           holeOverhangRemedy = hole_overhang_remedy, 
           cornerAttachmentsOnly = box_corner_attachments_only,
-          floorThickness = floor_thickness,
+          floorThickness = calculatedFloorThickness,
           cavityFloorRadius = cavity_floor_radius,
           efficientFloor=efficient_floor,
           halfPitch=half_pitch,
@@ -816,11 +817,13 @@ module gridfinity_itemholder(
         sliding_lid_lip_enabled=sliding_lid_lip_enabled);
       /*<!!end gridfinity_basic_cup!!>*/
 
-      itemholder_z_bottom = max(bch, bch+floor_thickness-itemholder_hole_depth);
-      // echo(bch=bch, mfh=mfh, floor_thickness=floor_thickness, itemholder_hole_depth=itemholder_hole_depth, itemholder_z_bottom=itemholder_z_bottom)
+      itemholder_z_bottom = max(
+          baseClearanceHeight, 
+          baseClearanceHeight + floor_thickness - calculatedItemDepth);
+      
+      echo("gridfinity_itemholder", baseClearanceHeight=baseClearanceHeight, minFloorHeight=minFloorHeight, floor_thickness=floor_thickness, calculatedFloorThickness=calculatedFloorThickness, calculatedItemDepth=calculatedItemDepth, itemholder_z_bottom=itemholder_z_bottom)
 
       color(color_extension)
-      translate(cupPosition(position,num_x,num_y))
       translate([0, 0, itemholder_z_bottom])
       itemholder(
         num_x=num_x, num_y=num_y, num_z=height,
@@ -837,7 +840,7 @@ module gridfinity_itemholder(
         holeChamfer = itemholder_hole_chamfer,
         holeGrid  = itemholder_hole_grid,
         holeClearance = itemholder_hole_clearance,
-        floorThickness = ft,
+        floorThickness = calculatedFloorThickness,
         wallThickness = wall_thickness,
         compartments = itemholder_compartments,
         compartment_spacing = itemholder_compartment_spacing,
@@ -864,4 +867,14 @@ module gridfinity_itemholder(
   }
 }
 
+SetGridfinityEnvironment(
+  width = width,
+  depth = depth,
+  height = height,
+  render_position = render_position,
+  help = enable_help,
+  cutx = cutx,
+  cuty = cuty,
+  cutz = calcDimensionHeight(height, true),
+  setColour = set_colour)
 gridfinity_itemholder();
