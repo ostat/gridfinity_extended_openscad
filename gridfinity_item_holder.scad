@@ -70,9 +70,8 @@ dimensions of the tray cutout, a string with comma separated values, and pipe (|
 */
 //[[xpos, ypos, xsize, ysize, radius, depth]].  xpos, ypos: the x/y position in gridfinity units.  xsize, ysize: the x/y size in gridfinity units.  radius [optional]: corner radius in mm.  depth [optional]: depth in mm.  Example "0,0,2,1|2,0,2,1,2,5"
 itemholder_customcompartments = "";
-
-
 /*<!!end gridfinity_itemholder!!>*/
+
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -83,11 +82,11 @@ depth = [1, 0]; //0.5
 // Z dimension excluding. grid units (multiples of 7mm) or mm.
 height = [3, 0]; //0.1
 // Fill in solid block (overrides all following options)
-filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
+filled_in = "disabled"; //[disabled, enabled, "enabledfilllip":Fill cup and lip]
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 // Remove some or all of lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable]
 render_position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
@@ -340,8 +339,8 @@ function itemCalculations(
     _depthTemp = holeDepth > 0 ? holeDepth : item[idepthneeded],
     _depth = _depthTemp <= 0 ? 5 : _depthTemp,
     _holeSize = 
-      item[ishape] == "round"  || item[ishape] == "hex"
-        ? [item[iitemDiameter]+holeClearance, 0, _depth]
+      item[ishape] == "round" || item[ishape] == "hex"
+        ? [item[iitemDiameter] + holeClearance, 0, _depth]
       : item[ishape] == "halfround" 
         ? [item[iitemx]+holeClearance, item[iitemy]+holeClearance, item[iitemx]/2]
       : [item[iitemx]+holeClearance,item[iitemy]+holeClearance,_depth]
@@ -349,8 +348,6 @@ function itemCalculations(
       _holeSize,
       [],[],[],0];   
     
-////////
-
 //TODO for the hose size its not correct due to loss in the number of faces.
 //E.G a 10mm circle cant contain a 10mm hex
 //This also throws off the calculated spacing.

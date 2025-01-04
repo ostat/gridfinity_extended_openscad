@@ -1,14 +1,11 @@
-include <modules/module_item_holder.scad>
 include <modules/gridfinity_constants.scad>
-include <modules/functions_general.scad>
 use <modules/module_gridfinity_cup.scad>
 use <modules/module_gridfinity.scad>
 
 /*<!!start gridfinity_sieve!!>*/
-
+/* [Sieve] */
 // Should the grid be square or hex
 sieve_grid_style = "hexgrid"; //[grid, gridrotated, hexgrid, hexgridrotated]
-
 //Spacing around the holes
 sieve_hole_spacing = 3; //0.1
 // 45 deg chamfer added to the top of the hole (mm)
@@ -33,8 +30,8 @@ height = [3, 0]; //0.1
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 // Remove some or all of lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-render_position = "center"; //[default,center,zero]
+lip_style = "normal";  // [normal, reduced, minimum, none:not stackable]
+render_position = "center"; //[default, center, zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
       
@@ -64,7 +61,7 @@ label_walls=[0,1,0,0];  //[0:1:1]
 cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
-// enable loging of help messages during render.
+// enable logging of help messages during render.
 enable_help = false;
 /*<!!end gridfinity_basic_cup!!>*/
 
@@ -109,8 +106,7 @@ module gridfinity_sieve(
   wall_thickness=wall_thickness,
   lip_style=lip_style,
   cutx=cutx,
-  cuty=cuty,
-  help=help) {
+  cuty=cuty) {
   
   difference() {
     num_x = calcDimensionWidth(width);
