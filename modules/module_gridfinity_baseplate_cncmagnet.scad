@@ -34,7 +34,7 @@ module cncmagnet_baseplate(
       gridcopy(num_x, num_y) {
         cornercopy(magnet_position) {
           translate([0, 0, -fudgeFactor])
-           cylinder(d=magnetSize[0], h=magnetSize[1]+fudgeFactor*2, $fn=48);
+           cylinder(d=magnetSize[0], h=magnetSize[1]+fudgeFactor*2);
         }
       }
     }
@@ -47,8 +47,7 @@ module cnc_baseplate(
     extra_down=0, 
     height = 4,
     cornerRadius = gf_cup_corner_radius,
-    roundedCorners = 15,
-    $fn = 44) {
+    roundedCorners = 15) {
 
   corner_position = gf_pitch/2-cornerRadius;
   
@@ -62,7 +61,7 @@ module cnc_baseplate(
           ($idx[0] == 0 ? -1 : 1)*(cornerRadius-radius), 
           ($idx[1] == 0 ? -1 : 1)*(cornerRadius-radius), -extra_down];
         translate(ctrn)
-        cylinder(r=radius, h=height+extra_down, $fn=$fn);
+        cylinder(r=radius, h=height+extra_down);
       }
       
     color(color_topcavity)
@@ -70,6 +69,6 @@ module cnc_baseplate(
       gridcopy(num_x, num_y)
       hull() 
         cornercopy(corner_position, 1, 1)
-        cylinder(r=2,h=height+fudgeFactor*2, $fn=$fn);
+        cylinder(r=2,h=height+fudgeFactor*2);
   }
 }

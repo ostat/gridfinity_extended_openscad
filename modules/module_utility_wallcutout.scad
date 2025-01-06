@@ -61,8 +61,7 @@ module WallCutout(
   height=21,
   thickness=10,
   cornerRadius=5,
-  topHeight,
-  $fn = 64) {
+  topHeight) {
  
   topHeight = is_undef(topHeight) || topHeight < 0 ? cornerRadius*4 : topHeight;
   bottomWidth = lowerWidth;

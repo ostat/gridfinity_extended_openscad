@@ -76,6 +76,14 @@ xpos5 = [6,2,2,2,2,10,0];
 xpos6 = [0,0,0,0,0,0,0];
 xpos7 = [0,0,0,0,0,0,0];
 
+/* [Model detail] */
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
+
 /* [debug] */
 Render_Position = "center"; //[default,center,zero]
 //Slice along the x axis

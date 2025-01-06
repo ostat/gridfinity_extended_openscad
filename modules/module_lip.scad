@@ -4,8 +4,7 @@ module cupLip(
   num_x = 2, 
   num_y = 3, 
   lipStyle = "normal", 
-  wall_thickness = 1.2, 
-  $fn=64){
+  wall_thickness = 1.2){
   //Difference between the wall and support thickness
   lipSupportThickness = (lipStyle == "minimum" || lipStyle == "none") ? 0
     : lipStyle == "reduced" ? gf_lip_upper_taper_height - wall_thickness
@@ -37,7 +36,7 @@ module cupLip(
       tz(fudgeFactor*2)
       hull() 
         cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=gf_cup_corner_radius, h=lipHeight+fudgeFactor, $fn=$fn);
+        cylinder(r=gf_cup_corner_radius, h=lipHeight+fudgeFactor);
     
       // remove top so XxY can fit on top
       pad_oversize(num_x, num_y, 1);
@@ -45,7 +44,7 @@ module cupLip(
       if (lipStyle == "minimum" || lipStyle == "none") {
         hull() cornercopy(seventeen, num_x, num_y)
           tz(-fudgeFactor) 
-          cylinder(r=innerWallRadius, h=gf_Lip_Height, $fn=32);   // remove entire lip
+          cylinder(r=innerWallRadius, h=gf_Lip_Height);   // remove entire lip
       } 
       else if (lipStyle == "reduced") {
         lowerTaperZ = gf_lip_lower_taper_height;
@@ -55,11 +54,11 @@ module cupLip(
           cylinder(
             r1=innerWallRadius, 
             r2=gf_cup_corner_radius-gf_lip_upper_taper_height, 
-            h=lipSupportThickness, $fn=32);
+            h=lipSupportThickness);
           tz(-fudgeFactor) 
           cylinder(
             r=innerWallRadius, 
-            h=lowerTaperZ+fudgeFactor*2, $fn=32);
+            h=lowerTaperZ+fudgeFactor*2);
         }
       } 
       else { // normal
@@ -67,17 +66,17 @@ module cupLip(
         if(lowerTaperZ <= floorht){
           hull() cornercopy(seventeen, num_x, num_y)
             tz(floorht) 
-            cylinder(r=innerLipRadius, h=-floorht+fudgeFactor*2, $fn=32); // lip
+            cylinder(r=innerLipRadius, h=-floorht+fudgeFactor*2); // lip
         } else {
           hull() cornercopy(seventeen, num_x, num_y)
             tz(-gf_lip_height-fudgeFactor) 
-            cylinder(r=innerLipRadius, h=gf_lip_height+fudgeFactor*2, $fn=32); // lip
+            cylinder(r=innerLipRadius, h=gf_lip_height+fudgeFactor*2); // lip
 
           hull() cornercopy(seventeen, num_x, num_y)
             tz(-gf_lip_height-lipSupportThickness-fudgeFactor) 
             cylinder(
               r1=innerWallRadius,
-              r2=innerLipRadius, h=q+fudgeFactor, $fn=32);   // ... to top of thin wall ...
+              r2=innerLipRadius, h=q+fudgeFactor);   // ... to top of thin wall ...
         }
       }
   }

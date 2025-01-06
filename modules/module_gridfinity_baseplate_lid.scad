@@ -67,8 +67,7 @@ module baseplate_lid(
     extra_down = frameBaseHeight, 
     frameLipHeight = frameLipHeight,
     cornerRadius = cornerRadius,
-    reducedWallHeight = reducedWallHeight,
-    $fn = 44)
+    reducedWallHeight = reducedWallHeight)
       difference(){
         translate([fudgeFactor,fudgeFactor,-fudgeFactor])
           cube([gf_pitch-fudgeFactor*2,gf_pitch-fudgeFactor*2,frameBaseHeight-fudgeFactor*2]);

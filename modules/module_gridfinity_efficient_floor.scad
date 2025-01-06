@@ -97,8 +97,7 @@ module EfficientFloor(
   margins=0,
   floorRounded = true,
   floorSmooth = 0,
-  efficientFloorGridHeight=0,
-  $fn=64){
+  efficientFloorGridHeight=0){
   fudgeFactor = 0.01;
   floorRadius=floorRounded ? 1 : 0;
 

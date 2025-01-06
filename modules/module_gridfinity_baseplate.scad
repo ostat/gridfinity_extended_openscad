@@ -205,7 +205,7 @@ module AttachFilament(l=5, d=1.75,left= true, right=true, front=true, back=true)
     if(positions[pi][0])
       translate(positions[pi][1])
       rotate(positions[pi][2])
-      cylinder(h=l,d=d, center=true,$fn=32);
+      cylinder(h=l,d=d, center=true);
   }
 }
 
@@ -251,7 +251,7 @@ module ButterFly(size,r,taper=false,half=false)
       hull(){
         for(pi = [0:len(positions)-1]){
           translate(positions[pi])
-            cylinder(h=h,r=r,center=true, $fn=32);
+            cylinder(h=h,r=r,center=true);
         }
       }
     }

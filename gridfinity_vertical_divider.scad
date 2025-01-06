@@ -69,10 +69,34 @@ half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
 
-/* [Hidden] */
-enable_help = false;
+/* [Model detail] */
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
+
+/* [debug] */
+render_position = "center"; //[default,center,zero]
+//Slice along the x axis
+cutx = 0; //0.1
+//Slice along the y axis
+cuty = 0; //0.1
+// enable loging of help messages during render.
+enable_help = "disabled"; //[info,debug,trace]
+
 module end_of_customizer_opts() {}
 
+SetGridfinityEnvironment(
+  width = width,
+  depth = depth,
+  height = height,
+  render_position = render_position,
+  help = enable_help,
+  cutx = cutx,
+  cuty = cuty,
+  cutz = calcDimensionHeight(height, true))
 Gridfinity_Divider();
 
 module Divider(
@@ -83,8 +107,7 @@ module Divider(
   frontTopInset=20,
   frontTopAngle=65,
   backTopInset=20,
-  backTopAngle=65,
-  $fn = 36
+  backTopAngle=65
 ){
   _baseHeight = radius > baseHeight ? radius : baseHeight;
   
@@ -106,7 +129,7 @@ module Divider(
     for(index =[0:1:len(positions)-1])
     {
       translate(positions[index])
-        circle(r=radius, $fn=$fn);
+        circle(r=radius);
     }
   }
 }
@@ -129,8 +152,7 @@ module PatternedDivider(
   wallpatternFill = wallpattern_fill,
   wallpatternVoronoiNoise = wallpattern_voronoi_noise,
   wallpatternVoronoiRadius = wallpattern_voronoi_radius,
-  help= false,
-  $fn = 36){
+  help= false){
   
   rotate([90,0,0])
   difference(){
@@ -143,8 +165,7 @@ module PatternedDivider(
     frontTopInset=frontTopInset,
     frontTopAngle=frontTopAngle,
     backTopInset=backTopInset,
-    backTopAngle=backTopAngle,
-    $fn = $fn);
+    backTopAngle=backTopAngle);
   
   if(wallpatternEnabled){
   translate([0,0,-fudgeFactor])
@@ -159,8 +180,7 @@ module PatternedDivider(
       frontTopInset=frontTopInset,
       frontTopAngle=frontTopAngle,
       backTopInset=backTopInset,
-      backTopAngle=backTopAngle,
-      $fn = $fn);
+      backTopAngle=backTopAngle);
     
       translate([0,height+baseHeight,0])
       rotate([0,0,-90])
@@ -172,10 +192,10 @@ module PatternedDivider(
         holeSize = [wallpatternHoleSize, wallpatternHoleSize],
         holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
         holeHeight = width*2,
+        holeRadius = wallpatternVoronoiRadius,
         center=false,
         fill=wallpatternFill, //"none", "space", "crop"
-        voronoiNoise=wallpatternVoronoiNoise,
-        voronoiRadius = wallpatternVoronoiRadius,
+        patternVariable=wallpatternVoronoiNoise,
         help=help);
       }
     }
@@ -227,17 +247,14 @@ module Gridfinity_Divider(
   
   gridfinity_cup(
     width=width, depth=depth, height=height,
-    position=position,
     cupBase_settings=cupBase_settings,
     wall_thickness=wall_thickness,
     lip_style=lip_style,
     label_settings=LabelSettings(
-      labelStyle="disabled"),
-    help = enable_help);
+      labelStyle="disabled"));
   
   for(i = [0 : divider_count-1]){
     ypos = (num_y*gf_pitch-gf_cup_corner_radius*2-dividerWidth)/(divider_count-1)*i;
-    translate(cupPosition(position,num_x,num_y))
     translate([0.25,gf_cup_corner_radius+dividerWidth+ypos,floorHeight])
     PatternedDivider(
       height = dividerHeight,

@@ -59,8 +59,7 @@ module frame_plain(
     cornerRadius = gf_cup_corner_radius,
     reducedWallHeight = 0,
     roundedCorners = 15,
-    reduceWallTaper = false,
-    $fn = 44) {
+    reduceWallTaper = false) {
   frameLipHeight = extra_down > 0 ? height -0.6 : height;
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
 
@@ -125,8 +124,7 @@ module frame_plain(
       extra_down = extra_down, 
       frameLipHeight = frameLipHeight,
       cornerRadius = gf_cup_corner_radius,
-      reducedWallHeight = reducedWallHeight,
-      $fn = 44)
+      reducedWallHeight = reducedWallHeight)
         children();
   }
 }
@@ -155,8 +153,7 @@ module frame_cavity(
     extra_down=0, 
     frameLipHeight = 4,
     cornerRadius = gf_cup_corner_radius,
-    reducedWallHeight = 0,
-    $fn = 44) {
+    reducedWallHeight = 0) {
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
     translate([0, 0, -fudgeFactor]) 
       gridcopy(
@@ -176,8 +173,7 @@ module frame_cavity(
               height=frameWallReduction,
               thickness=side[1].y+fudgeFactor*2,
               cornerRadius=frameWallReduction,
-              topHeight=1,
-              $fn = 64);
+              topHeight=1);
             }
             
           pad_oversize(
@@ -226,13 +222,13 @@ module baseplate_cavities(
   union(){
     gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
       translate([0, 0, baseCavityHeight-magnetSize.y]) 
-      cylinder(d=magnetSize[0], h=magnetSize.y, $fn=48);
+      cylinder(d=magnetSize[0], h=magnetSize.y);
 
       // counter-sunk holes in the bottom
       if(cornerScrewEnabled){
-        cylinder(d=3.5, h=baseCavityHeight, $fn=24);
+        cylinder(d=3.5, h=baseCavityHeight);
         translate([0, 0, -fudgeFactor]) 
-          cylinder(d1=8.5, d2=3.5, h=counterSinkDepth, $fn=24);
+          cylinder(d1=8.5, d2=3.5, h=counterSinkDepth);
       }
     }
     
@@ -246,7 +242,7 @@ module baseplate_cavities(
           for (a=[0, 180]) 
             rotate([0, 0, a]) 
             translate([-14.9519, 0, -fudgeFactor])
-              cylinder(d=8.5, h=2.01, $fn=24);
+              cylinder(d=8.5, h=2.01);
       }
     }
     
@@ -255,9 +251,9 @@ module baseplate_cavities(
       //counter-sunk holes for woodscrews
       union(){
         translate([0, 0, baseCavityHeight-counterSinkDepth]) 
-          cylinder(d1=3.5, d2=8.5, h=counterSinkDepth, $fn=24);
+          cylinder(d1=3.5, d2=8.5, h=counterSinkDepth);
         translate([0, 0, -fudgeFactor]) 
-          cylinder(d=3.5, h=baseCavityHeight, $fn=24);
+          cylinder(d=3.5, h=baseCavityHeight);
       }
     }
     
@@ -282,7 +278,7 @@ module baseplate_cavities(
             //magnet retaining ring
             union(){
               magnetSupportWidth = max(17/2,supportDiameter);
-              cylinder(d=supportDiameter, h=baseCavityHeight+fudgeFactor*4, $fn=48);
+              cylinder(d=supportDiameter, h=baseCavityHeight+fudgeFactor*4);
 
               translate([magnetSupportWidth/2, -magnetSupportWidth/2+supportDiameter/2, baseCavityHeight/2]) 
                 cube([magnetSupportWidth,magnetSupportWidth,baseCavityHeight+fudgeFactor*6],center = true);

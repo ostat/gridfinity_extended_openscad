@@ -100,6 +100,14 @@ wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, c
 wallpattern_voronoi_noise = 0.75;
 wallpattern_voronoi_radius = 0.5;
 
+/* [model detail] */
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
+
 /* [Hidden] */
 module end_of_customizer_opts() {}
 colour_drawer = "Teal";
@@ -119,8 +127,6 @@ function sum(list, c = 0) =
   c < len(list) - 1 
     ? list[c] + sum(list, c + 1) 
     : list[c];
- 
-$fn = 64;
 
 //Drawer modules
 module drawers(
@@ -254,7 +260,7 @@ module drawerPull(width, depth, height, radius){
       translate(i == 0 ? [0,0,radius] : [0,0,height-radius])
       rotate([0,90,0])
         difference(){
-          cylinder(h=width, r=radius, $fn=64);
+          cylinder(h=width, r=radius);
           //Remove inner half so we don't get error when r<roundedr*2
           translate([-radius,0,-fudgeFactor])
           cube([radius*2,radius*2,width+fudgeFactor*2]);

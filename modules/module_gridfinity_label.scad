@@ -213,9 +213,9 @@ module gridfinity_label(
                   union(){
                     //left
                     tz(abs(label_num_x-labelCornerRadius*2))//tz(abs(label_num_x))
-                    sphere(r=labelCornerRadius, $fn=64);
+                    sphere(r=labelCornerRadius);
                     //Right
-                    sphere(r=labelCornerRadius, $fn=64);
+                    sphere(r=labelCornerRadius);
                   }
                 }
                 
@@ -347,7 +347,7 @@ module cullenect_socket(
 }
 
 // Tool for rounded cubes
- module RoundedCube(size, radius, r1, r2, $fn=64) {
+ module RoundedCube(size, radius, r1, r2) {
   r1 = is_num(radius) ? radius : r1;
   r2 = is_num(radius) ? radius : r2;
   maxr = max(r1,r2);

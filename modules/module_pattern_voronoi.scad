@@ -87,10 +87,8 @@ module rectangle_voronoi(
    spacing = 2, 
    radius = 0.5,
    seed = undef,
-   center=true, 
-   fn = 32)
+   center=true)
 {
-  $fn=fn;
   _spacing = spacing + radius*2;
   points = points != undef && is_list(points) && len(points) > 0 
     ? points 

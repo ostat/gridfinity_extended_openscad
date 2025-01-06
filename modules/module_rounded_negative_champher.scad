@@ -26,8 +26,7 @@ module roundedNegativeChampher(
   size=[80,100], 
   cornerRadius = 10, 
   height = 0,
-  champher = false,
-  $fn = 64)
+  champher = false)
 {
 
 height = height <= champherRadius ? champherRadius : height;

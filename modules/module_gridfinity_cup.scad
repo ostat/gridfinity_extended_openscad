@@ -506,7 +506,9 @@ module gridfinity_cup(
                       patternVariable = floor_pattern_settings[iPatternVariable],
                       border = max(5, floor_pattern_settings[iPatternBorder],
                         cupBase_settings[iCupBase_EfficientFloor] == EfficientFloor_smooth? 6.5 : 0),
-                      holeRadius = floor_pattern_settings[iPatternHoleRadius]);
+                      holeRadius = floor_pattern_settings[iPatternHoleRadius],
+                      patternFs = floor_pattern_settings[iPatternFs],
+                      source="floor_pattern");
               }
           
               if(wallpattern_enabled){
@@ -584,6 +586,7 @@ module gridfinity_cup(
                         fill=wallpattern_fill, //"none", "space", "crop"
                         patternVariable=wallpattern_voronoi_noise,
                         holeRadius = wallpattern_voronoi_radius,
+                        source="wall_pattern",
                         help=help);
               }
             }
@@ -667,6 +670,7 @@ module gridfinity_cup(
                               fill=wallpattern_fill, //"none", "space", "crop"
                               voronoiNoise=wallpattern_voronoi_noise,
                               voronoiRadius = wallpattern_voronoi_radius,
+                              source="vertical separator wall pattern",
                               help=help);
                    
                             
@@ -710,6 +714,7 @@ module gridfinity_cup(
                             fill=wallpattern_fill, //"none", "space", "crop"
                             voronoiNoise=wallpattern_voronoi_noise,
                             voronoiRadius = wallpattern_voronoi_radius,
+                            source="horizontal separator wall pattern",
                             help=help);
                 
                             //subtract outer wall to outer wall cutout from separator pattern
@@ -1099,7 +1104,7 @@ module basic_cavity(num_x, num_y, num_z,
       if (reducedlipstyle == "minimum" || reducedlipstyle == "none") {
         /*hull() cornercopy(seventeen, num_x, num_y)
           tz(filledInZ-fudgeFactor) 
-          cylinder(r=innerWallRadius, h=gf_Lip_Height, $fn=32);   // remove entire lip*/
+          cylinder(r=innerWallRadius, h=gf_Lip_Height);   // remove entire lip*/
       } 
       else if (reducedlipstyle == "reduced") {
         /*lowerTaperZ = filledInZ+gf_lip_lower_taper_height;
@@ -1109,11 +1114,11 @@ module basic_cavity(num_x, num_y, num_z,
           cylinder(
             r1=innerWallRadius, 
             r2=gf_cup_corner_radius-gf_lip_upper_taper_height, 
-            h=lipSupportThickness, $fn=32);
+            h=lipSupportThickness);
           tz(filledInZ-fudgeFactor) 
           cylinder(
             r=innerWallRadius, 
-            h=lowerTaperZ-filledInZ+fudgeFactor*2, $fn=32);
+            h=lowerTaperZ-filledInZ+fudgeFactor*2);
         }*/
       } 
       else { // normal
@@ -1121,17 +1126,17 @@ module basic_cavity(num_x, num_y, num_z,
         if(lowerTaperZ <= floorht){
           hull() cornercopy(seventeen, num_x, num_y)
             tz(floorht) 
-            cylinder(r=innerLipRadius, h=filledInZ-floorht+fudgeFactor*4, $fn=32); // lip
+            cylinder(r=innerLipRadius, h=filledInZ-floorht+fudgeFactor*4); // lip
         } else {
           hull() cornercopy(seventeen, num_x, num_y)
             tz(filledInZ-gf_lip_height-fudgeFactor) 
-            cylinder(r=innerLipRadius, h=gf_lip_height+fudgeFactor*4, $fn=32); // lip
+            cylinder(r=innerLipRadius, h=gf_lip_height+fudgeFactor*4); // lip
     
           hull() cornercopy(seventeen, num_x, num_y)
             tz(filledInZ-gf_lip_height-lipSupportThickness-fudgeFactor) 
             cylinder(
               r1=innerWallRadius,
-              r2=innerLipRadius, h=q+fudgeFactor, $fn=32);   // ... to top of thin wall ...
+              r2=innerLipRadius, h=q+fudgeFactor);   // ... to top of thin wall ...
         }
       }
     
@@ -1143,7 +1148,7 @@ module basic_cavity(num_x, num_y, num_z,
             h=cavityHeight,
             r=innerWallRadius,
             roundedr1=min(cavityHeight, cavity_floor_radius),
-            roundedr2=0, $fn=32);
+            roundedr2=0);
     }
 
     if(sliding_lid_settings[iSlidingLidEnabled])
@@ -1228,7 +1233,7 @@ module basic_cavity(num_x, num_y, num_z,
     for (x=[1.5+0.25+wall_thickness, num_x*gf_pitch-1.5-0.25-wall_thickness]){
       for (y=[11, (num_y)*gf_pitch-seventeen])
       translate([x, y, top-height])
-      cylinder(d=3, h=height, $fn=24);
+      cylinder(d=3, h=height);
     }
   }
 
@@ -1236,7 +1241,7 @@ module basic_cavity(num_x, num_y, num_z,
     tz(-fudgeFactor)
       hull()
       cornercopy(num_x=num_x, num_y=num_y, r=seventeen)
-      cylinder(r=2, h=gf_cupbase_lower_taper_height+fudgeFactor, $fn=32);
+      cylinder(r=2, h=gf_cupbase_lower_taper_height+fudgeFactor);
     gridcopy(1, 1)
       EfficientFloor(num_x, num_y,-fudgeFactor, q);
   }

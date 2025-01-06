@@ -245,6 +245,14 @@ text_2 = false;
 // Actual text to add
 text_2_text = "Gridfinity";
 
+/* [model detail] */
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
+
 /* [debug] */
 //Slice along the x axis
 cutx = 0; //0.1
@@ -442,13 +450,13 @@ module itemholder(
               chamferedSquare(
                 size = [_holeSize.x, _holeSize.y, _depth+fudgeFactor], 
                 chamfer=holeChamfer, 
-                cornerRadius=item[iitemDiameter]/2, $fn=64);
+                cornerRadius=item[iitemDiameter]/2);
             } else if(item[ishape] == "halfround") {
               translate([_holeSize.x/2,_holeSize.y/2,0])
                 chamferedHalfCylinder(
                   r=item[iitemx]/2, 
                   h=item[iitemy], 
-                  chamfer=holeChamfer, $fn=64);
+                  chamfer=holeChamfer);
           } else if(item[ishape]=="custom") {
             mycustomshape();
           }
@@ -544,19 +552,19 @@ module samplesholder(
       translate([-_holeSize.x/2-wallThickness,-_holeSize.y/2-wallThickness,-wallThickness-fudgeFactor])
         cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
       translate([-_holeSize.x/2,-_holeSize.y/2,0])
-        chamferedSquare([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer, cornerRadius=item[iitemDiameter]/2, $fn=64);
+        chamferedSquare([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer, cornerRadius=item[iitemDiameter]/2);
     }
   } else if(item[ishape] == "halfround") {
     difference(){
       translate([-_holeSize.x/2-wallThickness,-_holeSize.y/2-wallThickness,-wallThickness-fudgeFactor])
         cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
 
-      chamferedHalfCylinder(r=item[iitemx]/2, h=item[iitemy], chamfer=holeChamfer, $fn=64);
+      chamferedHalfCylinder(r=item[iitemx]/2, h=item[iitemy], chamfer=holeChamfer);
     }
   } else {
     difference(){
       translate([0,0,-wallThickness-fudgeFactor])
-        cylinder(h=_depth+fudgeFactor+wallThickness, r=Rc+wallThickness, $fn=64);
+        cylinder(h=_depth+fudgeFactor+wallThickness, r=Rc+wallThickness);
       chamferedCylinder(h=_depth+fudgeFactor, r=Rc, chamfer=holeChamfer, circleFn = _sides);
     }
   }

@@ -40,7 +40,7 @@ module baseplate_cnclaser(
             center= true) {
               //magnet cutout
               translate([0, 0, -fudgeFactor*3]) 
-              cylinder(d=magnetSize[0], h=magnetSize[1]+fudgeFactor*4, $fn=48);
+              cylinder(d=magnetSize[0], h=magnetSize[1]+fudgeFactor*4);
             }
         }
   
@@ -52,8 +52,7 @@ module cnclaser_baseplate_internal(
     extra_down=0, 
     height = 4,
     cornerRadius = gf_cup_corner_radius,
-    roundedCorners = 15,
-    $fn = 44) {
+    roundedCorners = 15) {
 
   corner_position = gf_pitch/2-cornerRadius;
   

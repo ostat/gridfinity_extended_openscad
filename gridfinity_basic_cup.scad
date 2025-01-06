@@ -80,7 +80,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
-flat_base = false;
+flat_base = "off"; // [off, gridfinity, rounded]
 // Remove floor to create a vertical spacer
 spacer = false;
 //Pads smaller than this will not be rendered as it interferes with the baseplate. Ensure appropriate support is added in slicer.
@@ -160,6 +160,8 @@ floorpattern_hole_radius = 0.5;
 floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 //veroni: noise, brick: center weight
 floorpattern_pattern_variable = 0.75;
+//$fs for floor pattern, min size facit.
+floorpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [Wall Cutout] */
 wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
@@ -212,6 +214,13 @@ cutx = 0; //0.1
 cuty = 0; //0.1
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
+
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
@@ -295,7 +304,8 @@ gridfinity_cup(
     patternHoleSides = floorpattern_hole_sides,
     patternHoleSpacing = floorpattern_hole_spacing, 
     patternHoleRadius = floorpattern_hole_radius,
-    patternVariable = floorpattern_pattern_variable), 
+    patternVariable = floorpattern_pattern_variable,
+    patternFs = floorpattern_pattern_quality), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,
   wallcutout_vertical_width=wallcutout_vertical_width,

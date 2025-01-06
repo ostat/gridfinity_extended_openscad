@@ -50,8 +50,7 @@ module SlidingLid(
   cutoutEnabled = false,
   cutoutSize = [0,0],
   cutoutRadius = 0,
-  cutoutPosition = [0,0],
-  $fn=64
+  cutoutPosition = [0,0]
 ){
   innerWallRadius = gf_cup_corner_radius-wall_thickness-clearance;
   seventeen = gf_pitch/2-4;
@@ -155,16 +154,16 @@ module SlidingLidSupportMaterial(
   difference(){
     hull() 
       cornercopy(seventeen, num_x, num_y)
-      cylinder(r=innerWallRadius, h=belowLipHeight, $fn=32); 
+      cylinder(r=innerWallRadius, h=belowLipHeight); 
       
         union(){
         hull() cornercopy(seventeen, num_x, num_y)
           tz(belowRampHeight-fudgeFactor)
-          cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowLedgeHeight+fudgeFactor*2, $fn=32);
+          cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowLedgeHeight+fudgeFactor*2);
           
         hull() cornercopy(seventeen, num_x, num_y)
         tz(-fudgeFactor)
-        cylinder(r1=slidingLidEdge, r2=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowRampHeight+fudgeFactor, $fn=32);
+        cylinder(r1=slidingLidEdge, r2=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowRampHeight+fudgeFactor);
      }
    }
 
@@ -174,12 +173,12 @@ module SlidingLidSupportMaterial(
     hull() 
       cornercopy(seventeen, num_x, num_y)
       tz(fudgeFactor) 
-      cylinder(r=slidingLidEdge, h=aboveLipHeight, $fn=32); 
+      cylinder(r=slidingLidEdge, h=aboveLipHeight); 
     union(){
     hull() 
       cornercopy(seventeen, num_x, num_y)
       tz(fudgeFactor) 
-      cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=aboveLipHeight+fudgeFactor, $fn=32); 
+      cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=aboveLipHeight+fudgeFactor); 
       
     *SlidingLid(
       num_x=num_x, 
