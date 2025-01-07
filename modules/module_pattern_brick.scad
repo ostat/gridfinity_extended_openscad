@@ -20,6 +20,8 @@ module brick_pattern(
   assert(is_bool(offset_layers), "offset_layers must be a bool");
   assert(is_bool(center), "center must be a bool");
   assert(is_bool(rotateGrid), "rotateGrid must be a bool");
+
+  corner_radius = min(corner_radius,cell_size.x/2, cell_size.y/2);
   
   working_canvis_size = 
     let (cs = rotateGrid ? [canvis_size.y,canvis_size.x] : canvis_size)
@@ -27,7 +29,6 @@ module brick_pattern(
     
   ny = floor((working_canvis_size.y + spacing) / (cell_size.y + spacing));
   nx = floor((working_canvis_size.x + spacing) / (cell_size.x + spacing));
-  
 
   function course(canvis_length, count, spacing, center_weight, half_offset=false) = 
     let(c = count - (half_offset ? 0 : 1),
