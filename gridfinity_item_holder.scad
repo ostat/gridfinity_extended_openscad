@@ -87,11 +87,8 @@ filled_in = "disabled"; //[disabled, enabled, "enabledfilllip":Fill cup and lip]
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable]
-render_position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
-//assign colours to the bin, will may 
-set_colour = "enable"; //[disabled, enable, preview, lip]
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -186,21 +183,25 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid]
+wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
-wallpattern_walls=[1,1,1,1]; 
+wallpattern_walls=[1,1,1,1];  //[0:1:1]
 // Add the pattern to the dividers
 wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
-wallpattern_hole_size = 5; //0.1
+wallpattern_hole_size = [5,5]; //0.1
+//Radius of corners
+wallpattern_hole_radius = 0.5;
 // pattern fill mode
-wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-wallpattern_voronoi_noise = 0.75;
-wallpattern_voronoi_radius = 0.5;
+wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+//voronoi: noise, brick: center weight, grid: taper
+wallpattern_pattern_variable = 0.75;
+//$fs for floor pattern, min size face.
+wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [Wall Cutout] */
 wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
@@ -245,14 +246,6 @@ text_2 = false;
 // Actual text to add
 text_2_text = "Gridfinity";
 
-/* [model detail] */
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-$fa = 6; 
-// minimum size of a fragment.  Low is more fragments
-$fs = 0.1; 
-// number of fragments, overrides $fa and $fs
-$fn = 0;  
-
 /* [debug] */
 //Slice along the x axis
 cutx = 0; //0.1
@@ -260,6 +253,20 @@ cutx = 0; //0.1
 cuty = 0; //0.1
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
+
+/* [Model detail] */
+//assign colours to the bin
+set_colour = "enable"; //[disabled, enable, preview, lip]
+//where to render the model
+render_position = "center"; //[default,center,zero]
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
+// set random seed for 
+random_seed = 0; //0.0001
 /*<!!end gridfinity_basic_cup!!>*/
 
 /* [Hidden] */
@@ -671,8 +678,8 @@ module gridfinity_itemholder(
   wallpattern_hole_size=wallpattern_hole_size, 
   wallpattern_hole_spacing=wallpattern_hole_spacing,
   wallpattern_fill=wallpattern_fill,
-  wallpattern_voronoi_noise=wallpattern_voronoi_noise,
-  wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+  wallpattern_pattern_variable=wallpattern_pattern_variable,
+  wallpattern_hole_radius = wallpattern_hole_radius,
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,
   wallcutout_vertical_width=wallcutout_vertical_width,
@@ -785,16 +792,19 @@ module gridfinity_itemholder(
         tapered_corner=tapered_corner,
         tapered_corner_size = tapered_corner_size,
         tapered_setback = tapered_setback,
-        wallpattern_enabled=wallpattern_enabled,
-        wallpattern_style=wallpattern_style,
-        wallpattern_walls=wallpattern_walls, 
+        wallpattern_walls=wallpattern_walls,
         wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-        wallpattern_hole_sides=wallpattern_hole_sides,
-        wallpattern_hole_size=wallpattern_hole_size, 
-        wallpattern_hole_spacing=wallpattern_hole_spacing,
-        wallpattern_fill=wallpattern_fill,
-        wallpattern_voronoi_noise=wallpattern_voronoi_noise,
-        wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+        wall_pattern_settings = PatternSettings(
+          patternEnabled = wallpattern_enabled, 
+          patternStyle = wallpattern_style, 
+          patternFill = wallpattern_fill,
+          patternBorder = wallpattern_hole_spacing, 
+          patternHoleSize = wallpattern_hole_size, 
+          patternHoleSides = wallpattern_hole_sides,
+          patternHoleSpacing = wallpattern_hole_spacing, 
+          patternHoleRadius = wallpattern_hole_radius,
+          patternVariable = wallpattern_pattern_variable,
+          patternFs = wallpattern_pattern_quality), 
         wallcutout_vertical=wallcutout_vertical,
         wallcutout_vertical_position=wallcutout_vertical_position,
         wallcutout_vertical_width=wallcutout_vertical_width,

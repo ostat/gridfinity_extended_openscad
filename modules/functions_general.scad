@@ -125,7 +125,9 @@ module SetGridfinityEnvironment(
   render_position = "center", //[default,center,zero]
   cutx = 0, 
   cuty = 0,
-  cutz = 0){
+  cutz = 0,
+  randomSeed = 0,
+  force_render = true){
   
   //Set special variables, that child modules can use
   $setColour = setColour;
@@ -133,6 +135,8 @@ module SetGridfinityEnvironment(
   $cutx = cutx;
   $cuty = cuty;
   $cutz = cutz;
+  $randomSeed = randomSeed;
+  $forceRender = force_render;
 
   $user_width = width;
   $user_depth = depth;
@@ -172,6 +176,9 @@ module SetGridfinityEnvironment(
 function getCutx() = is_undef($cutx) || !is_num($cutx) ? 0 : $cutx;
 function getCuty() = is_undef($cuty) || !is_num($cuty) ? 0 : $cuty;
 function getCutz() = is_undef($cutz) || !is_num($cutz) ? 0 : $cutz;
+function getRandomSeed() = is_undef($randomSeed) || !is_num($randomSeed) || $randomSeed == 0 ? undef : $randomSeed;
+function getCutz() = is_undef($cutz) || !is_num($cutz) ? 0 : $cutz;
+function getForceRender() = is_undef($forceRender) ? true : $forceRender;
 
 //set_colour = "preview"; //[disabled, preview, lip]
 function getColour(colour, isLip = false, fallBack = color_cup) = 
@@ -197,4 +204,21 @@ function IsHelpEnabled(level) =
 
 module assert_openscad_version(){
   assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+}
+
+module conditional_color(enable=true, c){
+  if(enable)
+  color(c)
+    children();
+  else
+    children();
+}
+
+module conditional_render(enable=true){
+  if(enable)
+  render()
+    children();
+  else
+  union()
+    children();
 }

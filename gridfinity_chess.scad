@@ -4,7 +4,7 @@ include <modules/module_gridfinity.scad>
 // Select model
 part = "tile";  // [ board, tile, pawn, knight, bishop, rook, queen, king ]
 
-/* [detail] */
+/* [model detail] */
 // minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
 $fa = 6; 
 // minimum size of a fragment.  Low is more fragments

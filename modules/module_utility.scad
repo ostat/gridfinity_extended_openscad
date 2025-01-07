@@ -101,7 +101,7 @@ module roundedCube(
     let(sry = is_num(supportReduction_y) ? [supportReduction_y,supportReduction_y] : supportReduction_y) [min(sry[0], sideRadius),min(sry[1], sideRadius)];
       
   //assert(sideRadius < topRadius || sideRadius < bottomRadius, "sideRadius must be >= than bottomRadius and topRadius");
-  echo("roundedCube", supportReduction_x=supportReduction_x, supportReduction_y=supportReduction_y, supportReduction_z=supportReduction_z);
+  if(IsHelpEnabled("trace")) echo("roundedCube", supportReduction_x=supportReduction_x, supportReduction_y=supportReduction_y, supportReduction_z=supportReduction_z);
   positions=[
      [[sideRadius                         ,sideRadius],                        [0,0]]
     ,[[max(size.x-sideRadius, sideRadius) ,sideRadius]                        ,[1,0]]

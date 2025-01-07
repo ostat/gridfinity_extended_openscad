@@ -31,7 +31,6 @@ height = [3, 0]; //0.1
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [normal, reduced, minimum, none:not stackable]
-render_position = "center"; //[default, center, zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
       
@@ -61,8 +60,22 @@ label_walls=[0,1,0,0];  //[0:1:1]
 cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
-// enable logging of help messages during render.
-enable_help = false;
+// enable loging of help messages during render.
+enable_help = "disabled"; //[info,debug,trace]
+
+/* [Model detail] */
+//assign colours to the bin
+set_colour = "enable"; //[disabled, enable, preview, lip]
+//where to render the model
+render_position = "center"; //[default,center,zero]
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
+// set random seed for 
+random_seed = 0; //0.0001
 /*<!!end gridfinity_basic_cup!!>*/
 
 module end_of_customizer_opts() {}

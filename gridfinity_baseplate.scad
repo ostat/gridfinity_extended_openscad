@@ -261,20 +261,3 @@ else
       filamentClipLength=Filament_Clip_Length);
   }
 }
-
-module conditional_color(enable=true, c){
-  if(enable)
-  color(c)
-    children();
-  else
-    children();
-}
-
-module conditional_render(enable=true){
-  if(enable)
-  render()
-    children();
-  else
-  union()
-    children();
-}

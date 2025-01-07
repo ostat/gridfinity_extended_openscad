@@ -17,19 +17,27 @@ divider_back_top_angle=45;
 
 /* [Wall Pattern] */
 // Grid wall patter
-wallpattern_enabled=true;
+wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[grid, hexgrid, voronoi,voronoigrid,voronoihexgrid]
+wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
+// wall to enable on, front, back, left, right.
+wallpattern_walls=[1,1,1,1];  //[0:1:1]
+// Add the pattern to the dividers
+wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
-wallpattern_hole_size = 5; //0.1
+wallpattern_hole_size = [5,5]; //0.1
+//Radius of corners
+wallpattern_hole_radius = 0.5;
 // pattern fill mode
 wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-wallpattern_voronoi_noise = 0.75;
-wallpattern_voronoi_radius = 0.5;
+//voronoi: noise, brick: center weight, grid: taper
+wallpattern_pattern_variable = 0.75;
+//$fs for floor pattern, min size face.
+wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [General Cup] */
 // X dimension. grid units (multiples of 42mm) or mm.
@@ -69,22 +77,27 @@ half_pitch = false;
 // Removes the internal grid from base the shape
 flat_base = false;
 
-/* [Model detail] */
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-$fa = 6; 
-// minimum size of a fragment.  Low is more fragments
-$fs = 0.1; 
-// number of fragments, overrides $fa and $fs
-$fn = 0;  
-
 /* [debug] */
-render_position = "center"; //[default,center,zero]
 //Slice along the x axis
 cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
+
+/* [Model detail] */
+//assign colours to the bin, will may 
+set_colour = "enable"; //[disabled, enable, preview, lip]
+//where to render the model
+render_position = "center"; //[default,center,zero]
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
+// set random seed for 
+random_seed = 0; //0.0001
 
 module end_of_customizer_opts() {}
 
@@ -149,11 +162,12 @@ module PatternedDivider(
   wallpatternHoleSpacing = wallpattern_hole_spacing,
   wallpatternHoleSides = wallpattern_hole_sides,
   wallpatternHoleSize = wallpattern_hole_size,
+  wallpatternHoleRadius = wallpattern_hole_radius,
   wallpatternFill = wallpattern_fill,
-  wallpatternVoronoiNoise = wallpattern_voronoi_noise,
-  wallpatternVoronoiRadius = wallpattern_voronoi_radius,
+  wallpatternVariable = wallpattern_pattern_variable,
+  wallpatternQuality = wallpattern_pattern_quality,
   help= false){
-  
+
   rotate([90,0,0])
   difference(){
   linear_extrude(height = width)
@@ -185,17 +199,18 @@ module PatternedDivider(
       translate([0,height+baseHeight,0])
       rotate([0,0,-90])
       cutout_pattern(
-        patternStyle = wallpatternStyle ,
+        patternStyle = wallpatternStyle,
         canvasSize = [height+baseHeight,length], //Swap x and y and rotate so hex is easier to print
         customShape = false,
         circleFn = wallpatternHoleSides,
-        holeSize = [wallpatternHoleSize, wallpatternHoleSize],
+        holeSize = wallpatternHoleSize,
         holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
         holeHeight = width*2,
-        holeRadius = wallpatternVoronoiRadius,
-        center=false,
-        fill=wallpatternFill, //"none", "space", "crop"
-        patternVariable=wallpatternVoronoiNoise,
+        holeRadius = wallpatternHoleRadius,
+        center = false,
+        fill = wallpatternFill, //"none", "space", "crop"
+        patternVariable = wallpatternVariable,
+        patternFs = wallpatternQuality,
         help=help);
       }
     }
@@ -235,10 +250,9 @@ module Gridfinity_Divider(
   wallpatternHoleSpacing=wallpattern_hole_spacing,
   wallpatternHoleSides=wallpattern_hole_sides,
   wallpatternHoleSize=wallpattern_hole_size,
+  wallpatternHoleRadius=wallpattern_hole_radius,
   wallpatternFill=wallpattern_fill,
-  wallpatternVoronoiNoise=wallpattern_voronoi_noise,
-  wallpatternVoronoiRadius=wallpattern_voronoi_radius
-){
+  wallpatternVariable=wallpattern_pattern_variable) {
 
   num_x = calcDimensionWidth(width);
   num_y = calcDimensionDepth(depth);
@@ -255,10 +269,10 @@ module Gridfinity_Divider(
   
   for(i = [0 : divider_count-1]){
     ypos = (num_y*gf_pitch-gf_cup_corner_radius*2-dividerWidth)/(divider_count-1)*i;
-    translate([0.25,gf_cup_corner_radius+dividerWidth+ypos,floorHeight])
+    translate([gf_tolerance/2,gf_cup_corner_radius+dividerWidth+ypos,floorHeight])
     PatternedDivider(
       height = dividerHeight,
-      length = num_x*gf_pitch-0.5,
+      length = num_x*gf_pitch-gf_tolerance,
       baseHeight = baseHeight,
       width = dividerWidth,
       radius = radius,
@@ -271,8 +285,8 @@ module Gridfinity_Divider(
       wallpatternHoleSpacing = wallpatternHoleSpacing,
       wallpatternHoleSides = wallpatternHoleSides,
       wallpatternHoleSize = wallpatternHoleSize,
+      wallpatternHoleRadius = wallpatternHoleRadius,
       wallpatternFill = wallpatternFill,
-      wallpatternVoronoiNoise = wallpatternVoronoiNoise,
-      wallpatternVoronoiRadius = wallpatternVoronoiRadius);
+      wallpatternVariable = wallpatternVariable);
     }
 }

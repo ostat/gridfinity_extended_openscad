@@ -94,7 +94,8 @@ module cutout_pattern(
   holeSize = [],
   holeSpacing,
   holeHeight,
-  center,
+  center = true,
+  centerz = false,
   fill,
   patternVariable=0,
   holeRadius,
@@ -106,11 +107,12 @@ module cutout_pattern(
   canvasSize = border > 0
     ? [canvasSize.x-border*2, canvasSize.y-border*2]
     : canvasSize;
-  echo("cutout_pattern", canvasSize=canvasSize, patternVariable=patternVariable, patternFs=patternFs, source=source);
+  if(IsHelpEnabled("trace")) echo("cutout_pattern", canvasSize=canvasSize, patternVariable=patternVariable, patternFs=patternFs, source=source);
   
   $fs = patternFs > 0 ? patternFs : $fs;
   
   //translate(border>0 ? [border,border,0] : [0,0,0])
+  translate(centerz ? [0,0,-holeHeight/2] : [0,0,0])
   union(){
     if(patternStyle == PatternStyle_grid || patternStyle == PatternStyle_hexgrid || patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated) {
       GridItemHolder(
@@ -125,7 +127,7 @@ module cutout_pattern(
         fill=fill, //"none", "space", "crop"
         rotateGrid = (patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
         //border = border,
-        holeChamfer=patternVariable,
+        holeChamfer=[patternVariable,patternVariable],
         help=help);
     }
     else if(patternStyle == PatternStyle_voronoi || patternStyle == PatternStyle_voronoigrid || patternStyle == "voronoihexgrid"){
@@ -138,7 +140,8 @@ module cutout_pattern(
         gridOffset = (patternStyle == PatternStyle_voronoihexgrid),
         noise=patternVariable,
         radius = holeRadius,
-        center=center);
+        center=center,
+        seed=getRandomSeed());
     }
     else if(patternStyle == PatternStyle_brick || patternStyle == PatternStyle_brickrotated ||
             patternStyle == PatternStyle_brickoffset || patternStyle == PatternStyle_brickoffsetrotated){
@@ -147,6 +150,7 @@ module cutout_pattern(
         canvis_size=[canvasSize.x,canvasSize.y],
         thickness = holeHeight,
         spacing=holeSpacing.x,
+        center=center,
         cell_size = holeSize,
         corner_radius = holeRadius,
         center_weight = patternVariable,

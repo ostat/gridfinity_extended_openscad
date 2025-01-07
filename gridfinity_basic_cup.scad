@@ -27,8 +27,6 @@ wall_thickness = 0;  // .01
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
-//assign colours to the bin, will may 
-set_colour = "enable"; //[disabled, enable, preview, lip]
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -55,7 +53,6 @@ horizontal_irregular_subdivisions = false;
 horizontal_separator_config = "10.5|21|42|50|60";
 
 /* [Base] */
-
 // Enable magnets
 enable_magnets = true;
 // Enable screws
@@ -139,10 +136,14 @@ wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
 wallpattern_hole_size = [5,5]; //0.1
+//Radius of corners
+wallpattern_hole_radius = 0.5;
 // pattern fill mode
 wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-wallpattern_voronoi_noise = 0.75;
-wallpattern_voronoi_radius = 0.5;
+//voronoi: noise, brick: center weight, grid: taper
+wallpattern_pattern_variable = 0.75;
+//$fs for floor pattern, min size face.
+wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [Floor Pattern] */
 // enable Grid floor patter
@@ -158,9 +159,9 @@ floorpattern_hole_size = [5,5]; //0.1
 floorpattern_hole_radius = 0.5;
 // pattern fill mode
 floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-//veroni: noise, brick: center weight
+//voronoi: noise, brick: center weight, grid: taper
 floorpattern_pattern_variable = 0.75;
-//$fs for floor pattern, min size facit.
+//$fs for floor pattern, min size face.
 floorpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [Wall Cutout] */
@@ -207,7 +208,6 @@ text_2 = false;
 text_2_text = "Gridfinity Extended";
 
 /* [debug] */
-render_position = "center"; //[default,center,zero]
 //Slice along the x axis
 cutx = 0; //0.1
 //Slice along the y axis
@@ -215,12 +215,21 @@ cuty = 0; //0.1
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
+/* [Model detail] */
+//assign colours to the bin, will may 
+set_colour = "enable"; //[disabled, enable, preview, lip]
+//where to render the model
+render_position = "center"; //[default,center,zero]
 // minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
 $fa = 6; 
 // minimum size of a fragment.  Low is more fragments
 $fs = 0.1; 
 // number of fragments, overrides $fa and $fs
 $fn = 0;  
+// set random seed for 
+random_seed = 0; //0.0001
+// force render on costly components
+force_render = true;
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
@@ -235,7 +244,9 @@ SetGridfinityEnvironment(
   cutx = cutx,
   cuty = cuty,
   cutz = calcDimensionHeight(height, true),
-  setColour = set_colour)
+  setColour = set_colour,
+  randomSeed = random_seed,
+  force_render = force_render)
 gridfinity_cup(
   width=width, depth=depth, height=height,
   filled_in=filled_in,
@@ -285,16 +296,19 @@ gridfinity_cup(
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
-  wallpattern_enabled=wallpattern_enabled,
-  wallpattern_style=wallpattern_style,
   wallpattern_walls=wallpattern_walls, 
   wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-  wallpattern_hole_sides=wallpattern_hole_sides,
-  wallpattern_hole_size=wallpattern_hole_size, 
-  wallpattern_hole_spacing=wallpattern_hole_spacing,
-  wallpattern_fill=wallpattern_fill,
-  wallpattern_voronoi_noise=wallpattern_voronoi_noise,
-  wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+  wall_pattern_settings = PatternSettings(
+    patternEnabled = wallpattern_enabled, 
+    patternStyle = wallpattern_style, 
+    patternFill = wallpattern_fill,
+    patternBorder = wallpattern_hole_spacing, 
+    patternHoleSize = wallpattern_hole_size, 
+    patternHoleSides = wallpattern_hole_sides,
+    patternHoleSpacing = wallpattern_hole_spacing, 
+    patternHoleRadius = wallpattern_hole_radius,
+    patternVariable = wallpattern_pattern_variable,
+    patternFs = wallpattern_pattern_quality), 
   floor_pattern_settings = PatternSettings(
     patternEnabled = floorpattern_enabled, 
     patternStyle = floorpattern_style, 
