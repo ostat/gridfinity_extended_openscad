@@ -54,7 +54,7 @@ function calculateWallCutout(
           [wallcutoutLowerWidth, wallcutoutThickness, wallcutoutHeight],
           wallcutout_rotation,
           walcutout_reposition]) [wallcutout_close, wallcutout_far];
-          
+
 module WallCutout(
   lowerWidth=50,
   wallAngle=70,
@@ -91,3 +91,4 @@ module WallCutout(
     }
   }
 }
+

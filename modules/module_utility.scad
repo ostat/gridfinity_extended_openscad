@@ -54,11 +54,6 @@ module bentWall(
     }
    }
  }
- 
-/*roundedCube(
-  size=[40,80,21],
-  cornerRadius = 0,
-);*/
 
 //Creates a rounded cube
 //x=width in mm
@@ -93,12 +88,22 @@ module roundedCube(
   assert(topRadius <= sideRadius, str("topRadius must be less than or equal to sideRadius. topRadius:", topRadius, " sideRadius:", sideRadius));
   assert(bottomRadius <= sideRadius, str("bottomRadius must be less than or equal to sideRadius. bottomRadius:", bottomRadius, " sideRadius:", sideRadius));
 
+  //Support reduction should move in to roundedCylinder
+  function auto_support_reduction(supportReduction, radius) = 
+    supportReduction == -1 ? radius/2 : supportReduction;
+    
   supportReduction_z = 
-    let(srz = is_num(supportReduction_z) ? [supportReduction_z,supportReduction_z] : supportReduction_z) [min(srz[0], sideRadius),min(srz[1], sideRadius)];
+    let(srz_temp = is_num(supportReduction_z) ? [supportReduction_z,supportReduction_z] : supportReduction_z,
+        srz = [auto_support_reduction(srz_temp[0], bottomRadius), auto_support_reduction(srz_temp[1], topRadius)]) 
+      [min(srz[0], sideRadius),min(srz[1], sideRadius)];
   supportReduction_x = 
-    let(srx = is_num(supportReduction_x) ? [supportReduction_x,supportReduction_x] : supportReduction_x) [min(srx[0], sideRadius),min(srx[1], sideRadius)];
+    let(srx_temp = is_num(supportReduction_x) ? [supportReduction_x,supportReduction_x] : supportReduction_x,
+        srx = [auto_support_reduction(srx_temp[0], sideRadius), auto_support_reduction(srx_temp[1], sideRadius)])  
+      [min(srx[0], sideRadius),min(srx[1], sideRadius)];
   supportReduction_y = 
-    let(sry = is_num(supportReduction_y) ? [supportReduction_y,supportReduction_y] : supportReduction_y) [min(sry[0], sideRadius),min(sry[1], sideRadius)];
+    let(sry_temp = is_num(supportReduction_y) ? [supportReduction_y,supportReduction_y] : supportReduction_y,
+        sry = [auto_support_reduction(sry_temp[0], sideRadius), auto_support_reduction(sry_temp[1], sideRadius)])   
+      [min(sry[0], sideRadius),min(sry[1], sideRadius)];
       
   //assert(sideRadius < topRadius || sideRadius < bottomRadius, "sideRadius must be >= than bottomRadius and topRadius");
   if(IsHelpEnabled("trace")) echo("roundedCube", supportReduction_x=supportReduction_x, supportReduction_y=supportReduction_y, supportReduction_z=supportReduction_z);
@@ -458,4 +463,46 @@ module roundedDisk(r,roundedr, half=0){
 
 module tz(z) {
   translate([0, 0, z]) children();
+}
+//rounded_taper();
+module rounded_taper(
+  upperRadius=35,
+  upperLength=20,
+  lowerRadius=10,
+  lowerLength=20,
+  transitionLength=10,
+  cornerRadius=0,
+  roundedUpper=false,
+  roundedLower=false,
+  alignTop = false) {
+ 
+  bottomWidth = lowerRadius*2;
+  //topWidth = lowerWidth+(height/tan(wallAngle))*2;
+  topWidth = upperRadius*2;
+  height = upperLength+transitionLength+lowerLength;
+  
+  translate([0,0,alignTop?-height:0])
+  rotate_extrude(angle=360, convexity=10)
+  intersection(){
+    square([topWidth,height]);
+    
+    //Use triple offset to fillet corners
+    //https://www.reddit.com/r/openscad/comments/ut1n7t/quick_tip_simple_fillet_for_2d_shapes/
+    offset(r=-cornerRadius)
+    offset(r=2 * cornerRadius)
+    offset(r=-cornerRadius)
+    union(){
+      hull(){
+        //upper
+        translate([-topWidth/2,lowerLength+transitionLength])
+          square([topWidth,upperLength+(roundedUpper?0:cornerRadius)]);
+        //transition
+        translate([-bottomWidth/2,lowerLength])
+          square([bottomWidth,transitionLength]);
+      }
+      //lower
+      translate([-bottomWidth/2,roundedLower?0:-cornerRadius])
+      square([bottomWidth,lowerLength+(roundedLower?0:cornerRadius)]);
+    }
+  }
 }

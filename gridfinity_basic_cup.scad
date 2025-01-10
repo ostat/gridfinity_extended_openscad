@@ -77,11 +77,16 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
-flat_base = "off"; // [off, gridfinity, rounded]
+flat_base = "off"; // [off, gridfinity:gridfinity stackable, rounded]
 // Remove floor to create a vertical spacer
 spacer = false;
 //Pads smaller than this will not be rendered as it interferes with the baseplate. Ensure appropriate support is added in slicer.
 minimum_printable_pad_size = 0.2;
+
+// Adjust the radius of the rounded flat base. -1 uses the corner radius.
+flat_base_rounded_radius = -1;
+// Add chamfer to the rounded bottom corner to make easier to print. -1 add auto 45deg.
+flat_base_rounded_easyPrint = -1;
 
 /* [Label] */
 label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
@@ -273,7 +278,9 @@ gridfinity_cup(
     halfPitch=half_pitch,
     flatBase=flat_base,
     spacer=spacer,
-    minimumPrintablePadSize=minimum_printable_pad_size),
+    minimumPrintablePadSize=minimum_printable_pad_size,
+    flatBaseRoundedRadius = flat_base_rounded_radius,
+    flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
   wall_thickness=wall_thickness,
   chamber_wall_thickness=chamber_wall_thickness,
   chamber_wall_zClearance=chamber_wall_zClearance,

@@ -69,9 +69,28 @@ module grid_block(
         cylinder(r=gf_cup_corner_radius, h=gf_zpitch*num_z);
 
       union(){
+        if(flat_base == FlatBase_rounded){
+          basebottomRadius = let(fbr = cupBase_settings[iCupBase_FlatBaseRoundedRadius])
+            fbr == -1 ? gf_cup_corner_radius/2 : fbr;
+
+          color(getColour(color_cup))
+          translate([0.25,0.25,0])
+          roundedCube(
+            x = num_x*gf_pitch-0.5,
+            y = num_y*gf_pitch-0.5,
+            z = gf_zpitch,
+            size=[],
+            topRadius = 0,
+            bottomRadius = basebottomRadius,
+            sideRadius = gf_cup_corner_radius,
+            centerxy = false,
+            supportReduction_z = [cupBase_settings[iCupBase_FlatBaseRoundedEasyPrint],0]
+            );
+        } else {
           // logic for constructing odd-size grids of possibly half-pitch pads
           color(getColour(color_base))
-          pad_grid(num_x, num_y, half_pitch, flat_base, cupBase_settings[iCupBase_MinimumPrintablePadSize]);
+            pad_grid(num_x, num_y, half_pitch, flat_base != FlatBase_off, cupBase_settings[iCupBase_MinimumPrintablePadSize]);
+        }
         
         color(getColour(color_cup))
         tz(baseHeight) 

@@ -34,9 +34,9 @@ function calculateWallTop(num_z, lip_style) =
   gf_zpitch * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
   
 //Height to clear the voids in the base
-function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base=false) = 
-    flat_base 
-      ? max(magnet_depth, screw_depth) 
+function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base="off") = 
+    flat_base == FlatBase_rounded ? max(magnet_depth, screw_depth) 
+      : flat_base == FlatBase_gridfinity ? max(3.5, magnet_depth, screw_depth) //3.5 clears the side stacking indents
       : max(magnet_depth, screw_depth, gfBaseHeight());
 
 function calculateMinFloorHeight(magnet_depth,screw_depth) = 
@@ -44,18 +44,18 @@ function calculateMinFloorHeight(magnet_depth,screw_depth) =
 function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
+function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base="off") = 
       assert(is_num(floor_thickness), "floor_thickness must be a number")
       assert(is_num(magnet_depth), "magnet_depth must be a number")
       assert(is_num(screw_depth), "screw_depth must be a number")
-      assert(is_bool(flat_base), "flat_base must be a bool")
+      assert(is_string(flat_base), "flat_base must be a string")
       let(
         filledin = validateFilledIn(filledin),
         floorThickness = max(floor_thickness, gf_cup_floor_thickness))
   filledin != FilledIn_disabled ? num_z * gf_zpitch 
     : efficient_floor != "off" 
       ? floorThickness
-      : max(3.5, cupBaseClearanceHeight(magnet_depth,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
+      : max(0, cupBaseClearanceHeight(magnet_depth,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
     
 //Usable floor depth (floor height - min floor)
 function calculateFloorThickness(magnet_depth, screw_depth, floor_thickness, num_z, filledin) = 
@@ -90,7 +90,7 @@ function wallThickness(wall_thickness, num_z) = wall_thickness != 0 ? wall_thick
 /* Data types */
 function list_contains(list,value,index=0) = 
   assert(is_list(list), "list must be a list")
-  assert(index >= 0 && index < len(list), str("index is invalid len '" , len(list) , "' index '", index, "'"))
+  assert(index >= 0 && index < len(list), str("List does not contain value '", value, "'index is invalid len '" , len(list) , "' index '", index, "' List:", list))
   list[index] == value 
     ? true 
     : index <= len(list)  ? list_contains(list,value,index+1)
