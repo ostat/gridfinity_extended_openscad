@@ -72,7 +72,7 @@ module SlidingLid(
           lipStyle = lipStyle, 
           wall_thickness = 1.2);
         translate([0,lidLowerRadius,lidThickness-fudgeFactor*4])
-          cube([num_x*42,num_x*42,4+fudgeFactor*2]);
+          cube([num_x*gf_pitch,num_y*gf_pitch,4+fudgeFactor*2]);
       }
 
       color(getColour(color_lid))
