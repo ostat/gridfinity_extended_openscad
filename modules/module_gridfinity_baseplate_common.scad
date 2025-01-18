@@ -192,6 +192,7 @@ module baseplate_cavities(
   baseCavityHeight,
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
   magnetZOffset = 0,
+  magnetTopCover = 0,
   magnetSouround = true,
   centerScrewEnabled = false,
   cornerScrewEnabled = false,
@@ -204,8 +205,8 @@ module baseplate_cavities(
   assert(is_num(num_y) && num_y >= 0 && num_y <=1, "num_y must be a number between 0 and 1");
   assert(is_num(baseCavityHeight), "baseCavityHeight must be a number");
   
-  if(IsHelpEnabled("debug")) echo("baseplate_cavities", baseCavityHeight=baseCavityHeight, magnetSize=magnetSize, magnetZOffset=magnetZOffset);
-    
+  if(IsHelpEnabled("debug")) echo("baseplate_cavities", baseCavityHeight=baseCavityHeight, magnetSize=magnetSize, magnetZOffset=magnetZOffset, magnetTopCover=magnetTopCover);
+   
   counterSinkDepth = 2.5;
   screwOuterChamfer = 8.5;
   weightDepth = 4;
@@ -221,7 +222,7 @@ module baseplate_cavities(
     (reverseAlignment.y ? (-1/2+num_y) : 1/2)*gf_pitch, 0])
   union(){
     gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
-      translate([0, 0, baseCavityHeight-magnetSize.y]) 
+      translate([0, 0, baseCavityHeight-magnetSize.y-magnetTopCover]) 
       cylinder(d=magnetSize[0], h=magnetSize.y);
 
       // counter-sunk holes in the bottom

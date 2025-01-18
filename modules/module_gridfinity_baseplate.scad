@@ -42,6 +42,7 @@ module gridfinity_baseplate(
   plate_corner_radius=gf_cup_corner_radius,
   magnetSize = Default_Magnet_Size,
   magnetZOffset=0,
+  magnetTopCover=0,
   reducedWallHeight = 0,
   reduceWallTaper = false,
   cornerScrewEnabled  = false,
@@ -72,48 +73,75 @@ module gridfinity_baseplate(
     : oversizeMethod == "outer" ? floor(num_y)
     : num_y;
 
-  intersection(){
-    union() {
-      for(xi = [0:len(_gridPositions)-1])
-        for(yi = [0:len(_gridPositions[xi])-1])
-        {
-          if(_gridPositions[xi][yi])
+    debug_cut()
+    intersection(){
+      union() {
+        for(xi = [0:len(_gridPositions)-1])
+          for(yi = [0:len(_gridPositions[xi])-1])
           {
-            translate([gf_pitch*xi,gf_pitch*yi,0])
-            baseplate(
-              width = customGridEnabled ? 1 : width,
-              depth = customGridEnabled ? 1 : depth,
-              outer_width = outer_weidth,
-              outer_depth = outer_depth,
-              outer_height = outer_height,
-              position_fill_grid_x = position_fill_grid_x,
-              position_fill_grid_y = position_fill_grid_y,
-              position_grid_in_outer_x = position_grid_in_outer_x,
-              position_grid_in_outer_y = position_grid_in_outer_y,
-              magnetSize = magnetSize,
-              magnetZOffset=magnetZOffset,
-              reducedWallHeight = reducedWallHeight,
-              reduceWallTaper = reduceWallTaper,
-              cornerScrewEnabled = cornerScrewEnabled,
-              centerScrewEnabled = centerScrewEnabled,
-              weightedEnable = weightedEnable,
-              plateOptions= plateOptions,
-              butterflyClipEnabled  = butterflyClipEnabled,
-              butterflyClipSize = butterflyClipSize,
-              butterflyClipRadius = butterflyClipRadius,
-              filamentClipEnabled = filamentClipEnabled,
-              filamentClipDiameter = filamentClipDiameter,
-              filamentClipLength = filamentClipLength,
-              plate_corner_radius = plate_corner_radius,
-              roundedCorners = _gridPositions[xi][yi] == 1 ? 15 : _gridPositions[xi][yi] - 2);
+            if(_gridPositions[xi][yi])
+            {
+              translate([gf_pitch*xi,gf_pitch*yi,0])
+              baseplate(
+                width = customGridEnabled ? 1 : width,
+                depth = customGridEnabled ? 1 : depth,
+                outer_width = outer_weidth,
+                outer_depth = outer_depth,
+                outer_height = outer_height,
+                position_fill_grid_x = position_fill_grid_x,
+                position_fill_grid_y = position_fill_grid_y,
+                position_grid_in_outer_x = position_grid_in_outer_x,
+                position_grid_in_outer_y = position_grid_in_outer_y,
+                magnetSize = magnetSize,
+                magnetZOffset=magnetZOffset,
+                magnetTopCover=magnetTopCover,
+                reducedWallHeight = reducedWallHeight,
+                reduceWallTaper = reduceWallTaper,
+                cornerScrewEnabled = cornerScrewEnabled,
+                centerScrewEnabled = centerScrewEnabled,
+                weightedEnable = weightedEnable,
+                plateOptions= plateOptions,
+                butterflyClipEnabled  = butterflyClipEnabled,
+                butterflyClipSize = butterflyClipSize,
+                butterflyClipRadius = butterflyClipRadius,
+                filamentClipEnabled = filamentClipEnabled,
+                filamentClipDiameter = filamentClipDiameter,
+                filamentClipLength = filamentClipLength,
+                plate_corner_radius = plate_corner_radius,
+                roundedCorners = _gridPositions[xi][yi] == 1 ? 15 : _gridPositions[xi][yi] - 2);
+            }
           }
         }
-      }
-      if(oversizeMethod == "crop")
-        cube([num_x*gf_pitch, num_y*gf_pitch,20]);
+        if(oversizeMethod == "crop")
+          cube([num_x*gf_pitch, num_y*gf_pitch,20]);
+    }
+}
+
+module debug_cut(cutx, cuty, cutz) {
+  cutx = is_undef(cutx) ? getCutx() : cutx;
+  cuty = is_undef(cuty) ? getCuty() : cuty;
+  cutz = is_undef(cutz) ? getCutz() : cutz;
+  
+  num_x = getNum_x();
+  num_y = getNum_y();
+  num_z = getNum_z();
+  
+  difference(){
+    children();
+    
+    //Render the cut, used for debugging
+    if(cutx > 0 && cutz > 0 && $preview){
+      color(color_cut)
+      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+        cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
+    }
+    if(cuty > 0 && cutz > 0 && $preview){
+      color(color_cut)
+      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+        cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
+    }
   }
 }
-    
 module baseplate(
   width = 2,
   depth = 1,
@@ -126,6 +154,7 @@ module baseplate(
   position_grid_in_outer_y = true,
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
   magnetZOffset=0,
+  magnetTopCover=0,
   reducedWallHeight = 0,
   reduceWallTaper = false,
   cornerScrewEnabled = false,
@@ -166,6 +195,7 @@ module baseplate(
           position_grid_in_outer_y = position_grid_in_outer_y,
           magnetSize = magnetSize,
           magnetZOffset=magnetZOffset,
+          magnetTopCover=magnetTopCover,
           reducedWallHeight=reducedWallHeight,
           reduceWallTaper=reduceWallTaper,
           centerScrewEnabled = centerScrewEnabled,

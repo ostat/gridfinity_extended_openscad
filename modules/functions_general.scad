@@ -173,11 +173,14 @@ module SetGridfinityEnvironment(
   }
 }
 
+function getNum_x() = is_undef($num_x) || !is_num($num_x) ? 0 : $num_x;
+function getNum_y() = is_undef($num_y) || !is_num($num_y) ? 0 : $num_y;
+function getNum_z() = is_undef($num_z) || !is_num($num_z) ? 0 : $num_z;
+
 function getCutx() = is_undef($cutx) || !is_num($cutx) ? 0 : $cutx;
 function getCuty() = is_undef($cuty) || !is_num($cuty) ? 0 : $cuty;
 function getCutz() = is_undef($cutz) || !is_num($cutz) ? 0 : $cutz;
 function getRandomSeed() = is_undef($randomSeed) || !is_num($randomSeed) || $randomSeed == 0 ? undef : $randomSeed;
-function getCutz() = is_undef($cutz) || !is_num($cutz) ? 0 : $cutz;
 function getForceRender() = is_undef($forceRender) ? true : $forceRender;
 
 //set_colour = "preview"; //[disabled, preview, lip]

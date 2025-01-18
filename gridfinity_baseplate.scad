@@ -38,6 +38,8 @@ Enable_Magnets = false;
 Magnet_Size = [6.5, 2.4];  // .1
 //raises the magnet, and creates a floor (for gluding)
 Magnet_Z_Offset = 0;  // .1
+//raises the magnet, and creates a ceiling to capture the magnet
+Magnet_Top_Cover = 0;  // .1
 
 //Enable screws in the bin corner under the magnets
 Corner_Screw_Enabled = false;
@@ -244,6 +246,7 @@ else
       plate_corner_radius = plate_corner_radius,
       magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
       magnetZOffset = Magnet_Z_Offset,
+      magnetTopCover=Magnet_Top_Cover,
       reducedWallHeight = Reduced_Wall_Height, 
       reduceWallTaper = Reduced_Wall_Taper, 
       cornerScrewEnabled  = Corner_Screw_Enabled,
