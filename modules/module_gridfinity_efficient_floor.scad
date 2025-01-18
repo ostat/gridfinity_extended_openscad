@@ -9,11 +9,11 @@ module efficient_floor_grid(
   num_x, num_y, 
   floorStyle = "on", 
   half_pitch=false, 
-  flat_base=false, 
+  flat_base="off", 
   floor_thickness, 
   efficientFloorGridHeight=0,
   margins=0) {
-  if (flat_base) {
+  if (flat_base != "off") {
     EfficientFloor(num_x, num_y, 
       floor_thickness, 
       margins, 

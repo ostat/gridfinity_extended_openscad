@@ -785,6 +785,7 @@ module gridfinity_cup(
 
     // add text to the bottom
     _magnet_position = calculateMagnetPosition(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter]);
+    if(IsHelpEnabled("trace")) echo("cup_base_text", _magnet_position=_magnet_position, iCupBase_MagnetSize=cupBase_settings[iCupBase_MagnetSize]);
     cup_base_text(
       cupBaseTextSettings = cupBaseTextSettings, 
       wall_thickness = wall_thickness,
