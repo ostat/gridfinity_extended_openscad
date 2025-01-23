@@ -169,7 +169,6 @@ module cylsq2(d1, d2, h) {
   square([d1, d1], center=true);
 }
 
-
 //pad_oversize(  margins=1,extend_down=5);
 // unit pad slightly oversize at the top to be trimmed or joined with other feet or the rest of the model
 // also useful as cutouts for stacking
@@ -328,6 +327,7 @@ module gridcopy(
     for (yi=[0:len(yCellsList)-1])
     {
       $gci=[xi,yi,0];
+      $gc_count=[len(xCellsList), len(yCellsList), 0];
       $gc_size=[xCellsList[xi][0], yCellsList[yi][0], 0];
       $gc_is_corner=[xCellsList[xi][1], yCellsList[yi][1]];
       $gc_position=[
@@ -336,13 +336,7 @@ module gridcopy(
       translate([$gc_position.x,$gc_position.y,0]*pitch)
         children();
     }
-}
-
-function vector_sum(v, start=0, end, itemIndex) = 
-  let(v=is_list(v)?v:[v], end = is_undef(end)?len(v)-1:min(len(v)-1,end))
-  is_num(itemIndex) 
-    ? start<end ? v[start][itemIndex] + vector_sum(v, start+1, end, itemIndex) : v[start][itemIndex]
-    : start<end ? v[start] + vector_sum(v, start+1, end, itemIndex) : v[start];             
+}         
   
 // similar to cornercopy, can only copy to box corners
 // r, position of the corner from the center for a full sized. Must be less than half of pitch (normally 17 for gridfinity) .
@@ -400,5 +394,31 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch, center = false) {
     if(IsHelpEnabled("debug")) echo("cornercopy", num_x=num_x,num_y=num_y,pitch=pitch, center=center, idx=$idx, gridPosition=[xpos,ypos,0]);
     translate([xpos, ypos, 0]) 
       children();
+  }
+}
+
+module debug_cut(cutx, cuty, cutz) {
+  cutx = is_undef(cutx) ? getCutx() : cutx;
+  cuty = is_undef(cuty) ? getCuty() : cuty;
+  cutz = is_undef(cutz) ? getCutz() : cutz;
+  
+  num_x = getNum_x();
+  num_y = getNum_y();
+  num_z = getNum_z();
+  
+  difference(){
+    children();
+    
+    //Render the cut, used for debugging
+    if(cutx > 0 && cutz > 0 && $preview){
+      color(color_cut)
+      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+        cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
+    }
+    if(cuty > 0 && cutz > 0 && $preview){
+      color(color_cut)
+      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+        cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
+    }
   }
 }

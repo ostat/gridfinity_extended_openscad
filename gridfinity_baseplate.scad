@@ -2,6 +2,7 @@
 include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity.scad>
 use <modules/module_gridfinity_baseplate.scad>
+use <modules/module_gridfinity_baseplate_connectors.scad>
 
 // Plate Style
 Base_Plate_Options = "default";//[default:Efficient base, cnclaser:CNC or Laser cut]
@@ -36,7 +37,7 @@ build_plate_size = [200,250];
 Enable_Magnets = false;
 //size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
 Magnet_Size = [6.5, 2.4];  // .1
-//raises the magnet, and creates a floor (for gluding)
+//raises the magnet, and creates a floor (for gluing)
 Magnet_Z_Offset = 0;  // .1
 //raises the magnet, and creates a ceiling to capture the magnet
 Magnet_Top_Cover = 0;  // .1
@@ -48,18 +49,24 @@ Center_Screw_Enabled = false;
 //Enable cavity to place frame weights
 Enable_Weight = false;
 
-/* [Base Plate Clips - POC don't use yet]*/
-//This feature is not yet finalized, or working properly. 
-Butterfly_Clip_Enabled = false;
-Butterfly_Clip_Size = [6,6,1.5];
-Butterfly_Clip_Radius = 0.1;
-Butterfly_Clip_Tolerance = 0.1;
-Butterfly_Clip_Only = false;
+/* [Base Plate Clips]*/
+Connector_Only = false;
+Connector_Position = "center_wall"; //["center_wall","intersection","both"]
+
+Connector_Clip_Enabled = false;
+Connector_Clip_Size = 10;
+Connector_Clip_Tolerance = 0.1;
 
 //This feature is not yet finalized, or working properly. 
-Filament_Clip_Enabled = false;
-Filament_Clip_Diameter = 2;
-Filament_Clip_Length = 8;
+Connector_Butterfly_Enabled = false;
+Connector_Butterfly_Size = [5,4,1.5];
+Connector_Butterfly_Radius = 0.1;
+Connector_Butterfly_Tolerance = 0.1;
+
+//This feature is not yet finalized, or working properly. 
+Connector_Filament_Enabled = false;
+Connector_Filament_Diameter = 2;
+Connector_Filament_Length = 8;
 
 /* [Custom Grid]*/
 //Enable custom grid, you will configure this in the (Lid not supported)
@@ -181,14 +188,35 @@ iPlate_posGrid = 1;
 iPlate_outerSize = 2;
 iPlate_posOuter = 3;
     
-if(Butterfly_Clip_Only)
+if(Connector_Only)
 {
-  ButterFly(
+  if(Connector_Clip_Enabled) {
+    ClipConnector(
+      size=Connector_Clip_Size, 
+      clearance = Connector_Clip_Tolerance,
+      fullIntersection = true);
+
+    translate([0,15,0])
+    ClipConnector(
+      size=Connector_Clip_Size, 
+      straightIntersection = true,
+      clearance = Connector_Clip_Tolerance);
+    
+    translate([0,30,0])
+    ClipConnector(
+      size=Connector_Clip_Size, 
+      straightWall = true,
+      clearance = Connector_Clip_Tolerance);
+  }
+  
+  if(Connector_Butterfly_Enabled)
+  translate([20,0,0])
+  ButterFlyConnector(
     size=[
-      Butterfly_Clip_Size.x+Butterfly_Clip_Tolerance,
-      Butterfly_Clip_Size.y+Butterfly_Clip_Tolerance,
-      Butterfly_Clip_Size.z],
-    r=Butterfly_Clip_Radius);
+      Connector_Butterfly_Size.x,
+      Connector_Butterfly_Size.y,
+      Connector_Butterfly_Size.z],
+    r=Connector_Butterfly_Radius);
 }
 else 
 {
@@ -256,11 +284,16 @@ else
       plateOptions = Base_Plate_Options,
       customGridEnabled = Custom_Grid_Enabled,
       gridPositions=[xpos1,xpos2,xpos3,xpos4,xpos5,xpos6,xpos7],
-      butterflyClipEnabled  = Butterfly_Clip_Enabled,
-      butterflyClipSize = Butterfly_Clip_Size,
-      butterflyClipRadius = Butterfly_Clip_Radius,
-      filamentClipEnabled=Filament_Clip_Enabled,
-      filamentClipDiameter=Filament_Clip_Diameter,
-      filamentClipLength=Filament_Clip_Length);
+      connectorPosition = Connector_Position,
+      connectorClipEnabled  = Connector_Clip_Enabled,
+      connectorClipSize = Connector_Clip_Size,
+      connectorClipTolerance = Connector_Clip_Tolerance,
+      connectorButterflyEnabled  = Connector_Butterfly_Enabled,
+      connectorButterflySize = Connector_Butterfly_Size,
+      connectorButterflyRadius = Connector_Butterfly_Radius,
+      connectorButterflyTolerance = Connector_Butterfly_Tolerance,
+      connectorFilamentEnabled=Connector_Filament_Enabled,
+      connectorFilamentDiameter=Connector_Filament_Diameter,
+      connectorFilamentLength=Connector_Filament_Length);
   }
 }

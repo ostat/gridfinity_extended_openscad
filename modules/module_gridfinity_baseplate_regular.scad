@@ -13,14 +13,14 @@ module baseplate_regular(
   position_fill_grid_y = "near",
   position_grid_in_outer_x = "center",
   position_grid_in_outer_y = "center",
-  magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
+  magnetSize = [0,0],
   magnetZOffset=0,
   magnetTopCover=0,
   reducedWallHeight=0,
   reduceWallTaper = false,
-  centerScrewEnabled = true,
-  cornerScrewEnabled = true,
-  weightHolder = true,
+  centerScrewEnabled = false,
+  cornerScrewEnabled = false,
+  weightHolder = false,
   cornerRadius = gf_cup_corner_radius,
   roundedCorners = 15) {
 
@@ -37,7 +37,8 @@ module baseplate_regular(
     cornerScrewEnabled ? magnetSize[1] + counterSinkDepth + minFloorThickness : 0,
     weightHolder ? weightDepth+minFloorThickness : 0,
     magnetSize.y+magnetZOffset+magnetTopCover);
-    
+  $frameBaseHeight = frameBaseHeight;
+
     translate([0,0,frameBaseHeight])
     frame_plain(
       grid_num_x = grid_num_x,
@@ -53,7 +54,7 @@ module baseplate_regular(
       cornerRadius = cornerRadius,
       reducedWallHeight=reducedWallHeight,
       reduceWallTaper=reduceWallTaper,
-      roundedCorners = roundedCorners)
+      roundedCorners = roundedCorners){
         //translate([0,0,-fudgeFactor])
         difference(){
           translate([fudgeFactor,fudgeFactor,fudgeFactor])
@@ -73,4 +74,7 @@ module baseplate_regular(
             roundedCorners = roundedCorners,
             reverseAlignment = [$gci.x == 0, $gci.y==0]);
         }
+
+        children();
+      }
 }

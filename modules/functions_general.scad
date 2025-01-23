@@ -6,6 +6,12 @@ function sum(list, c = 0, end) =
   c < len(list) - 1 && c < end
     ? list[c] + sum(list, c + 1, end=end) 
     : list[c];
+
+function vector_sum(v, start=0, end, itemIndex) = 
+  let(v=is_list(v)?v:[v], end = is_undef(end)?len(v)-1:min(len(v)-1,end))
+  is_num(itemIndex) 
+    ? start<end ? v[start][itemIndex] + vector_sum(v, start+1, end, itemIndex) : v[start][itemIndex]
+    : start<end ? v[start] + vector_sum(v, start+1, end, itemIndex) : v[start];    
     
 //round a number to a decimal with a defined number of significant figures
 function roundtoDecimal(value, sigFigs = 0) = 

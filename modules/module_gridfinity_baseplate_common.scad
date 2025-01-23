@@ -74,7 +74,14 @@ module frame_plain(
         : (outer_num_y-grid_num_y)/2*gf_pitch,
     0];
 
-  echo(grid_num_x=grid_num_x, position_grid_in_outer_x=position_grid_in_outer_x, centerGridPosition=centerGridPosition);
+  //front back left right
+  $allowConnectors = [
+      grid_num_y >= outer_num_y || position_grid_in_outer_y == "near", 
+      grid_num_y >= outer_num_y || position_grid_in_outer_y == "far",
+      grid_num_x >= outer_num_x || position_grid_in_outer_x == "near", 
+      grid_num_x >= outer_num_x || position_grid_in_outer_x == "far"];
+
+  if(IsHelpEnabled("debug")) echo("frame_plain", allowConnectors=$allowConnectors, grid_num_x=grid_num_x, position_grid_in_outer_x=position_grid_in_outer_x, centerGridPosition=centerGridPosition);
   difference() {
     color(color_cup)
     translate([0,0,-extra_down])
@@ -124,14 +131,15 @@ module frame_plain(
       extra_down = extra_down, 
       frameLipHeight = frameLipHeight,
       cornerRadius = gf_cup_corner_radius,
-      reducedWallHeight = reducedWallHeight)
-        children();
+      reducedWallHeight = reducedWallHeight){
+        if($children >=1) children(0); 
+        if($children >=2) children(1);
+      }
   }
 }
 
 module hull_conditional(enabled = true)
 {
-  echo("hull_conditional", enabled=enabled)
   if(enabled){
     hull(){
       children();
@@ -142,7 +150,6 @@ module hull_conditional(enabled = true)
       children();
     }
   }
-
 }
 
 module frame_cavity(
@@ -164,24 +171,28 @@ module frame_cavity(
       if($gc_size.x > 0.2 && $gc_size.y >= 0.2){
         if(frameWallReduction>0)
           for(side=[[0, [$gc_size.x, $gc_size.y]*gf_pitch],[90, [$gc_size.y, $gc_size.x]*gf_pitch]]){
-          if(side[1].x >= gf_pitch/2)
-           translate([$gc_size.x/2*gf_pitch,$gc_size.y/2*gf_pitch,frameLipHeight])
-           rotate([0,0,side[0]])
-            WallCutout(
-              lowerWidth=side[1].x-15,
-              wallAngle=80,
-              height=frameWallReduction,
-              thickness=side[1].y+fudgeFactor*2,
-              cornerRadius=frameWallReduction,
-              topHeight=1);
-            }
-            
+            if(side[1].x >= gf_pitch/2)
+            translate([$gc_size.x/2*gf_pitch,$gc_size.y/2*gf_pitch,frameLipHeight])
+            rotate([0,0,side[0]])
+              WallCutout(
+                lowerWidth=side[1].x-20,
+                wallAngle=80,
+                height=frameWallReduction,
+                thickness=side[1].y+fudgeFactor*2,
+                cornerRadius=frameWallReduction,
+                topHeight=1);
+              }
+
+          //wall reducers, cutouts and clips
+          if($children >=2) children(1);
+
           pad_oversize(
             margins=1,
             extend_down=extra_down,
             $gc_size.x,
             $gc_size.y)
-                children();
+              //cell cavity
+              if($children >=1) children(0);
     }
   }
 }
