@@ -377,7 +377,7 @@ module gridfinity_cup(
     ? wallpattern_dividers_enabled ? "vertical" : "disabled"
     : wallpattern_dividers_enabled;
   
-  difference() {
+  debug_cut()
   union(){
     difference() {
       grid_block(
@@ -867,22 +867,6 @@ module gridfinity_cup(
       }
     }
   }  
-  
-  cutx = getCutx();
-  cuty = getCuty();
-  cutz = getCutz();
-  //Render the cut, used for debugging
-  if(cutx > 0 && cutz > 0 && $preview){
-    color(color_cut)
-    translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-      cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
-  }
-  if(cuty > 0 && cutz > 0 && $preview){
-    color(color_cut)
-    translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-      cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
-  }
-  }
   
   if(IsHelpEnabled("info"))
     //translate(cupPosition(position,num_x,num_y))
