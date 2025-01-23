@@ -424,7 +424,13 @@ module ClippedWall(
   }
 }
 
-module ButterFlyConnector(size,r,taper=false,half=false){
+module ButterFlyConnector(
+  size,
+  r,
+  clearance = 0,
+  taper=false,
+  half=false)
+  {
   h = taper ? size.y/2+size.z : size.z;
   //render()
   intersection(){

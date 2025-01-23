@@ -213,9 +213,9 @@ if(Connector_Only)
   translate([20,0,0])
   ButterFlyConnector(
     size=[
-      Connector_Butterfly_Size.x,
-      Connector_Butterfly_Size.y,
-      Connector_Butterfly_Size.z],
+      Connector_Butterfly_Size.x-Connector_Butterfly_Tolerance,
+      Connector_Butterfly_Size.y-Connector_Butterfly_Tolerance,
+      Connector_Butterfly_Size.z-Connector_Butterfly_Tolerance],
     r=Connector_Butterfly_Radius);
 }
 else 
