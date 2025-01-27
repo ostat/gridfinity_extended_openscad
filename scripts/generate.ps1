@@ -84,7 +84,7 @@ $Script:Heights | ForEach-Object {
                 #} | ForEach-Object { 
 
        
-            #for plain bin (no finger slide, no dividers, no labels), support no attachement, magnet only and magnetscrew
+            #for plain bin (no finger slide, no dividers, no labels), support no attachment, magnet only and magnetscrew
             #for non plain bin (finger slide, or divider or label)
                 #efficient is no magnet no screw only
                 #non efficient is  magnet and screw only

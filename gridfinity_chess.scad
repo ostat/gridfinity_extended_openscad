@@ -1,7 +1,17 @@
 include <modules/module_gridfinity.scad>
 
+/* [model] */
 // Select model
 part = "tile";  // [ board, tile, pawn, knight, bishop, rook, queen, king ]
+
+/* [model detail] */
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
+
 
 if (part == "tile") {
   tile();
@@ -52,7 +62,7 @@ module piece_set(white=true) {
 module king() {
   base();
   
-  rotate_extrude($fn=60)
+  rotate_extrude()
   polygon([[0, 47], [0, 0], [11, 0], [11, 10], [8, 13], [6, 38],
     [9, 42], [9, 45], [7, 46]]);
   
@@ -65,7 +75,7 @@ module queen() {
   base();
   
   difference() {  
-    rotate_extrude($fn=60)
+    rotate_extrude()
     polygon([[0, 45], [0, 0], [11, 0], [11, 10], [8, 13], [6, 42], 
       [8, 44], [8, 46], [11, 48], [13, 53], [12, 53], [8, 48]]);
     
@@ -74,7 +84,7 @@ module queen() {
     
     for (a=[0, 30, 60, 90, 120, 150]) rotate([0, 0, a])
     translate([0, 0, 48.5+6])
-    rotate([0, 90, 0]) cylinder(d=7.25, h=30, $fn=30, center=true);
+    rotate([0, 90, 0]) cylinder(d=7.25, h=30, center=true);
   }
 }
 
@@ -82,7 +92,7 @@ module queen() {
 module knight() {
   base();
 
-  rotate_extrude($fn=60)
+  rotate_extrude()
   polygon([[0, 13], [0, 0], [9, 0], [9, 10], [7, 13]]);
   
   hull() {
@@ -103,15 +113,15 @@ module knight() {
 module bishop() {
   base();
   
-  tz(42) sphere(d=3, $fn=60);
+  tz(42) sphere(d=3);
   
   difference() {
-    rotate_extrude($fn=60)
+    rotate_extrude()
     polygon([[0, 42], [0, 0], [9, 0], [9, 10], [7, 13], [3.5, 26], [6, 32]]);
     
     translate([4.5, 0, 40])
     rotate([0, -56, 0])
-    cylinder(d=20, h=1, $fn=60);
+    cylinder(d=20, h=1);
   }
 }
 
@@ -120,7 +130,7 @@ module rook() {
   base();
   
   difference() {
-    rotate_extrude($fn=60)
+    rotate_extrude()
     polygon([[0, 34], [0, 0], [10, 0], [10, 10], [7, 13], [7, 29], 
       [10, 32], [10, 39], [8, 39], [8, 34]]);
     
@@ -133,16 +143,16 @@ module rook() {
 module pawn() {
   base();
   
-  tz(25) sphere(d=11, $fn=60);
+  tz(25) sphere(d=11);
   
-  rotate_extrude($fn=60)
+  rotate_extrude()
   polygon([[0, 25], [0, 0], [7, 0], [7, 8], [4.5, 11], [3, 24]]);
 }
 
 
 module base() {
   difference() {
-    grid_block(1, 1, 0.72, magnet_diameter=0, screw_depth=0,position="center");
+    tile(0.75);
     difference() {
       cube([35, 35, 30], center=true);
       for (a=[45, 135]) rotate([0, 0, a]) cube([60, 2, 30], center=true);
@@ -160,8 +170,8 @@ module board() {  // 64 tiles in alternating colors
 }
 
 
-module tile() {
-  grid_block(1, 1, 0.5, magnet_diameter=0, screw_depth=0,position="center");
+module tile(height = 0.5) {
+  grid_block(1, 1, 0.5, lipStyle = "none", position = "centered");
 }
 
 

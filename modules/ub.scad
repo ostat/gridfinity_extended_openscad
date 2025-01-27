@@ -36,45 +36,7 @@ include<ub.scad>;
 
 Changelog (archive at the very bottom)
 
-000|23 FIX Grid UPD vMult UPD Pin  
-002|23 UPD Prisma UPD WStern UPD Kreis UPD Bogen FIX Rand  
-004|23 UPD Cycloid Fix Roof UPD kreis Fix Quad  
-006|23 UPD Arc UPD Pin FIX Linse  
-008|23 UPD VorterantQ Vorterantrotor UPD Reuleaux UPD Roof FIX Gewinde  
-010|23 ADD Tesselation FIX CyclGear UPD Twins UPD Linse CHG Pin UPD Halbrund
-020|23 CHG Linse CHG Pin UPD Tri CHG Bitaufnahme UPD PrevPos
-024|23 UPD vollwelle, UPD Vollwelle, UPD Arc UPD menu UPD Kegelmantel UPD Kegel
-040|23 UPD Pin UPD Kegel UPD Welle UPD Grid UPD HexGrid
-050|23 CHG Kehle CHG RotEx FIX Prisma UPD HexGrid CHG Vollwelle CHG LinEx UPD Kegel
-055|23 UPD kreis UPD polyRund upd SWelle upd PolyRund CHG Coil CHG pathPoints CHG Bezier
-060|23 CHG quad CHG printPos upd Schnitt chg Gewinde
-070|23 ADD Connector FIX Welle
-080|23 UPD Glied FIX Kehle FIX Gewinde UPD arc UPD Connector FIX Welle
-090|23 ADD QuadAnschluss upd Gewinde
-100|23 CHG Vollwelle UPD QuadAnschluss CHG Connector
-110|23 CHG Bogen CHG QuadAncshluss CHG Cut CHG Loch CHG Kehle
-120|23 UPD QuadAnschluss FIX Torus UPD Coil CHG SRing CHG kreis ADD FlatMesh
-130|23 CHG FlatMesh FIX GewindeV2 UPD Gewinde chg viewportsize UPD Points
-140|23 CHG Ring CHG Riemen UPD riemen CHG Tri CHG Tri90 FIX Gewinde UPD SBogen
-150|23 CHG SBogen CHG Kegel FIX Bezier chg fa UPD Anschluss UPD Welle UPD M
-160|23 UPD Pille UPD Connector CHG DPfeil UPD Kreis kreis
-180|23 UPD kreis FIX Text FIX kreis UPD SBogen UPD RotEx FIX Pille 
-190|23 CHG Points ADD sternDeg ADD SternDeg UPD Rund
-200|23 UPD SternDeg UPD nut UPD Gewinde UPD octa FIX SGlied UPD KnurlTri
-210|23 ADD bool UPD Knurl UPD Text ADD FlatKnurl UPD FlatMesh CHG Tesselation UPD Roof
-220|23 UPD distS UPD Kehle ADD Penrose ADD RectTiling CHG Ellipse UPD Filter UPD Caliper
-230|23 CHG Caliper UPD Rohr UPD Bogen UPD QuadAnschluss ADD vMin vMax vAdd UPD Torus
-240|23 FIX QuadAnschluss CHG WaveEX UPD Polar CHG Isosphere UPD WKreis 
-250|23 FIX GewindeV4 FIX kreis FIX vollwelle CHG Filter FIX Loch
-260|23 FIX Gewinde UPD Pfeil CHG CyclGear ADD Rod UPD Ring UPD Coil UPD SWelle
-270|23 FIX Pille UPD Kegel UPD Pille UPD Anschluss UPD SBogen FIX GewindeV4 ADD radiusSH
-275|23 UPD QuadAnschluss ADD transition CHG $fn UPD Ccube UPD Arc UPD Involute UPD involute
-280|23 UPD Torus CHG transition CHG Gardena FIX Rod CHG Gewinde Fix Text FIX WStern UPD HexGrid
-285|23 UPD HexGrid UPD Text Fix kreis UPD Kreis Fix Kegel UPD VorterantQ FIX Vorterantrotor
-290|23 FIX Roof FIX Kegel UPD Balg UPD RotEx UPD Involute UPD Connector UPD Kehle FIX Loch
-305|23 FIX HexGrid UPD Kegel
 */
-
 {//fold // Constants
 
 
@@ -489,25 +451,6 @@ is_num(v.y)?v.y:0,
 is_num(v.z)?v.z:0,
  ];
 
-
-/* org
-function v3org( v ) =
-       is_num(v.y)?is_num(v.z)?len(v)==3?v:  // make everything to a vector3
-                                          [v.x,v.y,v.z]: // shorten if len >3
-                            concat(v,[0]):
-                  concat(v,[0,0]);
-                  
-                  
- v=[1,undef,"a",2];
- echo(v3(v),v3org(v));
-// */
-                
-
-
-
- 
- 
-
 // list of parent modules [["name",id]]
 function parentList(n=-1,start=1)=  is_undef($parent_modules)||$parent_modules==start?undef:[for(i=[start:$parent_modules +n])[parent_module(i),i]];
 
@@ -897,32 +840,6 @@ function wall(soll=.5,min=1.25,even=false,line=line,nozzle,name)=
     )
   (is_undef($idx)||$idx==0)&&$info||name?echo(name=name,perimeterShells=walls,soll=soll,ist=line(walls,line=line),min=min)line(walls, line=line)*sign(soll) : line(walls, line=line)*sign(soll);
   
-  
-  
-/*
-function starOrg(e=5,r1=10,r2=5,grad=[0,0],grad2,radial=false,fn=0,z,angle=360,rot=0)=
-let(
-  grad=is_num(grad)?[grad/2,grad/2]:grad,
-  grad2=is_undef(grad2)?[grad[1],grad[0]]:is_num(grad2)?[grad2/2,grad2/2]:grad2,
-  fn=max(1,round(fn)),
-  
-  deg=angle/(e*2),
-  diff=(grad[1]-grad[0])/2,
-  diff2=(grad2[1]-grad2[0])/2,
-
-  
-  winkel=((radial?[1,1]*angle/4/e+ [grad.x,grad.y]:grad)+[diff,-diff])/fn,
-  winkel2=((radial?[1,1]*angle/4/e - [grad.y,grad.x]:grad2)+[diff2,-diff2])/fn
-  )
-[for(i=[0:e*2 -1], w=[0:1], ifn=[+1:fn +0])  RotLang((deg*i+rot +(i%2?diff2:diff))%360  + ( i%2?  w? winkel2[1]*ifn : - winkel2[0]*(fn-ifn+1) :
-                                                                      w?  winkel[1]*ifn: - winkel[0]*(fn-ifn+1) ),
-                                                 i%2?r2:r1,z=z)];
-
-// */
-
-
-
-
 function star(e=5,r1=10,r2=5,grad=[0,0],grad2,radial=false,fn=0,z,angle=360,rot=0)=
 let(
   r1=is_num(r1)?[r1]:r1,
@@ -944,22 +861,6 @@ let(
   RotLang((deg*i+rot +(i%2?diff2:diff))%360  + ( i%2?  w? winkel2[1]*ifn : - winkel2[0]*(fn-ifn +centerEck) :
                                                        w? winkel [1]*ifn : - winkel [0]*(fn-ifn+centerEck) ),
           i%2?r2[floor(i/2)%len(r2)]:r1[floor(i/2)%len(r1)],z=z)];
-
-
-//polygon(concat(star(e=4,angle=250),star(angle=70,e=4,r1=4,r2=3,rot=-90)));
-/*
-polygon(starOrg(e=3,angle=120*3,rot=-60,radial=true,fn=10));
-T(20)polygon(starOrg());
-T(0,20)polygon(starOrg(angle=180,fn=3,grad=4));
-
-Tz(.5)Color(){
-polygon(star(e=3,angle=120*3,rot=-60,radial=true,fn=10));
-T(20)polygon(star());
-T(0,20))polygon(star(angle=180,fn=3,grad=4));
-}
-
-// */
-
 
 // vector multiplication  
 function vMult(v1=[1],v2=1)=
@@ -3827,24 +3728,6 @@ HelpTxt("Arc",["r",r,"deg",deg,"r2",r2,"fn",fn,"rand",rand,"center",center,"cP",
 /// Vorterant Q creates a rotor for the Quad Vorterant pump
 //Grid(e=3,es=10*sqrt(2))rotate(($idx.x+$idx.y)%2?0:90)rotate(t0)VorterantQ();
 //Polar(4,10.0,rotE=90)VorterantQ(h=10);
-
-
-/*
-VorterantQ(ofs=2,adjusted=true);
-x=10-sqrt(2)*2;
-Tz(.1)Color()offset(2)Linse(dia=x*2,r=x*sqrt(2));
-//*/
-
-/*
-VorterantQ();
-Kreis(10,dicke=.1);
-T(10){
-Kreis(10*sqrt(2),dicke=.1);
-Pivot();
-}
-//*/
-
-
 module VorterantQ(size=20,ofs=.5,adjusted,fs=fs,fa=fa,fn=0,name,help,h){
 adjusted=is_undef(adjusted)?useVersion&&useVersion>23||Version>23?true:false
                            :adjusted;
@@ -4803,18 +4686,6 @@ module GT2(spiel=0,fn=fn){
    
     T(0,-ht )Rund(0,r1,fn=fn)
         polygon(pointsGT2);
-    
-//union(){
-//%T(-p,ht)square([2*p,i]);
-// }    
-//    Color("lime")T(0,r3,-0.1)circle(r3,$fn=fn);
-//    Color("green")T(0,ht,-.11)intersection(){
-//            T(b)circle(r=r2,$fn=fn);
-//            T(-b)circle(r=r2,$fn=fn);
-//            square([2,0.85],true);
-//        }
-    //%Color("red")T(0,ht-r1)MKlon(0.736)circle(r1);
-  
 }
 
  // GT();
@@ -8999,9 +8870,6 @@ module Spirale(grad=400*1,diff=2,radius=10,r1,r2,rand=n(2),$d,detail,fn=fn,exp=1
     $d=rand;
     radius=is_undef(r1)?radius:center&&is_num(r2)?r1-r2/2:r1;
     iDiff=is_undef(r2)?diff:center?(radius-r2)/grad*360*2:(radius-r2)/grad*360;
-    //diff=is_undef(r2)?diff:center?(radius-r2)/grad*360*2:(radius-r2)/grad*360;
-    
-    
        
     // * // recursive calculation
     function expDiff(diff=iDiff)=assert(exp>0)pow( (abs(diff/360*grad)), exp )*sign(diff);
@@ -9017,26 +8885,8 @@ module Spirale(grad=400*1,diff=2,radius=10,r1,r2,rand=n(2),$d,detail,fn=fn,exp=1
     //echo(expDiff(iDiff*diffAdj())/(iDiff/360*grad),diffAdj());
     diff=is_undef(r2)?pow(iDiff,1/exp):
                       iDiff*(exp==1?1:diffAdj());
-    // */
+    // 
     
- /*
-    diff=is_undef(r2)?pow(iDiff,1/exp):
-                      pow(iDiff/360*grad,1/exp);
-// */
-
- //center=is_undef(r2)?center:false;
- 
- 
-/*
-pointsOld=!$children?center?[
-    for(i=[0:fn])RotLang(i*-grad/fn,diff/2/360*grad+radius-rand/2-pow(i*(diff/360*grad)/(fn),exp)),
-    for(i=[fn:-1:0])RotLang(i*-grad/fn,diff/2/360*grad+radius+rand/2-pow(i*(diff/360*grad)/(fn),exp))]
-    :[// center=false
-for(i=[0:fn])RotLang(i*-grad/fn,radius-rand/2-pow(i*(diff/360*grad)/(fn),exp)),
-for(i=[fn:-1:0])RotLang(i*-grad/fn,radius+rand/2-pow(i*(diff/360*grad)/(fn),exp))]
-    :[0];// $children=true ⇒ deactivate point calculation
-*/
-
 path=[
   for(i=[0:fn])RotLang(
     i*-grad/fn, (center?diff/2/360*grad:0) + radius- pow( abs(diff/360*grad)*i/fn,exp)*sign(diff) )
@@ -10648,25 +10498,6 @@ module Buchtung(size=[10,5],l=10,r=2.5,rmin=0,center=true,fn=fn,fn2=fn,phase=360
           )
         each quad(size,r=ir,z=i*zscale,fn=fn2)
         ];
-  
-/*
-    for (i=[0:fn-1]){
-      
-        j=i+1;
-        zscale=l/fn;
-        rscale=r-rmin;
-        $info=0;
-        $helpM=false;
-        translate(center?[0,0,-l/2]:[0,0,0]+size/2)Color(i/((fn-1)*1.1))hull(){
-          $idx=i;
-        Tz(i*zscale)linear_extrude(minVal,scale=0)Quad(size,r=(1+sin(i*phase/fn+deltaPhi))*rscale/2+rmin,fn=fn2);
-        Tz(j*zscale+minVal){
-          $idx=j;
-          linear_extrude(minVal,scale=0)Quad(size,r=(1+sin(j*phase/fn+deltaPhi))*rscale/2+rmin,fn=fn2);
-          }
-        }
-    }
-// */
 
 //translate(center?[0,0,-l/2]:[0,0.0,0]+size/2)PolyH(points,loop=floor(fn2/4)*4+4,name=false);
 translate(center?[0,0,-l/2]:[0,0.0,0]+size/2)PolyH(points,loop=loop,name=false);
@@ -11153,25 +10984,7 @@ resolution=1/res;//[10,5,2.5,1,0.5,0.25,0.125]
 
 
 random=rands(-deltaZ,deltaZ,((rowl+1)*(rowly+1)*randSizeY)/min(randsize,1),seed);
-
-/*
-z1=0;
-z2=0.5; 
-alternate=[for(h=[0:y+1])for(i=[0:x+0])h%2?i%2?deltaZ:deltaZ/2:i%2?deltaZ/2:deltaZ];
-alternate3=[for(h=[0:y+1])for(i=[0:x+0])h%4?i%3?z1:z2:i%2?z2:z1];   
-function alternate2(x,y,z1=0.0,z2=0.5)=x%2?y%2?z1:z2:z2;
-//
-points0alternativ=[
-for(x=[-rowl/2+versch[0]:resolution:rowl/2+versch[0]])
-    for(y=[-rowly/2+versch[1]:resolution:rowly/2+versch[1]])
-        [x,y,
-    //alternate2((x+(rowl/2)),(y+(rowly/2)))]
-    //alternate[(x+rowl/2)+(rowl+0.5)*(y+rowly/2)]] 
-    alternate3[(x+rowl/2)+(rowl+0)*(y+rowly/2)]] 
-    ];
-    
-*/
-    
+   
 points0=[
 for(x=[-rowl/2+versch[0]:resolution:rowl/2+versch[0]])
     for(y=[-rowly/2+versch[1]:resolution:rowly/2+versch[1]])
@@ -11604,15 +11417,6 @@ rotate(inside?180:0,v=[0,1])intersection(){
               Tz(inside?-hIn(i):h(i))rotate(i*step)T(r1+rad,z=-rad)Pille(l=.1+r2+(inside?rad*3:rad)-h(i),r=rad,rad=rad,rad2=0,center=false,name=false,fn=fn,fn2=fn2);  
               Tz(inside?-hIn(i+1):h(i+1))rotate((i+1)*step)T(r1+rad,z=-rad)Pille(l=.1+r2+(inside?rad*3:rad)-h(i+1),r=rad,rad=rad,rad2=0,center=false,name=false,fn=fn,fn2=fn2);  
             }
-   /*hull(){  hull(){
-                    Tz(inside?-hIn(i):h(i))rotate(i*step)T(r1+rad)R(90)sphere(r=rad);
-                    Tz((inside?-1:1)*r2)rotate(i*step)T(r1+rad)R(90)cylinder(.5,r1=rad,r2=0);
-                }
-                hull(){
-                    Tz(inside?-hIn(i+1):h(i+1))rotate((i+1)*step)T(r1+rad)R(90)sphere(rad);//cylinder(.5,r1=rad,r2=0);
-                    Tz((inside?-1:1)*r2)rotate((i+1)*step)T(r1+rad)R(90)cylinder(.5,r1=rad,r2=0);
-                }
-        }   // end hull */
         }
     }
 if(!inside)scale([sc,1.00])cylinder(500,r=r1+rad,center=true);
@@ -12694,8 +12498,6 @@ difference(){
 /// ¼" Hex Shank
 // cylinder(20,d=Umkreis(6,inch(0.25)),$fn=6);
 // Bitaufnahme(star=2);
-
-
 module Bitaufnahme(l=10,star=2,help)
 {
 //¼" Hex Shank = umkreis 7.33235 / inkreis 6.35
@@ -12715,24 +12517,6 @@ module Bitaufnahme(l=10,star=2,help)
         
     }
  }
- /* old
- %T(6)union(){
-    linear_extrude(l,scale=.95,convexity=5){
-        if(star==true||star==1)Rund(1,fn=36)Polar(2)circle(4.6,$fn=3);
-        if(star>1)WStern(6,r=3.5,fn=6*10,help=0,r2=3.1);
-        }
-    if(star>1)T(z=l){
-     Tz(-0.30)scale([1,1,0.60]) sphere(d=5.8,$fn=36);
-     linear_extrude(1.00,scale=0.56,convexity=5)scale(.95)WStern(6,r=3.5,fn=6*10,help=0,r2=3.1);
-        }
-   else T(z=l){
-     Tz(-0.29)scale([1,1,0.6]) sphere(d=5.3,$fn=36);
-    linear_extrude(0.80,scale=0.56,convexity=5)scale(.95)Rund(1,fn=36)Polar(2)circle(4.6,$fn=3);
-        
-        
-    }
- } 
- */
  
  if(!star){hull()
         {
@@ -12749,15 +12533,9 @@ module Bitaufnahme(l=10,star=2,help)
 
 /// Luer connector
 //Luer(male=false);
-
 module Luer(male=true,lock=true,slip=true,rand=n(2),help,name)
 {
     HelpTxt("Luer",["male",male,"lock",lock,"slip",slip,"rand",rand,"name",name],help);
-    
-    /* show=41; 6% nach DIN
-     R(180)T(z=-73.5)color("red")cylinder(100,d1=0,d2=6.0,$fn=fn); //Eichzylinder 6%
-     T(z=+1.0)color("green")cylinder(5.8,d1=4.35,d2=4.0,$fn=fn); //referenz gemessen
-    // */
     
     d=4.5;
     
@@ -13439,113 +13217,7 @@ module BogenOrg(grad=90,rad=5,d=3,l1=10,l2=12,name,fn=fn,fn2=fn,ueberlapp=-0.001
 }
    
    
-}
-/* // Depreciated // // // // // // // // // // // // //
-    Depreciated / for Deletion
-
-module Aussenkreis(h=5,d=5.5,eck=6,kreis=0,fn=150,n=1)//misleading depreciated
-{
-    echo("!!!!!!!!!!!!!!!!!! Renamed Inkreis");
-    Inkreis(h=h,d=d,eck=eck,kreis=kreis,fn=fn,n=n);
-    echo("!!!!!!!!!!!!!!!!!! Renamed USE Inkreis");
-}
-
-
-
-module Inkreis(h=5,d=5.5,eck=6,kreis=0,fn=fn,name)//depreciated
-{
-     echo("<font color='red'size=10>!!!!!!!!!!!!!!!!!! Don't use — depreciated!!<font color='blue'size=7> - use functions Inkreis or Umkreis </font></font>");
-    if(eck==8){
-        a=d*(sqrt(2)-1);
-
-        R(z=180/8)cylinder(h,r=a*sqrt(1+(1/sqrt(2))),$fn=kreis?fn:eck);  
-    }  
-    
-    if(eck==6)cylinder(h,d=Umkreis(6,d),$fn=kreis?fn:eck);
-    
-    if(eck==4)R(z=45)cylinder(h,r=sqrt(2*pow(d/2,2)),$fn=kreis?fn:eck);
-    if(eck==3)R(z=0)cylinder(h,r=d,$fn=kreis?fn:eck);
-    
-    if(name)echo(str("»»» »»» ",name," ",eck,"-eck Inkreis∅= ",d));
-}
-
-
-   
-DEL module RingOLD(h=5,rand=2,d=10,cd=1,center=false,fn=fn,name,2D=0)// marked for deletion
-{
-if (!2D){
-     if(cd==1){difference()//Aussendurchmesser
-        {
-            cylinder(h,d=d,$fn=fn,center=center);
-            cylinder(2*h+1,d=d-2*rand,$fn=fn,center=true);
-        }
-        if(name)echo(str("»»»  »»» ",name," Ring Aussen∅= ",d,"mm — Mitte∅= ",d-rand,"mm — Innen∅= ",d-(rand*2),"mm groß und ",h," hoch ««« «««"));}
-            
-     if(cd==0){difference()//Center durchmesser
-        {
-            cylinder(h,d=d+rand,$fn=fn,center=center);
-            cylinder(2*h+1,d=d-rand,$fn=fn,center=true);
-        }
-        if(name)echo(str("»»»  »»» ",name," Ring Aussen∅= ",d+rand,"mm — Mitte∅= ",d,"mm — Innen∅= ",d-rand,"mm groß und ",h," hoch ««« «««"));}        
-            
-         
-     if(cd==-1){difference()//innen durchmesser
-        {
-            cylinder(h,d=d+2*rand,$fn=fn,center=center);
-            cylinder(2*h+1,d=d,$fn=fn,center=true);
-        }
-        if(name)echo(str("»»»  »»» ",name," Ring Aussen∅= ",d+2*rand,"mm — Mitte∅= ",d+rand,"mm — Innen∅= ",d,"mm groß und ",h," hoch ««« «««"));}
-    }
-
-
-if (2D){
-     if(cd==1){difference()//Aussendurchmesser
-        {
-            circle(d=d,$fn=fn);
-            circle(d=d-2*rand,$fn=fn);
-        }
-        if(name)echo(str("»»»  »»» ",name," Ring Aussen∅= ",d,"mm — Mitte∅= ",d-rand,"mm — Innen∅= ",d-(rand*2),"mm groß und 2D ««« «««"));}
-            
-     if(cd==0){difference()//Center durchmesser
-        {
-            circle(d=d+rand,$fn=fn);
-            circle(d=d-rand,$fn=fn);
-        }
-        if(name)echo(str("»»»  »»» ",name," Ring Aussen∅= ",d+rand,"mm — Mitte∅= ",d,"mm — Innen∅= ",d-rand,"mm groß und 2D ««« «««"));}        
-            
-         
-     if(cd==-1){difference()//innen durchmesser
-        {
-            circle(d=d+2*rand,$fn=fn);
-            circle(d=d,$fn=fn);
-        }
-        if(name)echo(str("»»»  »»» ",name," Ring Aussen∅= ",d+2*rand,"mm — Mitte∅= ",d+rand,"mm — Innen∅= ",d,"mm groß und 2D ««« «««"));}
-    }
-
-         
-}
-
-DEL module RingX(layer,rand,durchmesser)//old don't use! 
-{
-     
-  echo("<font color='red'size=10>WARNING - DONT USE , REMOVED -- USE: 'Ring(hoehe=l(layer);'</font>");  
-    difference()
-        {
-            cylinder(l(layer),d=durchmesser,$fn=250,center=false);
-            translate([+0,0,-l(.5)])cylinder(l(layer+1),d=durchmesser-rand,$fn=250,center=false);
-        }
-}
-
-//function negRedOLD(num)=num<0?str("<font color=red ><b>",num,"</font>"):num; // display console text
-   
-   
-   
-   
-   
-   
-   
-// */
-   
+} 
 
 echo("\n---————————————————————————————————————————---\n");
  
@@ -13613,614 +13285,3 @@ if (show) %color([0.6,+0.0,0.9,0.8]){
   if (show==1){cube(10,true);echo("10mm Cube",color="purple");}
 
 }
- 
- 
-/** \name Archive
-##  •••• Archive ••••  
-   
-   
-140|17 Changelog - beta 4.7
-140|17 ADD Text - beta 4.7
-141|17 ADD show 
-164|17 ADD Bogen CHG Schnitt rotation default - beta 4.9
-165|17 ADD Gewinde - beta 5
-169|17 CHG Polar - beta 5.01
-171|17 ADD Dreieck - beta5.1
-179|17 CHG t0↦-t0  - beta5.11
-180|17 CHG ADD Freiwinkel  - beta 5.2
-182|17 CHG Polar ADD dr - beta 5.21
-183|17 CHG Halbrund ADD parameter - beta 5.22
-184|17 ADD Achshalter -beta 5.3
-185|17 CHG Luer ADD lock ADD !male beta 5.41
-187|17 CHG Ring ID OD CD - CHG Pille l corrected! DEL Stabhalter beta 5.5
-189|17 CHG Achshalter ADD MutterSpiel - β5.51
-202|17 ADD Sinuskoerpe, ADD color - β5.6
-208|17 CHG Bogen fn=  -β5.7
-211|17 CHG Kegel ADD center - β5.8
-213|17 ADD Col for color  - β5.9
-216|17 ADD $fn=fn, CHG Dreieck ADD Winkel -β6.0
-226|17 ADD Kehle β6.1
-232|17 ADD Gardena β6.2
-237|17 ADD Kegelmantel β6.3
-238|17 ADD Kugelmantel ADD Halb β6.4
-240|17 ADD Klon β6.5
-241|17 ADD Rohr ADD Drehpunkt β6.6
-247|17 CHG Rohr CHG Bogen  β6.7
-276|17 CHG Dreieck ADD ha2 β6.8
-338|17 CHG Glied - ring dicke auf 1.5n  β6.9
-
-
-029|18 CHG TEXT ADD font 
-058|18 CHG Kehle ADD fn2,r2 β7
-060|18 ADD Kassette β7.1
-062|18 CHG Linear center β7.2
-104|18 ADD Vorterantrotor β7.3
-113|18 CHG Vorterantrotor ADD Mklon β7.38
-121|18 CHG Torus ADD dia CHG min β7.39
-123|18 ADD Tiegel β7.4
-135|18 ADD Reuleaux β7.5
-138|18 ADD Box ADD ReuleauxIntersectβ7.6
-143|18 ADD Bogendreieck
-149|18 CHG Schnitt add center ADD Spirale β7.7
-161|18 CHG Glied, DGlied  β7.8
-173|18 CHG Gardena β7.9
-176|18 CHG Ring hoehe=h β8
-183|18 CHG Kehle add convexity
-191|18 ADD function Hypertenuse β8.1
-194|18 ADD Area ADD Balg β8.2
-200|18 CHG Box Add d2 β8.3
-207|18 CHG Pille CHG Torus Add center β8.4
-209|18 ADD Sichel β8.5
-212|18 ADD Prisma β8.6
-213|18 CHG Kugelmantel rand β8.6
-214|18 ADD t3 β8.7
-230|18 CHG Ring Add 2D β8.8
-235|18 ADD Trapez β8.9
-237|18 CHG Trapez x1/x2 β9.0
-241|18 ADD Tring add Trapez&Prisma winkelinfo β9.1
-244|18 CHG Sinuskoerper Add 2D, linextr Add fill β9.21
-245|18 CHG Polar Chg END β9.3
-246|18 CHG Halb Add 2D ADD Rundrum β9.4
-254|18 CHG Spirale Add children β9.5
-267|18 CHG Rundrum Add spiel ADD Kontaktwinkelβ9.6
-273|18 CHG Text Add str CHG Gewinde warning β9.7 
-278|18 ADD Kathete ADD func Inkreis ADD func Umkreis β9.8
-279|18 CHG Rundrum Add eck β9.9
-288|18 ADD Ttorus ADD instructions ADD colors/size CHG Col Add $children β10
-289|18 CHG Col Add trans β10.1
-308|18 CHG Torus Add spheres ADD M β10.3
-313|18 ADD Rund β10.4
-324|18 ADD Achsenklammer CHG Schnitt debug on β10.5
-327|18 ADD LinEx β10.6
-331|18 CHG Spirale Add hull switch β10.7
-332|18 ADD Bezier CHG add $children CHG Kassette add r CHG Rundrum chg r add intersect β10.9
-333|18 CHG Bezier add funct/polygon Pivot ADD Pivot β11
-334|18 CHG Bezier add pabs,ex,w β11.1 (chg to v.2018)
-335|18 ADD Strebe β11.2
-341|18 CHG Bogen fix β11.3
-346|18 ADD Elipse β11.4
-349|18 CHG LinEx Add twist β11.5
-352|18 CHG Kontaktwinkel Add inv CHG ReuleauxIntersect Add 2D β11.6
-357|18 ADD Laser3D β11.7 Chg β11.8
-360|18 ADD function Kreis() β11.9
-
-
-001|19 CHG Kreis Add r2 rand2 β12
-002|19 Add Kegel/Kegelmantel/Dreieck grad β12.2
-006|19 CHG Kegelmantel zversch CHG Kegel d2>d1 β12.3
-010|19 CHG Col Add palette β12.4
-011|19 CHG Kreis Add center β12.5
-012|19 CHG Add switch for basis/prod objects β12.6
-025|19 CHG LinEx Add slices β12.7
-032|19 ADD KreisXY CHG Bezier detail/fn β12.8
-059|19 ADD RotLang β12.9
-060|19 CHG Linear chg e/s β13
-073|19 CHG Imprint β13.1
-075|19 ADD 5gon CHG RotLang β13.2
-077|19 CHG Glied3 Gelenk CHG Linear s=0 β13.3
-080|19 CHG Kassette add fn2,h chg size, β13.4
-080|19 CHG Strebe add fn β13.5
-093|19 CHG Col CHG Kassette β13.6
-111|19 CHG LinEx ADD Grid CHG Prisma Add warning β13.7
-113|19 CHG Bitaufnahme Add Star ADD Rand β13.8
-117|19 CHG Ring CHG Achshalter CHG Achsklammer Add fn CHG commented depreciated functions β13.9
-124|19 CHG Pille
-127|19 CHG Grid
-130|19 CHG Kreis Add rot ADD Gewinde2 ADD Tz() β14
-132|19 CHG Gewinde2 Ren Gewinde ⇔ GewindeV1 (old version)β14.1
-134|19 chg fn=$preview?-render chg vp - CHG Pivot chg size β14.2
-135|19 CHG Linear Add n, chg fn, Schnitt warning
-138|19 ADD VorterantQ β14.3
-141|19 CHG Gewinde Add preset ½zoll chg r1,rh calc β14.4
-147|19 CHG Prisma c1=c1-s
-148|19 ADD Linse β14.5
-150|19 CHG Strebe Add 2D CHG Kreis Add t=[0,0] CHG Kreis⇒KreisOrginal CHG Gewinde fn β14.6
-151|19 CHG Kassette Add sizey
-152|19 ADD Quad β14.7
-157|19 CHG Sichel Add 2D β14.8
-159|19 CHG Text font 
-168|19 CHG Pille ADD Disphenoid β14.9
-169|19 CHG Gewinde β15.0
-170|19 CHG Kassette
-v2019.5
-170|19 CHG Kreis() CHG Linse() β15.1
-171|19 ADD Stern()  - cleaned  β15.2
-172|19 CHG Kegelmantel
-173|19 CHG Pille()
-175|19 CHG Servokopf CHG Stern CHG Linse β15.3
-176|19 CHG Pille add rad2
-180|19 CHG Quad add r CHG Pille ADD Cring β15.4
-181|19 CHG Quad CHG Cring
-182|19 ADD Surface β15.5
-185|19 CHG Kegel Add spitzenwinkel info
-187|19 CHG Cring Add fn2
-188|19 CHG Twins Add 2D
-190|19 CHG Cring 
-194|19 CHG Polar Add mitte
-203|19 CHG Gewinde ADD LinEx2 CHG Stern β15.6
-205|19 CHG Gewinde ADD GewindeV3 chg spiel↦0.2 β15.7
-207|19 CHG Surface Add abs
-209|19 CHG n() chg nozzle
-210|19 CHG Grid β15.8
-211|19 CHG Grid Add element Nr CHG Polar
-212|19 CHG Gewinde Add translate rotate
-219|19 CHG Kassette Add help CHG Surfale Add help ADD helpM β15.9
-222|19 CHG Kassette Add n
-227|19 CHG Bogen Add Child ADD RStern CHG Pivot Add active ADD SCT β16
-228|19 CHG Bogen CHG Rohr CHG RStern
-229|19 CHG Stern rot90 CHG RStern ADD TangentenP
-230|19 CHG Bogen chg green arm CHG RStern β16.1
-236|19 CHG Cring rotate end2
-240|19 ADD ZigZag β16.2
-241|19 ADD module ZigZag,module Kreis
-243|19 CHG Linse CHG Strebe Add grad help β16.4
-244|19 CHG ADD WStrebe β16.5
-245|19 CHG Kehle CHG Servotraeger CHG Servokopf Add Spiel
-247|19 CHG Kehle Add a ax angle CHG Strebe Add center
-248|19 CHG Bogen center rot
-252|19 CHG Rundrum Add shift help CHG Kassette β16.6
-254|19 CHG Quad Add grad, r vector CHG Pivot ADD Caliper β16.7
-256|19 CHG Kehle Add 2D
-258|19 ADD Tri
-259|19 CHG Rundrum CHG Box‼ β16.8
-261|19 CHG Kassette grad2, CHG Rundrum fn ADD RotEx β16.9
-263|19 CHG T CHG Line CHG Col Add rainbow β17.0
-264|19 CHG Line Add 2D  CHG Col Add rainbow2 ADD Color β17.1
-265|19 CHG Bogen Add SBogen β17.2
-266|19 CHG Bogen fix fn FIX SBogen FIX Luer CHG Kegel Add h CHG Tri Chg center β17.3
-267|19 CHG Rand Add delta chamfer
-274|19 CHG SBogen CHG LinEx Add scale2 FIX Prisma CHG Caliperβ17.4
-278|19 FIX Balg
-279|19 FIX Gewinde
-280|19 FIX LinEx CHG Color β17.5
-283|19 ADD REcke
-284|19 CHG Cring
-285|19 ADD WStern ADD WaveEx ADD Superellipse ADD Flower CHG RotLang β17.6
-291|19 CHG Kassette ADD Ccube
-293|19 CHG Polar/Linear/Grid/Col/Color Add $idx CHG RotLang Add lz β17.7
-296|19 ADD RotPoints CHG RotLang 
-299|19 CHG Stern Add help CHG LinEx CHG WStern
-301|19 ADD Seg7 
-302|19 CHG Torus Add End β17.8
-303|19 CHG CHG Superellipse Add $fn CHG Prisma Fix CHG Kassette Add 2D - cleanups β17.9
-305|19 CHG Kassette Add base
-308|19 CHG Superellipse Add Superllipsoid β18
-309|19 CHG t-t3 tset for render
-310|19 CHG LinEx Add $d $r
-313|19 CHG helpM↦$helpM FIX RStern l calc FIX RotEx -grad calc fn
-314|19 CHG Prisma Add list option CHG WStern ADD name Fix LinEx
-315|19 FIX Quad basisX
-316|19 CHG Quad add centerX=-1 trueX β18.1
-319|19 FIX Prisma help
-320|19 ADD PCBcase β18.2
-321|19 CHG PCBcase Chg and Add clip 
-325|19 CHG TRI ADD Tri90
-326|19 CHG Zylinder Add f3
-330|19 CHG Flower CHG LinEx Add Mantelwinkel
-333|19 CHG LinEx rotate
-334|19 CHG Box Add help CHG debug β18.4
-336|19 Fix Pille CHG PCBcase
-342|19 CHG Zylinder Add altFaces
-349|19 ADD Row β18.5
-350|19 ADD new Pille2 
-351|19 CHG Spirale polygon generation
-353|19 CHG Pille Add grad CHG Servokopf
-359|19 CHG Rundrum Fix child help/info
-360|19 ADD Welle
-361|19 ADD Klammer FIX LinEx
-
-
-008|20 ADD Kextrude
-009|20 FIX LinEx scale list info
-013|20 FIX Color $idx
-017|20 CHG Text h=0↦2D 
-018|20 ADD Pin β18.6
-023|20 FIX Bezier messpunkt CHG Pivot add txt/vec
-024|20 CHG Pin add Achse
-026|20 CHG Strebe 
-031|20 CHG Welle add overlap CHG Kehle add spiel vektor
-053|20 CHG Bitaufnahme β18.7
-055|20 CHG Kreis Add d, ADD Wkreis CHG Row β18.8
-056|20 FIX Wkreis calc OD/ID CHG Stern Add center 
-057|20 ADD RSternFill CHG RStern
-058|20 FIX WKreis,RSternFill
-060|20 ADD Cycloid
-062|20 ADD SQ CHG Cycloid Add linear β18.9
-065|20 CHG LinEx Add rotCenter chg name CHG SBogen Add extrude β19.0
-068|20 ADD Vollwelle
-070|20 CHG Quad
-073|20 CHG LinEx slices 
-076|20 CHG diverse name info
-078|20 ADD Anschluss
-080|20 CHG SBogen/Anschluss Add grad2 CHG Vollwelle Add mitte⇒β19.1
-083|20 CHG Pin CHG LinEx
-088|20 CHG SBogen Add info CHG Grid
-101|20 CHG SBogen
-112|20 CHG Prisma Add center
-113|20 CHG Anschluss Add x0 CHG SBogen Add x0 ⇒β19.2
-119|20 ADD Anordnung
-123|20 CHG LinEx add grad vector x/y CHG Kreis CHG Cycloid
-124|20 ADD CyclGetriebe ⇒ β19.3
-131|20 ADD Sekante⇒ β19.31
-132|20 CHG Torus ⇒β19.32
-134|20 CHG Ttorus
-135|20 CHG Achsenklamer Achshöhe CycloidZahn/Getriebe fn
-139|20 CHG Prisma nama
-140|20 ADD Buchtung CHG Kehle Add end β19.34
-148|20 CHG Halbrund Add 2D help CHG Ttorus Add scale β19.35
-155|20 ADD Bevel CHG Kassette name CHG Anordnung CHG Schnitt
-156|20 CHG CycloidZahn/Gear β19.36
-157|20 CHG Bevel Add -z CHG Konus β19.37
-163|20 CHG CyclGetriebe d !preview add rot
-181|20 CHG Anordnen CHG Kugelmantel Add help
-190|20 ADD SRing β19.38
-191|20 CHG Bogen Add Info
-195|20 CHG Linse Add help CHG CyclGetriebe Chg spiel=.075
-209|20 Fix Cring
-211|20 CHG Kreis Add b β19.39
-215|20 CHG Gardena Dichtungsring
-220|20 CHG SBogen Add spiel
-221|20 CHG Pille d<h ⇒rad
-232|20 CHG Sichel Add help β19.4
-236|20 CHG Text Add help
-237|20 CHG Kehle fix end ↦ β19.5
-237|20 CHG Kehle Add fase
-244|20 CHG Quad n⇒name CHG Gewinde kern↦undef↦ β19.51
-254|20 FIX n() for negatives β19.52
-276|20 FIX Rund ir=0 β19.53
-281|20 FIX Kegel name FIX Luer name β19.54
-290|20 CHG Schnitt on=2 β19.55
-317|20 CHG Anschluss Add Wand CHG SBogen Add neg radius warning β19.61
-318|20 CHG REcke Add fn
-321|20 CHG Torus end Add gradEnd β19.63
-322|20 CHG Bezier ex CHG Text Add 2D
-325|20 CHG Text chg center β19.65
-328|20 CHG Gewinde Add center Add endMod ADD gw tw twF constβ19.66
-330|20 FIX Linear chg for s
-338|20 FIX Rand center
-343|20 ADD Nut β19.7
-344|20 FIX Nut β19.72
-346|20 CHG Surface Add exp β19.73
-347|20 CHG Surface Add mult
-349|20 ADD DRing β19.75 CHG Anordnen c=undef CHG Rundrum CHG MKlon Add $idx
-350|20 CHG Caliper Add end=2  β19.76
-351|20 ADD DBogen β19.77 CHG RotEx+funcKreis abs(fn)
-355|20 CHG Linear s⇒$idx
-357|20 CHG Color
-361|20 CHG Anordnen
-
-2021
-
-000|21 CHG Klammer l vector CHG Quad r=undef β19.78
-005|21 CHG Glied FIX LinEx FIX Schnitt β19.79
-007|21 CHG Vollwelle Add h β19.8
-011|21 CHG Vollwelle Add l CHG LinEx Add End ADD inch β19.81
-013|21 CHG Pille chg rad list FIX Kegelmantel FIX LinEx hc=0 CHG Klon Add $idx CHG LinEx end FIX Kassette name β19.82
-016|21 FIX Grid CHG Vollwelle list fn CHG Nut Add grad β19.821
-017|21 FIX CycloidZahn β19.822
-018|21 FIX Pille β19.83
-019|21 FIX SBogen/Bogen
-022|21 ADD gradB CHG Quad warning CHG Text help radius β19.84
-023|21 ADD funct vollwelle CHG Gewinde test vollwelle
-025|21 ADD fonts styles lists CHG Text β19.85
-026|21 CHG Text Add rot fix -h CHG Vollwellen grad list FIX Anschluss r1/2 β19.86
-027|21 CHG Linear  e first CHG Grid e first Add s
-028|21 CHG Vollwelle fix h replaced w. vollwelle() β19.88
-029|21 ADD GewindeV4 CHG Gewinde β19.89
-030|21 CHG GewindeV4 autocalc warning variables ADD useVersion ADD func gradS CHG Ring method FIX Prisma FIX LinEx β19.90
-031|21 CHG Pille Rad2 CHG Sichel Add step CHG DBogen Add spiel CHG Text fn FIX Kegel
-040|21 CHG Kegelmantel CHG Gewinde Add konisch β19.94
-042|21 CHG vollwelle g2 end Fix grad list,CHG GewindeV4 konisch grad2, FIX Caliper help β19.95
-043|21 FIX Bogen n CHG Gewinde Add ISO presets β19.951
-045|21 FIX Quad x=list CHG Drehpunkt Add vector help β19.952
-046|21 CHG Quad r gerunded CHG LinEx max slices Fix Luer β19.953
-051|21 FIX Pille rad2
-055|21 CHG Bogen Add l[] CHG Rundrum x[] β19.955
-056|21 CHG Gewinde
-057|21 FIX Nut console Add Pfeil CHG console colors β19.957
-058|21 FIX Linear e=1/0 β19.958  CHG Anordnen es⇔e es=Sehne
-059|21 CHG Rund Add vector ADD func radiusS
-060|21 ADD func radiusS+grad FIX Quad rundung CHG LinEx warning+h2=0 β19.960
-β21.60
-062|21 CHG Gewinde add tz in preset chg spiel CHG DRing Add center FIX Kehle bool
-063|21 FIX DBogen FIX Gewinde wand
-064|21 FIX Gewinde children old Version CHG DRing Add grad
-068|21 CHG Ring Add Id CHG Torus Add endRot ADD func Inch FIX Kehle end
-069|21 CHG Kehle Add Fillet
-070|21 CHG Kehle Add  dia/Fillet CHG Ring Add grad CHG help CHG Bevel Add messpunkt CHG Anordnen Add rot
-
-078|21 CHG Schnitt center bool CHG Color Add color names CHG Pfeil Add d
-079|21 CHG Gewinde Add gb
-081|21 FIX RStern n
-082|21 ADD Rosette
-083|21 ADD Scale CHG Rosette Add children Del round
-085|21 ADD GT
-087|21 FIX LinEx warning CHG WStrebe grad2 undef
-089|21 FIX LinEx grad list  CHG GT Add fn FIX SRing h
-091|21 ADD Egg ADD HelpTxt ADD InfoTxt CHG GT2 CHG Torus end fn2
-092|21 ADD BB FIX DBogen CHG Egg Add breit CHG Anordnen
-093|21 ADD $fs CHG DBogen CHG Egg ADD func fs2fn
-096|21 CHG BB Add achse center fixes FIX Polar e=0 
-098|21 FIX GewindeV3
-100|21 CHG Strebe Add fn2
-105|21 FIX Infotxt
-108|21 ADD Echo FIX HelpTxt InfoTxt for v[2021] CHG Achsenklammer CHG Ring help
-111|21 CHG Gewinde helptxt Fix SBogen -grad
-118|21 CHG Color Add spread
-119|21 FIX LinEx
-127|21 CHG Zylinder faces
-130|21 CHG Zylinder var
-138|21 ADD HexGrid
-139|21 CHG Zylinder Add center
-142|21 FIX Vollwelle 
-148|21 CHG Text add spacing
-149|21 ADD HypKehle
-151|21 CHG HexGrid es vector ADD PrintBed
-164|21 CHG Text spacing
-166|21 CHG Text not empty CHG vpt printBed/2
-176|21 CHG Pin 
-178|21 CHG Rohr
-181|21 CHG Cring
-194|21 ADD Abzweig FIX Anschluss
-215|21 ADD printPos FIX Abzweig
-216|21 ADD assert Version
-217|21 CHG Zylinder Add lambda
-218|21 CHG Pille Add r CHG Abzweig CHG T Add vector
-224|21 FIX printPos vpt
-235|21 FIX Luer 33.3
-237|21 CHG Zylinder lambda
-245|21 CHG menue layer nozzle var
-260|21 FIX LinEx list $r
-268|21 FIX Gewinde Mantel
-272|21 FIX removed ,, (test with [2021,9]) some formating regarding version
-273|21 FIX formating for v21
-276|21 FIX GewindeV4 faces error grad<360
-277|21 FIX LinEx vector, del Schnitt convexity, cCube
-280|21 FIX Polar 1 with end<360
-281|21 FIX Cring bool
-283|21 FIX Gewinde winkel
-284|21 FIX Kreis ceil(fn) CHG Bevel messpunkt FIX Trapez help
-285|21 FIX Ring rot 90
-286|21 FIX Anordnen;
-287|21 CHG Torus Add endspiel FIX Kreis r=0 b
-288|21 FIX Halb
-289|21 FIX Pille accuracy issue ADD minVal
-290|21 ADD clampToX0 FIX Pille help info FIX Torus grad end
-291|21 ADD KreisSeg
-292|21 FIX Cycloid points, Cyclgetriebe bool center + info CHG Kreis r=0 rand=0
-295|21 FIX HelpTxt,InfoTxt ↦ scad version > 2021
-296|21 CHG Vollwelle/ECHO
-297|21 CHG Gewindev4 calc dn=undef
-298|21 CHG Echo add color characters
-299|21 CHG Gewinde g rot CHG GewindeV4 add g autocalc
-301|21 CHG Tugel Add rand,help fix name,CHG help info DBogen
-305|21 CHG Bezier Add $idx for children ADD vektorWinkel ADD v3
-306|21 CHG Echo Add colors CHG Pfeil CHG Anordnen CHG Halbrund CHG Imprint 
-307|21 CHG helptext changes CHG Glied ADD GT2Pulley FIX Superellipse FIX LinEx2
-208|21 FIX help Diverse 
-309|21 CHG Gewinde Add other FIX Zylinder fix ub CHG SBogen ADD parentList
-310|21 FIX Anschluss
-311|21 FIX Grid ub FIX v3() CHG Bezier CHG parentList CHG SBogen 
-312|21 FIX Strebe
-
-313|21  Reordering modules ADD teiler FIX Help txt ADD MO fix missing obj warnings
-314|21  ADD Example Fix Linear infotxt
-315|21  CHG Anordnen Add center CHG Pfeil  add center add inv CHG Calliper CHG Pivot
-316|21  ADD 3Projection CHG Scale CHG Halb CHG Rand add help
-317|21  CHG WStern help CHG Caliper CHG GT2Pull ADD gcode CHG Tri, Quad, Kreis
-318|21  CHG Tri90, Linse, Pivot, Star, 7Seg, DBogen
-319|21  ADD b() CHG PCBcase
-320|21  CHG view to viewportSize
-321|21  CHG Kehle ADD KBS REN KreisSeg↦TorusSeg
-324|21  ADD scaleGrad CHG RotEx $fa
-325|21 !CHG Kreis rotate 180 for center==true ⇒ CHG Quad ⇒ Egg ⇒ WKreis ⇒ GT ⇒ RSternFill ⇒ Tri CHG LinEx CHG Bezier CHG Ttorus CHG Torus CHG Rundrum CHG Pivot CHG Bogen
-326|21  CHG CyclGetriebe CHG Pivot CHG Kreis CHG Klammer CHG KBS add top
-327|21  CHG HypKehle/HypKehleD ADD Isopshere Add pPos
-3272|21 FIX  Issue  #2
-328|21  CHG $helpM use  CHG HelpTxt CHG Quad CHG Rundrum  CHG n↦name
-3281|21 CHG KBS CHG CHG $info
-3282|21 CHG Quad Add tangent + Fixes
-329|21  CHG Polar Prisma help info CHG Anordnen FIX Bogen(2D) SBogen CHG Kontaktwinkel CHG b(add bool) Add $tab
-330|21  FIX HypKehle ADD VarioFill CHG Color CHG InfoTxt CHG Flower CHG Cycloid FIX DBogen FIX Kegel info/help Kegelmantel
-331|21  CHG Abzweig CHG Kontaktwinkel
-332|21  CHG Linear CHG Surface help Scale 2D
-333|21  ADD easterEgg
-334|21  FIX Bezier FIX Line
-335|21  FIX Strebe FIX Rundrum ADD is_parent( needs2D )CHG VarioFill
-336|21  FIX Vollwelle grad2=90 FIX Strebe assert CHG Nut CHG negRed CHG Quad CHG Tri add c
-337|21  FIX SBogen 2D CHG Anschluss FIX Bogen CHG Bezier CHG gcode CHG Ttorus
-338|21  CHG Color $idxON  CHG Bezier hull=false
-339|21  FIX Ttorus  diverse $tab / $info fixes HypKehle Polar Linear Grid DBogen CHG SBogen
-340|21  ADD m CHG div tab info CHG InfoTxt FIX WaveEx
-341|21  FIX Pfeil d FIX Quad
-346|21  ADD mPoints CHG m add s
-349|21  CHG Bezier
-350|21  ADD function Quad ADD function octa ADD OctaH
-351|21  ADD function Stern CHG Torus End true for children CHG Sichel CHG Spirale
-354|21  CHG HexGrid info FIX Strebe
-355|21  CHG Bogen CHG Pille CHG GewindeV3 help
-356|21  FIX Servokopf FIX Glied CHG HypKehleD CHG TorusSeg
-357|21  CHG Rohr/Bogen  CHG OctaH CHG TorusSeg REN ⇒ RingSeg CHG Gewinde version undef⇒ new FIX V2
-358|21  CHG Box help CHG Gewinde CHG OctaH
-359|21  ADD Points Add Helper help CHG help menu
-360|21  CHG Anordnen
-361|21  CHG Vollwelle CHG fVollwelle Add tMitte  CHG multiple (help) Menu HelpTxt Buchtung KreisSeg
-362|21  CHG RotEx fn CHG Halbrund help
-363|21  CHG func stern quad bezier kreis CHG Kehle help fix end spiel CHG Buchtung help 
-364|21  FIX Ring REP Kreis kreis
-
-2022
-
-000|22 prepare release CHG VarioFill
-001|22 CHG MKlon
-002|22 CHG Line 
-004|22 FIX Gewinde CHG Vollwelle CHG Caliper CHG GewindeV3
-005|22 CHG Gewinde
-006|22 CHG Anschluss FIX Zylinder
-007|22 FIX Ellipse CHG Points ADD PolyH
-008|22 FIX Ttorus CHG PolyH CHG RotLang
-009|22 CHG Points add center CHG kreis add z CHG quad add z
-011|22 FIX Box Prisma FIX Gewinde
-012|22 CHG Rosette Add id od FIX spelling help CHG Anorden (fix for 2021.1)
-0121|22 FIX Anordnen FIX SRing FIX Knochen
-013|22 CHG Rosette autocalc
-015|22 FIX Gewinde
-016|22 CHG RingSeg FIX Kassette help CHG Superellipse
-019|22 CHG Schnitt size
-020|22 CHG KBS CHG Prisma CHG Box CHG Pille
-021|22 CHG Pille FIX m chg v3 chg stern CHG Buchtung CHG Schnitt size
-022|22 CHG Kassette ADD pathPoints CHG kreis ADD Coil ADD wStern CHG vektorWinkel CHG Halb CHG Superellipse CHG Glied ADD SGlied CHG Prisma ADD Tdrop CHG Bezier
-Release
-033|22 CHG DRing CHG DBogen CHG Strebe CHG Ttorus CHG Glied CHG Kreis ADD wall CHG n()
-036|22 ADD star CHG SpiralCut CHG Gewinde CHG Bevel
-037|22 CHG star ADD Star
-038|22 CHG star CHG SpiralCut CHG Anordnen FIX DGlied Glied SGLied
-040|22 FIX SGLied CHG wall
-042|22 FIX CycloidZahn CHG Cycloid CHG Polar FIX star
-044|22 CHG Kegel FIX star
-045|22 CHG CycloidZahn CHG CyclGetriebe add f CHG Cycloid 
-046|22 CHG CyclGetriebe CHG CycloidZahn CHG LinEx CHG REcke
-047|22 FIX CyclGtriebe
-048|22 Add CyclGear FIX Bezier CHG v3 CHG vektorWinkel CHG Points ADD vMult
-050|22 CHG vMult CHG Gewinde
-052|22 CHG Buchtung CHG SpiralCut Add 2D
-054|22 CHG inch CHG Pille ADD Roof
-056|22 CHG PolyH CHG kreis CyclGetriebe CHG gradS CHG LinEx CHG Echo
-058|22 CHG PolyH
-060|22 CHG nametext CHG Egg CHG Stern CHG Star CHG star CHG Roof CHG Linse add fn
-062|22 CHG Pfeil
-064|22 CHG Pfeil CHG Star add fn2 CHG Roof CHG GT
-066|22 ADD naca ADD NACA CHG Roof CHG WStern CHG wall CHG Points
-068|22 FIX Polar CHG Umkreis
-070|22 FIX star ADD pathLength
-072|22 CHG NACA CHG Roof chg LinEx CHG Linse
-074|22 CHG Points
-076|22 CHG Points FIX Cring CHG Text ADD stringChunk
-078|22 CHG Servokopf CHG wall CHG Roof CHG title menue ADD line line() CHG wall chg l() n()
-080|22 CHG Star CHG kreis chg Roof
-082|22 CHG Seg7 Prisma ADD Cut 
-084|22 FIX Seg7 fix Cut
-086|22 FIX Cut CHG Achsenklammer ADD nut FIX stringChunk
-088|22 CHG bezier add p CHG Seg7 CHG wall CHG nut
-090|22 ADD Involute involute
-092|22 CHG gcode 
-094|22 ADD riemen, Riemen
-096|22 CHG Seg7
-098|22 CHG Coil CHG T
-100|22 UPD ZigZag FIX Riemen  
-101|22 reordered  
-102|22 CHG Glied CHG Riemen UPD Welle CHG Nut  
-104|22 CHG Riemen UPD Zylinder CHG Bogen SBogen  
-106|22 ADD kreisSek CHG Points  
-108|22 CHG Pivot FIX/UPD kreisSek  
-110|22 UPD Cut CHG GewindeV4  
-112|22 UPD HexGrid UPD Grid FIX vollwelle  
-114|22 CHG RotEx CHG DGlied0  
-116|22 FIX SGlied,DGlied upd Seg7  
-118|22 ADD vSum CHG Rund CHG CycloidZahn  
-120|22 CHG Roof FIX gradS UPD Coil CHG quad chg pPos  
-130|22 ADD bend ADD sq upd needs2D UPD mPoints UPD m UPD Bezier UPD Coil chg pathPoints  
-132|22 CHG Spirale UPD pathPoints  
-134|22 UPD Rundrum UPD Spirale CHG Row  
-135|22 Doxygen comments  
-137|22 FIX Spirale  
-140|22 FIX Caliper  
-142|22 CHG Quad fn  Add DPfeil FIX Text  
-144|22 ADD scene ADD map  
-146|22 CHG Disphenoid UPD vSum  
-148|22 FIX Prisma UPD LinEx UPD map
-150|22 CHG Torus UPD Ellipse
-152|22 ADD Schlaufe
-156|22 CHG Menu FIX Torus help FIX Torus2 help
-158|22 CHG Pin CHG RStern CHG Schlaufe
-160|22 CHG Schlaufe UPD Ellipse UPD MO
-162|22 UPD Involute
-164|22 UPD Schlaufe
-166|22 FIX Schlaufe
-168|22 ADD PrevPos
-170|22 FIX Torus FIX Rundrum
-172|22 UPD Rund FIX Spirale
-174|22 UPD kreis ADD polyRund PolyRund PolyDeg
-176|22 CHG stern
-178|22 FIX polyRund UPD PolyRund FIX DPfeil
-180|22 ADD revP UPD polyRund PolyRund CHG sq
-181|22 FIX polyRund
-182|22 FIX polyRund FIX PolyRund
-184|22 CHG PolyRund
-185|22 CHG PolyRund
-188|22 UPD map UPD Rand ADD sehne,UPD Roof
-190|22 CHG Quad ADD arc Arc UPD LinEx CHG vMult
-202|22 UPD tangentenP
-204|22 UPD PolyH
-206|22 ADD Knurl
-208|22 CHG Text add trueSize add cy=-1/2
-210|22 CHG Text Fix Knurl
-212|22 upd fold
-214|22 ADD parabel
-216|22 UPD Tdrop UPD Line UPD Rand
-218|22 FIX Schlaufe FIX Knurl
-220|22 FIX Kegel ADD designVersion
-222|22 FIX LinEx FIX Cut UPD M FIX Rand FIX Knurl FIX Text FIX Roof UPD vSum UPD Quad
-230|22 CHG Kreis FIX Cut CHG Pin CHG Roof FIX LinEx FIX Prisma
-232|22 UPD Sehne FIX Roof
-234|22 FIX Prisma FIX Caliper
-236|22 FIX LinEx
-240|22 UPD Polar UPD Roof
-242|22 FIX Anschluss UPD SQ
-250|22 FIX Halb UPD PrevPos
-270|22 ADD KnurlTri
-272|22 UPD Cring FIX DPfeil CHG radiusS ADD distS UPD Ring CHG Torus UPD Drehpunkt
-274|22 FIX LinEx() FIX KnurlTri
-276|22 FIX LinEx() UPD Halb()
-278|22 CHG Points UPD arc ADD LangL UPD line FIX fs2fn CHG Roof Fix Seg7
-280|22 UPD Seg7 UPD name CHG LangL↦Loch
-282|22 UPD Vollwelle UPD Nut
-283|22 UPD nut
-292|22 UPD Echo UPD BB CHG Loch FIX Gardena UPD Pille FIX fs2fn FIX Halb UPD GewindeV1
-294|22 UPD Prisma FIX Linear
-303|22 UPD Roof FIX Loch
-306|22 FIX Pille chg Quad CHG kreis CHG fs
-308|22 UPD Welle CHG PrevPos FIX Prisma CHG RotEx
-310|22 ADD string2num
-312|22 UPD Prisma FIX Roof
-316|22 UPD LinEx2 UPD Text FIX DPfeil FIX LinEx FIX Roof FIX radiusS
-322|22 FIX Kreis FIX map FIX Line UPD Ring UPD kreis FIX Prisma
-333|22 UPD GT2Pulley UPD GT UPD Ring UPD Grid CHG Loch
-336|22 UPD Coil FIX LinEx ADD SWelle
-338|22 Fix Roof UPD InfoTxt Fix LinEx UPD Ring UPD Bezier UPD Arc CHG SWelle
-340|22 CHG VarioFill UPD fs2fn
-342|22 ADD layerProfile FIX Linear FIX Kegelmantel
-344|22 CHG Luer UPD Kegel FIX VarioFill ADD Filter
-352|22 CHG Filter UPD star FIX VarioFill CHG Kegel
-354|22 CHG Anschluss UPD Coil UPD Pin UPD vpr
-356|22 CHG SBogen CHG Anschluss
-358|22 UPD Torus UPD Coil CHG kreis
-360|22 FIX Rund UPD fs2fn UPD Luer
-362|22 FIX fs2fn UPD BB CHG Torus
-364|22 UPD Rand UPD Loch UPD CyclGetriebe
-
-
-
-*/
-
-// */

@@ -25,7 +25,6 @@ filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
 
@@ -54,14 +53,18 @@ horizontal_irregular_subdivisions = false;
 horizontal_separator_config = "10.5|21|42|50|60";
 
 /* [Base] */
-// (Zack's design uses magnet diameter of 6.5) 
-magnet_diameter = 0;  // .1
-//create relief for magnet removal 
-magnet_easy_release  = "auto";//["off","auto","inner","outer"] 
-// (Zack's design uses depth of 6)
-screw_depth = 0;
-center_magnet_diameter =0;
-center_magnet_thickness = 0;
+// Enable magnets
+enable_magnets = true;
+// Enable screws
+enable_screws = true;
+//size of magnet, diameter and height. Zack's original used 6.5 and 2.4
+magnet_size = [6.5, 2.4];  // .1
+//create relief for magnet removal
+magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+//size of screw, diameter and height. Zack's original used 3 and 6
+screw_size = [3, 6]; // .1
+//size of center magnet, diameter and height. 
+center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
@@ -70,13 +73,20 @@ box_corner_attachments_only = true;
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//[off,on,rounded,smooth] 
+efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
-flat_base = false;
+flat_base = "off"; // [off, gridfinity:gridfinity stackable, rounded]
 // Remove floor to create a vertical spacer
 spacer = false;
+//Pads smaller than this will not be rendered as it interferes with the baseplate. Ensure appropriate support is added in slicer.
+minimum_printable_pad_size = 0.2;
+
+// Adjust the radius of the rounded flat base. -1 uses the corner radius.
+flat_base_rounded_radius = -1;
+// Add chamfer to the rounded bottom corner to make easier to print. -1 add auto 45deg.
+flat_base_rounded_easyPrint = -1;
 
 /* [Label] */
 label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
@@ -84,7 +94,7 @@ label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel ba
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
-// Size in mm of relief where appropiate. Width, depth, height, radius
+// Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 label_walls=[0,1,0,0];  //[0:1:1]
@@ -98,6 +108,7 @@ sliding_min_wallThickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
 sliding_min_support = 0;//0.1
 sliding_clearance = 0.1;//0.1
+sliding_lid_lip_enabled = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -106,6 +117,8 @@ fingerslide = "none"; //[none, rounded, chamfered]
 fingerslide_radius = 8;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 fingerslide_walls=[1,0,0,0];  //[0:1:1]
+//Align the fingerslide with the lip
+fingerslide_lip_aligned=true; 
 
 /* [Tapered Corner] */
 tapered_corner = "none"; //[none, rounded, chamfered]
@@ -117,7 +130,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid]
+wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -127,11 +140,34 @@ wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
 //Size of the hole
-wallpattern_hole_size = 5; //0.1
+wallpattern_hole_size = [5,5]; //0.1
+//Radius of corners
+wallpattern_hole_radius = 0.5;
 // pattern fill mode
 wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-wallpattern_voronoi_noise = 0.75;
-wallpattern_voronoi_radius = 0.5;
+//voronoi: noise, brick: center weight, grid: taper
+wallpattern_pattern_variable = 0.75;
+//$fs for floor pattern, min size face.
+wallpattern_pattern_quality = 0.4;//0.1:0.1:2
+
+/* [Floor Pattern] */
+// enable Grid floor patter
+floorpattern_enabled=false;
+// Style of the pattern
+floorpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+// Spacing between pattern
+floorpattern_hole_spacing = 2; //0.1
+//Number of sides of the hole op
+floorpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
+//Size of the hole
+floorpattern_hole_size = [5,5]; //0.1
+floorpattern_hole_radius = 0.5;
+// pattern fill mode
+floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+//voronoi: noise, brick: center weight, grid: taper
+floorpattern_pattern_variable = 0.75;
+//$fs for floor pattern, min size face.
+floorpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [Wall Cutout] */
 wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
@@ -162,21 +198,62 @@ extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 extension_tab_size= [10,0,0,0];
 
+/* [Bottom Text] */
+// Add bin size to bin bottom
+text_1 = false;
+// Font Size of text, in mm (0 will auto size)
+text_size = 0; // 0.1
+// Depth of text, in mm
+text_depth = 0.3; // 0.01
+// Font to use
+text_font = "Aldo";  // [Aldo, B612, "Open Sans", Ubuntu]
+// Add free-form text line to bin bottom (printing date, serial, etc)
+text_2 = false;
+// Actual text to add
+text_2_text = "Gridfinity Extended";
+
 /* [debug] */
 //Slice along the x axis
 cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
 // enable loging of help messages during render.
-enable_help = false;
+enable_help = "disabled"; //[info,debug,trace]
+
+/* [Model detail] */
+//assign colours to the bin, will may 
+set_colour = "enable"; //[disabled, enable, preview, lip]
+//where to render the model
+render_position = "center"; //[default,center,zero]
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+$fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+$fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+$fn = 0;  
+// set random seed for 
+random_seed = 0; //0.0001
+// force render on costly components
+force_render = true;
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
 
+SetGridfinityEnvironment(
+  width = width,
+  depth = depth,
+  height = height,
+  render_position = render_position,
+  help = enable_help,
+  cutx = cutx,
+  cuty = cuty,
+  cutz = calcDimensionHeight(height, true),
+  setColour = set_colour,
+  randomSeed = random_seed,
+  force_render = force_render)
 gridfinity_cup(
   width=width, depth=depth, height=height,
-  position=position,
   filled_in=filled_in,
   label_settings=LabelSettings(
     labelStyle=label_style, 
@@ -187,16 +264,24 @@ gridfinity_cup(
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
   fingerslide_walls=fingerslide_walls,
-  magnet_diameter=magnet_diameter,
-  magnet_easy_release=magnet_easy_release,
-  screw_depth=screw_depth,
-  center_magnet_diameter=center_magnet_diameter,
-  center_magnet_thickness=center_magnet_thickness,
-  floor_thickness=floor_thickness,
-  cavity_floor_radius=cavity_floor_radius,
+  fingerslide_lip_aligned=fingerslide_lip_aligned,
+  cupBase_settings = CupBaseSettings(
+    magnetSize = enable_magnets?magnet_size:[0,0],
+    magnetEasyRelease = magnet_easy_release, 
+    centerMagnetSize = center_magnet_size, 
+    screwSize = enable_screws?screw_size:[0,0],
+    holeOverhangRemedy = hole_overhang_remedy, 
+    cornerAttachmentsOnly = box_corner_attachments_only,
+    floorThickness = floor_thickness,
+    cavityFloorRadius = cavity_floor_radius,
+    efficientFloor=efficient_floor,
+    halfPitch=half_pitch,
+    flatBase=flat_base,
+    spacer=spacer,
+    minimumPrintablePadSize=minimum_printable_pad_size,
+    flatBaseRoundedRadius = flat_base_rounded_radius,
+    flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
   wall_thickness=wall_thickness,
-  hole_overhang_remedy=hole_overhang_remedy,
-  efficient_floor=efficient_floor,
   chamber_wall_thickness=chamber_wall_thickness,
   chamber_wall_zClearance=chamber_wall_zClearance,
   vertical_chambers = vertical_chambers,
@@ -213,25 +298,35 @@ gridfinity_cup(
   horizontal_separator_cut_depth=horizontal_separator_cut_depth,
   horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
   horizontal_separator_config=horizontal_separator_config, 
-  half_pitch=half_pitch,
   lip_style=lip_style,
   zClearance=zClearance,
-  box_corner_attachments_only=box_corner_attachments_only,
-  flat_base = flat_base,
-  spacer=spacer,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
-  wallpattern_enabled=wallpattern_enabled,
-  wallpattern_style=wallpattern_style,
   wallpattern_walls=wallpattern_walls, 
   wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-  wallpattern_hole_sides=wallpattern_hole_sides,
-  wallpattern_hole_size=wallpattern_hole_size, 
-  wallpattern_hole_spacing=wallpattern_hole_spacing,
-  wallpattern_fill=wallpattern_fill,
-  wallpattern_voronoi_noise=wallpattern_voronoi_noise,
-  wallpattern_voronoi_radius = wallpattern_voronoi_radius,
+  wall_pattern_settings = PatternSettings(
+    patternEnabled = wallpattern_enabled, 
+    patternStyle = wallpattern_style, 
+    patternFill = wallpattern_fill,
+    patternBorder = wallpattern_hole_spacing, 
+    patternHoleSize = wallpattern_hole_size, 
+    patternHoleSides = wallpattern_hole_sides,
+    patternHoleSpacing = wallpattern_hole_spacing, 
+    patternHoleRadius = wallpattern_hole_radius,
+    patternVariable = wallpattern_pattern_variable,
+    patternFs = wallpattern_pattern_quality), 
+  floor_pattern_settings = PatternSettings(
+    patternEnabled = floorpattern_enabled, 
+    patternStyle = floorpattern_style, 
+    patternFill = floorpattern_fill,
+    patternBorder = floorpattern_hole_spacing, 
+    patternHoleSize = floorpattern_hole_size, 
+    patternHoleSides = floorpattern_hole_sides,
+    patternHoleSpacing = floorpattern_hole_spacing, 
+    patternHoleRadius = floorpattern_hole_radius,
+    patternVariable = floorpattern_pattern_variable,
+    patternFs = floorpattern_pattern_quality), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,
   wallcutout_vertical_width=wallcutout_vertical_width,
@@ -256,6 +351,11 @@ gridfinity_cup(
   sliding_min_wall_thickness = sliding_min_wallThickness, 
   sliding_min_support = sliding_min_support, 
   sliding_clearance = sliding_clearance,
-  cutx=cutx,
-  cuty=cuty,
-  help = enable_help);
+  sliding_lid_lip_enabled=sliding_lid_lip_enabled,
+  cupBaseTextSettings = CupBaseTextSettings(
+    baseTextLine1Enabled = text_1,
+    baseTextLine2Enabled = text_2,
+    baseTextLine2Value = text_2_text,
+    baseTextFontSize = text_size,
+    baseTextFont = text_font,
+    baseTextDepth = text_depth));

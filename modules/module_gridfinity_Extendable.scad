@@ -70,6 +70,6 @@ function ValidateExtendableSettings(settings, num_x, num_y) =
     cuty = !is_undef(num_y) ? unitPositionTo_mm(settings.y[iExtendablePosition],num_y) : num_y,
   ) [
       [xetendableEnabled, settings[iExtendablex][iExtendablePosition], cutx],
-      [yetendableEnabled, settings[iExtendablex][iExtendablePosition], cuty],
+      [yetendableEnabled, settings[iExtendabley][iExtendablePosition], cuty],
       settings[iExtendableTabsEnabled],
       settings[iExtendableTabSize]];

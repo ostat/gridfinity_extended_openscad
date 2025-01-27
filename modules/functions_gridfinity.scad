@@ -13,7 +13,7 @@ function calcDimension(value, name, unitSize, shouldLog) =
     roundedCalcUnits = roundtoDecimal(calcUnits,4))
     (shouldLog ? echo(str("🟩",name,": ", calcUnits, "gf (",calcUnits*unitSize,"mm)"), input=value, roundedCalcUnits=roundedCalcUnits) roundedCalcUnits: roundedCalcUnits);
           
-function calcualteCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
+function calculateCavityFloorRadius(cavity_floor_radius, wall_thickness, efficientFloor) = let(
   q = 1.65 - wall_thickness + 0.95 // default 1.65 corresponds to wall thickness of 0.95
   //efficient floor has an effective radius of 0
 ) efficientFloor != "off" ? 0 
@@ -34,33 +34,40 @@ function calculateWallTop(num_z, lip_style) =
   gf_zpitch * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
   
 //Height to clear the voids in the base
-function cupBaseClearanceHeight(magnet_diameter, screw_depth, flat_base=false) = let (
-    mag_ht = magnet_diameter > 0 ? gf_magnet_thickness : 0)
-    flat_base 
-      ? max(mag_ht, screw_depth) 
-      : max(mag_ht, screw_depth, gfBaseHeight());
+function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base="off") = 
+    flat_base == FlatBase_rounded ? max(magnet_depth, screw_depth) 
+      : flat_base == FlatBase_gridfinity ? max(3.5, magnet_depth, screw_depth) //3.5 clears the side stacking indents
+      : max(magnet_depth, screw_depth, gfBaseHeight());
 
-function calculateMinFloorHeight(magnet_diameter,screw_depth) = 
-    cupBaseClearanceHeight(magnet_diameter,screw_depth) + gf_cup_floor_thickness;
-function calculateMagnetPosition(magnet_diameter) = min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
+function calculateMinFloorHeight(magnet_depth,screw_depth) = 
+    cupBaseClearanceHeight(magnet_depth,screw_depth) + gf_cup_floor_thickness;
+function calculateMagnetPosition(magnet_diameter) = 
+  magnet_diameter == 0 
+    ? 0
+    : min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base=false) = 
+function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base="off") = 
       assert(is_num(floor_thickness), "floor_thickness must be a number")
-      assert(is_num(magnet_diameter), "magnet_diameter must be a number")
+      assert(is_num(magnet_depth), "magnet_depth must be a number")
       assert(is_num(screw_depth), "screw_depth must be a number")
-      assert(is_bool(flat_base), "flat_base must be a bool")
+      assert(is_string(flat_base), "flat_base must be a string")
       let(
         filledin = validateFilledIn(filledin),
         floorThickness = max(floor_thickness, gf_cup_floor_thickness))
   filledin != FilledIn_disabled ? num_z * gf_zpitch 
     : efficient_floor != "off" 
       ? floorThickness
-      : max(3.5, cupBaseClearanceHeight(magnet_diameter,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
+      : max(0, cupBaseClearanceHeight(magnet_depth,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
     
-//Usable floor depth (florr height - min floor)
-function calculateFloorThickness(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) = 
-  calculateFloorHeight(magnet_diameter, screw_depth, floor_thickness, num_z, filledin) - cupBaseClearanceHeight(magnet_diameter, screw_depth);
+//Usable floor depth (floor height - min floor)
+function calculateFloorThickness(magnet_depth, screw_depth, floor_thickness, num_z, filledin) = 
+let(
+    cfh = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z, filledin),
+    cbch = cupBaseClearanceHeight(magnet_depth, screw_depth))
+  IsHelpEnabled("info") ? 
+  echo("calculateFloorThickness", cfh=cfh, cbch=cbch,num_z=num_z,magnet_depth=magnet_depth,screw_depth=screw_depth,floor_thickness=floor_thickness,filledin=filledin) cfh - cbch :
+  cfh - cbch;
     
 // calculate the position of separators from the size
 function splitChamber(num_separators, num_x) = num_separators < 1 
@@ -71,7 +78,8 @@ function LookupKnownShapes(name="round") =
   name == "square" ? 4 :
   name == "hex" ? 6 : 64;
   
-function cupPosition(position, num_x, num_y) = 
+function cupPosition(position, num_x, num_y) = gridfinityRenderPosition(position, num_x, num_y);
+function gridfinityRenderPosition(position, num_x, num_y) = 
     position == "center" ? [-(num_x)*gf_pitch/2, -(num_y)*gf_pitch/2, 0] 
     : position == "zero" ? [0, 0, 0] 
     : [-gf_pitch/2, -gf_pitch/2, 0]; 
@@ -85,12 +93,13 @@ function wallThickness(wall_thickness, num_z) = wall_thickness != 0 ? wall_thick
 /* Data types */
 function list_contains(list,value,index=0) = 
   assert(is_list(list), "list must be a list")
-  assert(index >= 0 && index < len(list), str("index is invalid len '" , len(list) , "' index '", index, "'"))
+  assert(index >= 0 && index < len(list), str("List does not contain value '", value, "'index is invalid len '" , len(list) , "' index '", index, "' List:", list))
   list[index] == value 
     ? true 
     : index <= len(list)  ? list_contains(list,value,index+1)
     : false;
 function typeerror(type, value) = str("invalid value for type '" , type , "'; value '" , value ,"'");
+function typeerror_list(name, list, expectedLength) = str(name, " must be a list of length ", expectedLength, ", length:", is_list(list) ? len(list) : "not a list");
 
 FilledIn_disabled = "disabled";
 FilledIn_enabled = "enabled";
@@ -100,15 +109,6 @@ function validateFilledIn(value) =
   //Convert boolean to list value
   let(value = is_bool(value) ? value ? FilledIn_enabled : FilledIn_disabled : value)
   assert(list_contains(FilledIn_values, value), typeerror("FilledIn", value))
-  value;
-
-EfficientFloor_off = "off";
-EfficientFloor_on = "on";
-EfficientFloor_rounded = "rounded";
-EfficientFloor_smooth = "smooth";
-EfficientFloor_values = [EfficientFloor_off,EfficientFloor_on,EfficientFloor_rounded,EfficientFloor_smooth];
-function validateEfficientFloor(value) = 
-  assert(list_contains(EfficientFloor_values, value), typeerror("EfficientFloor", value))
   value;
 
 LipStyle_normal = "normal";
@@ -128,18 +128,4 @@ Stackable_values = [Stackable_enabled,Stackable_disabled,Stackable_filllip];
   //Convert boolean to list value
   let(value = is_bool(value) ? value ? Stackable_enabled : Stackable_disabled : value) 
   assert(list_contains(Stackable_values, value), typeerror("Stackable", value))
-  value;
- 
-MagnetEasyRelease_off = "off";
-MagnetEasyRelease_auto = "auto";
-MagnetEasyRelease_inner = "inner"; 
-MagnetEasyRelease_outer = "outer"; 
-MagnetEasyRelease_values = [MagnetEasyRelease_off, MagnetEasyRelease_auto, MagnetEasyRelease_inner, MagnetEasyRelease_outer];
-  function validateMagnetEasyRelease(value, efficientFloorValue) = 
-  //Convert boolean to list value
-  let(value = is_bool(value) ? value ? MagnetEasyRelease_auto : MagnetEasyRelease_off : value,
-      autoValue = value == MagnetEasyRelease_auto 
-        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer 
-        : value) 
-  assert(list_contains(MagnetEasyRelease_values, autoValue), typeerror("MagnetEasyRelease", autoValue))
-  autoValue;
+  value;  
