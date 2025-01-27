@@ -1,5 +1,5 @@
-@set OPENSCAD="C:\Program Files\OpenSCAD\openscad.exe"
-@set PYTHON="C:\Users\Vector\Anaconda3\python.exe"
+@set OPENSCAD="C:\Program Files\OpenSCAD (Nightly)\openscad.exe"
+@set PYTHON="C:\Python312\python.exe"
 
 %OPENSCAD% gridfinity_basic_cup.scad -D width=2 -D depth=1 -D height=2 -D chambers=1 -D fingerslide=true -o Renders/basic_cup_2x1x2.stl --export-format binstl
 %PYTHON% canonicalize.py Renders/basic_cup_2x1x2.stl
