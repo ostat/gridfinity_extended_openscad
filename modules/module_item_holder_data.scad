@@ -5,11 +5,11 @@ idepthneeded = 3;
 iitemHeight = 4;
 ishape = 5;
 
-function LookupKnownShapes(name="round", default = 64) = 
+function LookupKnownShapes(name="round", default_sides=64) = 
   name == "square" || name == "halfround" || name == "multicard" ? 4 :
   name == "hex" ? 6 : 
   name == "round" ? 64 :
-  default;
+  default_sides;
   
 // result is dimensions for commonly know items
 //[diameter, x, y, z, item height, shape]

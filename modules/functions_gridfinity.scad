@@ -73,10 +73,6 @@ let(
 function splitChamber(num_separators, num_x) = num_separators < 1 
       ? [] 
       : [ for (i=[1:num_separators]) i*(num_x/(num_separators+1))*gf_pitch];
-
-function LookupKnownShapes(name="round") = 
-  name == "square" ? 4 :
-  name == "hex" ? 6 : 64;
   
 function cupPosition(position, num_x, num_y) = gridfinityRenderPosition(position, num_x, num_y);
 function gridfinityRenderPosition(position, num_x, num_y) = 
