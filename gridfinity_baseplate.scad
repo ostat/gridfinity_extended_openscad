@@ -87,11 +87,11 @@ xpos7 = [0,0,0,0,0,0,0];
 
 /* [Model detail] */
 // minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-$fa = 6; 
+fa = 6; 
 // minimum size of a fragment.  Low is more fragments
-$fs = 0.1; 
+fs = 0.1; 
 // number of fragments, overrides $fa and $fs
-$fn = 0;  
+fn = 0;  
 
 /* [debug] */
 Render_Position = "center"; //[default,center,zero]
@@ -104,7 +104,12 @@ enable_help = false;
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
-   
+
+//Some online generators do not like direct setting of fa,fs,fn
+$fa = fa; 
+$fs = fs; 
+$fn = fn;   
+
 function split_dimention(gf_size, gf_outer_size, plate_size, position_fill_grid, position_grid_in_outer, average_plate_sizes = false) =
   assert(is_num(gf_size), "gf_size must be a number")
   assert(is_num(gf_outer_size), "gf_outer_size must be a number")

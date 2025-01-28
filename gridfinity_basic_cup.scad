@@ -226,11 +226,11 @@ set_colour = "enable"; //[disabled, enable, preview, lip]
 //where to render the model
 render_position = "center"; //[default,center,zero]
 // minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-$fa = 6; 
+fa = 6; 
 // minimum size of a fragment.  Low is more fragments
-$fs = 0.1; 
+fs = 0.4; 
 // number of fragments, overrides $fa and $fs
-$fn = 0;  
+fn = 0;  
 // set random seed for 
 random_seed = 0; //0.0001
 // force render on costly components
@@ -239,6 +239,11 @@ force_render = true;
 /* [Hidden] */
 module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
+
+//Some online generators do not like direct setting of fa,fs,fn
+$fa = fa; 
+$fs = fs; 
+$fn = fn;  
 
 SetGridfinityEnvironment(
   width = width,
