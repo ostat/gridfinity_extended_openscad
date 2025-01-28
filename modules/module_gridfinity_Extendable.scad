@@ -67,7 +67,7 @@ function ValidateExtendableSettings(settings, num_x, num_y) =
     xetendableEnabled = validateBinExtensionEnabled(settings[iExtendablex][iExtendableEnabled]),
     yetendableEnabled = validateBinExtensionEnabled(settings[iExtendabley][iExtendableEnabled]),
     cutx = !is_undef(num_x) ? unitPositionTo_mm(settings.x[iExtendablePosition],num_x) : num_x,
-    cuty = !is_undef(num_y) ? unitPositionTo_mm(settings.y[iExtendablePosition],num_y) : num_y,
+    cuty = !is_undef(num_y) ? unitPositionTo_mm(settings.y[iExtendablePosition],num_y) : num_y
   ) [
       [xetendableEnabled, settings[iExtendablex][iExtendablePosition], cutx],
       [yetendableEnabled, settings[iExtendabley][iExtendablePosition], cuty],

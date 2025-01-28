@@ -59,7 +59,7 @@ function calculateLabelSize(label_size) =
     assert(is_list(label_size), "label_size must be a list")
     let(
       labelxtemp = is_num(label_size) ? label_size : is_list(label_size) && len(label_size) >= 1 ? label_size.x : 0,
-      labelx = labelxtemp <=0 ? 0 : labelxtemp,
+      labelx = labelxtemp <= 0 ? 0 : labelxtemp,
       labelytemp = is_list(label_size) && len(label_size) >= 2 ? label_size.y : 0,
       labely = labelytemp <= 0 ? 14 : labelytemp,
       labelztemp = is_list(label_size) && len(label_size) >= 3 ? label_size.z : 0,
