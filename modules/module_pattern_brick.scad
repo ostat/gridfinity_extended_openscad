@@ -1,10 +1,13 @@
+include <functions_general.scad>
+include <module_utility.scad>
+
 module brick_pattern(
   canvis_size=[31,31],
   thickness = 1,
   spacing = 1,
   border = 0,
-  cell_size = [5,5],
-  corner_radius = 1,
+  cell_size = [15,5],
+  corner_radius = 3,
   center_weight = 3,
   offset_layers = false,
   center = true,
@@ -52,7 +55,13 @@ module brick_pattern(
         size = [bricks[ix], h, thickness];
         if(size.x > min(cell_size.x,cell_size.y)*0.5 && size.y > min(cell_size.x,cell_size.y)*0.5)
           translate([pos,0])
-          roundedCube(size = size, sideRadius = corner_radius);
+          roundedCube(
+            size = size, 
+            sideRadius = corner_radius,
+            supportReduction_x = [0,1]
+            //supportReduction_y = [0,0],
+            //supportReduction_z = [0,0]
+            );
       }
     }
   }

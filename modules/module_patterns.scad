@@ -63,7 +63,7 @@ function PatternSettings(
       patternStyle,
       patternFill,
       patternBorder,
-      patternHoleSize,
+      is_num(patternHoleSize) ? [patternHoleSize, patternHoleSize] : patternHoleSize,
       patternHoleSides,
       patternHoleSpacing,
       patternHoleRadius,
