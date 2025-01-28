@@ -309,7 +309,7 @@ module gridfinity_cup(
     baseTextLine2Value = default_text_2_text,
     baseTextFontSize = default_text_size,
     baseTextFont = default_text_font,
-    baseTextDepth = default_text_depth), 
+    baseTextDepth = default_text_depth)
 ) {
   
   num_x = calcDimensionWidth(width, true);
@@ -665,8 +665,7 @@ module gridfinity_cup(
                             patternVariable=wall_pattern_settings[iPatternVariable],
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
                             source="wall_pattern",
-                            patternFs = wall_pattern_settings[iPatternFs],
-                            help=help);
+                            patternFs = wall_pattern_settings[iPatternFs]);
                             
                         if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
                           position_separators(

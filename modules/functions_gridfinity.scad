@@ -1,3 +1,5 @@
+include <module_gridfinity_cup_base.scad>
+
 // set this to produce sharp corners on baseplates and bins
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;

@@ -8,9 +8,7 @@ iAllowConnectorsBack = 1;
 iAllowConnectorsLeft = 2;
 iAllowConnectorsRight = 3;
 
-$fn=64;
-
-show_demo = true;
+show_demo = false;
 if(show_demo){
   translate([0,0,0]) {
     ClippedWall(fullIntersection = true);

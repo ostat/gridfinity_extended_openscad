@@ -337,7 +337,7 @@ function multiCardCalculations(
       shortCenterItem = addClearance(LookupKnown(mc[1]), holeClearance),
       sideItem = addClearance(LookupKnown(mc[2]), holeClearance),
       multiCardCompact = multiCardCompact > 0 ? sideItem[iitemx] * (1 - min(multiCardCompact/2 + 0.5 ,1)) : 0,
-      _sides = LookupKnownShapes("multicard"),
+      _sides = LookupKnownShapes(name="multicard"),
       _holeSize = [
         max(longCenterItem[iitemx],shortCenterItem[iitemx]), 
         max(longCenterItem[iitemy], shortCenterItem[iitemy], sideItem[iitemx] - multiCardCompact), 
@@ -355,7 +355,7 @@ function itemCalculations(
   holeDepth,
   holeClearance
   ) = let(
-    _sides = LookupKnownShapes(item[ishape], sides),
+    _sides = LookupKnownShapes(name=item[ishape], default_sides=sides),
     _depthTemp = holeDepth > 0 ? holeDepth : item[idepthneeded],
     _depth = _depthTemp <= 0 ? 5 : _depthTemp,
     _holeSize = 
