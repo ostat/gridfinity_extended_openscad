@@ -154,6 +154,8 @@ module SetGridfinityEnvironment(
   $num_y = num_y; 
   $num_z = num_z; 
 
+  echo("🟩SetGridfinityEnvironment", fs=$fs, fa=$fa, fn=$fn);
+
   //Position the object
   translate(gridfinityRenderPosition(render_position,num_x,num_y))
   union(){
