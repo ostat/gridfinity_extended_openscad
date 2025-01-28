@@ -1,4 +1,4 @@
-include <ub.scad>
+include <thridparty/ub_sbogen.scad>
 include <module_utility_wallcutout.scad>
 
 module bentWall(
@@ -91,7 +91,7 @@ module roundedCube(
   //Support reduction should move in to roundedCylinder
   function auto_support_reduction(supportReduction, radius) = 
     supportReduction == -1 ? radius/2 : supportReduction;
-    
+
   supportReduction_z = 
     let(srz_temp = is_num(supportReduction_z) ? [supportReduction_z,supportReduction_z] : supportReduction_z,
         srz = [auto_support_reduction(srz_temp[0], bottomRadius), auto_support_reduction(srz_temp[1], topRadius)]) 

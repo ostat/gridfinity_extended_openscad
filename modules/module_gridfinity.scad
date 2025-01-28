@@ -1,3 +1,4 @@
+include <thridparty/ub_helptxt.scad>
 include <module_utility.scad>
 include <functions_general.scad>
 include <gridfinity_constants.scad>
