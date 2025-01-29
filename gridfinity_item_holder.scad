@@ -289,13 +289,13 @@ module mycustomshape(){
   //item spacing 4
   translate([4,0,0])
   union(){
-    chamferedSquare(size=[9.9,25.3,30], chamfer = 1, cornerRadius = 1);
+    chamfered_cube(size=[9.9,25.3,30], chamfer = 1, cornerRadius = 1);
     translate([-2.1,7.55,0])
-    chamferedSquare(size=[3,10,30], chamfer = 1, cornerRadius = 1);
+    chamfered_cube(size=[3,10,30], chamfer = 1, cornerRadius = 1);
   }
   
   //You can use any shapes but these are some example shapes
-  //chamferedSquare(size=[10,10,10], chamfer = 1, cornerRadius = 1);
+  //chamfered_cube(size=[10,10,10], chamfer = 1, cornerRadius = 1);
   //chamferedRectangleTop(size=[10,10,10], chamfer = 1, cornerRadius = 1);
   //chamferedHalfCylinder(h=10, r=5, circleFn=64, chamfer=0.5);
   //chamferedCylinder(h=10, r=5, circleFn=64, chamfer=0.5);
@@ -459,7 +459,7 @@ module itemholder(
                 chamfer = holeChamfer,
                 alternate = _multiCardCompact > 0 && (($idx.y % 2) != $idx.x % 2));
             } else if(item[ishape] == "square") {
-              chamferedSquare(
+              chamfered_cube(
                 size = [_holeSize.x, _holeSize.y, _depth+fudgeFactor], 
                 chamfer=holeChamfer, 
                 cornerRadius=item[iitemDiameter]/2);
@@ -564,7 +564,7 @@ module samplesholder(
       translate([-_holeSize.x/2-wallThickness,-_holeSize.y/2-wallThickness,-wallThickness-fudgeFactor])
         cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
       translate([-_holeSize.x/2,-_holeSize.y/2,0])
-        chamferedSquare([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer, cornerRadius=item[iitemDiameter]/2);
+        chamfered_cube([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer, cornerRadius=item[iitemDiameter]/2);
     }
   } else if(item[ishape] == "halfround") {
     difference(){

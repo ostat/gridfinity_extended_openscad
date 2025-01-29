@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_sieve.scad'. Generated 2025-01-29 03:51
+//Combined version of 'gridfinity_sieve.scad'. Generated 2025-01-29 22:28
 ///////////////////////////////////////
 
 /*<!!start gridfinity_sieve!!>*/
@@ -1920,14 +1920,25 @@ module cutout_pattern(
 //CombinedEnd from path module_patterns.scad
 //Combined from path module_item_holder.scad
 
-//GridItemHolder(fill="space", center=true, rotateGrid = true);
-//translate([0,50,0])
-//GridItemHolder(fill="space", center=true, rotateGrid = false);
+griditemholder_demo = false;
 
-//translate([100,0,0])
-//GridItemHolder(fill="space", hexGrid=false, rotateGrid = true);
-//translate([100,50,0])
-//GridItemHolder(fill="space", hexGrid=false, rotateGrid = false);
+if(griditemholder_demo)
+{
+  GridItemHolder(fill="space", center=true, rotateGrid = true);
+  
+  translate([0,50,0])
+  GridItemHolder(fill="space", center=true, rotateGrid = false);
+
+  translate([100,0,0])
+  GridItemHolder(fill="space", hexGrid=false, rotateGrid = true);
+  
+  translate([100,50,0])
+  GridItemHolder(fill="space", hexGrid=false, rotateGrid = false);
+  
+  translate([0,0,20])
+  chamfered_cube(size = [13,20,10], chamfer = 1, cornerRadius = 0);
+}
+
 module GridItemHolder(
   canvasSize = [100,50],
   hexGrid = true, //false, true, "auto"
@@ -2149,36 +2160,36 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
     translate([(longCenter[iitemx])/2,side[iitemx]/2,0])
     union(){
     translate([-(longCenter[iitemx])/2,-longCenter[iitemy]/2,0])
-    chamferedSquare([longCenter[iitemx], longCenter[iitemy], longCenter[idepthneeded]+fudgeFactor], chamfer);
+    chamfered_cube([longCenter[iitemx], longCenter[iitemy], longCenter[idepthneeded]+fudgeFactor], chamfer);
     
     translate([-smallCenter[iitemx]/2,-smallCenter[iitemy]/2,(longCenter[idepthneeded]-smallCenter[idepthneeded])])
-    chamferedSquare([smallCenter[iitemx], smallCenter[iitemy], smallCenter[idepthneeded]+fudgeFactor], chamfer);
+    chamfered_cube([smallCenter[iitemx], smallCenter[iitemy], smallCenter[idepthneeded]+fudgeFactor], chamfer);
 
     if(alternate){
       pos = let(targetPos = (longCenter[iitemx])/4-(side[iitemy])/2) max(targetPos, smallCenter[iitemy]+minspacing);
       translate([-pos-side[iitemy]/2, 0, 0])
         rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
       translate([+pos+side[iitemy]/2, 0, 0])
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
     } else {
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
       translate([-(longCenter[iitemx])/2+(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
         
       translate([(longCenter[iitemx])/2-(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       }
     }
   }
@@ -2190,7 +2201,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
 //depth = depth of slot
 //height = height of slot
 //chamfer = chamfer size
-module chamferedSquare(size, chamfer = 1, cornerRadius = 0)
+module chamfered_cube(size, chamfer = 1, cornerRadius = 0)
 {
   assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
 
@@ -2495,6 +2506,13 @@ else HelpTxt("Help",["titel",titel,"string",string,"help",help],help=1);
 }
 //CombinedEnd from path ub_helptxt.scad
 //Combined from path ub_common.scad
+// works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
+
+/** \mainpage
+ * ##Open SCAD library www.openscad.org 
+ * **Author:** ulrich.baer+UBscad@gmail.com (mail me if you need help - i am happy to assist)
+*/
+
 useVersion=undef;
 
 co=[
@@ -6107,28 +6125,33 @@ module EfficientFloor(
 }
 //CombinedEnd from path module_gridfinity_efficient_floor.scad
 //Combined from path module_rounded_negative_champher.scad
-eps = 0.01;
+champher_demo = false;
 
+if(champher_demo)
+{
+  rotate([90,0,0])
+  chamferedSquare(size=50, radius = 0, $fn=64);
 
-/*
-roundedNegativeChampher(
-  champherRadius = 10, 
-  size=[400,200], 
-  cornerRadius = 20);
-  
-translate([0,0,60])
-roundedNegativeChampher(
-  champherRadius = 20, 
-  size=[200,100], 
-  cornerRadius = 10,
-  champher = false);
-translate([0,0,30])
-roundedNegativeChampher(
-  champherRadius = 10, 
-  size=[100,50], 
-  cornerRadius = 5,
-  height = 20);
-*/
+  translate([0,0,30])
+  roundedNegativeChampher(
+    champherRadius = 10, 
+    size=[400,200], 
+    cornerRadius = 20, $fn=64);
+    
+  translate([0,0,60])
+  roundedNegativeChampher(
+    champherRadius = 20, 
+    size=[200,100], 
+    cornerRadius = 10,
+    champher = false, $fn=64);
+    
+  translate([0,0,90])
+  roundedNegativeChampher(
+    champherRadius = 10, 
+    size=[100,50], 
+    cornerRadius = 5,
+    height = 20, $fn=64);
+}
 
 module roundedNegativeChampher(
   champherRadius = 10, 
@@ -6137,57 +6160,58 @@ module roundedNegativeChampher(
   height = 0,
   champher = false)
 {
+  eps = 0.01;
 
-height = height <= champherRadius ? champherRadius : height;
-postions = [
-  [[0,0,0],
-    size.y-cornerRadius*2,
-    [size.x/2+champherRadius,size.y/2-cornerRadius,0],
-    [size.x/2-cornerRadius,size.y/2-cornerRadius,0]],
-  [[90,0,0],
-    size.x-cornerRadius*2,
-    [size.y/2+champherRadius,size.x/2-cornerRadius,0],
-    [-size.x/2+cornerRadius,-size.y/2+cornerRadius,0]],
-  [[180,0,0],
-    size.y-cornerRadius*2,
-    [size.x/2+champherRadius,size.y/2-cornerRadius,0],
-    [size.x/2-cornerRadius,-size.y/2+cornerRadius,0]],
-  [[270,0,0],
-    size.x-cornerRadius*2,
-    [size.y/2+champherRadius,size.x/2-cornerRadius,0],
-    [-size.x/2+cornerRadius,size.y/2-cornerRadius,0]]
-  ];
+  height = height <= champherRadius ? champherRadius : height;
+  postions = [
+    [[0,0,0],
+      size.y-cornerRadius*2,
+      [size.x/2+champherRadius,size.y/2-cornerRadius,0],
+      [size.x/2-cornerRadius,size.y/2-cornerRadius,0]],
+    [[90,0,0],
+      size.x-cornerRadius*2,
+      [size.y/2+champherRadius,size.x/2-cornerRadius,0],
+      [-size.x/2+cornerRadius,-size.y/2+cornerRadius,0]],
+    [[180,0,0],
+      size.y-cornerRadius*2,
+      [size.x/2+champherRadius,size.y/2-cornerRadius,0],
+      [size.x/2-cornerRadius,-size.y/2+cornerRadius,0]],
+    [[270,0,0],
+      size.x-cornerRadius*2,
+      [size.y/2+champherRadius,size.x/2-cornerRadius,0],
+      [-size.x/2+cornerRadius,size.y/2-cornerRadius,0]]
+    ];
 
-difference(){
-  hull(){
-    for (pos = postions){  
-      translate(pos[3])
-        cylinder(r=(cornerRadius+champherRadius), h=height);
+  difference(){
+    hull(){
+      for (pos = postions){  
+        translate(pos[3])
+          cylinder(r=(cornerRadius+champherRadius), h=height);
+      }
     }
-  }
 
-  union(){  
-    for (pos = postions){  
-      rotate(pos[0][0])
-      translate(pos[2])
-      union(){
-        translate([-cornerRadius-champherRadius, 0]) 
-        rotate_extrude(angle=90, convexity=cornerRadius)
-          translate([cornerRadius+champherRadius, 0]) 
-          if(champher){
-              chamferedSquare(champherRadius*2);
-          } else {
-            circle(champherRadius);
-           }
-           
-      translate([0, eps, 0]) 
-         rotate([90, 0, 0]) 
+    union(){  
+      for (pos = postions){  
+        rotate(pos[0][0])
+        translate(pos[2])
+        union(){
+          translate([-cornerRadius-champherRadius, 0]) 
+          rotate_extrude(angle=90, convexity=cornerRadius)
+            translate([cornerRadius+champherRadius, 0]) 
             if(champher){
-            linear_extrude(height=pos[1]+eps*2)
-              chamferedSquare(champherRadius*2);
-          } else {
+                chamferedSquare(champherRadius*2);
+            } else {
+              circle(champherRadius);
+            }
+             
+          translate([0, eps, 0]) 
+           rotate([90, 0, 0]) 
+            if(champher){
+              linear_extrude(height=pos[1]+eps*2)
+                chamferedSquare(champherRadius*2);
+            } else {
               cylinder(r=champherRadius, h=pos[1]+eps*2);
-           }
+            }
         }    
       }
     }

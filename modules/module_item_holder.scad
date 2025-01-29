@@ -1,14 +1,25 @@
 include <thridparty/ub_hexgrid.scad>
 include <functions_general.scad>
 
-//GridItemHolder(fill="space", center=true, rotateGrid = true);
-//translate([0,50,0])
-//GridItemHolder(fill="space", center=true, rotateGrid = false);
+griditemholder_demo = false;
 
-//translate([100,0,0])
-//GridItemHolder(fill="space", hexGrid=false, rotateGrid = true);
-//translate([100,50,0])
-//GridItemHolder(fill="space", hexGrid=false, rotateGrid = false);
+if(griditemholder_demo)
+{
+  GridItemHolder(fill="space", center=true, rotateGrid = true);
+  
+  translate([0,50,0])
+  GridItemHolder(fill="space", center=true, rotateGrid = false);
+
+  translate([100,0,0])
+  GridItemHolder(fill="space", hexGrid=false, rotateGrid = true);
+  
+  translate([100,50,0])
+  GridItemHolder(fill="space", hexGrid=false, rotateGrid = false);
+  
+  translate([0,0,20])
+  chamfered_cube(size = [13,20,10], chamfer = 1, cornerRadius = 0);
+}
+
 module GridItemHolder(
   canvasSize = [100,50],
   hexGrid = true, //false, true, "auto"
@@ -230,36 +241,36 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
     translate([(longCenter[iitemx])/2,side[iitemx]/2,0])
     union(){
     translate([-(longCenter[iitemx])/2,-longCenter[iitemy]/2,0])
-    chamferedSquare([longCenter[iitemx], longCenter[iitemy], longCenter[idepthneeded]+fudgeFactor], chamfer);
+    chamfered_cube([longCenter[iitemx], longCenter[iitemy], longCenter[idepthneeded]+fudgeFactor], chamfer);
     
     translate([-smallCenter[iitemx]/2,-smallCenter[iitemy]/2,(longCenter[idepthneeded]-smallCenter[idepthneeded])])
-    chamferedSquare([smallCenter[iitemx], smallCenter[iitemy], smallCenter[idepthneeded]+fudgeFactor], chamfer);
+    chamfered_cube([smallCenter[iitemx], smallCenter[iitemy], smallCenter[idepthneeded]+fudgeFactor], chamfer);
 
     if(alternate){
       pos = let(targetPos = (longCenter[iitemx])/4-(side[iitemy])/2) max(targetPos, smallCenter[iitemy]+minspacing);
       translate([-pos-side[iitemy]/2, 0, 0])
         rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
       translate([+pos+side[iitemy]/2, 0, 0])
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
     } else {
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
       translate([-(longCenter[iitemx])/2+(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
         
       translate([(longCenter[iitemx])/2-(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       }
     }
   }
@@ -271,7 +282,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
 //depth = depth of slot
 //height = height of slot
 //chamfer = chamfer size
-module chamferedSquare(size, chamfer = 1, cornerRadius = 0)
+module chamfered_cube(size, chamfer = 1, cornerRadius = 0)
 {
   assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
 

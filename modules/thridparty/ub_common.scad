@@ -1,3 +1,10 @@
+// works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
+
+/** \mainpage
+ * ##Open SCAD library www.openscad.org 
+ * **Author:** ulrich.baer+UBscad@gmail.com (mail me if you need help - i am happy to assist)
+*/
+
 useVersion=undef;
 
 co=[
