@@ -363,4 +363,6 @@ gridfinity_cup(
     baseTextLine2Value = text_2_text,
     baseTextFontSize = text_size,
     baseTextFont = text_font,
-    baseTextDepth = text_depth));
+    baseTextDepth = text_depth
+  )
+);
