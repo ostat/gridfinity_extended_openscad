@@ -163,7 +163,7 @@ module baseplate(
   connectorButterflyTolerance = Default_Connector_Butterfly_Tolerance,
   connectorFilamentEnabled = Default_Connector_Filament_Enabled,
   connectorFilamentDiameter = Default_Connector_Filament_Diameter,
-  connectorFilamentLength = connectorFilamentLength)
+  connectorFilamentLength = Default_Connector_Filament_Length)
 {
   assert_openscad_version();
   
