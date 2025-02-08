@@ -298,8 +298,9 @@ module labelSockets(
     }
     else if(label_style == LabelStyle_cullenect){
       extraHeightToCleanLip = 0.5;
+      cullenect_relief_x = label_num_x - 5.7;
       labelSize=[
-        label_relief.x == 0 ? 36.3 : label_relief.x,
+        label_relief.x == 0 ? cullenect_relief_x : label_relief.x,
         label_relief.y == 0 ? 11.3 : label_relief.y,
         (label_relief.z == 0 ? 1.5 : label_relief.z)+extraHeightToCleanLip];
       labelLeftPosition = CalculateLabelSocketPosition(

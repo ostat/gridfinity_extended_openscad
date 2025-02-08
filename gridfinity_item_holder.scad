@@ -834,7 +834,16 @@ module gridfinity_itemholder(
         sliding_min_wall_thickness = sliding_min_wallThickness, 
         sliding_min_support = sliding_min_support, 
         sliding_clearance = sliding_clearance,
-        sliding_lid_lip_enabled=sliding_lid_lip_enabled);
+        sliding_lid_lip_enabled=sliding_lid_lip_enabled,
+        cupBaseTextSettings = CupBaseTextSettings(
+          baseTextLine1Enabled = text_1,
+          baseTextLine2Enabled = text_2,
+          baseTextLine2Value = text_2_text,
+          baseTextFontSize = text_size,
+          baseTextFont = text_font,
+          baseTextDepth = text_depth
+        )
+      );
       /*<!!end gridfinity_basic_cup!!>*/
 
       itemholder_z_bottom = max(
