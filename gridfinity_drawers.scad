@@ -116,8 +116,6 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;   
 
-/* [Hidden] */
-module end_of_customizer_opts() {}
 colour_drawer = "Teal";
 colour_drawer_pull = "CadetBlue";
 colour_chest = "Maroon";
