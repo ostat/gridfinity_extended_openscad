@@ -59,7 +59,7 @@ module EfficientFloorAttachmentCaps(
   assert(is_list(grid_copy_corner_index) && len(grid_copy_corner_index) >= 3, "grid_copy_corner_index must be a list of length > 3");
   
   fudgeFactor = 0.01; 
-  magnetPosition = calculateMagnetPosition(magnet_size[iCylinderDimension_Diameter]);
+  magnetPosition = calculateAttachmentPosition(magnet_size[iCylinderDimension_Diameter], screw_size[iCylinderDimension_Diameter]);
   blockSize = gf_pitch/2-magnetPosition+wall_thickness;
     
   //$gcci=[trans,xi,yi,xx,yy];

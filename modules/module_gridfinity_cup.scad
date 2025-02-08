@@ -787,7 +787,7 @@ module gridfinity_cup(
     }
 
     // add text to the bottom
-    _magnet_position = calculateMagnetPosition(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter]);
+    _magnet_position = calculateAttachmentPosition(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter], cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter]);
     if(IsHelpEnabled("trace")) echo("cup_base_text", _magnet_position=_magnet_position, iCupBase_MagnetSize=cupBase_settings[iCupBase_MagnetSize]);
     cup_base_text(
       cupBaseTextSettings = cupBaseTextSettings, 
@@ -1159,7 +1159,7 @@ module basic_cavity(num_x, num_y, num_z,
     }
 
     if (cupBase_settings[iCupBase_EfficientFloor] != "off") {
-      magnetPosition = calculateMagnetPosition(magnet_diameter);
+      magnetPosition = calculateAttachmentPosition(magnet_diameter, cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter]);
       magnetCoverHeight = max(
         cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
         cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height]);

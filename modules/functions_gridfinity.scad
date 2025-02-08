@@ -43,10 +43,12 @@ function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base="off") =
 
 function calculateMinFloorHeight(magnet_depth,screw_depth) = 
     cupBaseClearanceHeight(magnet_depth,screw_depth) + gf_cup_floor_thickness;
-function calculateMagnetPosition(magnet_diameter) = 
-  magnet_diameter == 0 
+    
+function calculateAttachmentPosition(magnet_diameter, screw_diameter) = 
+  let(attachment_diameter = max(magnet_diameter, screw_diameter))
+  attachment_diameter == 0 
     ? 0
-    : min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
+    : min(gf_pitch/2-8, gf_pitch/2-4-attachment_diameter/2);
 
 //Height of base including the floor.
 function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base="off") = 
