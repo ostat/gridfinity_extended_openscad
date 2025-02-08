@@ -69,6 +69,10 @@ horizontal_irregular_subdivisions = false;
 horizontal_separator_config = "10.5|21|42|50|60";
       
 /* [Base] */
+// Enable magnets
+enable_magnets = true;
+// Enable screws
+enable_screws = true;
 //size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
@@ -226,10 +230,10 @@ SetGridfinityEnvironment(
       fingerslide=fingerslide,
       fingerslide_radius=fingerslide_radius,
       cupBase_settings = CupBaseSettings(
-        magnetSize = magnet_size, 
+        magnetSize = enable_magnets ? magnet_size : [0,0], 
         magnetEasyRelease = magnet_easy_release, 
         centerMagnetSize = center_magnet_size, 
-        screwSize = screw_size, 
+        screwSize = enable_screws ? screw_size : [0,0], 
         holeOverhangRemedy = hole_overhang_remedy, 
         cornerAttachmentsOnly = box_corner_attachments_only,
         floorThickness = floor_thickness,

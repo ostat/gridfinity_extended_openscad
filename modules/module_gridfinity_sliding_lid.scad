@@ -64,6 +64,7 @@ module SlidingLid(
   {
     union(){
       if(addLiptoLid)
+      color(getColour(color_topcavity, isLip = true))
       difference(){
         translate([0,0,lidThickness-fudgeFactor*3])
         cupLip(
