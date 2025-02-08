@@ -25,6 +25,8 @@ filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 wall_thickness = 0;  // .01
 // Remove some or all of lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+//At what x and y size should we enable side lip reduction
+lip_side_relief_trigger = [1,1]; //0.1
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
 
@@ -244,7 +246,6 @@ module end_of_customizer_opts() {}
 $fa = fa; 
 $fs = fs; 
 $fn = fn;  
-
 SetGridfinityEnvironment(
   width = width,
   depth = depth,
@@ -304,6 +305,7 @@ gridfinity_cup(
   horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
   horizontal_separator_config=horizontal_separator_config, 
   lip_style=lip_style,
+  lip_side_relief_trigger=lip_side_relief_trigger,
   zClearance=zClearance,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,

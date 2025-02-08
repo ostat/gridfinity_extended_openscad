@@ -24,6 +24,8 @@ default_position = "default"; //["default","center","zero"]
 default_filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Might want to remove inner lip of cup
 default_lip_style = "normal"; //[normal, reduced, minimum, none]
+//At what x and y size should we enable side lip reduction
+default_lip_side_relief_trigger = [1,1];
 //assign colours to the bin, will may 
 default_set_colour = "preview"; //[disabled, preview, lip]
 
@@ -251,6 +253,7 @@ module gridfinity_cup(
   horizontal_irregular_subdivisions = default_horizontal_irregular_subdivisions,
   horizontal_separator_config = default_horizontal_separator_config,
   lip_style=default_lip_style,
+  lip_side_relief_trigger=default_lip_side_relief_trigger,
   zClearance=default_zClearance,
   tapered_corner = default_tapered_corner,
   tapered_corner_size = default_tapered_corner_size,
@@ -403,7 +406,8 @@ module gridfinity_cup(
           chamber_wall_zClearance=chamber_wall_zClearance,
           calculated_vertical_separator_positions = calculated_vertical_separator_positions,
           calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
-          lip_style=lip_style, 
+          lip_style=lip_style,
+          lip_side_relief_trigger=lip_side_relief_trigger,
           zClearance=zClearance,
           sliding_lid_settings= slidingLidSettings);
       
@@ -944,7 +948,9 @@ module partitioned_cavity(num_x, num_y, num_z,
     chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_zClearance=default_chamber_wall_zClearance,
     calculated_vertical_separator_positions=calculated_vertical_separator_positions,
     calculated_horizontal_separator_positions=calculated_horizontal_separator_positions,
-    lip_style=default_lip_style, zClearance=default_zClearance, 
+    lip_style=default_lip_style, 
+    lip_side_relief_trigger=default_lip_side_relief_trigger,
+    zClearance=default_zClearance, 
     sliding_lid_settings=[]) {
   
   //Legacy variables
@@ -965,9 +971,12 @@ module partitioned_cavity(num_x, num_y, num_z,
   difference() {
     color(getColour(color_cupcavity))
     basic_cavity(num_x, num_y, num_z,
-    fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_lip_aligned=fingerslide_lip_aligned, fingerslide_radius=fingerslide_radius, cupBase_settings=cupBase_settings,
+      fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_lip_aligned=fingerslide_lip_aligned, fingerslide_radius=fingerslide_radius, 
+      cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
-      lip_style=lip_style, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
+      lip_style=lip_style, 
+      lip_side_relief_trigger=lip_side_relief_trigger,
+      sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
     
     if(IsHelpEnabled("trace")) echo("partitioned_cavity", vertical_separator_positions=calculated_vertical_separator_positions);
@@ -1003,6 +1012,7 @@ module basic_cavity(num_x, num_y, num_z,
     fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,fingerslide_lip_aligned=default_fingerslide_lip_aligned,
     wall_thickness=default_wall_thickness,
     lip_style=default_lip_style,
+    lip_side_relief_trigger=[1,1],
     cupBase_settings=[],
     sliding_lid_settings = [],
     zClearance = 0) {
@@ -1186,19 +1196,18 @@ module basic_cavity(num_x, num_y, num_z,
     
     //Sliding lid rebate.
     if(sliding_lid_settings[iSlidingLidEnabled])
-        tz(zpoint)
-        SlidingLidCavity(
-          num_x = num_x,
-          num_y = num_y,
-          wall_thickness = wall_thickness,
-          sliding_lid_settings = sliding_lid_settings,
-          aboveLidHeight = aboveLidHeight);
-
+      tz(zpoint)
+      SlidingLidCavity(
+        num_x = num_x,
+        num_y = num_y,
+        wall_thickness = wall_thickness,
+        sliding_lid_settings = sliding_lid_settings,
+        aboveLidHeight = aboveLidHeight);
   }}
   
   // cut away side lips if num_x is less than 1
   if(IsHelpEnabled("trace")) echo(str("cutaway input:", num_x, " rounded:", roundtoDecimal(num_x, sigFigs = 2), " numx<1:", num_x < 1," round<1:", roundtoDecimal(num_x, sigFigs = 2)<1, " numx=round:", num_x==roundtoDecimal(num_x, sigFigs = 2)));
-  if (roundtoDecimal(num_x,2) < 1) {
+  if (roundtoDecimal(num_x,2) < lip_side_relief_trigger.x) {
     top = num_z*gf_zpitch+gf_Lip_Height;
     height = top-lipBottomZ+fudgeFactor*2;
     
@@ -1210,6 +1219,18 @@ module basic_cavity(num_x, num_y, num_z,
     }
   }
 
+  if (roundtoDecimal(num_y,2) < lip_side_relief_trigger.y) {
+    top = num_z*gf_zpitch+gf_Lip_Height;
+    height = top-lipBottomZ+fudgeFactor*2;
+    
+    hull()
+    for (y=[1.5+0.25+wall_thickness, num_y*gf_pitch-1.5-0.25-wall_thickness]){
+      for (x=[11, (num_x)*gf_pitch-seventeen])
+      translate([x, y, top-height])
+      cylinder(d=3, h=height);
+    }
+  }
+  
   if (nofloor) {
     tz(-fudgeFactor)
       hull()
