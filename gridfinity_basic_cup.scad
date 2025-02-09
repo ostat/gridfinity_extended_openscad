@@ -35,12 +35,12 @@ chamber_wall_thickness = 1.2;
 //Reduce the wall height by this amount
 chamber_wall_zClearance = 0;//0.1
 // X dimension subdivisions
-vertical_chambers = 1; 
+vertical_chambers = 1;
 vertical_separator_bend_position = 0;
 vertical_separator_bend_angle = 0;
 vertical_separator_bend_separation = 0;
 vertical_separator_cut_depth=0;
-horizontal_chambers = 1; 
+horizontal_chambers = 1;
 horizontal_separator_bend_position = 0;
 horizontal_separator_bend_angle = 0;
 horizontal_separator_bend_separation = 0;
@@ -115,12 +115,12 @@ sliding_lid_lip_enabled = false;
 /* [Finger Slide] */
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
-// Radius of the corner fillet
+// Radius of the corner fillet, 0:none, >1: radius in mm, <0 dimention/abs(n) (i.e. -3 is 1/3 the width)
 fingerslide_radius = 8;
-// wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
-fingerslide_walls=[1,0,0,0];  //[0:1:1]
+// wall to enable on, front, back, left, right. 0: disabled; 1: enabled using radius; >1: override radius.
+fingerslide_walls=[1,0,0,0];
 //Align the fingerslide with the lip
-fingerslide_lip_aligned=true; 
+fingerslide_lip_aligned=true;
 
 /* [Tapered Corner] */
 tapered_corner = "none"; //[none, rounded, chamfered]
@@ -223,7 +223,7 @@ cuty = 0; //0.1
 enable_help = "disabled"; //[info,debug,trace]
 
 /* [Model detail] */
-//assign colours to the bin, will may 
+//assign colours to the bin
 set_colour = "enable"; //[disabled, enable, preview, lip]
 //where to render the model
 render_position = "center"; //[default,center,zero]
@@ -246,6 +246,7 @@ module end_of_customizer_opts() {}
 $fa = fa; 
 $fs = fs; 
 $fn = fn;  
+
 SetGridfinityEnvironment(
   width = width,
   depth = depth,
@@ -365,6 +366,4 @@ gridfinity_cup(
     baseTextLine2Value = text_2_text,
     baseTextFontSize = text_size,
     baseTextFont = text_font,
-    baseTextDepth = text_depth
-  )
-);
+    baseTextDepth = text_depth));

@@ -1273,34 +1273,56 @@ module FingerSlide(
     //Position
     [0, 0, 0],
     //rotation
-    [0,0,0]];
+    [0,0,0],
+    //cup width for finger slide (opposide dimention)
+    num_y*gf_pitch,
+    //cup height
+    num_z*gf_zpitch];
   back = [
     //width
     num_x*gf_pitch,
     //Position
     [num_x*gf_pitch, num_y*gf_pitch, 0],
     //rotation
-    [0,0,180]];
+    [0,0,180],
+    //cup width for finger slide (opposide dimention)
+    num_y*gf_pitch,
+    //cup height
+    num_z*gf_zpitch];
   left = [
     //width
     num_y*gf_pitch,
     //Position
     [0, num_y*gf_pitch, 0],
     //rotation
-    [0,0,270]];
+    [0,0,270],
+    //cup width for finger slide (opposide dimention)
+    num_x*gf_pitch,
+    //cup height
+    num_z*gf_zpitch];
   right = [
     //width
     num_y*gf_pitch,
     //Position
     [num_x*gf_pitch, 0, 0],
     //rotation
-    [0,0,90]];
+    [0,0,90],
+    //cup width for finger slide (opposide dimention)
+    num_x*gf_pitch,
+    //cup height
+    num_z*gf_zpitch];
     
   locations = [front, back, left, right];
-
+  function get_fingerslide_radius(wall, cup_size, cup_height, fingerslide_radius) = 
+  let(radius_start = wall == 1 ? fingerslide_radius : wall,
+      calculated_radius = radius_start < 0 ? cup_size/abs(radius_start) : radius_start,
+      limited_radius = min(calculated_radius,cup_height,cup_size/2))
+    echo("get_fingerslide_radius", is_ratio=(wall < 0),result=limited_radius, wall=wall, cup_size=cup_size, cup_height=cup_height, fingerslide_radius=fingerslide_radius)
+    limited_radius;
+      
   for(i = [0:1:len(locations)-1])
     union()
-      if(fingerslide_walls[i] > 0)
+      if(fingerslide_walls[i] != 0)
         //patterns in the outer walls
         translate(locations[i][1])
         rotate(locations[i][2])                  
@@ -1312,13 +1334,13 @@ module FingerSlide(
       union(){
         if(fingerslide == "rounded"){
           roundedCorner(
-            radius = fingerslide_radius, 
+            radius = get_fingerslide_radius(fingerslide_walls[i], locations[i][3], locations[i][4], fingerslide_radius), 
             length=locations[i][0], 
             height = gf_zpitch*num_z-floorht+fudgeFactor);
         }
         else if(fingerslide == "chamfered"){
           chamferedCorner(
-            chamferLength = fingerslide_radius, 
+            chamferLength = get_fingerslide_radius(fingerslide_walls[i], locations[i][3], locations[i][4], fingerslide_radius), 
             length=locations[i][0],
             height = gf_zpitch*num_z-floorht+fudgeFactor);
       }
