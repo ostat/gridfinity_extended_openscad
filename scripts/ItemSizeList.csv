@@ -73,14 +73,14 @@ tool,1/4hexshank,hex,6.35,0,0,15,8,1/4 Hex Shank,
 tool,1/4hexshanklong,hex,6.35,0,0,40,15,1/4 Hex Long Shank,
 tool,5/16hexshank,hex,7.94,0,0,0,7,5/16 Hex Shank,
 tool,3/8hexshank,hex,9.52,0,0,0,10,3/8 Hex Shank,
-tool,1/2shank,round,12.7,0,0,20,20,1/2 inch router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
-tool,12shank,round,12,0,0,20,20,12mm router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
-tool,10shank,round,10,0,0,20,15,10mm router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
-tool,3/8shank,round,9.525,0,20,15,20,3/8 inch router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
-tool,8shank,round,8,0,0,15,15,8mm router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
-tool,1/4shank,round,6.35,0,0,20,10,1/4 inch router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
-tool,6shank,round,6,0,0,10,10,6mm router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
-tool,1/8shank,round,3.2,0,0,10,10,1/8 inch Dremel router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
+tool,1/2shank,round,12.7,0,0,50,20,1/2 inch router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
+tool,12shank,round,12,0,0,50,20,12mm router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
+tool,10shank,round,10,0,0,50,20,10mm router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
+tool,3/8shank,round,9.525,0,0,50,20,3/8 inch router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
+tool,8shank,round,8,0,0,50,20,8mm router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
+tool,1/4shank,round,6.35,0,0,50,20,1/4 inch router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
+tool,6shank,round,6,0,0,40,15,6mm router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
+tool,1/8shank,round,3.2,0,0,40,15,1/8 inch Dremel router bit, https://en.wikipedia.org/wiki/Router_(woodworking)
 card,multicard,square,0,0,0,0,0,Multi card slot,
 card,compactflashi,square,0,43,3.3,36,9,"CompactFlash, Type I",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
 card,compactflashii,square,0,43,5,36,9,"CompactFlash, Type II",https://en.wikipedia.org/wiki/Comparison_of_memory_cards
