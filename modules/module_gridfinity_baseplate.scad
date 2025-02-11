@@ -91,7 +91,7 @@ module gridfinity_baseplate(
           {
             if(_gridPositions[xi][yi])
             {
-              translate([gf_pitch*xi,gf_pitch*yi,0])
+              translate([env_pitch().x*xi,env_pitch().y*yi,0])
               baseplate(
                 width = customGridEnabled ? 1 : width,
                 depth = customGridEnabled ? 1 : depth,
@@ -128,7 +128,7 @@ module gridfinity_baseplate(
           }
         }
         if(oversizeMethod == "crop")
-          cube([num_x*gf_pitch, num_y*gf_pitch,20]);
+          cube([num_x*env_pitch().x, num_y*env_pitch().y,20]);
     }
 }
 

@@ -12,7 +12,7 @@ module cupLip(
       
   floorht=0;
   
-  seventeen = gf_pitch/2-4;
+  seventeen = [env_pitch().x/2-4, env_pitch().y/2-4];
   innerLipRadius = gf_cup_corner_radius-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
   innerWallRadius = gf_cup_corner_radius-wall_thickness;
   
@@ -22,8 +22,8 @@ module cupLip(
   q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
   lipHeight = 3.75;
   
-  outer_size = gf_pitch - gf_tolerance;  // typically 41.5
-  block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
+  outer_size = [env_pitch().x - gf_tolerance, env_pitch().y - gf_tolerance];  // typically 41.5
+  block_corner_position = [outer_size.x/2 - gf_cup_corner_radius, outer_size.y/2 - gf_cup_corner_radius];  // need not match center of pad corners
  
   coloredLipHeight=min(2,lipHeight);
 

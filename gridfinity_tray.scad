@@ -235,10 +235,10 @@ module tray(
   if(len(customCompartments) == 0)
   {
     //Non custom components
-    if(env_help_enabled("trace")) echo(n=num_x*gf_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
-    xSize = (num_x*gf_pitch-(verticalCompartments+1)*spacing)/verticalCompartments;
+    if(env_help_enabled("trace")) echo(n=num_x*env_pitch().x-(verticalCompartments+1)*spacing,d=verticalCompartments);
+    xSize = (num_x*env_pitch().x-(verticalCompartments+1)*spacing)/verticalCompartments;
     xStep = xSize + spacing;
-    ySize = (num_y*gf_pitch-(horizontalCompartments+1)*spacing)/horizontalCompartments;
+    ySize = (num_y*env_pitch().y-(horizontalCompartments+1)*spacing)/horizontalCompartments;
     yStep = ySize + spacing;
     
     for(x =[0:1:verticalCompartments-1])
@@ -249,7 +249,7 @@ module tray(
         translate([spacing+x*xStep,spacing+y*yStep,baseHeight+max(trayZpos,floorThickness)])
         roundedCube(
             xSize, ySize,
-            num_z*gf_zpitch,
+            num_z*env_pitch().z,
             bottomRadius = cornerRadius,
             sideRadius = cornerRadius);
       }
@@ -262,8 +262,8 @@ module tray(
     compartments = split(customCompartments, "|");
     
     scl = [
-      (num_x*gf_pitch-cellSpacing*2)/(num_x*gf_pitch),
-      (num_y*gf_pitch-cellSpacing*2)/(num_y*gf_pitch),1];
+      (num_x*env_pitch().x-cellSpacing*2)/(num_x*env_pitch().x),
+      (num_y*env_pitch().y-cellSpacing*2)/(num_y*env_pitch().y),1];
     translate([cellSpacing,cellSpacing,0])
     scale(scl)
     union()
@@ -277,12 +277,12 @@ module tray(
           radius = len(comp) >= 5 ? comp[iCornerRadius] : cornerRadius;
           depth = baseHeight+(len(comp) >= 6 ? comp[iDepth] : max(trayZpos,floorThickness));
         
-          translate([cellSpacing+xpos*gf_pitch,cellSpacing+ypos*gf_pitch,depth])
+          translate([cellSpacing+xpos*env_pitch().x,cellSpacing+ypos*env_pitch().y,depth])
           roundedCube(
-              xsize*gf_pitch-cellSpacing*2,
-              ysize*gf_pitch-cellSpacing*2,
+              xsize*env_pitch().x-cellSpacing*2,
+              ysize*env_pitch().y-cellSpacing*2,
               //Added 5, as I need to deal with the lip overhang
-              num_z*gf_zpitch-depth+fudgeFactor+5,
+              num_z*env_pitch().z-depth+fudgeFactor+5,
               bottomRadius = radius,
               sideRadius = radius);
     }

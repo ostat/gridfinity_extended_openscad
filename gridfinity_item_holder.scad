@@ -424,9 +424,9 @@ module itemholder(
   _multiCardCompact = itemCalc[icMcCompact];
   _depth = min(itemCalc[icHoleSize].z, floorThickness);
   
-  xSize = (num_x*gf_pitch-(compartments.x+1)*compartment_spacing)/compartments.x;
+  xSize = (num_x*env_pitch().x-(compartments.x+1)*compartment_spacing)/compartments.x;
   xStep = xSize + compartment_spacing;
-  ySize = (num_y*gf_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
+  ySize = (num_y*env_pitch().y-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
   yStep = ySize + compartment_spacing;
   
   if(env_help_enabled("info")) echo("itemholder", item=item, multiCards=multiCards,longCenter=itemCalc[icMcLongCenterItem],smallCenter=itemCalc[icMcShortCenterItem],side=itemCalc[icMcSideItem], _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
@@ -738,8 +738,8 @@ module gridfinity_itemholder(
   //calculate the bin height. This math is not right
   height = !itemholder_auto_bin_height || calculatedItemDepth <=0 ? num_z
       : filled_in != "disabled"
-        ? (minFloorHeight + calculatedItemDepth)/gf_zpitch
-        : ceil((minFloorHeight + calculatedItemDepth)/gf_zpitch);
+        ? (minFloorHeight + calculatedItemDepth)/env_pitch().z
+        : ceil((minFloorHeight + calculatedItemDepth)/env_pitch().z);
   // calculate floor thickness
   calculatedFloorThickness = calculateFloorThickness(magnet_depth, screw_depth, calculatedItemDepth + gf_cup_floor_thickness, height, filled_in);  
 

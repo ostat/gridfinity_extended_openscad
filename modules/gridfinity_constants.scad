@@ -69,8 +69,7 @@ function gfBasePlateHeight() = gf_baseplate_lower_taper_height + gf_baseplate_ri
 /*
 gridfinity_lip_height = gf_Lip_Height; 
 gridfinity_corner_radius = gf_cup_corner_radius ; 
-gridfinity_pitch = gf_pitch; 
-gridfinity_zpitch = gf_zpitch;
+gridfinity_zpitch = env_pitch().z;
 gridfinity_clearance = gf_tolerance; 
 minFloorThickness = gf_cup_floor_thickness;  
 const_magnet_height = gf_magnet_thickness;

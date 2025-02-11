@@ -136,9 +136,9 @@ module gridfinity_label(
   
   frontWall = [
     //width
-    num_x*gf_pitch,
+    num_x*env_pitch().x,
     //Position
-    [num_x*gf_pitch, 0, 0],
+    [num_x*env_pitch().x, 0, 0],
     //rotation
     [0,0,180],
     vertical_separator_positions,
@@ -147,9 +147,9 @@ module gridfinity_label(
     "front"];
   backWall = [
     //width
-    num_x*gf_pitch,
+    num_x*env_pitch().x,
     //Position
-    [0, num_y*gf_pitch, 0],
+    [0, num_y*env_pitch().y, 0],
     //rotation
     [0,0,0],
     vertical_separator_positions,
@@ -158,7 +158,7 @@ module gridfinity_label(
     "back"];
   leftWall = [
     //width
-    num_y*gf_pitch,
+    num_y*env_pitch().y,
     //Position
     [0, 0, 0],
     //rotation
@@ -169,9 +169,9 @@ module gridfinity_label(
     "left"];
   rightWall = [
     //width
-    num_y*gf_pitch,
+    num_y*env_pitch().y,
     //Position
-    [num_x*gf_pitch, num_y*gf_pitch, 0],
+    [num_x*env_pitch().x, num_y*env_pitch().y, 0],
     //rotation
     [0,0,270],
     horizontal_separator_positions,
@@ -192,7 +192,7 @@ module gridfinity_label(
       [ 0, -labelCornerRadius ],
       [ 0, -labelCornerRadius-labelSize.z ]
     ];
-    labelWidthmm = labelSize.x <=0 ? wallLocation[ilabelWall_Width] : labelSize.x * gf_pitch;
+    labelWidthmm = labelSize.x <=0 ? wallLocation[ilabelWall_Width] : labelSize.x * env_pitch().x;
     
     // Calculate list of chambers. 
     chamberWidths = len(separator_positions) < 1 || 

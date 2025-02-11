@@ -86,6 +86,8 @@ xpos6 = [0,0,0,0,0,0,0];
 xpos7 = [0,0,0,0,0,0,0];
 
 /* [Model detail] */
+//Work in progress,  Modify the default grid size. Will break compatibility
+pitch = [42,42,7];  //[0:1:9999]
 // minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
 fa = 6; 
 // minimum size of a fragment.  Low is more fragments
@@ -151,8 +153,8 @@ function split_plate(num_x, num_y,
     build_plate_size,
     average_plate_sizes) =
   let(
-    max_x = build_plate_size.x/gf_pitch,
-    max_y = build_plate_size.y/gf_pitch,
+    max_x = build_plate_size.x/env_pitch().x,
+    max_y = build_plate_size.y/env_pitch().y,
     list_x = split_dimention(num_x, outer_num_x, max_x, position_fill_grid_x, position_grid_in_outer_x, average_plate_sizes),
     list_y = split_dimention(num_y, outer_num_y, max_y, position_fill_grid_y, position_grid_in_outer_y, average_plate_sizes),
     list = [for(iy=[0:len(list_y)-1]) [for(ix=[0:len(list_x)-1]) [[ix,iy], [list_x[ix],list_y[iy]]]]])
@@ -262,6 +264,7 @@ else
     width = plate[1].x[iPlate_size],
     depth = plate[1].y[iPlate_size],
     render_position = Render_Position,
+    pitch = pitch,
     help = enable_help,
     cut = [cutx, cuty, 2])
     gridfinity_baseplate(

@@ -49,12 +49,12 @@ module set_environment(
       if(cutx > 0 && cutz > 0 && $preview){
         color(color_cut)
         translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-          cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
+          cube([env_pitch().x*cutx,num_y*env_pitch().y+fudgeFactor*2,(cutz+1)*env_pitch().z]);
       }
       if(cuty > 0 && cutz > 0 && $preview){
         color(color_cut)
         translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-          cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
+          cube([num_x*env_pitch().x+fudgeFactor*2,env_pitch().y*cuty,(cutz+1)*env_pitch().z]);
       }*/
     }
 
@@ -65,6 +65,8 @@ module set_environment(
 function env_numx() = is_undef($num_x) || !is_num($num_x) ? 0 : $num_x;
 function env_numy() = is_undef($num_y) || !is_num($num_y) ? 0 : $num_y;
 function env_numz() = is_undef($num_z) || !is_num($num_z) ? 0 : $num_z;
+
+function env_pitch() =  is_undef($pitch) || !is_list($pitch) ? [gf_pitch, gf_pitch, gf_zpitch] : $pitch; 
 
 function env_cutx() = is_undef($cutx) || !is_num($cutx) ? 0 : $cutx;
 function env_cuty() = is_undef($cuty) || !is_num($cuty) ? 0 : $cuty;

@@ -135,23 +135,23 @@ module baseplate_connectors(
 
 module PositionCellCenterConnector(left, right,front,back){
     if(left)
-      translate([0,gf_pitch/2,0])
+      translate([0,env_pitch().y/2,0])
       children();
     if(right)
-      translate([gf_pitch,gf_pitch/2,0])
+      translate([env_pitch().x,env_pitch().y/2,0])
       rotate([0,0,180])
       children();
     if(front)
-      translate([gf_pitch/2,0,0])
+      translate([env_pitch().x/2,0,0])
       rotate([0,0,90])
       children();
     if(back)
-      translate([gf_pitch/2,gf_pitch,0])
+      translate([env_pitch().x/2,env_pitch().y,0])
       rotate([0,0,270])
       children();
 }
 
-module PositionCellCornerConnector(left, right,front,back){
+module PositionCellCornerConnector(left, right, front, back){
   if(left || right || front || back)
   {
     if(left && front) {
@@ -162,12 +162,12 @@ module PositionCellCornerConnector(left, right,front,back){
 
       let($corner = false){
         if($allowConnectors[iAllowConnectorsFront])
-        translate([gf_pitch,0,0])
+        translate([env_pitch().x,0,0])
         rotate([0,0,90])
         children();
         
         if($allowConnectors[iAllowConnectorsLeft])
-        translate([0,gf_pitch,0])
+        translate([0,env_pitch().y,0])
         children();
       }
     }
@@ -175,7 +175,7 @@ module PositionCellCornerConnector(left, right,front,back){
     if(left && back) {
       if($allowConnectors[iAllowConnectorsLeft] && $allowConnectors[iAllowConnectorsBack])
         let($corner = true)
-        translate([0,gf_pitch,0])
+        translate([0,env_pitch().y,0])
         children();
 
       let($corner = false) {
@@ -183,7 +183,7 @@ module PositionCellCornerConnector(left, right,front,back){
         children();
         
         if($allowConnectors[iAllowConnectorsBack])
-        translate([gf_pitch,gf_pitch,0])
+        translate([env_pitch().x,env_pitch().y,0])
         rotate([0,0,270])
         children();
       }
@@ -192,7 +192,7 @@ module PositionCellCornerConnector(left, right,front,back){
     if(right && front){
       if($allowConnectors[iAllowConnectorsRight] && $allowConnectors[iAllowConnectorsFront])
         let($corner = true)
-        translate([gf_pitch,0,0])
+        translate([env_pitch().x,0,0])
         rotate([0,0,180])
         children();
 
@@ -202,7 +202,7 @@ module PositionCellCornerConnector(left, right,front,back){
         children();
         
         if($allowConnectors[iAllowConnectorsRight])
-        translate([gf_pitch,gf_pitch,0])
+        translate([env_pitch().x,env_pitch().y,0])
         rotate([0,0,180])
         children();
       }
@@ -211,18 +211,18 @@ module PositionCellCornerConnector(left, right,front,back){
     if(right && back){
       if($allowConnectors[iAllowConnectorsRight] && $allowConnectors[iAllowConnectorsBack])
         let($corner = true)
-        translate([gf_pitch,gf_pitch,0])
+        translate([env_pitch().x,env_pitch().y,0])
         rotate([0,0,270])
         children();
 
       let($corner = false) {
         if($allowConnectors[iAllowConnectorsRight])
-        translate([gf_pitch,0,0])
+        translate([env_pitch().x,0,0])
         rotate([0,0,180])
         children();
 
         if($allowConnectors[iAllowConnectorsBack])
-        translate([0,gf_pitch,0])
+        translate([0,env_pitch().y,0])
         rotate([0,0,270])
         children();
       }
@@ -230,25 +230,25 @@ module PositionCellCornerConnector(left, right,front,back){
 
     if(left && !back && !front && !front && $gci.y<=$gc_count.y-3 && $allowConnectors[iAllowConnectorsLeft]){
       $corner = false;
-      translate([0,gf_pitch,0])
+      translate([0,env_pitch().y,0])
       children();
     }
     if(front && !left && !right && $gci.x<=$gc_count.x-3 && $allowConnectors[iAllowConnectorsFront]){
       $corner = false;
-      translate([gf_pitch,0,0])
+      translate([env_pitch().x,0,0])
       rotate([0,0,90])
       children();
     }
     if(right && !back && !front && $gci.y<=$gc_count.y-3 && $allowConnectors[iAllowConnectorsRight]){
       $corner = false;
-      translate([gf_pitch,gf_pitch,0])
+      translate([env_pitch().x,env_pitch().y,0])
       rotate([0,0,180])
       children();
     }
 
     if(back && !left && !right && $gci.x<=$gc_count.x-3 && $allowConnectors[iAllowConnectorsBack]){
       $corner = false;
-      translate([gf_pitch,gf_pitch,0])
+      translate([env_pitch().x,env_pitch().y,0])
       rotate([0,0,270])
       children();
     }
@@ -343,12 +343,12 @@ module ClipConnector(
           frameHeight-height]);
 
     if(!straightWall) {
-      translate([-gf_pitch,-gf_pitch,-height])
+      translate([-env_pitch().x,-env_pitch().y,-height])
         frame_cavity(
           num_x=2, 
           num_y=2);
     } else {
-      translate([-gf_pitch,-gf_pitch/2,-height])
+      translate([-env_pitch().x,-env_pitch().y/2,-height])
         frame_cavity(
           num_x=2, 
           num_y=1);

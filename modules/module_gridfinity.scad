@@ -36,15 +36,15 @@ module grid_block(
   center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
   magnet_easy_release = cupBase_settings[iCupBase_MagnetEasyRelease];
   
-  outer_size = gf_pitch - gf_tolerance;  // typically 41.5
-  block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
+  outer_size = [env_pitch().x - gf_tolerance, env_pitch().y - gf_tolerance];  // typically 41.5
+  block_corner_position = [outer_size.x/2 - gf_cup_corner_radius, outer_size.y/2 - gf_cup_corner_radius];  // need not match center of pad corners
 
-  magnet_position = calculateAttachmentPosition(magnet_size[iCylinderDimension_Diameter], screw_size[iCylinderDimension_Diameter]);
+  magnet_position = calculateAttachmentPositions(magnet_size[iCylinderDimension_Diameter], screw_size[iCylinderDimension_Diameter]);
    
   overhang_fix = hole_overhang_remedy > 0 && magnet_size[iCylinderDimension_Diameter] > 0 && screw_size[iCylinderDimension_Diameter] > 0 ? hole_overhang_remedy : 0;
   overhang_fix_depth = 0.3;  // assume this is enough
   
-  tz(gf_zpitch*num_z-fudgeFactor*2)
+  tz(env_pitch().z*num_z-fudgeFactor*2)
   if(filledin == "enabledfilllip"){
     color(env_colour(color_topcavity))
       tz(-fudgeFactor)
@@ -59,7 +59,7 @@ module grid_block(
       wall_thickness = wall_thickness);
   }
         
-  translate(cupPosition(position,num_x,num_y))
+  translate(gridfinityRenderPosition(position,num_x,num_y))
   difference() {
     baseHeight = 5;
     intersection() {
@@ -68,7 +68,7 @@ module grid_block(
         tz(-fudgeFactor)
         hull() 
         cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=gf_cup_corner_radius, h=gf_zpitch*num_z);
+        cylinder(r=gf_cup_corner_radius, h=env_pitch().z*num_z);
 
       union(){
         if(flat_base == FlatBase_rounded){
@@ -78,9 +78,9 @@ module grid_block(
           color(env_colour(color_cup))
           translate([0.25,0.25,0])
           roundedCube(
-            x = num_x*gf_pitch-0.5,
-            y = num_y*gf_pitch-0.5,
-            z = gf_zpitch,
+            x = num_x*env_pitch().x-0.5,
+            y = num_y*env_pitch().y-0.5,
+            z = env_pitch().z,
             size=[],
             topRadius = 0,
             bottomRadius = basebottomRadius,
@@ -96,7 +96,7 @@ module grid_block(
         
         color(env_colour(color_cup))
         tz(baseHeight) 
-          cube([gf_pitch*num_x, gf_pitch*num_y, gf_zpitch*num_z]);
+          cube([env_pitch().x*num_x, env_pitch().y*num_y, env_pitch().z*num_z]);
       }
     }
     
@@ -107,7 +107,7 @@ module grid_block(
         for(y =[0:1:num_y-1])
         {
           color(env_colour(color_basehole))
-          translate([x*gf_pitch,y*gf_pitch,-fudgeFactor])
+          translate([x*env_pitch().x,y*env_pitch().y,-fudgeFactor])
             cylinder(h=center_magnet_size[iCylinderDimension_Height]-fudgeFactor, d=center_magnet_size[iCylinderDimension_Diameter]);
         }
       }
@@ -190,7 +190,7 @@ module pad_oversize(
   assert(is_num(extend_down), "extend_down must be a number >= 0");
   
   if(env_help_enabled("trace")) echo("pad_oversize", num_x=num_x, num_y=num_y, margins= margins);
-  pad_corner_position = gf_pitch/2 - 4; // must be 17 to be compatible
+  pad_corner_position = [env_pitch().x/2 - 4,env_pitch().y/2 - 4]; // must be 17 to be compatible
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
   bevel2_top = 5;       // z of top of second bevel
@@ -250,7 +250,7 @@ module pad_oversize(
     
     // cut off bottom if we're going to go negative
     if (margins && extend_down == 0) {
-      cube([gf_pitch*num_x, gf_pitch*num_y, axialdown]);
+      cube([env_pitch().x*num_x, env_pitch().y*num_y, axialdown]);
     }
   }
 }
@@ -267,7 +267,7 @@ module pad_copy(num_x, num_y, half_pitch=false, flat_base=false, minimium_size =
     }
   }
   else if (half_pitch) {
-    gridcopy(ceil(num_x*2), ceil(num_y*2), gf_pitch/2) {
+    gridcopy(ceil(num_x*2), ceil(num_y*2), env_pitch()/2) {
       //Calculate pad size, last cells might not be 100%
       $pad_copy_size = [          
           ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
@@ -295,12 +295,12 @@ module pad_copy(num_x, num_y, half_pitch=false, flat_base=false, minimium_size =
 module gridcopy(
   num_x, 
   num_y, 
-  pitch=gf_pitch, 
+  pitch=env_pitch(), 
   positionGridx = "near", 
   positionGridy = "near") {
   assert(is_num(num_x) && num_x>=0, "num_x must be a number greater than 1");
   assert(is_num(num_y) && num_y>=0, "num_y must be a number greater than 1");
-  assert(is_num(pitch) && pitch>=1, "pitch must be a number greater than 1");
+  assert(is_list(pitch));
   
   function num_to_list(num, positionGrid = "near") = 
     let(
@@ -335,7 +335,7 @@ module gridcopy(
       $gc_position=[
         vector_sum(xCellsList, 0, xi,0)-xCellsList[xi][0], 
         vector_sum(yCellsList, 0, yi,0)-yCellsList[yi][0], 0];
-      translate([$gc_position.x,$gc_position.y,0]*pitch)
+      translate([$gc_position.x*pitch.x,$gc_position.y*pitch.y,0])
         children();
     }
 }         
@@ -346,18 +346,20 @@ module gridcopy(
 // pitch, size of one unit.
 // center, center the grid
 // reverseAlignment, reverse the alignment of the corners
-module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch, center = false, reverseAlignment=[false,false]) {
-  assert(!is_undef(r), "r is undefined");
-  assert(!is_undef(num_x), "num_x is undefined");
-  assert(!is_undef(num_y), "num_y is undefined");
+module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=env_pitch(), center = false, reverseAlignment=[false,false]) {
+  assert(is_list(pitch), "pitch must be a list");
+  assert(is_list(r), "pitch must be a list");
+  assert(is_num(num_x), "num_x must be a number");
+  assert(is_num(num_y), "num_y must be a number");
+  r = is_num(r) ? [r,r] : r;
   
-  translate(center ? [0,0] : [pitch/2,pitch/2])
+  translate(center ? [0,0] : [pitch.x/2,pitch.y/2])
   for (cellx=[1:ceil(num_x)], celly=[1:ceil(num_y)]) 
     for (quadrentx=[-1, 1], quadrenty=[-1, 1]) {
       cell = [cellx, celly];
       quadrent = [quadrentx, quadrenty];
       gridPosition = [cell.x+(quadrent.x == -1 ? -0.5 : 0), cell.y+(quadrent.y == -1 ? -0.5 : 0)];
-      trans = [pitch*(cell.x-1)+quadrent.x*r, pitch*(cell.y-1)+ quadrent.y*r, 0];
+      trans = [pitch.x*(cell.x-1)+quadrent.x*r.x, pitch.y*(cell.y-1)+ quadrent.y*r.y, 0];
       $gcci=[trans,cell,quadrent];
 
       cornerVisible = 
@@ -383,16 +385,18 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch, 
 // pitch, size of one unit.
 // num_x = 1 give r*2, num_x = 2 give r*2+pitch, 
 // similar to quadtranslate but expands to extremities of a block
-module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch, center = false) {
+module cornercopy(r, num_x=1, num_y=1,pitch=env_pitch(), center = false) {
   assert(!is_undef(r), "r is undefined");
-  assert(!is_undef(num_x), "num_x is undefined");
-  assert(!is_undef(num_y), "num_y is undefined");
+  assert(is_list(pitch), "pitch must be a list");
+  assert(is_num(num_x), "num_x must be a number");
+  assert(is_num(num_y), "num_y must be a number");
+  r = is_num(r) ? [r,r] : r;
 
-  translate(center ? [0,0] : [pitch/2,pitch/2])
+  translate(center ? [0,0] : [pitch.x/2,pitch.y/2])
   for (xx=[0, 1], yy=[0, 1]) {
     $idx=[xx,yy,0];
-    xpos = xx == 0 ? -r : max(pitch*(num_x-1)+r,-r);
-    ypos = yy == 0 ? -r : max(pitch*(num_y-1)+r,-r);
+    xpos = xx == 0 ? -r.x : max(pitch.x*(num_x-1)+r.x,-r.x);
+    ypos = yy == 0 ? -r.y : max(pitch.y*(num_y-1)+r.y,-r.y);
     if(env_help_enabled("debug")) echo("cornercopy", num_x=num_x,num_y=num_y,pitch=pitch, center=center, idx=$idx, gridPosition=[xpos,ypos,0]);
     translate([xpos, ypos, 0]) 
       children();
@@ -415,12 +419,12 @@ module debug_cut(cutx, cuty, cutz) {
     if(cutx > 0 && cutz > 0 && $preview){
       color(color_cut)
       translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
+        cube([env_pitch().x*cutx,num_y*env_pitch().y+fudgeFactor*2,(cutz+1)*env_pitch().z]);
     }
     if(cuty > 0 && cutz > 0 && $preview){
       color(color_cut)
       translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
+        cube([num_x*env_pitch().x+fudgeFactor*2,env_pitch().y*cuty,(cutz+1)*env_pitch().z]);
     }
   }
 }

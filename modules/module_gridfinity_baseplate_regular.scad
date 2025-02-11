@@ -58,7 +58,7 @@ module baseplate_regular(
         //translate([0,0,-fudgeFactor])
         difference(){
           translate([fudgeFactor,fudgeFactor,fudgeFactor])
-          cube([gf_pitch-fudgeFactor*2,gf_pitch-fudgeFactor*2,frameBaseHeight+fudgeFactor*2]);
+          cube([env_pitch().x-fudgeFactor*2,env_pitch().y-fudgeFactor*2,frameBaseHeight+fudgeFactor*2]);
 
           baseplate_cavities(
             num_x = $gc_size.x,
