@@ -77,9 +77,10 @@ Custom_Grid_Enabled = false;
 //0:off the cell is off
 //1:on the cell is on and all corners are rounded
 //2-16, are bitwise values used to calculate what corners should be rounded, you need to subtract 2 from the value for the bitwise logic (so it does not clash with 0 and 1).
-xpos1 = [3,4,0,0,3,4,0];
-xpos2 = [2,2,0,0,2,2,0];
-xpos3 = [2,2,0,0,2,2,0];
+//[c,[x,y]], c corner value as shown above. [x,y] x and y size of the cell.
+xpos1 = [3,[2,[3,3]],0,0,2,4,0];
+xpos2 = [2,0,0,0,2,2,0];
+xpos3 = [2,0,0,0,2,2,0];
 xpos4 = [2,2,2,2,2,2,0];
 xpos5 = [6,2,2,2,2,10,0];
 xpos6 = [0,0,0,0,0,0,0];

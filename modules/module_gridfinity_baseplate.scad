@@ -89,9 +89,18 @@ module gridfinity_baseplate(
         for(xi = [0:len(_gridPositions)-1])
           for(yi = [0:len(_gridPositions[xi])-1])
           {
+            if(is_list(_gridPositions[xi][yi])){
+              assert(is_num(_gridPositions[xi][yi][0]));
+              assert(is_list(_gridPositions[xi][yi][1]));
+            }
+            gridPosCorners = is_list(_gridPositions[xi][yi]) ? _gridPositions[xi][yi][0] : _gridPositions[xi][yi];
+            gridPosx = is_list(_gridPositions[xi][yi]) ? _gridPositions[xi][yi][1].x : 1;
+            gridPosy = is_list(_gridPositions[xi][yi]) ? _gridPositions[xi][yi][1].y : 1;
+              
             if(_gridPositions[xi][yi])
             {
-              translate([env_pitch().x*xi,env_pitch().y*yi,0])
+              let($pitch = [env_pitch().x*gridPosx, env_pitch().y*gridPosy, env_pitch().y])
+              translate([env_pitch().x*xi/gridPosx,env_pitch().y*yi/gridPosy,0])
               baseplate(
                 width = customGridEnabled ? 1 : width,
                 depth = customGridEnabled ? 1 : depth,
@@ -123,7 +132,7 @@ module gridfinity_baseplate(
                 connectorFilamentDiameter = connectorFilamentDiameter,
                 connectorFilamentLength = connectorFilamentLength,
                 plate_corner_radius = plate_corner_radius,
-                roundedCorners = _gridPositions[xi][yi] == 1 ? 15 : _gridPositions[xi][yi] - 2);
+                roundedCorners = gridPosCorners == 1 ? 15 : gridPosCorners - 2);
             }
           }
         }
