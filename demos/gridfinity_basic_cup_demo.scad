@@ -689,15 +689,13 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
     translate(DictGet(currentStepSettings, itranslate))
     rotate(DictGet(currentStepSettings, irotate)) 
     scale(DictGet(currentStepSettings, iscale))
-    SetGridfinityEnvironment(
+    set_environment(
       width = width > -1 ? width : DictGet(currentStepSettings, iwidth),
       depth = depth > -1 ? depth : DictGet(currentStepSettings, idepth),
       height = height > -1 ? height : DictGet(currentStepSettings, iheight),
       render_position = DictGet(currentStepSettings, iposition),
       help = help || DictGet(currentStepSettings, ihelp),
-      cutx = DictGet(currentStepSettings, icutx),
-      cuty = DictGet(currentStepSettings, icuty),
-      cutz = calcDimensionHeight(height, true)
+      cut = [DictGet(currentStepSettings, icutx), DictGet(currentStepSettings, icuty), calcDimensionHeight(height, true)]
       //setColour = set_colour,
       //randomSeed = random_seed,
       //force_render = force_render

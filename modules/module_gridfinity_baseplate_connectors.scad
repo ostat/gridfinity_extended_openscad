@@ -58,7 +58,7 @@ module baseplate_connectors(
   connectorFilamentDiameter = 2) {
   if(connectorButterflyEnabled || connectorFilamentEnabled || connectorClipEnabled){
     union(){
-      if(IsHelpEnabled("debug")) echo("baseplate", gci=$gci, gc_size=$gc_size, gc_is_corner=$gc_is_corner, gc_position=$gc_position, width=width, depth=depth);
+      if(env_help_enabled("debug")) echo("baseplate", gci=$gci, gc_size=$gc_size, gc_is_corner=$gc_is_corner, gc_position=$gc_position, width=width, depth=depth);
       
       if(connectorPosition == "center_wall" || connectorPosition == "both")
       PositionCellCenterConnector(

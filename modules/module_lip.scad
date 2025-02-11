@@ -28,7 +28,7 @@ module cupLip(
   coloredLipHeight=min(2,lipHeight);
 
   if(lipStyle != "none")
-  color(getColour(color_topcavity, isLip = true))
+  color(env_colour(color_topcavity, isLip = true))
 
     tz(-fudgeFactor*2)
     difference() {

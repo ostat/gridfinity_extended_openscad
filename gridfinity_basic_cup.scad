@@ -247,15 +247,13 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true),
+  cut = [cutx, cuty, calcDimensionHeight(height, true)],
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)

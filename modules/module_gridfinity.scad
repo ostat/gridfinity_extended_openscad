@@ -1,5 +1,6 @@
 include <thridparty/ub_helptxt.scad>
 include <module_utility.scad>
+include <functions_environment.scad>
 include <functions_general.scad>
 include <gridfinity_constants.scad>
 include <functions_gridfinity.scad>
@@ -45,7 +46,7 @@ module grid_block(
   
   tz(gf_zpitch*num_z-fudgeFactor*2)
   if(filledin == "enabledfilllip"){
-    color(getColour(color_topcavity))
+    color(env_colour(color_topcavity))
       tz(-fudgeFactor)
       hull() 
       cornercopy(block_corner_position, num_x, num_y) 
@@ -63,7 +64,7 @@ module grid_block(
     baseHeight = 5;
     intersection() {
       //Main cup outer shape
-      color(getColour(color_cup))
+      color(env_colour(color_cup))
         tz(-fudgeFactor)
         hull() 
         cornercopy(block_corner_position, num_x, num_y) 
@@ -74,7 +75,7 @@ module grid_block(
           basebottomRadius = let(fbr = cupBase_settings[iCupBase_FlatBaseRoundedRadius])
             fbr == -1 ? gf_cup_corner_radius/2 : fbr;
 
-          color(getColour(color_cup))
+          color(env_colour(color_cup))
           translate([0.25,0.25,0])
           roundedCube(
             x = num_x*gf_pitch-0.5,
@@ -89,11 +90,11 @@ module grid_block(
             );
         } else {
           // logic for constructing odd-size grids of possibly half-pitch pads
-          color(getColour(color_base))
+          color(env_colour(color_base))
             pad_grid(num_x, num_y, half_pitch, flat_base != FlatBase_off, cupBase_settings[iCupBase_MinimumPrintablePadSize]);
         }
         
-        color(getColour(color_cup))
+        color(env_colour(color_cup))
         tz(baseHeight) 
           cube([gf_pitch*num_x, gf_pitch*num_y, gf_zpitch*num_z]);
       }
@@ -105,14 +106,14 @@ module grid_block(
       {
         for(y =[0:1:num_y-1])
         {
-          color(getColour(color_basehole))
+          color(env_colour(color_basehole))
           translate([x*gf_pitch,y*gf_pitch,-fudgeFactor])
             cylinder(h=center_magnet_size[iCylinderDimension_Height]-fudgeFactor, d=center_magnet_size[iCylinderDimension_Diameter]);
         }
       }
     }
     
-    color(getColour(color_basehole))
+    color(env_colour(color_basehole))
     tz(-fudgeFactor)
     gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only){
         rdeg =
@@ -188,7 +189,7 @@ module pad_oversize(
   assert(!is_undef(extend_down), "extend_down is undefined");
   assert(is_num(extend_down), "extend_down must be a number >= 0");
   
-  if(IsHelpEnabled("trace")) echo("pad_oversize", num_x=num_x, num_y=num_y, margins= margins);
+  if(env_help_enabled("trace")) echo("pad_oversize", num_x=num_x, num_y=num_y, margins= margins);
   pad_corner_position = gf_pitch/2 - 4; // must be 17 to be compatible
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
@@ -260,7 +261,7 @@ module pad_copy(num_x, num_y, half_pitch=false, flat_base=false, minimium_size =
 
   if (flat_base) {
     $pad_copy_size = [num_x, num_y];
-    if(IsHelpEnabled("debug")) echo("pad_grid_flat_base", pad_copy_size=$pad_copy_size);
+    if(env_help_enabled("debug")) echo("pad_grid_flat_base", pad_copy_size=$pad_copy_size);
     if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
       children();
     }
@@ -271,7 +272,7 @@ module pad_copy(num_x, num_y, half_pitch=false, flat_base=false, minimium_size =
       $pad_copy_size = [          
           ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
           ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5)];
-      if(IsHelpEnabled("debug")) echo("pad_grid_half_pitch", gci=$gci, pad_copy_size=$pad_copy_size);
+      if(env_help_enabled("debug")) echo("pad_grid_half_pitch", gci=$gci, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
          children();      }
     }
@@ -282,7 +283,7 @@ module pad_copy(num_x, num_y, half_pitch=false, flat_base=false, minimium_size =
       $pad_copy_size = [
           ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
           ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1)];
-      if(IsHelpEnabled("debug")) echo("pad_grid", gci=$gci, pad_copy_size=$pad_copy_size);
+      if(env_help_enabled("debug")) echo("pad_grid", gci=$gci, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
         children();
       }
@@ -322,7 +323,7 @@ module gridcopy(
   
   $gc_count=[len(xCellsList), len(yCellsList)];
   
-  if(IsHelpEnabled("debug")) echo("gridcopy", xCellsList=xCellsList, yCellsList=yCellsList);
+  if(env_help_enabled("debug")) echo("gridcopy", xCellsList=xCellsList, yCellsList=yCellsList);
   
   for (xi=[0:len(xCellsList)-1]) 
     for (yi=[0:len(yCellsList)-1])
@@ -362,7 +363,7 @@ module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=gf_pitch, 
       cornerVisible = 
         (!reverseAlignment.x && gridPosition.x <= num_x || reverseAlignment.x && 1.5-gridPosition.x <= num_x) && 
         (!reverseAlignment.y && gridPosition.y <= num_y || reverseAlignment.y && 1.5-gridPosition.y <= num_y);
-      if(IsHelpEnabled("debug")) echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, gridPosition=gridPosition, reverseAlignment=reverseAlignment, cornerVisible=cornerVisible);
+      if(env_help_enabled("debug")) echo("gridcopycorners", num_x=num_x,num_y=num_y, gcci=$gcci, gridPosition=gridPosition, reverseAlignment=reverseAlignment, cornerVisible=cornerVisible);
       //only copy if the cell is atleast half size
       if(cornerVisible)
         //only box corners or every cell corner
@@ -392,20 +393,20 @@ module cornercopy(r, num_x=1, num_y=1,pitch=gf_pitch, center = false) {
     $idx=[xx,yy,0];
     xpos = xx == 0 ? -r : max(pitch*(num_x-1)+r,-r);
     ypos = yy == 0 ? -r : max(pitch*(num_y-1)+r,-r);
-    if(IsHelpEnabled("debug")) echo("cornercopy", num_x=num_x,num_y=num_y,pitch=pitch, center=center, idx=$idx, gridPosition=[xpos,ypos,0]);
+    if(env_help_enabled("debug")) echo("cornercopy", num_x=num_x,num_y=num_y,pitch=pitch, center=center, idx=$idx, gridPosition=[xpos,ypos,0]);
     translate([xpos, ypos, 0]) 
       children();
   }
 }
 
 module debug_cut(cutx, cuty, cutz) {
-  cutx = is_undef(cutx) ? getCutx() : cutx;
-  cuty = is_undef(cuty) ? getCuty() : cuty;
-  cutz = is_undef(cutz) ? getCutz() : cutz;
+  cutx = is_undef(cutx) ? env_cutx() : cutx;
+  cuty = is_undef(cuty) ? env_cuty() : cuty;
+  cutz = is_undef(cutz) ? env_cutz() : cutz;
   
-  num_x = getNum_x();
-  num_y = getNum_y();
-  num_z = getNum_z();
+  num_x = env_numx();
+  num_y = env_numy();
+  num_z = env_numz();
   
   difference(){
     children();

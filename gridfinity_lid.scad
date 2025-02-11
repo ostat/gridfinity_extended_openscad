@@ -60,14 +60,12 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
   
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = 2,
+  cut = [cutx, cuty, 2],
   setColour = set_colour)
 gridfinity_lid(
   num_x = calcDimensionWidth(width),

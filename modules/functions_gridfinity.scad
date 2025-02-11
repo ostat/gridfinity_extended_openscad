@@ -43,7 +43,7 @@ function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base="off") =
 
 function calculateMinFloorHeight(magnet_depth,screw_depth) = 
     cupBaseClearanceHeight(magnet_depth,screw_depth) + gf_cup_floor_thickness;
-    
+
 function calculateAttachmentPosition(magnet_diameter, screw_diameter) = 
   let(attachment_diameter = max(magnet_diameter, screw_diameter))
   attachment_diameter == 0 
@@ -69,7 +69,7 @@ function calculateFloorThickness(magnet_depth, screw_depth, floor_thickness, num
 let(
     cfh = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z, filledin),
     cbch = cupBaseClearanceHeight(magnet_depth, screw_depth))
-  IsHelpEnabled("info") ? 
+  env_help_enabled("info") ? 
   echo("calculateFloorThickness", cfh=cfh, cbch=cbch,num_z=num_z,magnet_depth=magnet_depth,screw_depth=screw_depth,floor_thickness=floor_thickness,filledin=filledin) cfh - cbch :
   cfh - cbch;
     

@@ -155,13 +155,11 @@ module gridfinity_sieve(
   }
 }
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true))
+  cut = [cutx, cuty, calcDimensionHeight(height, true)])
 gridfinity_sieve();

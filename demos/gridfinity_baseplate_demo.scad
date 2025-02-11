@@ -177,12 +177,10 @@ translate([0,-40,60])
 if(scenarioDefaults[0] != "unknown scenario")
 rotate(animationStep[1] ? [180,0,0] : [0,0,0]) 
 translate(animationStep[1] ? [0,-gf_pitch,0] : [0,0,0])
-SetGridfinityEnvironment(
+set_environment(
   width = DictGet(currentStepSettings, iwidth),
   depth = DictGet(currentStepSettings, idepth),
-  cutx = DictGet(currentStepSettings, icutx),
-  cuty = DictGet(currentStepSettings, icuty),
-  cutz = 2)
+  cut = [DictGet(currentStepSettings, icutx), DictGet(currentStepSettings, icuty), 2])
 gridfinity_baseplate(
   num_x = calcDimensionWidth(DictGet(currentStepSettings ,iwidth)),
   num_y = calcDimensionDepth(DictGet(currentStepSettings, idepth)),

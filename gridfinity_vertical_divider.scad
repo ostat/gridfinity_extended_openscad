@@ -107,15 +107,13 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true))
+  cut = [cutx, cuty, calcDimensionHeight(height, true)])
 Gridfinity_Divider();
 
 module Divider(
@@ -132,8 +130,8 @@ module Divider(
   
   _backBottomHeight = max(_baseHeight,height-radius-abs(backTopInset*tan(backTopAngle)));
   _frontBottomHeight = max(_baseHeight,height-radius-abs(frontTopInset*tan(frontTopAngle)));
-  if(IsHelpEnabled("debug")) echo("Gridfinity_Divider", height,radius, abs(backTopInset*tan(backTopAngle)),_backBottomHeight);
-  if(IsHelpEnabled("debug")) echo("Gridfinity_Divider", _baseHeight=_baseHeight, height=height, _backBottomHeight=_backBottomHeight, _frontBottomHeight=_frontBottomHeight);
+  if(env_help_enabled("debug")) echo("Gridfinity_Divider", height,radius, abs(backTopInset*tan(backTopAngle)),_backBottomHeight);
+  if(env_help_enabled("debug")) echo("Gridfinity_Divider", _baseHeight=_baseHeight, height=height, _backBottomHeight=_backBottomHeight, _frontBottomHeight=_frontBottomHeight);
   
   positions = [
     [radius,_frontBottomHeight],      //front bottom

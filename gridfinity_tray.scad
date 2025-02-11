@@ -235,7 +235,7 @@ module tray(
   if(len(customCompartments) == 0)
   {
     //Non custom components
-    if(IsHelpEnabled("trace")) echo(n=num_x*gf_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
+    if(env_help_enabled("trace")) echo(n=num_x*gf_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
     xSize = (num_x*gf_pitch-(verticalCompartments+1)*spacing)/verticalCompartments;
     xStep = xSize + spacing;
     ySize = (num_y*gf_pitch-(horizontalCompartments+1)*spacing)/horizontalCompartments;
@@ -245,7 +245,7 @@ module tray(
     {
       for(y =[0:1:horizontalCompartments-1])
       {
-        if(IsHelpEnabled("trace")) echo(x=x,y=y,xStep=xStep,yStep=yStep);
+        if(env_help_enabled("trace")) echo(x=x,y=y,xStep=xStep,yStep=yStep);
         translate([spacing+x*xStep,spacing+y*yStep,baseHeight+max(trayZpos,floorThickness)])
         roundedCube(
             xSize, ySize,
@@ -257,7 +257,7 @@ module tray(
   }
   else
   {
-    if(IsHelpEnabled("debug")) echo(customCompartments = splitCustomConfig(customCompartments));
+    if(env_help_enabled("debug")) echo(customCompartments = splitCustomConfig(customCompartments));
     //custom components
     compartments = split(customCompartments, "|");
     
@@ -384,7 +384,7 @@ module gridfinity_tray(
   num_y = calcDimensionDepth(depth);
   num_z = calcDimensionHeight(height);
   
-  if(IsHelpEnabled("info")) echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
+  if(env_help_enabled("info")) echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
   
   difference() {
     /*<!!start gridfinity_basic_cup!!>*/
@@ -472,18 +472,16 @@ module gridfinity_tray(
         [iCornerRadius, tray_corner_radius], 
         [iDepth, num_z]];
 
-      if(IsHelpEnabled("info")) echo(outputCustomConfig("tray", replace_Items(configArray, [])));
+      if(env_help_enabled("info")) echo(outputCustomConfig("tray", replace_Items(configArray, [])));
   }
 }
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true),
+  cut = [cutx, cuty, calcDimensionHeight(height, true)],
   randomSeed = random_seed)
 gridfinity_tray();

@@ -258,14 +258,12 @@ else
   conditional_color(len(plate_list) > 1, plate[2] ? "#404040" : "#006400")
   translate(pos)
   conditional_render(len(plate_list) > 1)//plate[2])
-  SetGridfinityEnvironment(
+  set_environment(
     width = plate[1].x[iPlate_size],
     depth = plate[1].y[iPlate_size],
     render_position = Render_Position,
     help = enable_help,
-    cutx = cutx,
-    cuty = cuty,
-    cutz = 2)
+    cut = [cutx, cuty, 2])
     gridfinity_baseplate(
       num_x = plate[1].x[iPlate_size],//calcDimensionWidth(Width),
       num_y = plate[1].y[iPlate_size],//calcDimensionWidth(Depth),
