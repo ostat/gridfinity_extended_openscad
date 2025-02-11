@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate.scad'. Generated 2025-01-29 22:28
+//Combined version of 'gridfinity_baseplate.scad'. Generated 2025-02-09 00:20
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -104,6 +104,8 @@ enable_help = false;
 /* [Hidden] */
 module end_of_customizer_opts() {}
 //Combined from path gridfinity_constants.scad
+
+
 // dimensions as declared on https://gridfinity.xyz/specification/
 
 //Gridfinity grid size
@@ -200,6 +202,17 @@ color_lid = "MediumAquamarine";
 //CombinedEnd from path gridfinity_constants.scad
 //Combined from path module_gridfinity.scad
 
+
+
+
+
+
+
+
+
+
+
+
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 //grid_block();
@@ -232,7 +245,7 @@ module grid_block(
   outer_size = gf_pitch - gf_tolerance;  // typically 41.5
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
 
-  magnet_position = calculateMagnetPosition(magnet_size[iCylinderDimension_Diameter]);
+  magnet_position = calculateAttachmentPosition(magnet_size[iCylinderDimension_Diameter], screw_size[iCylinderDimension_Diameter]);
    
   overhang_fix = hole_overhang_remedy > 0 && magnet_size[iCylinderDimension_Diameter] > 0 && screw_size[iCylinderDimension_Diameter] > 0 ? hole_overhang_remedy : 0;
   overhang_fix_depth = 0.3;  // assume this is enough
@@ -619,6 +632,9 @@ module debug_cut(cutx, cuty, cutz) {
 }
 //CombinedEnd from path module_gridfinity.scad
 //Combined from path ub_helptxt.scad
+
+
+
 // works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
 
 /** \mainpage
@@ -690,6 +706,8 @@ else HelpTxt("Help",["titel",titel,"string",string,"help",help],help=1);
 }
 //CombinedEnd from path ub_helptxt.scad
 //Combined from path ub_common.scad
+
+
 // works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
 
 /** \mainpage
@@ -1052,6 +1070,10 @@ module Mklon(tx=0,ty=0,tz=0,rx=0,ry=0,rz=0,mx=0,my=0,mz=1)
 }
 //CombinedEnd from path ub_common.scad
 //Combined from path module_utility.scad
+
+
+
+
 
 module bentWall(
   length=100,
@@ -1572,6 +1594,12 @@ module rounded_taper(
 }
 //CombinedEnd from path module_utility.scad
 //Combined from path ub_sbogen.scad
+
+
+
+
+
+
 // works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
 
 /** \mainpage
@@ -2059,6 +2087,8 @@ module R(x=0,y=0,z=0,help=false)
 }
 //CombinedEnd from path ub_sbogen.scad
 //Combined from path module_utility_wallcutout.scad
+
+
 iwalcutoutconfig_type = 0;
 iwalcutoutconfig_position = 1;
 iwalcutoutconfig_width = 2;
@@ -2155,6 +2185,9 @@ module WallCutout(
 
 //CombinedEnd from path module_utility_wallcutout.scad
 //Combined from path functions_general.scad
+
+
+
 
 function sum(list, c = 0, end) = 
   let(end = is_undef(end) ? len(list) : end)
@@ -2391,6 +2424,8 @@ module conditional_render(enable=true){
 }
 //CombinedEnd from path functions_general.scad
 //Combined from path functions_string.scad
+
+
 // String functions found here https://github.com/thehans/funcutils/blob/master/string.scad
 join = function (l,delimiter="") 
   let(s = len(l), d = delimiter,
@@ -2448,6 +2483,9 @@ csv_parse = function(s) [for (e=split(s, ",")) float(e)];
 //CombinedEnd from path functions_string.scad
 //Combined from path functions_gridfinity.scad
 
+
+
+
 // set this to produce sharp corners on baseplates and bins
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
@@ -2491,10 +2529,12 @@ function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base="off") =
 
 function calculateMinFloorHeight(magnet_depth,screw_depth) = 
     cupBaseClearanceHeight(magnet_depth,screw_depth) + gf_cup_floor_thickness;
-function calculateMagnetPosition(magnet_diameter) = 
-  magnet_diameter == 0 
+    
+function calculateAttachmentPosition(magnet_diameter, screw_diameter) = 
+  let(attachment_diameter = max(magnet_diameter, screw_diameter))
+  attachment_diameter == 0 
     ? 0
-    : min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
+    : min(gf_pitch/2-8, gf_pitch/2-4-attachment_diameter/2);
 
 //Height of base including the floor.
 function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base="off") = 
@@ -2577,6 +2617,10 @@ Stackable_values = [Stackable_enabled,Stackable_disabled,Stackable_filllip];
   value;  
 //CombinedEnd from path functions_gridfinity.scad
 //Combined from path module_gridfinity_cup_base.scad
+
+
+
+
 
 /* [Base]
 // (Zack's design uses magnet diameter of 6.5) 
@@ -2749,6 +2793,10 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
 //CombinedEnd from path module_gridfinity_cup_base.scad
 //Combined from path module_lip.scad
 
+
+
+
+
 module cupLip(
   num_x = 2, 
   num_y = 3, 
@@ -2832,6 +2880,16 @@ module cupLip(
 }
 //CombinedEnd from path module_lip.scad
 //Combined from path module_gridfinity_baseplate.scad
+
+
+
+
+
+
+
+
+
+
 // include instead of use, so we get the pitch
 
 /* BasePlate */
@@ -2991,7 +3049,7 @@ module baseplate(
   connectorButterflyTolerance = Default_Connector_Butterfly_Tolerance,
   connectorFilamentEnabled = Default_Connector_Filament_Enabled,
   connectorFilamentDiameter = Default_Connector_Filament_Diameter,
-  connectorFilamentLength = connectorFilamentLength)
+  connectorFilamentLength = Default_Connector_Filament_Length)
 {
   assert_openscad_version();
   
@@ -3046,6 +3104,12 @@ module baseplate(
 }
 //CombinedEnd from path module_gridfinity_baseplate.scad
 //Combined from path module_gridfinity_baseplate_common.scad
+
+
+
+
+
+
 // include instead of use, so we get the pitch
 
 iBaseplateTypeSettings_SupportsMagnets = true;
@@ -3388,6 +3452,14 @@ module outer_baseplate(
 }
 //CombinedEnd from path module_gridfinity_baseplate_common.scad
 //Combined from path module_gridfinity_baseplate_regular.scad
+
+
+
+
+
+
+
+
 // include instead of use, so we get the pitch
 
 module baseplate_regular(
@@ -3467,6 +3539,14 @@ module baseplate_regular(
 }
 //CombinedEnd from path module_gridfinity_baseplate_regular.scad
 //Combined from path module_gridfinity_baseplate_cnclaser.scad
+
+
+
+
+
+
+
+
 // include instead of use, so we get the pitch
 
 /*
@@ -3549,6 +3629,14 @@ module cnclaser_baseplate_internal(
 }
 //CombinedEnd from path module_gridfinity_baseplate_cnclaser.scad
 //Combined from path module_gridfinity_baseplate_connectors.scad
+
+
+
+
+
+
+
+
 // include instead of use, so we get the pitch
 
 iAllowConnectorsFront = 0;
