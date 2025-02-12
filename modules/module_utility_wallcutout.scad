@@ -39,7 +39,7 @@ function calculateWallCutout(
             : wallcutout_height == 0 ? wallTop - floorHeight - cavityFloorRadius
             : wallcutout_height,
         wallcutoutLowerWidth=wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, wall_length*pitch/3) : wallcutout_width,
-        closeThickness = fullEnabled ? opposite_wall_distance*pitch : wallcutoutThickness,
+        closeThickness = fullEnabled ? opposite_wall_distance*pitch_opposite : wallcutoutThickness,
               
       //This could be more specific based on the base height, and the lip style.
       wallcutout_close = [
