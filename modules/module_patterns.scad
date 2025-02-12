@@ -101,13 +101,12 @@ module cutout_pattern(
   holeRadius,
   border = 0,
   patternFs = 0,
-  source = "",
-  help){
+  source = ""){
   
   canvasSize = border > 0
     ? [canvasSize.x-border*2, canvasSize.y-border*2]
     : canvasSize;
-  if(IsHelpEnabled("trace")) echo("cutout_pattern", canvasSize=canvasSize, patternVariable=patternVariable, patternFs=patternFs, source=source);
+  if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize=canvasSize, patternVariable=patternVariable, patternFs=patternFs, source=source);
   
   $fs = patternFs > 0 ? patternFs : $fs;
   
@@ -127,11 +126,10 @@ module cutout_pattern(
         fill=fill, //"none", "space", "crop"
         rotateGrid = (patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
         //border = border,
-        holeChamfer=[patternVariable,patternVariable],
-        help=help);
+        holeChamfer=[patternVariable,patternVariable]);
     }
     else if(patternStyle == PatternStyle_voronoi || patternStyle == PatternStyle_voronoigrid || patternStyle == "voronoihexgrid"){
-      if(IsHelpEnabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
+      if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
       rectangle_voronoi(
         canvasSize = [canvasSize.x,canvasSize.y,holeHeight], 
         spacing = holeSpacing.x, 
@@ -141,11 +139,11 @@ module cutout_pattern(
         noise=patternVariable,
         radius = holeRadius,
         center=center,
-        seed=getRandomSeed());
+        seed=env_random_seed());
     }
     else if(patternStyle == PatternStyle_brick || patternStyle == PatternStyle_brickrotated ||
             patternStyle == PatternStyle_brickoffset || patternStyle == PatternStyle_brickoffsetrotated){
-      if(IsHelpEnabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
+      if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
       brick_pattern(
         canvis_size=[canvasSize.x,canvasSize.y],
         thickness = holeHeight,

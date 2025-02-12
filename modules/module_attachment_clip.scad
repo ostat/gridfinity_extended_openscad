@@ -16,7 +16,7 @@ module attachment_clip(
   footingThickness= 1,
   tabStyle = 0)
 {
-  if(IsHelpEnabled("debug")) echo("attachment_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
+  if(env_help_enabled("debug")) echo("attachment_clip", height=height, width=width, thickness=thickness, tabStyle=tabStyle);
   tabVersion = 0;
   width = width > 0 ? width : height/2;
   tabHeight=height-thickness*2;

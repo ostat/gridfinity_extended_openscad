@@ -39,7 +39,7 @@ module cup_base_text(
   
   maxTextWidth = 30;
   maxTextSize= 10;
-  if(IsHelpEnabled("trace")) echo("cup_base_text", magnet_position=magnet_position);
+  if(env_help_enabled("trace")) echo("cup_base_text", magnet_position=magnet_position);
   AssertCupBaseTextSettings(cupBaseTextSettings);
   text_line1_enabled = cupBaseTextSettings[iCupBaseTextLine1Enabled];
   text_line2_enabled = cupBaseTextSettings[iCupBaseTextLine2Enabled];
@@ -67,7 +67,7 @@ module cup_base_text(
       5*maxTextWidth/sample_text_1_width;
       
   if (text_line1_enabled) {
-    color(getColour(color_wallcutout))
+    color(env_colour(color_wallcutout))
     translate([
       _text_x,
       _text_1_y,
@@ -92,7 +92,7 @@ module cup_base_text(
         
     _text_2_y = _text_1_y + _text_1_size + min(_text_1_size * 0.25, 3);
 
-    color(getColour(color_wallcutout))
+    color(env_colour(color_wallcutout))
     translate([
       _text_x,
       _text_2_y,

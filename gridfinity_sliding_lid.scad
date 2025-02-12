@@ -254,15 +254,13 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true),
+  cut = [cutx, cuty, calcDimensionHeight(height, true)],
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)
@@ -397,12 +395,12 @@ SetGridfinityEnvironment(
         
     zClearance = zClearance + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
     
-    filledInZ = gf_zpitch*num_z;
+    filledInZ = env_pitch().z*num_z;
     zpoint = filledInZ-zClearance;
     
     translate(
       render_choice == "both" && !$preview 
-      ? [(num_x+0.5)*gf_pitch, 0, 0] 
+      ? [(num_x+0.5)*env_pitch().x, 0, 0] 
       : [0, 0, render_choice == "lid" ? 0 : zpoint])
     difference()
     {

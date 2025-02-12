@@ -53,8 +53,7 @@ for(hexi = [0:1:len(hexOptions)-1])
     holeHeight = holeSize,
     center=centerOptions[centeri],
     fill=fillOptions[filli],
-    customShape = true,
-    help = help)
+    customShape = true)
     cube([holeSize,2*holeSize,holeSize]);
 
   translate([xpos+(canvasSize+canvasSpace)*1,ypos,0])
@@ -69,8 +68,7 @@ for(hexi = [0:1:len(hexOptions)-1])
     holeHeight = holeSize,
     center=centerOptions[centeri],
     fill=fillOptions[filli],
-    customShape = true,
-    help = help)
+    customShape = true)
     cube([2*holeSize,holeSize,holeSize]);
     
   translate([xpos+(canvasSize+canvasSpace)*2,ypos,0])
@@ -86,8 +84,7 @@ for(hexi = [0:1:len(hexOptions)-1])
     holeHeight = holeSize,
     center=centerOptions[centeri],
     fill=fillOptions[filli],
-    customShape = false,
-    help = help);
+    customShape = false);
 
   translate([xpos+(canvasSize+canvasSpace)*3,ypos,0])
   Highlight([canvasSize,canvasSize,1], "circle")
@@ -102,8 +99,7 @@ for(hexi = [0:1:len(hexOptions)-1])
     holeHeight = holeSize,
     center=centerOptions[centeri],
     fill=fillOptions[filli],
-    customShape = false,
-    help = help);
+    customShape = false);
     
   translate([xpos+(canvasSize+canvasSpace)*4,ypos,0])
   Highlight([canvasSize,canvasSize,1], "sqaure")
@@ -118,8 +114,7 @@ for(hexi = [0:1:len(hexOptions)-1])
     holeHeight = holeSize,
     center=centerOptions[centeri],
     fill=fillOptions[filli],
-    customShape = false,
-    help = help);
+    customShape = false);
 }
 }
 }
@@ -157,6 +152,5 @@ for(hexi = [0:1:len(hexOptions)-1])
     holeHeight = 5,
     center=centerOptions[centeri],
     fill=fillOptions[filli],
-    customShape = false,
-    help = help);
+    customShape = false);
  }}}

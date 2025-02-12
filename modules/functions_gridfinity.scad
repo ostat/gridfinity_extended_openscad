@@ -4,9 +4,9 @@ include <module_gridfinity_cup_base.scad>
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
 
-function calcDimensionWidth(width, shouldLog = false) = calcDimension(width, "width", gf_pitch, shouldLog);
-function calcDimensionDepth(depth, shouldLog = false) = calcDimension(depth, "depth", gf_pitch, shouldLog);
-function calcDimensionHeight(height, shouldLog = false) = calcDimension(height, "height", gf_zpitch, shouldLog); 
+function calcDimensionWidth(width, shouldLog = false) = calcDimension(width, "width", env_pitch().x, shouldLog);
+function calcDimensionDepth(depth, shouldLog = false) = calcDimension(depth, "depth", env_pitch().y, shouldLog);
+function calcDimensionHeight(height, shouldLog = false) = calcDimension(height, "height", env_pitch().z, shouldLog); 
 function calcDimension(value, name, unitSize, shouldLog) = 
   is_num(value) ? 
     (shouldLog ? echo(str("🟩",name,": ", value, "gf (",value*unitSize,"mm)"), input=value) value : value)
@@ -24,16 +24,16 @@ function calculateCavityFloorRadius(cavity_floor_radius, wall_thickness, efficie
 constTopHeight = let(fudgeFactor = 0.01) 5.7+fudgeFactor*5; //Need to confirm this
   
   
-//unit position to mm.
+//returns unit position to mm.
 //positive values are in units.
 //negative values are ration total/abs(value)
-function wallCutoutPosition_mm(userPosition, wallLength) = unitPositionTo_mm(userPosition, wallLength);
-function unitPositionTo_mm(userPosition, wallLength) = 
-  (userPosition < 0 ? wallLength*gf_pitch/abs(userPosition) : gf_pitch*userPosition);
+function wallCutoutPosition_mm(userPosition, wallLength, pitch) = unitPositionTo_mm(userPosition, wallLength, pitch);
+function unitPositionTo_mm(userPosition, wallLength, pitch) = 
+  (userPosition < 0 ? wallLength*pitch/abs(userPosition) : pitch*userPosition);
   
 //0.6 is needed to align the top of the cutout, need to fix this
 function calculateWallTop(num_z, lip_style) =
-  gf_zpitch * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
+  env_pitch().z * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
   
 //Height to clear the voids in the base
 function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base="off") = 
@@ -43,12 +43,17 @@ function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base="off") =
 
 function calculateMinFloorHeight(magnet_depth,screw_depth) = 
     cupBaseClearanceHeight(magnet_depth,screw_depth) + gf_cup_floor_thickness;
-    
-function calculateAttachmentPosition(magnet_diameter, screw_diameter) = 
+
+//This should be a function and should match the cup function
+function calculateAttachmentPosition(magnet_diameter=0, screw_diameter=0, pitch = env_pitch().x) = 
   let(attachment_diameter = max(magnet_diameter, screw_diameter))
   attachment_diameter == 0 
     ? 0
-    : min(gf_pitch/2-8, gf_pitch/2-4-attachment_diameter/2);
+    : min(pitch/2-8, pitch/2-4-attachment_diameter/2);
+
+function calculateAttachmentPositions(magnet_diameter=0, screw_diameter=0, pitch = env_pitch()) = 
+  [calculateAttachmentPosition(magnet_diameter, screw_diameter, pitch.x),
+  calculateAttachmentPosition(magnet_diameter, screw_diameter, pitch.y)];
 
 //Height of base including the floor.
 function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base="off") = 
@@ -59,7 +64,7 @@ function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=
       let(
         filledin = validateFilledIn(filledin),
         floorThickness = max(floor_thickness, gf_cup_floor_thickness))
-  filledin != FilledIn_disabled ? num_z * gf_zpitch 
+  filledin != FilledIn_disabled ? num_z * env_pitch().z 
     : efficient_floor != "off" 
       ? floorThickness
       : max(0, cupBaseClearanceHeight(magnet_depth,screw_depth, flat_base) + max(floor_thickness, gf_cup_floor_thickness));
@@ -69,20 +74,19 @@ function calculateFloorThickness(magnet_depth, screw_depth, floor_thickness, num
 let(
     cfh = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z, filledin),
     cbch = cupBaseClearanceHeight(magnet_depth, screw_depth))
-  IsHelpEnabled("info") ? 
+  env_help_enabled("info") ? 
   echo("calculateFloorThickness", cfh=cfh, cbch=cbch,num_z=num_z,magnet_depth=magnet_depth,screw_depth=screw_depth,floor_thickness=floor_thickness,filledin=filledin) cfh - cbch :
   cfh - cbch;
     
 // calculate the position of separators from the size
-function splitChamber(num_separators, num_x) = num_separators < 1 
+function splitChamber(num_separators, width) = num_separators < 1 
       ? [] 
-      : [ for (i=[1:num_separators]) i*(num_x/(num_separators+1))*gf_pitch];
+      : [ for (i=[1:num_separators]) i*(width/(num_separators+1))];
   
-function cupPosition(position, num_x, num_y) = gridfinityRenderPosition(position, num_x, num_y);
 function gridfinityRenderPosition(position, num_x, num_y) = 
-    position == "center" ? [-(num_x)*gf_pitch/2, -(num_y)*gf_pitch/2, 0] 
+    position == "center" ? [-(num_x)*env_pitch().x/2, -(num_y)*env_pitch().y/2, 0] 
     : position == "zero" ? [0, 0, 0] 
-    : [-gf_pitch/2, -gf_pitch/2, 0]; 
+    : [-env_pitch().x/2, -env_pitch().y/2, 0]; 
 
 //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm) 
 function wallThickness(wall_thickness, num_z) = wall_thickness != 0 ? wall_thickness

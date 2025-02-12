@@ -34,8 +34,7 @@ module GridItemHolder(
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   //crop = true,
-  rotateGrid = false,
-  help) 
+  rotateGrid = false) 
 {
   holeChamfer = is_num(holeChamfer) ? [0, holeChamfer] : holeChamfer;
   assert(is_list(canvasSize) && len(canvasSize)==2, "canvasSize must be list of len 2");
@@ -107,14 +106,14 @@ module GridItemHolder(
     _canvasSize.x<=holeSize.x+holeSpacing.x || 
     _canvasSize.y<=holeSize.y+holeSpacing.y ||
     holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
-  if(IsHelpEnabled("trace")) echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
+  if(env_help_enabled("trace")) echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
   hexGridCount = let(count = eHexGrid[0]*eHexGrid[1]) eHexGrid[0] % 2 == 0 ? floor(count) : ceil(count);
   squareCount = eSquareGrid[0]*eSquareGrid[1];
   _hexGrid = hexGrid != "auto" ? hexGrid //if not auto use what was chose
           : hexGridCount == squareCount ? false //if equal prefer square
           : hexGridCount > squareCount;
           
-  if(IsHelpEnabled("info")) echo(str("🟩ItemGrid: count ", _hexGrid?hexGridCount:squareCount, " using grid ", _hexGrid?"hex":"square"), input=hexGrid==true?"hex":hexGrid==false?"square":hexGrid, hexGridCount=hexGridCount, squareCount=squareCount);
+  if(env_help_enabled("info")) echo(str("🟩ItemGrid: count ", _hexGrid?hexGridCount:squareCount, " using grid ", _hexGrid?"hex":"square"), input=hexGrid==true?"hex":hexGrid==false?"square":hexGrid, hexGridCount=hexGridCount, squareCount=squareCount);
   
 
   translate(center ? [0, 0, 0] : [(rotateGrid?canvasSize.x:0)+ border, border, 0])
@@ -155,7 +154,7 @@ module GridItemHolder(
       module HexGrid(e=[11,4],es=5,center=true,name,help){
       */
 
-      HexGrid(e=eFill, es=es, center=center, help=help)
+      HexGrid(e=eFill, es=es, center=center)
         if(customShape){
           translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
             children();
@@ -187,7 +186,7 @@ module GridItemHolder(
       module Grid(e=[2,2,1],es=10,s,center=true,name,help)
       */
       
-      Grid(e=eFill, es=es, center=center, help=help)
+      Grid(e=eFill, es=es, center=center)
         if(customShape){
           translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
           children();
@@ -217,7 +216,7 @@ module GridItemHolder(
     ,"squareCount",squareCount  
      ,"Rc",Rc
     ,"Ri",Ri]
-    ,help);
+    ,env_help_enabled("info"));
 }
 
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
@@ -234,7 +233,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   iitemHeight = 4;
   ishape = 5;
 
-  if(IsHelpEnabled("trace")) echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
+  if(env_help_enabled("trace")) echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
   render() //Render on item holder multiCard as it can be complex
   union(){
     minspacing = 3;
@@ -323,7 +322,7 @@ module chamferedRectangleTop(size, chamfer, cornerRadius){
   conesizeTop = chamfer+cornerRadius+champherExtention;
   conesizeBottom = conesizeTop>size.z ? conesizeTop-size.z: 0;
   
-  if(IsHelpEnabled("trace")) echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
+  if(env_help_enabled("trace")) echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
   //if cornerRadius = 0, we can further increase the height of the 'cone' so we can extend inside the shape
   hull(){
     translate([cornerRadius+champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])

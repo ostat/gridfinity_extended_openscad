@@ -223,6 +223,8 @@ cuty = 0; //0.1
 enable_help = "disabled"; //[info,debug,trace]
 
 /* [Model detail] */
+//Work in progress,  Modify the default grid size. Will break compatibility
+pitch = [42,42,7];  //[0:1:9999]
 //assign colours to the bin
 set_colour = "enable"; //[disabled, enable, preview, lip]
 //where to render the model
@@ -247,15 +249,14 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true),
+  pitch = pitch,
+  cut = [cutx, cuty, calcDimensionHeight(height, true)],
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)
