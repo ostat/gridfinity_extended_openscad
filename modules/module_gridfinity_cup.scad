@@ -613,8 +613,7 @@ module gridfinity_cup(
                             patternVariable=wall_pattern_settings[iPatternVariable],
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
                             source="wall_pattern",
-                            patternFs = wall_pattern_settings[iPatternFs],
-                            help=help);
+                            patternFs = wall_pattern_settings[iPatternFs]);
                             
                       if(wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
                         position_separators(
@@ -638,8 +637,7 @@ module gridfinity_cup(
                                 patternVariable =wall_pattern_settings[iPatternVariable],
                                 holeRadius = wall_pattern_settings[iPatternHoleRadius],
                                 source="vertical separator wall pattern",
-                                patternFs = wall_pattern_settings[iPatternFs],
-                                help=help);
+                                patternFs = wall_pattern_settings[iPatternFs]);
                   }    
                     
                   //subtract dividers from wall patterns
@@ -697,8 +695,7 @@ module gridfinity_cup(
                                   patternVariable=wall_pattern_settings[iPatternVariable],
                                   holeRadius = wall_pattern_settings[iPatternHoleRadius],
                                   source="horizontal separator wall pattern",
-                                  patternFs = wall_pattern_settings[iPatternFs],
-                                  help=help);
+                                  patternFs = wall_pattern_settings[iPatternFs]);
                   }
                     
                   //subtract dividers from outer wall pattern

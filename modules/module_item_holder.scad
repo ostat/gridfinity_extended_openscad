@@ -34,8 +34,7 @@ module GridItemHolder(
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   //crop = true,
-  rotateGrid = false,
-  help) 
+  rotateGrid = false) 
 {
   holeChamfer = is_num(holeChamfer) ? [0, holeChamfer] : holeChamfer;
   assert(is_list(canvasSize) && len(canvasSize)==2, "canvasSize must be list of len 2");
@@ -155,7 +154,7 @@ module GridItemHolder(
       module HexGrid(e=[11,4],es=5,center=true,name,help){
       */
 
-      HexGrid(e=eFill, es=es, center=center, help=help)
+      HexGrid(e=eFill, es=es, center=center)
         if(customShape){
           translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
             children();
@@ -187,7 +186,7 @@ module GridItemHolder(
       module Grid(e=[2,2,1],es=10,s,center=true,name,help)
       */
       
-      Grid(e=eFill, es=es, center=center, help=help)
+      Grid(e=eFill, es=es, center=center)
         if(customShape){
           translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
           children();
@@ -217,7 +216,7 @@ module GridItemHolder(
     ,"squareCount",squareCount  
      ,"Rc",Rc
     ,"Ri",Ri]
-    ,help);
+    ,env_help_enabled("info"));
 }
 
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){

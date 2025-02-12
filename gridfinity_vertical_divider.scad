@@ -214,8 +214,7 @@ module PatternedDivider(
         center = false,
         fill = wallpatternFill, //"none", "space", "crop"
         patternVariable = wallpatternVariable,
-        patternFs = wallpatternQuality,
-        help=help);
+        patternFs = wallpatternQuality);
       }
     }
   }

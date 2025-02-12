@@ -450,8 +450,7 @@ module itemholder(
           holeHeight = _depth+fudgeFactor,
           holeChamfer = holeChamfer,
           center=compartment_centered,
-          fill=compartment_fill,
-          help=help)
+          fill=compartment_fill)
             if(item[ishape]=="multicard")
             {
               multiCard(

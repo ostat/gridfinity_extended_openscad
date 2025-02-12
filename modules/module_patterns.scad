@@ -101,8 +101,7 @@ module cutout_pattern(
   holeRadius,
   border = 0,
   patternFs = 0,
-  source = "",
-  help){
+  source = ""){
   
   canvasSize = border > 0
     ? [canvasSize.x-border*2, canvasSize.y-border*2]
@@ -127,8 +126,7 @@ module cutout_pattern(
         fill=fill, //"none", "space", "crop"
         rotateGrid = (patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
         //border = border,
-        holeChamfer=[patternVariable,patternVariable],
-        help=help);
+        holeChamfer=[patternVariable,patternVariable]);
     }
     else if(patternStyle == PatternStyle_voronoi || patternStyle == PatternStyle_voronoigrid || patternStyle == "voronoihexgrid"){
       if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);

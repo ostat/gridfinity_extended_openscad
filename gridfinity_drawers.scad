@@ -164,7 +164,7 @@ module drawers(
     if(env_help_enabled("debug")) echo("drawers", i= i, StartH=StartH, clearance=clearance, height=drawerInnerHeights[i], zpos=zpos, drawerOuterz=drawerOuterSizes.z, drawerInnerz=drawerInnerSizes.z, drawerOuterSizes.z);
     
     translate($preview 
-      ? [chestWallThickness+chestClearance.x, ((drawerCount-i)/(drawerCount+1)*-innerUnitSize.y*y/(1.5))+offsetW, zpos] 
+      ? [chestWallThickness+chestClearance.x, ((drawerCount-i)/(drawerCount+1)*-innerUnitSize.y*env_pitch().y/(1.5))+offsetW, zpos] 
       : [(innerUnitSize.x+0.5)*i*env_pitch().x,0,0])
       drawer(drawerIndex=i,
         innerUnitSize=innerUnitSize,
@@ -434,9 +434,8 @@ module chestCutouts(
           holeHeight = wallPattern_thickness,
           center=true,
           fill=wallPatternFill, //"none", "space", "crop"
-          voronoiNoise=wallPatternVoronoiNoise,
-          voronoiRadius = wallPatternVoronoiRadius,
-          help=false);
+          patternVariable=wallPatternVoronoiNoise,
+          holeRadius = wallPatternVoronoiRadius);
   }
   
   top = [
@@ -466,8 +465,7 @@ module chestCutouts(
           center=true,
           fill=wallPatternFill, //"none", "space", "crop"
           voronoiNoise=wallPatternVoronoiNoise,
-          voronoiRadius = wallPatternVoronoiRadius,
-          help=false);
+          voronoiRadius = wallPatternVoronoiRadius);
    
   color(colour_chest) 
   if(drawerSlideWidth > 0 && drawerCount > 1)
@@ -480,48 +478,6 @@ module chestCutouts(
         y=outerChest.y, //was innerchest
         z=zposLastDivider-zposFirstDivider,
         sideRadius = drawerSlideWidth-fudgeFactor*2);
-  }
-}
-
-
-module cutout_pattern(
-  patternStyle,
-  canvasSize,
-  customShape,
-  circleFn,
-  holeSize = [],
-  holeSpacing,
-  holeHeight,
-  center,
-  fill,
-  voronoiNoise,
-  voronoiRadius,
-  rotateGrid = true,
-  help){
-  if(patternStyle == "grid" || patternStyle == "hexgrid" || patternStyle == "gridrotated" || patternStyle == "hexgridrotated") {
-    GridItemHolder(
-      canvasSize = canvasSize,
-      hexGrid = (patternStyle == "hexgrid" || patternStyle == "hexgridrotated"),
-      customShape = customShape,
-      circleFn = circleFn,
-      holeSize = holeSize,
-      holeSpacing = holeSpacing,
-      holeHeight = holeHeight,
-      center=center,
-      fill=fill, //"none", "space", "crop"
-      rotateGrid = (patternStyle == "gridrotated" || patternStyle == "hexgridrotated"),
-      border=0,
-      help=help);
-  }
-  else if(patternStyle == "voronoi" || patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"){
-    rectangle_voronoi(
-      canvasSize = [canvasSize.x,canvasSize.y,holeHeight], 
-      spacing = holeSpacing.x, 
-      cellsize = holeSize.x,
-      grid = (patternStyle == "voronoigrid" || patternStyle == "voronoihexgrid"),
-      gridOffset = (patternStyle == "voronoihexgrid"),
-      noise=voronoiNoise,
-      radius = voronoiRadius);
   }
 }
 
