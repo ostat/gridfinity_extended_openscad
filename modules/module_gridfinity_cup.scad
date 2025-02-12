@@ -495,6 +495,7 @@ module gridfinity_cup(
           difference(){
             union(){
               if(floor_pattern_settings[iPatternEnabled]){
+                difference(){
                 pad_copy(
                   num_x = num_x, 
                   num_y = num_y, 
@@ -517,7 +518,23 @@ module gridfinity_cup(
                       holeRadius = floor_pattern_settings[iPatternHoleRadius],
                       patternFs = floor_pattern_settings[iPatternFs],
                       source="floor_pattern");
+                      
+                  //subtract dividers from floor pattern
+                  translate([0, 0, -fudgeFactor])
+                  separators(
+                    calculatedSeparators = calculated_vertical_separator_positions,
+                    separator_orientation = "vertical",
+                    override_wall_thickness = chamber_wall_thickness+cutoutclearance*2);
+                    
+                  //subtract dividers from floor pattern
+                  translate([gf_pitch*num_x, 0, -fudgeFactor])
+                  separators(
+                    calculatedSeparators = calculated_horizontal_separator_positions,
+                    separator_orientation = "horizontal",
+                    override_wall_thickness = chamber_wall_thickness+cutoutclearance*2);
+                }
               }
+              
           
               if(wall_pattern_settings[iPatternEnabled]){
                 wallpattern_thickness = wall_thickness + fudgeFactor*4;
@@ -707,7 +724,7 @@ module gridfinity_cup(
                 }
               }
             }
-              
+                    
             //Subtract setback from wall pattern
             if(tapered_corner == "rounded" || tapered_corner == "chamfered")
               //tapered_corner_size = tapered_corner_size == 0 ? gf_zpitch*num_z/2 : tapered_corner_size;
