@@ -15,10 +15,10 @@ module grid_block(
   num_y=2, 
   num_z=2, 
   position = "zero",
-  lipStyle = "normal",    //"minimum" "none" "reduced" "normal"
   filledin = "disabled", //[disabled, enabled, enabledfilllip]
   wall_thickness = 1.2,
   cupBase_settings = CupBaseSettings(),
+  lip_settings = LipSettings(),
   help)
 {
   lipHeight = 3.75;
@@ -55,8 +55,10 @@ module grid_block(
     cupLip(
       num_x = num_x, 
       num_y = num_y, 
-      lipStyle = lipStyle,
-      wall_thickness = wall_thickness);
+      lipStyle = lip_settings[iLipStyle],
+      wall_thickness = wall_thickness,
+      lip_notches = lip_settings[iLipNotch],
+      lip_top_relief_height = lip_settings[iLipTopReliefHeight]);
   }
         
   translate(gridfinityRenderPosition(position,num_x,num_y))
@@ -144,7 +146,7 @@ module grid_block(
     ,"half_pitch",half_pitch
     ,"box_corner_attachments_only",box_corner_attachments_only
     ,"flat_base",flat_base
-    ,"lipStyle",lipStyle
+    ,"lipSettings",lip_settings
     ,"filledin",filledin]
     ,help);
 }
@@ -176,14 +178,68 @@ module cylsq2(d1, d2, h) {
   linear_extrude(height=h, scale=d2/d1)
   square([d1, d1], center=true);
 }
+  
+module frame_cavity(
+    num_x, 
+    num_y, 
+    position_fill_grid_x = "near",
+    position_fill_grid_y = "near",
+    render_top = true,
+    render_bottom = true,
+    extra_down=0, 
+    frameLipHeight = 4,
+    cornerRadius = gf_cup_corner_radius,
+    reducedWallHeight = 0,
+    reducedWallOuterEdgesOnly=false) {
 
-//pad_oversize(  margins=1,extend_down=5);
+  frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
+    translate([0, 0, -fudgeFactor]) 
+      gridcopy(
+        num_x, 
+        num_y,
+        positionGridx = position_fill_grid_x,
+        positionGridy = position_fill_grid_y) {
+      if($gc_size.x > 0.2 && $gc_size.y >= 0.2){
+        if(frameWallReduction>0)
+          for(side=[[0, [$gc_size.x, $gc_size.y]*env_pitch().x, "x"],[90, [$gc_size.y, $gc_size.x]*env_pitch().y, "y"]]){
+            if(side[1].x >= env_pitch().x/2)
+            if(!reducedWallOuterEdgesOnly || ($gc_is_corner[1] && side[2] =="x") || ($gc_is_corner[0] && side[2] =="y"))
+            translate([$gc_size.x/2*env_pitch().x,$gc_size.y/2*env_pitch().y,frameLipHeight])
+            rotate([0,0,side[0]])
+              WallCutout(
+                lowerWidth=side[1].x-20,
+                wallAngle=80,
+                height=frameWallReduction,
+                thickness=side[1].y+fudgeFactor*2,
+                cornerRadius=frameWallReduction,
+                topHeight=1);
+              }
+
+          //wall reducers, cutouts and clips
+          if($children >=2) children(1);
+
+          pad_oversize(
+            num_x=$gc_size.x,
+            num_y=$gc_size.y,
+            margins=1,
+            extend_down=extra_down,
+            render_top=render_top,
+            render_bottom=render_bottom)
+              //cell cavity
+              if($children >=1) children(0);
+    }
+  }
+}
+
 // unit pad slightly oversize at the top to be trimmed or joined with other feet or the rest of the model
 // also useful as cutouts for stacking
+//pad_oversize(margins=1,extend_down=5, $fn=64);
 module pad_oversize(
   num_x=1, 
   num_y=1, 
   margins=0,
+  render_top = true,
+  render_bottom = true,
   extend_down = 0) {
   
   assert(!is_undef(num_x), "num_x is undefined");
@@ -213,28 +269,32 @@ module pad_oversize(
   difference() {
     union() {
       //top over size taper
-      hull() cornercopy(pad_corner_position, num_x, num_y) {
-        if (sharp_corners) {
-          translate(bevel2_bottom) 
-          cylsq2(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
-        }
-        else {
-          tz(bevel2_bottom) 
-          cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+      if(render_top){
+        hull() cornercopy(pad_corner_position, num_x, num_y) {
+          if (sharp_corners) {
+            translate(bevel2_bottom) 
+            cylsq2(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+          }
+          else {
+            tz(bevel2_bottom) 
+            cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+          }
         }
       }
       
-      hull() 
+      if(render_bottom){ 
+        hull()
         cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
             cylsq(d=1.6+2*radialgap, h=0.1);
-            translate([0, 0, bevel1_top]) cylsq(d=3.2+2*radialgap, h=1.9);
+            translate([0, 0, bevel1_top]) cylsq(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
             cylinder(d=1.6+2*radialgap, h=0.1);
             translate([0, 0, bevel1_top]) 
-              cylinder(d=3.2+2*radialgap, h=1.9);
+              cylinder(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
+        }
       }
  
       if(extend_down > 0)
@@ -342,6 +402,7 @@ module gridcopy(
       $gci=[xi,yi,0];
       $gc_count=[len(xCellsList), len(yCellsList), 0];
       $gc_size=[xCellsList[xi][0], yCellsList[yi][0], 0];
+      //is this a corner really means is outer edge.
       $gc_is_corner=[xCellsList[xi][1], yCellsList[yi][1]];
       $gc_position=[
         vector_sum(xCellsList, 0, xi,0)-xCellsList[xi][0], 

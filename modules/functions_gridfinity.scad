@@ -153,16 +153,7 @@ function validateFilledIn(value) =
   let(value = is_bool(value) ? value ? FilledIn_enabled : FilledIn_disabled : value)
   assert(list_contains(FilledIn_values, value), typeerror("FilledIn", value))
   value;
-
-LipStyle_normal = "normal";
-LipStyle_reduced = "reduced";
-LipStyle_minimum = "minimum";
-LipStyle_none = "none";
-LipStyle_values = [LipStyle_normal,LipStyle_reduced,LipStyle_minimum,LipStyle_none];
-function validateLipStyle(value) = 
-  assert(list_contains(LipStyle_values, value), typeerror("LipStyle", value))
-  value;
-  
+ 
 Stackable_enabled = "enabled";
 Stackable_disabled = "disabled";
 Stackable_filllip = "filllip";

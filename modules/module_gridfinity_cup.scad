@@ -19,13 +19,8 @@ default_width = [2, 0]; //0.1
 default_depth = [1, 0]; //0.1
 // Z dimension excluding. grid units (multiples of 7mm) or mm.
 default_height = [3, 0]; //0.1
-
 default_position = "default"; //["default","center","zero"]
 default_filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
-// Might want to remove inner lip of cup
-default_lip_style = "normal"; //[normal, reduced, minimum, none]
-//At what x and y size should we enable side lip reduction
-default_lip_side_relief_trigger = [1,1];
 //assign colours to the bin, will may 
 default_set_colour = "preview"; //[disabled, preview, lip]
 
@@ -36,6 +31,16 @@ default_wall_thickness = 0;// 0.01
 // (Zack's design uses magnet diameter of 6.5)
 //under size the bin top by this amount to allow for better stacking
 default_zClearance = 0; // 0.1
+
+/* [Cup Lip] */
+// Style of the cup lip
+default_lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+// Below this the inside of the lip will be reduced for easier access.
+default_lip_side_relief_trigger = [1,1]; //0.1
+// Create a relief in the lip
+default_lip_top_relief_height = 0; // 0.1
+// add a notch to the lip to prevent sliding.
+default_lip_top_notches  = 0; // 0.1
 
 /* [Label] */
 // Include overhang for labeling
@@ -251,8 +256,11 @@ module gridfinity_cup(
   horizontal_separator_cut_depth = default_horizontal_separator_cut_depth,
   horizontal_irregular_subdivisions = default_horizontal_irregular_subdivisions,
   horizontal_separator_config = default_horizontal_separator_config,
-  lip_style=default_lip_style,
-  lip_side_relief_trigger=default_lip_side_relief_trigger,
+  lip_settings = LipSettings(
+    lipStyle=default_lip_style, 
+    lipSideReliefTrigger=default_lip_side_relief_trigger, 
+    lipTopReliefHeight=default_lip_top_relief_height, 
+    lipNotch=default_lip_top_notches),
   zClearance=default_zClearance,
   tapered_corner = default_tapered_corner,
   tapered_corner_size = default_tapered_corner_size,
@@ -315,8 +323,7 @@ module gridfinity_cup(
     baseTextLine2Value = default_text_2_text,
     baseTextFontSize = default_text_size,
     baseTextFont = default_text_font,
-    baseTextDepth = default_text_depth)
-) {
+    baseTextDepth = default_text_depth)) {
   
   num_x = calcDimensionWidth(width, true);
   num_y = calcDimensionDepth(depth, true);
@@ -394,7 +401,7 @@ module gridfinity_cup(
         num_x, num_y, num_z,
         cupBase_settings = cupBase_settings,
         wall_thickness = wall_thickness,
-        lipStyle = lip_style,
+        lip_settings = lip_settings,
         filledin = filled_in);
         
       if(filled_in == FilledIn_disabled) 
@@ -413,15 +420,14 @@ module gridfinity_cup(
           chamber_wall_zClearance=chamber_wall_zClearance,
           calculated_vertical_separator_positions = calculated_vertical_separator_positions,
           calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
-          lip_style=lip_style,
-          lip_side_relief_trigger=lip_side_relief_trigger,
+          lip_settings=lip_settings,
           zClearance=zClearance,
           sliding_lid_settings= slidingLidSettings);
       
       color(env_colour(color_wallcutout))
       union(){
         cavityFloorRadius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
-        wallTop = calculateWallTop(num_z, lip_style);
+        wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
         cutoutclearance_divider = gf_cup_corner_radius/2;
         cutoutclearance_border = max(wall_thickness, wall_pattern_settings[iPatternBorder]);
 
@@ -569,8 +575,8 @@ module gridfinity_cup(
                 //I feel this should use wallTop, but it seems to work...
                 heightz = env_pitch().z*(num_z)-wallpatternzpos + (
                   //Position specific to each LIP style
-                  lip_style == "reduced" ? 0.6 :
-                  lip_style == "minimum" ? 3 -border*2 
+                  lip_settings[iLipStyle] == "reduced" ? 0.6 :
+                  lip_settings[iLipStyle] == "minimum" ? 3 -border*2 
                    : -gf_lip_height-1.8);
                 z=wallpatternzpos+heightz/2;
                 
@@ -858,8 +864,8 @@ module gridfinity_cup(
         floor_thickness) + calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,efficient_floor)-tabThickness;
       
       //todo need to correct this
-      lipheight = lip_style == "none" ? tabThickness
-        : lip_style == "reduced" ? gf_lip_upper_taper_height+tabThickness
+      lipheight = lip_settings[iLipStyle] == "none" ? tabThickness
+        : lip_settings[iLipStyle] == "reduced" ? gf_lip_upper_taper_height+tabThickness
         //Add tabThickness, as the taper can bleed in to the lip
         : gf_lip_upper_taper_height + gf_lip_lower_taper_height-tabThickness;
       ceilingHeight = env_pitch().z*num_z-zClearance-lipheight;
@@ -910,7 +916,7 @@ module gridfinity_cup(
       env_cutx(), 
       env_cuty(), 
       size=[num_x,num_y,num_z], 
-      lip_style,
+      lip_settings[iLipStyle],
       cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
       cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
       cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
@@ -943,7 +949,7 @@ module gridfinity_cup(
     ,"horizontal_separator_bend_separation",horizontal_separator_bend_separation
     ,"horizontal_separator_positions",calculated_horizontal_separator_positions
     ,"horizontal_separator_cut_depth",horizontal_separator_cut_depth
-    ,"lip_style",lip_style
+    ,"lip_settings",lip_settings
     ,"zClearance",zClearance
     ,"tapered_corner",tapered_corner
     ,"tapered_corner_size",tapered_corner_size
@@ -982,8 +988,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_zClearance=default_chamber_wall_zClearance,
     calculated_vertical_separator_positions=calculated_vertical_separator_positions,
     calculated_horizontal_separator_positions=calculated_horizontal_separator_positions,
-    lip_style=default_lip_style, 
-    lip_side_relief_trigger=default_lip_side_relief_trigger,
+    lip_settings=[], 
     zClearance=default_zClearance, 
     sliding_lid_settings=[]) {
   
@@ -1015,8 +1020,7 @@ module partitioned_cavity(num_x, num_y, num_z,
       fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_lip_aligned=fingerslide_lip_aligned, fingerslide_radius=fingerslide_radius, 
       cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
-      lip_style=lip_style, 
-      lip_side_relief_trigger=lip_side_relief_trigger,
+      lip_settings=lip_settings, 
       sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
     
@@ -1052,8 +1056,7 @@ module partitioned_cavity(num_x, num_y, num_z,
 module basic_cavity(num_x, num_y, num_z, 
     fingerslide=default_fingerslide, fingerslide_radius=default_fingerslide_radius,fingerslide_walls,fingerslide_lip_aligned=default_fingerslide_lip_aligned,
     wall_thickness=default_wall_thickness,
-    lip_style=default_lip_style,
-    lip_side_relief_trigger=[1,1],
+    lip_settings=[],
     cupBase_settings=[],
     sliding_lid_settings = [],
     zClearance = 0) {
@@ -1079,7 +1082,7 @@ module basic_cavity(num_x, num_y, num_z,
     (num_z < 1.2) ? "none" 
     // replace with "reduced" if z-height is less than 1.8
     : (num_z < 1.8) ? "reduced" 
-    : lip_style;
+    : lip_settings[iLipStyle];
 
   filledInZ = env_pitch().z*num_z;
   zpoint = filledInZ-zClearance;
@@ -1251,7 +1254,7 @@ module basic_cavity(num_x, num_y, num_z,
   
   // cut away side lips if num_x is less than 1
   if(env_help_enabled("trace")) echo(str("cutaway input:", num_x, " rounded:", roundtoDecimal(num_x, sigFigs = 2), " numx<1:", num_x < 1," round<1:", roundtoDecimal(num_x, sigFigs = 2)<1, " numx=round:", num_x==roundtoDecimal(num_x, sigFigs = 2)));
-  if (roundtoDecimal(num_x,2) < lip_side_relief_trigger.x) {
+  if (roundtoDecimal(num_x,2) < lip_settings[iLipSideReliefTrigger].x) {
     top = num_z*env_pitch().z+gf_Lip_Height;
     height = top-lipBottomZ+fudgeFactor*2;
     
@@ -1263,7 +1266,7 @@ module basic_cavity(num_x, num_y, num_z,
     }
   }
 
-  if (roundtoDecimal(num_y,2) < lip_side_relief_trigger.y) {
+  if (roundtoDecimal(num_y,2) < lip_settings[iLipSideReliefTrigger].y) {
     top = num_z*env_pitch().z+gf_Lip_Height;
     height = top-lipBottomZ+fudgeFactor*2;
     

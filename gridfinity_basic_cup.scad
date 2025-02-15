@@ -23,12 +23,18 @@ height = [3, 0]; //0.1
 filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
-// Remove some or all of lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-//At what x and y size should we enable side lip reduction
-lip_side_relief_trigger = [1,1]; //0.1
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
+
+/* [Cup Lip] */
+// Style of the cup lip
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+// Below this the inside of the lip will be reduced for easier access.
+lip_side_relief_trigger = [1,1]; //0.1
+// Create a relie
+lip_top_relief_height = 0; // 0.1
+// add a notch to the lip to prevent sliding.
+lip_top_notches  = true;
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -318,8 +324,11 @@ gridfinity_cup(
   horizontal_separator_cut_depth=horizontal_separator_cut_depth,
   horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
   horizontal_separator_config=horizontal_separator_config, 
-  lip_style=lip_style,
-  lip_side_relief_trigger=lip_side_relief_trigger,
+  lip_settings = LipSettings(
+    lipStyle=lip_style, 
+    lipSideReliefTrigger=lip_side_relief_trigger, 
+    lipTopReliefHeight=lip_top_relief_height, 
+    lipNotch=lip_top_notches),
   zClearance=zClearance,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
