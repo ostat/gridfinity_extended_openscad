@@ -136,8 +136,12 @@ wallpattern_hole_size = [5,5]; //0.1
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
 wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-//voronoi: noise, brick: center weight, grid: taper
-wallpattern_pattern_variable = 0.75;
+//grid pattern hole taper
+wallpattern_pattern_grid_chamfer = 0; //0.01
+//voronoi pattern noise, 
+wallpattern_pattern_voronoi_noise = 0.75;
+//brick pattern center weight
+wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -347,16 +351,21 @@ module gridfinity_tray(
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
-  wallpattern_enabled=wallpattern_enabled,
-  wallpattern_style=wallpattern_style,
   wallpattern_walls=wallpattern_walls, 
   wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-  wallpattern_hole_sides=wallpattern_hole_sides,
-  wallpattern_hole_size=wallpattern_hole_size, 
-  wallpattern_hole_radius = wallpattern_hole_radius,
-  wallpattern_hole_spacing=wallpattern_hole_spacing,
-  wallpattern_fill=wallpattern_fill,
-  wallpattern_pattern_variable=wallpattern_pattern_variable,
+  wall_pattern_settings = PatternSettings(
+    patternEnabled = wallpattern_enabled, 
+    patternStyle = wallpattern_style, 
+    patternFill = wallpattern_fill,
+    patternBorder = wallpattern_hole_spacing, 
+    patternHoleSize = wallpattern_hole_size, 
+    patternHoleSides = wallpattern_hole_sides,
+    patternHoleSpacing = wallpattern_hole_spacing, 
+    patternHoleRadius = wallpattern_hole_radius,
+    patternGridChamfer = wallpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+    patternBrickWeight = wallpattern_pattern_brick_weight,
+    patternFs = wallpattern_pattern_quality), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,
   wallcutout_vertical_width=wallcutout_vertical_width,
@@ -417,17 +426,7 @@ module gridfinity_tray(
       tapered_setback = tapered_setback,
       wallpattern_walls=wallpattern_walls, 
       wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-      wall_pattern_settings = PatternSettings(
-        patternEnabled = wallpattern_enabled, 
-        patternStyle = wallpattern_style, 
-        patternFill = wallpattern_fill,
-        patternBorder = wallpattern_hole_spacing, 
-        patternHoleSize = wallpattern_hole_size, 
-        patternHoleSides = wallpattern_hole_sides,
-        patternHoleSpacing = wallpattern_hole_spacing, 
-        patternHoleRadius = wallpattern_hole_radius,
-        patternVariable = wallpattern_pattern_variable,
-        patternFs = wallpattern_pattern_quality), 
+      wall_pattern_settings = wall_pattern_settings, 
       wallcutout_vertical=wallcutout_vertical,
       wallcutout_vertical_position=wallcutout_vertical_position,
       wallcutout_vertical_width=wallcutout_vertical_width,

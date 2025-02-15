@@ -434,7 +434,9 @@ module chestCutouts(
           holeHeight = wallPattern_thickness,
           center=true,
           fill=wallPatternFill, //"none", "space", "crop"
-          patternVariable=wallPatternVoronoiNoise,
+          patternGridChamfer = 0,
+          patternVoronoiNoise = wallPatternVoronoiNoise,
+          patternBrickWeight = 0,
           holeRadius = wallPatternVoronoiRadius);
   }
   

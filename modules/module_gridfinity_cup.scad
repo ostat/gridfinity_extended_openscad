@@ -268,7 +268,9 @@ module gridfinity_cup(
     patternHoleSides = default_wallpattern_hole_sides,
     patternHoleSpacing = default_wallpattern_hole_spacing, 
     patternHoleRadius = default_wallpattern_hole_radius,
-    patternVariable = default_wallpattern_variable,
+    patternGridChamfer = default_wallpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = default_wallpattern_pattern_voronoi_noise,
+    patternBrickWeight = default_wallpattern_pattern_brick_weight,
     patternFs = default_wallpattern_pattern_quality), 
   floor_pattern_settings = PatternSettings(
     patternEnabled = default_wallpattern_enabled,
@@ -279,7 +281,9 @@ module gridfinity_cup(
     patternHoleSides = default_wallpattern_hole_sides,
     patternHoleSpacing = default_wallpattern_hole_spacing, 
     patternHoleRadius = default_wallpattern_hole_radius,
-    patternVariable = default_wallpattern_variable,
+    patternGridChamfer = default_wallpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = default_wallpattern_pattern_voronoi_noise,
+    patternBrickWeight = default_wallpattern_pattern_brick_weight,
     patternFs = default_wallpattern_pattern_quality), 
   wallcutout_vertical=default_wallcutout_vertical,
   wallcutout_vertical_position=default_wallcutout_vertical_position,
@@ -519,13 +523,15 @@ module gridfinity_cup(
                       holeHeight = sepFloorHeight + fudgeFactor*6,
                       center = true,
                       fill = floor_pattern_settings[iPatternFill],
-                      patternVariable = floor_pattern_settings[iPatternVariable],
+                      patternGridChamfer = floor_pattern_settings[iPatternGridChamfer],
+                      patternVoronoiNoise = floor_pattern_settings[iPatternVoronoiNoise],
+                      patternBrickWeight = floor_pattern_settings[iPatternBrickWeight],
                       border = max(5, floor_pattern_settings[iPatternBorder],
                         cupBase_settings[iCupBase_EfficientFloor] == EfficientFloor_smooth? 6.5 : 0),
                       holeRadius = floor_pattern_settings[iPatternHoleRadius],
                       patternFs = floor_pattern_settings[iPatternFs],
                       source="floor_pattern");
-                      
+
                   //subtract dividers from floor pattern
                   translate([0, 0, -fudgeFactor])
                   separators(
@@ -650,10 +656,12 @@ module gridfinity_cup(
                             holeHeight = wallpattern_thickness,
                             center=true,
                             centerz = true,
-                            fill=wall_pattern_settings[iPatternFill], //"none", "space", "crop"
-                            patternVariable=wall_pattern_settings[iPatternVariable],
+                            fill = wall_pattern_settings[iPatternFill], //"none", "space", "crop"
+                            patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
+                            patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
+                            patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
-                            source="wall_pattern",
+                            source = "wall_pattern",
                             patternFs = wall_pattern_settings[iPatternFs]);
                             
                       if(wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
@@ -675,7 +683,9 @@ module gridfinity_cup(
                                 holeHeight = verSepThickness,
                                 center=true,
                                 fill=wall_pattern_settings[iPatternFill],
-                                patternVariable =wall_pattern_settings[iPatternVariable],
+                                patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
+                                patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
+                                patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
                                 holeRadius = wall_pattern_settings[iPatternHoleRadius],
                                 source="vertical separator wall pattern",
                                 patternFs = wall_pattern_settings[iPatternFs]);
@@ -707,10 +717,12 @@ module gridfinity_cup(
                             holeHeight = wallpattern_thickness,
                             center=true,
                             centerz = true,
-                            fill=wall_pattern_settings[iPatternFill], //"none", "space", "crop"
-                            patternVariable=wall_pattern_settings[iPatternVariable],
+                            fill = wall_pattern_settings[iPatternFill], //"none", "space", "crop"
+                            patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
+                            patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
+                            patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
-                            source="wall_pattern",
+                            source = "wall_pattern",
                             patternFs = wall_pattern_settings[iPatternFs]);
                             
                         if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
@@ -731,11 +743,13 @@ module gridfinity_cup(
                                   holeSize = wall_pattern_settings[iPatternHoleSize],
                                   holeSpacing = [wall_pattern_settings[iPatternHoleSpacing],wall_pattern_settings[iPatternHoleSpacing]],
                                   holeHeight = hozSepThickness,
-                                  center=true,
-                                  fill=wall_pattern_settings[iPatternFill], 
-                                  patternVariable=wall_pattern_settings[iPatternVariable],
+                                  center = true,
+                                  fill = wall_pattern_settings[iPatternFill], 
+                                  patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
+                                  patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
+                                  patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
                                   holeRadius = wall_pattern_settings[iPatternHoleRadius],
-                                  source="horizontal separator wall pattern",
+                                  source = "horizontal separator wall pattern",
                                   patternFs = wall_pattern_settings[iPatternFs]);
                   }
                     

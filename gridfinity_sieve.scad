@@ -150,7 +150,7 @@ module gridfinity_sieve(
         patternHoleSize = holeSize, 
         patternHoleSides = 6,
         patternHoleSpacing = sieve_hole_spacing,
-        patternVariable = sieve_hole_chamfer));
+        patternGridChamfer=sieve_hole_chamfer));
     /*<!!end gridfinity_basic_cup!!>*/
   }
 }

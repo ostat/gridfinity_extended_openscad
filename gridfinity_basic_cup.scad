@@ -147,8 +147,12 @@ wallpattern_hole_size = [5,5]; //0.1
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
 wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-//voronoi: noise, brick: center weight, grid: taper
-wallpattern_pattern_variable = 0.75;
+//grid pattern hole taper
+wallpattern_pattern_grid_chamfer = 0; //0.1
+//voronoi pattern noise, 
+wallpattern_pattern_voronoi_noise = 0.75; //0.01
+//brick pattern center weight
+wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -166,8 +170,12 @@ floorpattern_hole_size = [5,5]; //0.1
 floorpattern_hole_radius = 0.5;
 // pattern fill mode
 floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-//voronoi: noise, brick: center weight, grid: taper
-floorpattern_pattern_variable = 0.75;
+//grid pattern hole taper
+floorpattern_pattern_grid_chamfer = 0; //0.1
+//voronoi pattern noise, 
+floorpattern_pattern_voronoi_noise = 0.75; //0.01
+//brick pattern center weight
+floorpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 floorpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -323,7 +331,9 @@ gridfinity_cup(
     patternHoleSides = wallpattern_hole_sides,
     patternHoleSpacing = wallpattern_hole_spacing, 
     patternHoleRadius = wallpattern_hole_radius,
-    patternVariable = wallpattern_pattern_variable,
+    patternGridChamfer = wallpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+    patternBrickWeight = wallpattern_pattern_brick_weight,
     patternFs = wallpattern_pattern_quality), 
   floor_pattern_settings = PatternSettings(
     patternEnabled = floorpattern_enabled, 
@@ -334,7 +344,9 @@ gridfinity_cup(
     patternHoleSides = floorpattern_hole_sides,
     patternHoleSpacing = floorpattern_hole_spacing, 
     patternHoleRadius = floorpattern_hole_radius,
-    patternVariable = floorpattern_pattern_variable,
+    patternGridChamfer = floorpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
+    patternBrickWeight = floorpattern_pattern_brick_weight,
     patternFs = floorpattern_pattern_quality), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,

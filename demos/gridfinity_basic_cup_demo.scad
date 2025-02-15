@@ -775,20 +775,11 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
         patternHoleSides = DictGet(currentStepSettings, iwallpattern_hole_sides),
         patternHoleSpacing = DictGet(currentStepSettings, iwallpattern_hole_spacing),
         patternHoleRadius = DictGet(currentStepSettings, iwallpattern_voronoi_radius),
-        patternVariable = DictGet(currentStepSettings, iwallpattern_voronoi_noise)
+        patternGridChamfer = 0,
+        patternVoronoiNoise = DictGet(currentStepSettings, iwallpattern_voronoi_noise),
+        patternBrickWeight = 0,
         //patternFs = wallpattern_pattern_quality
         ), 
-      /*floor_pattern_settings = PatternSettings(
-        patternEnabled = floorpattern_enabled, 
-        patternStyle = floorpattern_style, 
-        patternFill = floorpattern_fill,
-        patternBorder = floorpattern_hole_spacing, 
-        patternHoleSize = floorpattern_hole_size, 
-        patternHoleSides = floorpattern_hole_sides,
-        patternHoleSpacing = floorpattern_hole_spacing, 
-        patternHoleRadius = floorpattern_hole_radius,
-        patternVariable = floorpattern_pattern_variable,
-        patternFs = floorpattern_pattern_quality), */
 
       extendable_Settings = ExtendableSettings(
         extendablexEnabled = DictGet(currentStepSettings, iextension_x_enabled), 

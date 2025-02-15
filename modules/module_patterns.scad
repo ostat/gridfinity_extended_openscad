@@ -10,8 +10,10 @@ iPatternHoleSize=4;
 iPatternHoleSides=5;
 iPatternHoleSpacing=6;
 iPatternHoleRadius=7;
-iPatternVariable=8;
-iPatternFs=9;
+iPatternGridChamfer=8;
+iPatternVoronoiNoise=9;
+iPatternBrickWeight=10;
+iPatternFs=11;
 
 PatternStyle_grid = "grid";
 PatternStyle_gridrotated = "gridrotated";
@@ -55,7 +57,9 @@ function PatternSettings(
     patternHoleSides,
     patternHoleSpacing, 
     patternHoleRadius,
-    patternVariable = 0,
+    patternGridChamfer=0,
+    patternVoronoiNoise=0,
+    patternBrickWeight=0,
     patternFs = 0) = 
   let(
     result = [
@@ -67,14 +71,16 @@ function PatternSettings(
       patternHoleSides,
       patternHoleSpacing,
       patternHoleRadius,
-      patternVariable,
+      patternGridChamfer,
+      patternVoronoiNoise,
+      patternBrickWeight,
       patternFs],
     validatedResult = ValidatePatternSettings(result)
   ) validatedResult;
 
 function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_list(settings), "PatternStyle Settings must be a list")
-  assert(len(settings)==10, "PatternStyle Settings must length 10")
+  assert(len(settings)==12, "PatternStyle Settings must length 10")
     [settings[iPatternEnabled],
       validatePatternStyle(settings[iPatternStyle]),
       validatePatternFill(settings[iPatternFill]),
@@ -83,9 +89,11 @@ function ValidatePatternSettings(settings, num_x, num_y) =
       settings[iPatternHoleSides],
       settings[iPatternHoleSpacing],
       settings[iPatternHoleRadius],
-      settings[iPatternVariable],
+      settings[iPatternGridChamfer],
+      settings[iPatternVoronoiNoise],
+      settings[iPatternBrickWeight],
       settings[iPatternFs]];
-
+      
 module cutout_pattern(
   patternStyle,
   canvasSize,
@@ -98,7 +106,9 @@ module cutout_pattern(
   center = true,
   centerz = false,
   fill,
-  patternVariable=0,
+  patternGridChamfer=0,
+  patternVoronoiNoise=0,
+  patternBrickWeight=0,
   border = 0,
   patternFs = 0,
   source = ""){
@@ -106,7 +116,7 @@ module cutout_pattern(
   canvasSize = border > 0
     ? [canvasSize.x-border*2, canvasSize.y-border*2]
     : canvasSize;
-  if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize=canvasSize, patternVariable=patternVariable, patternFs=patternFs, source=source);
+  if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize=canvasSize, patternFs=patternFs, source=source);
   
   $fs = patternFs > 0 ? patternFs : $fs;
   
@@ -126,7 +136,7 @@ module cutout_pattern(
         fill=fill, //"none", "space", "crop"
         rotateGrid = (patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
         //border = border,
-        holeChamfer=[patternVariable,patternVariable]);
+        holeChamfer=[patternGridChamfer,patternGridChamfer]);
     }
     else if(patternStyle == PatternStyle_voronoi || patternStyle == PatternStyle_voronoigrid || patternStyle == "voronoihexgrid"){
       if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
@@ -136,7 +146,7 @@ module cutout_pattern(
         cellsize = holeSize.x,
         grid = (patternStyle == PatternStyle_voronoigrid || patternStyle == PatternStyle_voronoihexgrid),
         gridOffset = (patternStyle == PatternStyle_voronoihexgrid),
-        noise=patternVariable,
+        noise=patternVoronoiNoise,
         radius = holeRadius,
         center=center,
         seed=env_random_seed());
@@ -151,7 +161,7 @@ module cutout_pattern(
         center=center,
         cell_size = holeSize,
         corner_radius = holeRadius,
-        center_weight = patternVariable,
+        center_weight = patternBrickWeight,
         rotateGrid = (patternStyle == PatternStyle_brickrotated || patternStyle == PatternStyle_brickoffsetrotated),
         offset_layers = (patternStyle == PatternStyle_brickoffset || patternStyle == PatternStyle_brickoffsetrotated)
       );

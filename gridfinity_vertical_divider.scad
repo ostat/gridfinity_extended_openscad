@@ -34,8 +34,12 @@ wallpattern_hole_size = [5,5]; //0.1
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
 wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-//voronoi: noise, brick: center weight, grid: taper
-wallpattern_pattern_variable = 0.75;
+//grid pattern hole taper
+wallpattern_pattern_grid_chamfer = 0; //0.1
+//voronoi pattern noise, 
+wallpattern_pattern_voronoi_noise = 0.75; //0.01
+//brick pattern center weight
+wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -168,7 +172,9 @@ module PatternedDivider(
   wallpatternHoleSize = wallpattern_hole_size,
   wallpatternHoleRadius = wallpattern_hole_radius,
   wallpatternFill = wallpattern_fill,
-  wallpatternVariable = wallpattern_pattern_variable,
+  wallpatternGridChamfer = wallpattern_pattern_grid_chamfer,
+  wallpatternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+  wallpatternBrickWeight = wallpattern_pattern_brick_weight,
   wallpatternQuality = wallpattern_pattern_quality,
   help= false){
 
@@ -213,7 +219,9 @@ module PatternedDivider(
         holeRadius = wallpatternHoleRadius,
         center = false,
         fill = wallpatternFill, //"none", "space", "crop"
-        patternVariable = wallpatternVariable,
+        patternGridChamfer=wallpatternGridChamfer,
+        patternVoronoiNoise=wallpatternVoronoiNoise,
+        patternBrickWeight=wallpatternBrickWeight,
         patternFs = wallpatternQuality);
       }
     }
@@ -255,7 +263,9 @@ module Gridfinity_Divider(
   wallpatternHoleSize=wallpattern_hole_size,
   wallpatternHoleRadius=wallpattern_hole_radius,
   wallpatternFill=wallpattern_fill,
-  wallpatternVariable=wallpattern_pattern_variable) {
+  wallpatternGridChamfer = wallpattern_pattern_grid_chamfer,
+  wallpatternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+  wallpatternBrickWeight = wallpattern_pattern_brick_weight) {
 
   num_x = calcDimensionWidth(width);
   num_y = calcDimensionDepth(depth);
@@ -290,6 +300,8 @@ module Gridfinity_Divider(
       wallpatternHoleSize = wallpatternHoleSize,
       wallpatternHoleRadius = wallpatternHoleRadius,
       wallpatternFill = wallpatternFill,
-      wallpatternVariable = wallpatternVariable);
+      wallpatternGridChamfer = wallpatternGridChamfer,
+      wallpatternVoronoiNoise = wallpatternVoronoiNoise,
+      wallpatternBrickWeight = wallpatternBrickWeight);
     }
 }
