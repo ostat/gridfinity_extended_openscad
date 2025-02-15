@@ -422,7 +422,8 @@ module gridfinity_cup(
       union(){
         cavityFloorRadius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
         wallTop = calculateWallTop(num_z, lip_style);
-        cutoutclearance = gf_cup_corner_radius/2;
+        cutoutclearance_divider = gf_cup_corner_radius/2;
+        cutoutclearance_border = max(wall_thickness, wall_pattern_settings[iPatternBorder]);
 
         tapered_setback = tapered_setback < 0 ? gf_cup_corner_radius : tapered_setback;
         tapered_corner_size =
@@ -537,21 +538,21 @@ module gridfinity_cup(
                   separators(
                     calculatedSeparators = calculated_vertical_separator_positions,
                     separator_orientation = "vertical",
-                    override_wall_thickness = chamber_wall_thickness+cutoutclearance*2);
+                    override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
                     
                   //subtract dividers from floor pattern
                   translate([gf_pitch*num_x, 0, -fudgeFactor])
                   separators(
                     calculatedSeparators = calculated_horizontal_separator_positions,
                     separator_orientation = "horizontal",
-                    override_wall_thickness = chamber_wall_thickness+cutoutclearance*2);
+                    override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
                 }
               }
               
           
               if(wall_pattern_settings[iPatternEnabled]){
                 wallpattern_thickness = wall_thickness + fudgeFactor*4;
-                border = 0; //wall_thickness; todo set back
+                border = 0; //Believe this to be no longer needed
                
                 wallpatternzpos = wallpatternClearanceHeight(
                   magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
@@ -563,14 +564,7 @@ module gridfinity_cup(
                   efficient_floor=efficient_floor, 
                   flat_base=cupBase_settings[iCupBase_FlatBase], 
                   floor_inner_radius = cavityFloorRadius, 
-                  outer_cup_radius = 1)+border;
-                 /* = 
-                  flat_base=cupBase_settings[iCupBase_FlatBase]))
-                  floorHeight + max(cavityFloorRadius, border) +
-              (efficient_floor != EfficientFloor_off ? 
-                max((cupBase_settings[iCupBase_FlatBase] == FlatBase_gridfinity ? cbch : 0),
-                    (cupBase_settings[iCupBase_FlatBase] == FlatBase_rounded ? 3.5 : 0)) : 0); 
-                */
+                  outer_cup_radius = 1);
 
                 //I feel this should use wallTop, but it seems to work...
                 heightz = env_pitch().z*(num_z)-wallpatternzpos + (
@@ -698,7 +692,7 @@ module gridfinity_cup(
                   separators(
                     calculatedSeparators = calculated_horizontal_separator_positions,
                     separator_orientation = "horizontal",
-                    override_wall_thickness = chamber_wall_thickness+cutoutclearance*2);
+                    override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
                 }
                   
                 //patterns in the outer walls y
@@ -762,33 +756,32 @@ module gridfinity_cup(
                   separators(
                     calculatedSeparators = calculated_vertical_separator_positions,
                     separator_orientation = "vertical",
-                    override_wall_thickness = chamber_wall_thickness+cutoutclearance*2);
+                    override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
                 }
               }
             }
                     
             //Subtract setback from wall pattern
-            if(tapered_corner == "rounded" || tapered_corner == "chamfered")
-              //tapered_corner_size = tapered_corner_size == 0 ? env_pitch().z*num_z/2 : tapered_corner_size;
+            if(tapered_corner == "rounded" || tapered_corner == "chamfered") {
               translate([
-                -cutoutclearance,
-                +tapered_setback+gf_tolerance+cutoutclearance,
-                env_pitch().z*num_z+gf_Lip_Height-gf_tolerance-cutoutclearance])
+                0,
+                tapered_setback+cutoutclearance_border,
+                env_pitch().z*num_z+gf_Lip_Height-gf_tolerance+cutoutclearance_border])
               rotate([270,0,0])
               union()
                 if(tapered_corner == "rounded"){
                   roundedCorner(
-                    radius = tapered_corner_size-cutoutclearance,
-                    length=(num_x+1)*env_pitch().x,
+                    radius = tapered_corner_size+cutoutclearance_border*2, 
+                    length=(num_x)*env_pitch().x, 
                     height = tapered_corner_size);
                 }
                 else if(tapered_corner == "chamfered"){
                   chamferedCorner(
-                    chamferLength = tapered_corner_size-cutoutclearance,
-                    length=(num_x+1)*env_pitch().x,
+                    chamferLength = tapered_corner_size+cutoutclearance_border*2, 
+                    length=(num_x)*env_pitch().x, 
                     height = tapered_corner_size);
                 }
-              
+            }  
             
             //Subtract cutout from wall pattern
             if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
@@ -798,33 +791,13 @@ module gridfinity_cup(
                   rotate(wallcutout_location[iwalcutout_rotation])
                   translate(wallcutout_location[iwalcutout_position])
                   WallCutout(
-                    lowerWidth=wallcutout_location[iwalcutout_size].x+cutoutclearance*2,
+                    lowerWidth=wallcutout_location[iwalcutout_size].x+cutoutclearance_border*2,
                     wallAngle=wallcutout_location[iwalcutout_config][iwalcutoutconfig_angle],
-                    height=wallcutout_location[iwalcutout_size].z+cutoutclearance,
+                    height=wallcutout_location[iwalcutout_size].z+cutoutclearance_border,
                     thickness=wallcutout_location[iwalcutout_size].y,
                     cornerRadius=wallcutout_location[iwalcutout_config][iwalcutoutconfig_cornerradius]);
       
-            //Subtract setback from wall pattern
-            if(tapered_corner == "rounded" || tapered_corner == "chamfered") {
-              translate([
-                -cutoutclearance,
-                +tapered_setback+gf_tolerance+cutoutclearance,
-                env_pitch().z*num_z+gf_Lip_Height-gf_tolerance-cutoutclearance])
-              rotate([270,0,0])
-              union()
-                if(tapered_corner == "rounded"){
-                  roundedCorner(
-                    radius = tapered_corner_size-cutoutclearance, 
-                    length=(num_x+1)*env_pitch().x, 
-                    height = tapered_corner_size);
-                }
-                else if(tapered_corner == "chamfered"){
-                  chamferedCorner(
-                    chamferLength = tapered_corner_size-cutoutclearance, 
-                    length=(num_x+1)*env_pitch().x, 
-                    height = tapered_corner_size);
-                }
-            }
+
             
             //Subtract magnet caps from floor pattern
             }
