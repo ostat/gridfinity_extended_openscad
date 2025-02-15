@@ -125,7 +125,7 @@ module assert_openscad_version(){
   assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
-module conditional_color(enable=true, c){
+module color_conditional(enable=true, c){
   if(enable)
   color(c)
     children();
@@ -133,11 +133,25 @@ module conditional_color(enable=true, c){
     children();
 }
 
-module conditional_render(enable=true){
+module render_conditional(enable=true){
   if(enable)
   render()
     children();
   else
   union()
     children();
+}
+
+module hull_conditional(enabled = true)
+{
+  if(enabled){
+    hull(){
+      children();
+    }
+  }
+  else{
+    union(){
+      children();
+    }
+  }
 }

@@ -639,7 +639,7 @@ module gridfinity_cup(
                       if(ylocations[i][3] > 0)
                         translate(ylocations[i][1])
                         rotate(ylocations[i][2])
-                        conditional_render(env_force_render())
+                        render_conditional(env_force_render())
                           cutout_pattern(
                             patternStyle = wall_pattern_settings[iPatternStyle],
                             canvasSize = ylocations[i][0],
@@ -666,7 +666,7 @@ module gridfinity_cup(
                             let(verSepThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
                             translate([-verSepThickness/2, left[1].y, left[1].z]) 
                             rotate(left[2])
-                            conditional_render(env_force_render())
+                            render_conditional(env_force_render())
                               //separator wall pattern
                               cutout_pattern(
                                 patternStyle = wall_pattern_settings[iPatternStyle],
@@ -702,7 +702,7 @@ module gridfinity_cup(
                       if(xlocations[i][3] > 0)
                         translate(xlocations[i][1])
                         rotate(xlocations[i][2])
-                        conditional_render(env_force_render())
+                        render_conditional(env_force_render())
                           cutout_pattern(
                             patternStyle = wall_pattern_settings[iPatternStyle],
                             canvasSize = xlocations[i][0],
@@ -730,7 +730,7 @@ module gridfinity_cup(
                               rotate([0,0,-90])
                               translate([front[1].x, hozSepThickness/2, front[1].z])
                               rotate(front[2])
-                              conditional_render(env_force_render())
+                              render_conditional(env_force_render())
                                 //separator wall pattern
                                 cutout_pattern(
                                   patternStyle = wall_pattern_settings[iPatternStyle],

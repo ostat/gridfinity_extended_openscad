@@ -135,20 +135,6 @@ module frame_plain(
   }
 }
 
-module hull_conditional(enabled = true)
-{
-  if(enabled){
-    hull(){
-      children();
-    }
-  }
-  else{
-    union(){
-      children();
-    }
-  }
-}
-
 module frame_cavity(
     num_x, 
     num_y, 
