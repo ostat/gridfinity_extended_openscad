@@ -649,6 +649,7 @@ module gridfinity_cup(
                           cutout_pattern(
                             patternStyle = wall_pattern_settings[iPatternStyle],
                             canvasSize = ylocations[i][0],
+                            border = wall_pattern_settings[iPatternBorder],
                             customShape = false,
                             circleFn = wall_pattern_settings[iPatternHoleSides],
                             holeSize = wall_pattern_settings[iPatternHoleSize],
@@ -676,6 +677,7 @@ module gridfinity_cup(
                               cutout_pattern(
                                 patternStyle = wall_pattern_settings[iPatternStyle],
                                 canvasSize = left[0], 
+                                border = wall_pattern_settings[iPatternBorder],
                                 customShape = false,
                                 circleFn = wall_pattern_settings[iPatternHoleSides],
                                 holeSize = wall_pattern_settings[iPatternHoleSize],
@@ -710,6 +712,7 @@ module gridfinity_cup(
                           cutout_pattern(
                             patternStyle = wall_pattern_settings[iPatternStyle],
                             canvasSize = xlocations[i][0],
+                            border = wall_pattern_settings[iPatternBorder],
                             customShape = false,
                             circleFn = wall_pattern_settings[iPatternHoleSides],
                             holeSize = wall_pattern_settings[iPatternHoleSize],
@@ -738,6 +741,7 @@ module gridfinity_cup(
                                 cutout_pattern(
                                   patternStyle = wall_pattern_settings[iPatternStyle],
                                   canvasSize = front[0], 
+                                  border = wall_pattern_settings[iPatternBorder],
                                   customShape = false,
                                   circleFn = wall_pattern_settings[iPatternHoleSides],
                                   holeSize = wall_pattern_settings[iPatternHoleSize],

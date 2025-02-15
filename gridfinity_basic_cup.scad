@@ -146,7 +146,9 @@ wallpattern_hole_size = [5,5]; //0.1
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
-wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+// border around the wall pattern, default is wall thickness
+wallpattern_border = 0;
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
@@ -170,6 +172,8 @@ floorpattern_hole_size = [5,5]; //0.1
 floorpattern_hole_radius = 0.5;
 // pattern fill mode
 floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+// border around the wall pattern, default is wall thickness
+floorpattern_border = 0;
 //grid pattern hole taper
 floorpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
@@ -326,7 +330,7 @@ gridfinity_cup(
     patternEnabled = wallpattern_enabled, 
     patternStyle = wallpattern_style, 
     patternFill = wallpattern_fill,
-    patternBorder = wallpattern_hole_spacing, 
+    patternBorder = wallpattern_border, 
     patternHoleSize = wallpattern_hole_size, 
     patternHoleSides = wallpattern_hole_sides,
     patternHoleSpacing = wallpattern_hole_spacing, 
@@ -339,7 +343,7 @@ gridfinity_cup(
     patternEnabled = floorpattern_enabled, 
     patternStyle = floorpattern_style, 
     patternFill = floorpattern_fill,
-    patternBorder = floorpattern_hole_spacing, 
+    patternBorder = floorpattern_border, 
     patternHoleSize = floorpattern_hole_size, 
     patternHoleSides = floorpattern_hole_sides,
     patternHoleSpacing = floorpattern_hole_spacing, 

@@ -116,7 +116,7 @@ module cutout_pattern(
   canvasSize = border > 0
     ? [canvasSize.x-border*2, canvasSize.y-border*2]
     : canvasSize;
-  if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize=canvasSize, patternFs=patternFs, source=source);
+  if(env_help_enabled("trace")) echo("cutout_pattern", source=source, canvasSize=canvasSize, patternFs=patternFs, border=border);
   
   $fs = patternFs > 0 ? patternFs : $fs;
   
