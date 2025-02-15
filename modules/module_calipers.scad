@@ -2,6 +2,7 @@ include <thridparty/ub_caliper.scad>
 include <gridfinity_constants.scad>
 include <functions_general.scad>
 include <functions_gridfinity.scad>
+include <functions_environment.scad>
 
 module ShowCalipers(
   cutx, cuty, 
@@ -9,18 +10,31 @@ module ShowCalipers(
   lip_style, 
   magnet_depth, 
   screw_depth, 
+  center_magnet_depth, 
   floor_thickness, 
   filled_in,
   wall_thickness,
   efficient_floor,
   flat_base){
+  assert(is_num(cutx));
+  assert(is_num(cuty));
+  assert(is_list(size));
+  assert(is_string(lip_style));
+  assert(is_num(magnet_depth));
+  assert(is_num(screw_depth));
+  assert(is_num(center_magnet_depth));
+  assert(is_num(floor_thickness));
+  assert(is_string(filled_in));
+  assert(is_num(wall_thickness));
+  assert(is_string(efficient_floor));
+  assert(is_string(flat_base));
   
   if(cuty > 0 && $preview)
   {
     color(color_text)
     translate([0,env_pitch().y*cuty,0]) 
     rotate([90,0,0])
-    showCalipersForSide("width", size.x, size.z, lip_style, magnet_depth, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base,env_pitch().x);
+    showCalipersForSide("width", size.x, size.z, lip_style, magnet_depth, screw_depth, center_magnet_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base,env_pitch().x);
   }  
   
   if(cutx > 0 && $preview)
@@ -28,21 +42,34 @@ module ShowCalipers(
     color(color_text)
     translate([env_pitch().x*cutx,env_pitch().y*size.y,0]) 
     rotate([90,0,270])
-    showCalipersForSide("depth", size.y, size.z, lip_style, magnet_depth, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base,env_pitch().y);
+    showCalipersForSide("depth", size.y, size.z, lip_style, magnet_depth, screw_depth, center_magnet_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base,env_pitch().y);
   }
 }
 
-module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_depth, screw_depth, floor_thickness, filled_in,wall_thickness,efficient_floor,flat_base, pitch){
+module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_depth, screw_depth, center_magnet_depth, floor_thickness, filled_in, wall_thickness, efficient_floor, flat_base, pitch){
+  assert(is_string(description));
+  assert(is_num(gf_num));
+  assert(is_num(num_z));
+  assert(is_string(lip_style));
+  assert(is_num(magnet_depth));
+  assert(is_num(screw_depth));
+  assert(is_num(center_magnet_depth));
+  assert(is_num(floor_thickness));
+  assert(is_string(filled_in));
+  assert(is_num(wall_thickness));
+  assert(is_string(efficient_floor));
+  assert(is_string(flat_base));
+  assert(is_num(pitch));
+  
     fontSize = 5;  
     gridHeight= gfBaseHeight();
-    baseClearanceHeight = cupBaseClearanceHeight(magnet_depth, screw_depth,flat_base);
-    minFloorHeight  = calculateMinFloorHeight(magnet_depth, screw_depth);
+    baseClearanceHeight = cupBaseClearanceHeight(magnet_depth, screw_depth, center_magnet_depth, flat_base);
     floorHeight = calculateFloorHeight(
           magnet_depth=magnet_depth, 
           screw_depth=screw_depth, 
           floor_thickness=floor_thickness, 
           num_z=num_z, 
-          filledin=filled_in,
+          filled_in=filled_in,
           efficient_floor=efficient_floor,
           flat_base=flat_base);
     floorDepth = efficient_floor != "off"
@@ -50,7 +77,7 @@ module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_depth, 
       floorHeight - baseClearanceHeight;
 
       if(env_help_enabled("info")) echo("showClippersForSide", description=description, gf_num=gf_num,num_z=num_z,lip_style=lip_style,magnet_depth=magnet_depth,screw_depth=screw_depth,floor_thickness=floor_thickness,filled_in=filled_in,wall_thickness=wall_thickness,efficient_floor=efficient_floor,flat_base=flat_base);
-      if(env_help_enabled("info")) echo("showClippersForSide", floorHeight=floorHeight, floorDepth=floorDepth, baseClearanceHeight=baseClearanceHeight, minFloorHeight=minFloorHeight);
+      if(env_help_enabled("info")) echo("showClippersForSide", floorHeight=floorHeight, floorDepth=floorDepth, baseClearanceHeight=baseClearanceHeight);
   wallTop = calculateWallTop(num_z, lip_style);
       
   isCutX = description == "depth";

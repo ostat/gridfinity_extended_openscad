@@ -695,7 +695,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
       height = height > -1 ? height : DictGet(currentStepSettings, iheight),
       render_position = DictGet(currentStepSettings, iposition),
       help = help || DictGet(currentStepSettings, ihelp),
-      cut = [DictGet(currentStepSettings, icutx), DictGet(currentStepSettings, icuty), calcDimensionHeight(height, true)]
+      cut = [DictGet(currentStepSettings, icutx), DictGet(currentStepSettings, icuty), height]
       //setColour = set_colour,
       //randomSeed = random_seed,
       //force_render = force_render

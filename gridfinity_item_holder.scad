@@ -139,7 +139,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
-flat_base = false;
+flat_base = "off";
 // Remove floor to create a vertical spacer
 spacer = false;
 
@@ -732,18 +732,17 @@ module gridfinity_itemholder(
 
   // min floor height
   baseClearanceHeight = cupBaseClearanceHeight(magnet_depth, screw_depth);
-  minFloorHeight = calculateMinFloorHeight(magnet_depth, screw_depth);
   
   //calculate the bin height. This math is not right
   height = !itemholder_auto_bin_height || calculatedItemDepth <=0 ? num_z
       : filled_in != "disabled"
-        ? (minFloorHeight + calculatedItemDepth)/env_pitch().z
-        : ceil((minFloorHeight + calculatedItemDepth)/env_pitch().z);
+        ? (baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z
+        : ceil((baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z);
   // calculate floor thickness
-  calculatedFloorThickness = calculateFloorThickness(magnet_depth, screw_depth, calculatedItemDepth + gf_cup_floor_thickness, height, filled_in);  
+  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_depth, screw_depth=screw_depth, floor_thickness=calculatedItemDepth + gf_cup_floor_thickness, num_z=height, filledin=filled_in,flat_base=flat_base);  
 
   if(env_help_enabled("info")) ;
-  echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedFloorThickness=calculatedFloorThickness, minFloorHeight=minFloorHeight, baseClearanceHeight=baseClearanceHeight, height=height); 
+  echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedUsableFloorThickness=calculatedUsableFloorThickness, baseClearanceHeight=baseClearanceHeight, height=height); 
 
   if(itemholder_enable_sample == false)
   {
@@ -768,7 +767,7 @@ module gridfinity_itemholder(
           screwSize = enable_screws?screw_size:[0,0],
           holeOverhangRemedy = hole_overhang_remedy, 
           cornerAttachmentsOnly = box_corner_attachments_only,
-          floorThickness = calculatedFloorThickness,
+          floorThickness = calculatedUsableFloorThickness, //todo this seems like the wrong value
           cavityFloorRadius = cavity_floor_radius,
           efficientFloor=efficient_floor,
           halfPitch=half_pitch,
@@ -849,7 +848,7 @@ module gridfinity_itemholder(
           baseClearanceHeight, 
           baseClearanceHeight + floor_thickness - calculatedItemDepth);
       
-      echo("gridfinity_itemholder", baseClearanceHeight=baseClearanceHeight, minFloorHeight=minFloorHeight, floor_thickness=floor_thickness, calculatedFloorThickness=calculatedFloorThickness, calculatedItemDepth=calculatedItemDepth, itemholder_z_bottom=itemholder_z_bottom)
+      echo("gridfinity_itemholder", baseClearanceHeight=baseClearanceHeight, floor_thickness=floor_thickness, calculatedFloorThickness=calculatedFloorThickness, calculatedItemDepth=calculatedItemDepth, itemholder_z_bottom=itemholder_z_bottom)
 
       color(color_extension)
       translate([0, 0, itemholder_z_bottom])
@@ -901,6 +900,6 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, calcDimensionHeight(height, true)],
+  cut = [cutx, cuty, height],
   setColour = set_colour)
 gridfinity_itemholder();

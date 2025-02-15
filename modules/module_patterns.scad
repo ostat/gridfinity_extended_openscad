@@ -94,11 +94,11 @@ module cutout_pattern(
   holeSize = [],
   holeSpacing,
   holeHeight,
+  holeRadius,
   center = true,
   centerz = false,
   fill,
   patternVariable=0,
-  holeRadius,
   border = 0,
   patternFs = 0,
   source = ""){

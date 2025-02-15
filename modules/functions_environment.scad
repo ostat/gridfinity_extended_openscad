@@ -15,12 +15,10 @@ module set_environment(
   force_render = true){
   
   //Set special variables, that child modules can use
+  $pitch = pitch;
+
   $setColour = setColour;
   $showHelp = help;
-  $cutx = cut.x;
-  $cuty = cut.y;
-  $cutz = cut.z;
-  $pitch = pitch;
   $randomSeed = randomSeed;
   $forceRender = force_render;
 
@@ -34,6 +32,11 @@ module set_environment(
   $num_x = num_x; 
   $num_y = num_y; 
   $num_z = num_z; 
+
+  $cutx = calcDimensionWidth(cut.x);
+  $cuty = calcDimensionWidth(cut.y);
+  $cutz = calcDimensionWidth(cut.z);
+  
 
   echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn, pitch=pitch);
 

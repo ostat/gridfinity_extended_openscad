@@ -194,7 +194,7 @@ set_environment(//execution point
   height = default_height,
   setColour = default_set_colour,//execution point
   help = default_help,//execution point
-  cut=[default_cutx,default_cuty, calcDimensionHeight(default_height, true)]//execution point
+  cut=[default_cutx,default_cuty, default_height]//execution point
   )//execution point
 gridfinity_cup();//execution point
 */
@@ -343,9 +343,13 @@ module gridfinity_cup(
   efficient_floor = cupBase_settings[iCupBase_EfficientFloor];
   floor_thickness = cupBase_settings[iCupBase_FloorThickness];
   floorHeight = calculateFloorHeight(
-    cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-    cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
-    cupBase_settings[iCupBase_FloorThickness]);
+    magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+    screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+    floor_thickness=cupBase_settings[iCupBase_FloorThickness],
+    num_z=num_z,
+    filled_in=filled_in, 
+    efficient_floor=efficient_floor, 
+    flat_base=cupBase_settings[iCupBase_FlatBase]);
   sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
        
   calculated_vertical_separator_positions = calculateSeparators(
@@ -541,9 +545,27 @@ module gridfinity_cup(
           
               if(wall_pattern_settings[iPatternEnabled]){
                 wallpattern_thickness = wall_thickness + fudgeFactor*4;
-                border = wall_thickness;
-                wallpatternzpos = floorHeight+max(cavityFloorRadius,border);
-                
+                border = 0; //wall_thickness; todo set back
+               
+                wallpatternzpos = wallpatternClearanceHeight(
+                  magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+                  screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+                  center_magnet=cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
+                  floor_thickness = cupBase_settings[iCupBase_FloorThickness],
+                  num_z=num_z, 
+                  filled_in=FilledIn_disabled, 
+                  efficient_floor=efficient_floor, 
+                  flat_base=cupBase_settings[iCupBase_FlatBase], 
+                  floor_inner_radius = cavityFloorRadius, 
+                  outer_cup_radius = 1)+border;
+                 /* = 
+                  flat_base=cupBase_settings[iCupBase_FlatBase]))
+                  floorHeight + max(cavityFloorRadius, border) +
+              (efficient_floor != EfficientFloor_off ? 
+                max((cupBase_settings[iCupBase_FlatBase] == FlatBase_gridfinity ? cbch : 0),
+                    (cupBase_settings[iCupBase_FlatBase] == FlatBase_rounded ? 3.5 : 0)) : 0); 
+                */
+
                 //I feel this should use wallTop, but it seems to work...
                 heightz = env_pitch().z*(num_z)-wallpatternzpos + (
                   //Position specific to each LIP style
@@ -604,7 +626,9 @@ module gridfinity_cup(
                   [90,0,90],
                   //enabled
                   wallpattern_walls[3]];
-              
+                  
+                echo("gridfinity_cup_wallpattern", wallpattern_thickness=wallpattern_thickness, heightz=heightz, wallpatternzpos=wallpatternzpos, border=border,   ylocations=ylocations, xlocations=xlocations);
+                
                 ylocations = [left, right];
                 xlocations = [front, back];
 
@@ -898,6 +922,7 @@ module gridfinity_cup(
       lip_style,
       cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
       cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+      cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
       floor_thickness = cupBase_settings[iCupBase_FloorThickness], 
       filled_in,
       wall_thickness,
@@ -984,8 +1009,15 @@ module partitioned_cavity(num_x, num_y, num_z,
   floor_thickness=cupBase_settings[iCupBase_FloorThickness];  
   zpoint = env_pitch().z*num_z-zClearance;
 
-  floorHeight = calculateFloorHeight(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], screw_depth, floor_thickness);
-
+  floorHeight = calculateFloorHeight(
+    magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+    screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+    floor_thickness=cupBase_settings[iCupBase_FloorThickness],
+    num_z=num_z,
+    filled_in="disabled", 
+    efficient_floor=efficient_floor, 
+    flat_base=cupBase_settings[iCupBase_FlatBase]);
+    
   difference() {
     color(env_colour(color_cupcavity))
     basic_cavity(num_x, num_y, num_z,
@@ -1027,7 +1059,7 @@ module partitioned_cavity(num_x, num_y, num_z,
 }           
 
 module basic_cavity(num_x, num_y, num_z, 
-    fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,fingerslide_lip_aligned=default_fingerslide_lip_aligned,
+    fingerslide=default_fingerslide, fingerslide_radius=default_fingerslide_radius,fingerslide_walls,fingerslide_lip_aligned=default_fingerslide_lip_aligned,
     wall_thickness=default_wall_thickness,
     lip_style=default_lip_style,
     lip_side_relief_trigger=[1,1],
@@ -1062,12 +1094,15 @@ module basic_cavity(num_x, num_y, num_z,
   zpoint = filledInZ-zClearance;
  
   floorht = min(filledInZ, calculateFloorHeight(
-      cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-      cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
-      cupBase_settings[iCupBase_FloorThickness], 
+      magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+      screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+      center_magnet=cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
+      floor_thickness=cupBase_settings[iCupBase_FloorThickness], 
+      num_z=num_z,
+      filled_in=FilledIn_disabled,
       efficient_floor=cupBase_settings[iCupBase_EfficientFloor],
       flat_base=cupBase_settings[iCupBase_FlatBase]));
-
+    
   //Remove floor to create a vertical spacer.
   nofloor = spacer && fingerslide == "none";
   

@@ -13,7 +13,7 @@ module efficient_floor_grid(
   floor_thickness, 
   efficientFloorGridHeight=0,
   margins=0) {
-  if (flat_base != "off") {
+  if (flat_base != FlatBase_off) {
     EfficientFloor(num_x, num_y, 
       floor_thickness, 
       margins, 

@@ -91,7 +91,7 @@ module grid_block(
         } else {
           // logic for constructing odd-size grids of possibly half-pitch pads
           color(env_colour(color_base))
-            pad_grid(num_x, num_y, half_pitch, flat_base != FlatBase_off, cupBase_settings[iCupBase_MinimumPrintablePadSize]);
+            pad_grid(num_x, num_y, half_pitch, flat_base = flat_base, cupBase_settings[iCupBase_MinimumPrintablePadSize]);
         }
         
         color(env_colour(color_cup))
@@ -149,7 +149,13 @@ module grid_block(
     ,help);
 }
 
-module pad_grid(num_x, num_y, half_pitch=false, flat_base=false, minimium_size = 0.2) {
+module pad_grid(num_x, num_y, half_pitch=false, flat_base="off", minimium_size = 0.2) {
+  assert(is_num(num_x));
+  assert(is_num(num_y));
+  assert(is_bool(half_pitch));
+  assert(is_string(flat_base));
+  assert(is_num(minimium_size));
+
   pad_copy(
     num_x = num_x, 
     num_y = num_y, 
@@ -255,11 +261,16 @@ module pad_oversize(
   }
 }
  
-module pad_copy(num_x, num_y, half_pitch=false, flat_base=false, minimium_size = 0.2) {
-  assert(!is_undef(num_x), "num_x is undefined");
-  assert(!is_undef(num_y), "num_y is undefined");
+module pad_copy(num_x, num_y, half_pitch=false, flat_base="off", minimium_size = 0.2) {
+  assert(is_num(num_x));
+  assert(is_num(num_y));
+  assert(is_bool(half_pitch));
+  assert(is_string(flat_base));
+  assert(is_num(minimium_size));
 
-  if (flat_base) {
+  if(env_help_enabled("debug")) echo("pad_copy", flat_base=flat_base, half_pitch=half_pitch, minimium_size=minimium_size);
+ 
+  if (flat_base != FlatBase_off) {
     $pad_copy_size = [num_x, num_y];
     if(env_help_enabled("debug")) echo("pad_grid_flat_base", pad_copy_size=$pad_copy_size);
     if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {

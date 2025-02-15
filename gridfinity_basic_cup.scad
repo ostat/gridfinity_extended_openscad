@@ -256,7 +256,7 @@ set_environment(
   render_position = render_position,
   help = enable_help,
   pitch = pitch,
-  cut = [cutx, cuty, calcDimensionHeight(height, true)],
+  cut = [cutx, cuty, height],
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)

@@ -23,6 +23,7 @@ gf_cupbase_screw_diameter = 3;
 gf_cupbase_screw_depth = 6;
 gf_magnet_diameter = 6.5;
 gf_magnet_thickness = 2.4;
+gf_base_grid_clearance_height = 3.5;
 
 //stacking lips
 // Standard lip
@@ -87,6 +88,6 @@ color_wallcutout = "SandyBrown";
 color_basehole = "DarkSlateGray";
 color_base = "DimGray";
 color_extension = "lightpink";
-color_text = "Black";
-color_cut = "Gold";
+color_text = "Yellow"; //Gold
+color_cut = "Black";
 color_lid = "MediumAquamarine";

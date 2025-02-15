@@ -161,5 +161,5 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, calcDimensionHeight(height, true)])
+  cut = [cutx, cuty, height])
 gridfinity_sieve();

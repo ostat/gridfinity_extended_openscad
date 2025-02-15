@@ -75,7 +75,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
-flat_base = false;
+flat_base = "off";
 
 /* [debug] */
 //Slice along the x axis
@@ -113,7 +113,7 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, calcDimensionHeight(height, true)])
+  cut = [cutx, cuty, height])
 Gridfinity_Divider();
 
 module Divider(

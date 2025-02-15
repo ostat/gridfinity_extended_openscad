@@ -16,7 +16,7 @@ module baseplate_lid(
   reducedWallHeight=0,
   cornerScrewEnabled = true,
   cornerRadius = gf_cup_corner_radius) {
-  flat_base = lidOptions == "flat";
+  flat_base = lidOptions == "flat" ? FlatBase_gridfinity : FlatBase_off;
   half_pitch = lidOptions == "halfpitch";
   efficient_base = lidOptions == "efficient";
   

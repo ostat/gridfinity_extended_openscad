@@ -79,7 +79,7 @@ chest_corner_attachments_only = true;
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
-flat_base = false;
+flat_base = "off";
 
 /* [Chest Wall Pattern] */
 // Grid wall patter
