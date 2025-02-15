@@ -36,7 +36,7 @@ module GridItemHolder(
   //crop = true,
   rotateGrid = false) 
 {
-  holeChamfer = is_num(holeChamfer) ? [0, holeChamfer] : holeChamfer;
+  holeChamfer = let(chamfer = is_num(holeChamfer) ? [0, holeChamfer] : holeChamfer) [min(chamfer.x,holeHeight/2),min(chamfer.y,holeHeight/2)];
   assert(is_list(canvasSize) && len(canvasSize)==2, "canvasSize must be list of len 2");
   assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
   assert(is_bool(customShape), "customShape must be bool");    
