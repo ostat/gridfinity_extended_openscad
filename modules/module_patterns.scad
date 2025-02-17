@@ -121,6 +121,7 @@ module cutout_pattern(
   $fs = patternFs > 0 ? patternFs : $fs;
   
   //translate(border>0 ? [border,border,0] : [0,0,0])
+  translate(center ? [0,0,0] : [border,border,0])
   translate(centerz ? [0,0,-holeHeight/2] : [0,0,0])
   union(){
     if(patternStyle == PatternStyle_grid || patternStyle == PatternStyle_hexgrid || patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated) {
@@ -134,7 +135,7 @@ module cutout_pattern(
         holeHeight = holeHeight,
         center=center,
         fill=fill, //"none", "space", "crop"
-        rotateGrid = (patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
+        rotateGrid = !(patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
         //border = border,
         holeChamfer=[patternGridChamfer,patternGridChamfer]);
     }
@@ -162,7 +163,7 @@ module cutout_pattern(
         cell_size = holeSize,
         corner_radius = holeRadius,
         center_weight = patternBrickWeight,
-        rotateGrid = (patternStyle == PatternStyle_brickrotated || patternStyle == PatternStyle_brickoffsetrotated),
+        rotateGrid = !(patternStyle == PatternStyle_brickrotated || patternStyle == PatternStyle_brickoffsetrotated),
         offset_layers = (patternStyle == PatternStyle_brickoffset || patternStyle == PatternStyle_brickoffsetrotated)
       );
     }

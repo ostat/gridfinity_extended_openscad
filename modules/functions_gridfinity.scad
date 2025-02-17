@@ -98,7 +98,7 @@ function calculateFloorHeight(magnet_depth, screw_depth, center_magnet=0, floor_
   let(
     filled_in = validateFilledIn(filled_in),
     floorThickness = max(floor_thickness, gf_cup_floor_thickness),
-    clearanceHeight = cupBaseClearanceHeight(magnet_depth,screw_depth, center_magnet, flat_base), 
+    clearanceHeight = cupBaseClearanceHeight(magnet_depth=magnet_depth, screw_depth=screw_depth, center_magnet=center_magnet, flat_base=flat_base), 
     result = 
       filled_in != FilledIn_disabled ? num_z * env_pitch().z 
         : efficient_floor != "off" 
@@ -108,10 +108,17 @@ function calculateFloorHeight(magnet_depth, screw_depth, center_magnet=0, floor_
       
 //Usable floor depth (floor height - height of voids)
 //used in the item holder
-function calculateUsableFloorThickness(magnet_depth, screw_depth, floor_thickness, num_z, filledin, flat_base=FlatBase_off) = 
-let(
-    cfh = calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z, filledin),
-    cbch = cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base),
+function calculateUsableFloorThickness(magnet_depth, screw_depth, center_magnet=0,floor_thickness, num_z, filled_in, flat_base=FlatBase_off) = 
+  assert(is_num(magnet_depth))
+  assert(is_num(screw_depth))
+  assert(is_num(center_magnet))
+  assert(is_num(floor_thickness))
+  assert(is_num(num_z))
+  assert(is_string(filled_in))
+  assert(is_string(flat_base))
+  let(
+    cfh = calculateFloorHeight(magnet_depth=magnet_depth, screw_depth=screw_depth, center_magnet=center_magnet, floor_thickness=floor_thickness, num_z=num_z, filled_in=filled_in, efficient_floor="off", flat_base=flat_base),
+    cbch = cupBaseClearanceHeight(magnet_depth=magnet_depth, screw_depth=screw_depth, center_magnet=center_magnet, flat_base=flat_base),
     usableFloorThickness = cfh - cbch)
   env_help_enabled("trace") ? 
   echo("calculateFloorThickness", usableFloorThickness=usableFloorThickness, cfh=cfh, cbch=cbch, num_z=num_z, magnet_depth=magnet_depth,screw_depth=screw_depth, floor_thickness=floor_thickness, filledin=filledin) usableFloorThickness :

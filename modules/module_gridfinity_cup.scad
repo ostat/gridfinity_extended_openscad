@@ -151,15 +151,18 @@ default_wallcutout_horizontal_corner_radius=5;
 
 /* [Wall Pattern] */
 default_wallpattern_enabled=false; 
-default_wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+default_wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 default_wallpattern_dividers_enabled ="disabled"; //["disabled", "horizontal", "vertical", "both"] 
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0];  //[0:1:1]
 default_wallpattern_hole_sides = 6;
 default_wallpattern_hole_size = [10,10]; //0.1
 default_wallpattern_hole_spacing = 2; //0.1
-default_wallpattern_variable = 0.75;
 default_wallpattern_hole_radius = 0.5;
+default_wallpattern_border = 0;
+default_wallpattern_pattern_grid_chamfer = 0; //0.1
+default_wallpattern_pattern_voronoi_noise = 0.75; //0.01
+default_wallpattern_pattern_brick_weight = 5;
 default_wallpattern_pattern_quality = 0;
     
 /* [Extendable] */

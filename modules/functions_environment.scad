@@ -13,7 +13,9 @@ module set_environment(
   pitch = [gf_pitch, gf_pitch, gf_zpitch],
   randomSeed = 0,
   force_render = true){
-  
+
+  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn, pitch=pitch);
+    
   //Set special variables, that child modules can use
   $pitch = pitch;
 
@@ -37,9 +39,6 @@ module set_environment(
   $cuty = calcDimensionWidth(cut.y);
   $cutz = calcDimensionWidth(cut.z);
   
-
-  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn, pitch=pitch);
-
   //Position the object
   translate(gridfinityRenderPosition(render_position,num_x,num_y))
   union(){

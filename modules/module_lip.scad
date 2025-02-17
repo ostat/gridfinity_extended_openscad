@@ -54,6 +54,14 @@ module cupLip(
   wall_thickness = 1.2,
   lip_notches = true,
   lip_top_relief_height = 0){
+  
+  assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
+  assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
+  assert(is_string(lipStyle));
+  assert(is_num(wall_thickness) && wall_thickness > 0, "wall_thickness must be a number greater than 0");
+  assert(is_num(lip_top_relief_height));
+  assert(is_bool(lip_notches));
+  
   //Difference between the wall and support thickness
   lipSupportThickness = (lipStyle == "minimum" || lipStyle == "none") ? 0
     : lipStyle == "reduced" ? gf_lip_upper_taper_height - wall_thickness
@@ -97,7 +105,7 @@ module cupLip(
           num_y = num_y, 
           position_fill_grid_x = "near",
           position_fill_grid_y = "near",
-          render_top = true,
+          render_top = lip_notches,
           render_bottom = false,
           frameLipHeight = 4,
           reducedWallHeight = lip_top_relief_height,

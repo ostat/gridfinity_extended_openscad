@@ -135,6 +135,7 @@ module frame_plain(
   }
 }
 
+/*
 module frame_cavity(
     num_x, 
     num_y, 
@@ -144,6 +145,7 @@ module frame_cavity(
     frameLipHeight = 4,
     cornerRadius = gf_cup_corner_radius,
     reducedWallHeight = 0) {
+
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
     translate([0, 0, -fudgeFactor]) 
       gridcopy(
@@ -178,7 +180,7 @@ module frame_cavity(
               if($children >=1) children(0);
     }
   }
-}
+}*/
 
 module baseplate_cavities(
   num_x, 

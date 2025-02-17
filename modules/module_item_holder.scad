@@ -1,5 +1,6 @@
 include <thridparty/ub_hexgrid.scad>
 include <functions_general.scad>
+include <functions_environment.scad>
 
 griditemholder_demo = false;
 
@@ -36,7 +37,6 @@ module GridItemHolder(
   //crop = true,
   rotateGrid = false) 
 {
-  holeChamfer = let(chamfer = is_num(holeChamfer) ? [0, holeChamfer] : holeChamfer) [min(chamfer.x,holeHeight/2),min(chamfer.y,holeHeight/2)];
   assert(is_list(canvasSize) && len(canvasSize)==2, "canvasSize must be list of len 2");
   assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
   assert(is_bool(customShape), "customShape must be bool");    
@@ -47,11 +47,14 @@ module GridItemHolder(
   assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
   assert(is_list(holeGrid) && len(holeGrid)==2, "canvasSize must be list of len 2");  
   assert(is_num(holeHeight), "holeHeight must be number");    
-  assert(is_list(holeChamfer), "holeChamfer must be list");  
   assert(is_num(border), "border must be number");    
   assert(is_string(fill), "fill must be a string");
   assert(is_bool(rotateGrid), "rotateGrid must be bool");  
 
+  holeChamfer = let(chamfer = is_num(holeChamfer) ? [0, holeChamfer] : holeChamfer) [min(chamfer.x,holeHeight/2),min(chamfer.y,holeHeight/2)];
+  
+  assert(is_list(holeChamfer), "holeChamfer must be list");  
+  
   fudgeFactor = 0.01;
   
   //Sides, 

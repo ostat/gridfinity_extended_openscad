@@ -2,6 +2,7 @@ include <modules/module_item_holder.scad>
 include <modules/gridfinity_constants.scad>
 include <modules/functions_general.scad>
 use <modules/module_gridfinity_cup.scad>
+include <modules/module_gridfinity_cup_base.scad>
 use <modules/module_gridfinity.scad>
 
 /* [Divider] */
@@ -17,9 +18,9 @@ divider_back_top_angle=45;
 
 /* [Wall Pattern] */
 // Grid wall patter
-wallpattern_enabled=false;
+wallpattern_enabled=true;
 // Style of the pattern
-wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -33,7 +34,9 @@ wallpattern_hole_size = [5,5]; //0.1
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
-wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+wallpattern_fill = "space"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+// border around the wall pattern, default is wall thickness
+wallpattern_border = 0;
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
@@ -54,9 +57,17 @@ height = [1, 0]; //0.1
 filled_in = false; 
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
-// Remove some or all of lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 position = "center"; //[default,center,zero]
+
+/* [Cup Lip] */
+// Style of the cup lip
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+// Below this the inside of the lip will be reduced for easier access.
+lip_side_relief_trigger = [1,1]; //0.1
+// Create a relie
+lip_top_relief_height = 0; // 0.1
+// add a notch to the lip to prevent sliding.
+lip_top_notches  = false;
 
 /* [Base] */
 //size of magnet, diameter and height. Zack's original used 6.5 and 2.4 
@@ -166,17 +177,7 @@ module PatternedDivider(
   backTopInset=20,
   backTopAngle=65,
   wallpatternEnabled = wallpattern_enabled,
-  wallpatternStyle = wallpattern_style,
-  wallpatternHoleSpacing = wallpattern_hole_spacing,
-  wallpatternHoleSides = wallpattern_hole_sides,
-  wallpatternHoleSize = wallpattern_hole_size,
-  wallpatternHoleRadius = wallpattern_hole_radius,
-  wallpatternFill = wallpattern_fill,
-  wallpatternGridChamfer = wallpattern_pattern_grid_chamfer,
-  wallpatternVoronoiNoise = wallpattern_pattern_voronoi_noise,
-  wallpatternBrickWeight = wallpattern_pattern_brick_weight,
-  wallpatternQuality = wallpattern_pattern_quality,
-  help= false){
+  wallpatternBorder = wallpattern_border) {
 
   rotate([90,0,0])
   difference(){
@@ -195,7 +196,7 @@ module PatternedDivider(
   translate([0,0,-fudgeFactor])
   intersection(){
     linear_extrude(height = width+fudgeFactor*2)
-    offset(delta = -width)
+    offset(delta = -wallpatternBorder)
     Divider(
       height = height,
       length = length,
@@ -206,23 +207,7 @@ module PatternedDivider(
       backTopInset=backTopInset,
       backTopAngle=backTopAngle);
     
-      translate([0,height+baseHeight,0])
-      rotate([0,0,-90])
-      cutout_pattern(
-        patternStyle = wallpatternStyle,
-        canvasSize = [height+baseHeight,length], //Swap x and y and rotate so hex is easier to print
-        customShape = false,
-        circleFn = wallpatternHoleSides,
-        holeSize = wallpatternHoleSize,
-        holeSpacing = [wallpattern_hole_spacing,wallpattern_hole_spacing],
-        holeHeight = width*2,
-        holeRadius = wallpatternHoleRadius,
-        center = false,
-        fill = wallpatternFill, //"none", "space", "crop"
-        patternGridChamfer=wallpatternGridChamfer,
-        patternVoronoiNoise=wallpatternVoronoiNoise,
-        patternBrickWeight=wallpatternBrickWeight,
-        patternFs = wallpatternQuality);
+      children();
       }
     }
   }
@@ -245,8 +230,11 @@ module Gridfinity_Divider(
     halfPitch=half_pitch,
     flatBase=flat_base),
   wall_thickness=wall_thickness,
-  lip_style=lip_style,
-  
+  lip_settings = LipSettings(
+    lipStyle=lip_style, 
+    lipSideReliefTrigger=lip_side_relief_trigger, 
+    lipTopReliefHeight=lip_top_relief_height, 
+    lipNotch=lip_top_notches),
   dividerCount=divider_count,
   dividerHeight=divider_height,
   baseHeight=divider_base_height,
@@ -270,22 +258,23 @@ module Gridfinity_Divider(
   num_x = calcDimensionWidth(width);
   num_y = calcDimensionDepth(depth);
   num_z = calcDimensionHeight(height);
-  floorHeight = calculateFloorHeight(magnet_size[1], screw_size[1], floor_thickness);
-  
+  floorHeight = calculateFloorHeight(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=floor_thickness,num_z=num_z, efficient_floor=cupBase_settings[iCupBase_EfficientFloor], flat_base=flat_base);
+    
   gridfinity_cup(
     width=width, depth=depth, height=height,
     cupBase_settings=cupBase_settings,
     wall_thickness=wall_thickness,
-    lip_style=lip_style,
+    lip_settings = lip_settings,
     label_settings=LabelSettings(
       labelStyle="disabled"));
   
   for(i = [0 : divider_count-1]){
+    canvis = [dividerHeight, num_x*env_pitch().x-gf_tolerance];
     ypos = (num_y*env_pitch().y-gf_cup_corner_radius*2-dividerWidth)/(divider_count-1)*i;
     translate([gf_tolerance/2,gf_cup_corner_radius+dividerWidth+ypos,floorHeight])
     PatternedDivider(
-      height = dividerHeight,
-      length = num_x*env_pitch().x-gf_tolerance,
+      height = canvis.x,
+      length = canvis.y,
       baseHeight = baseHeight,
       width = dividerWidth,
       radius = radius,
@@ -293,15 +282,27 @@ module Gridfinity_Divider(
       frontTopAngle=frontTopAngle,
       backTopInset=backTopInset,
       backTopAngle=backTopAngle,
-      wallpatternEnabled = wallpatternEnabled,
-      wallpatternStyle = wallpatternStyle,
-      wallpatternHoleSpacing = wallpatternHoleSpacing,
-      wallpatternHoleSides = wallpatternHoleSides,
-      wallpatternHoleSize = wallpatternHoleSize,
-      wallpatternHoleRadius = wallpatternHoleRadius,
-      wallpatternFill = wallpatternFill,
-      wallpatternGridChamfer = wallpatternGridChamfer,
-      wallpatternVoronoiNoise = wallpatternVoronoiNoise,
-      wallpatternBrickWeight = wallpatternBrickWeight);
+      wallpatternEnabled = wallpatternEnabled){
+        //translate([0,height+baseHeight,0])
+        //rotate([0,0,-90])
+        if(wallpatternEnabled)
+        translate([canvis.y/2,canvis.x/2])
+        cutout_pattern(
+          patternStyle = wallpatternStyle,
+          canvasSize = [canvis.y,canvis.x], //Swap x and y and rotate so hex is easier to print
+          border=wallpattern_border*2,
+          customShape = false,
+          circleFn = wallpatternHoleSides,
+          holeSize = wallpatternHoleSize,
+          holeSpacing = [wallpatternHoleSpacing,wallpatternHoleSpacing],
+          holeHeight = dividerWidth*2,
+          holeRadius = wallpatternHoleRadius,
+          center = true,
+          fill = wallpatternFill, //"none", "space", "crop"
+          patternGridChamfer=wallpatternGridChamfer,
+          patternVoronoiNoise=wallpatternVoronoiNoise,
+          patternBrickWeight=wallpatternBrickWeight,
+          patternFs = wallpattern_pattern_quality);
+        }
     }
 }

@@ -180,17 +180,29 @@ module cylsq2(d1, d2, h) {
 }
   
 module frame_cavity(
-    num_x, 
-    num_y, 
-    position_fill_grid_x = "near",
-    position_fill_grid_y = "near",
-    render_top = true,
-    render_bottom = true,
-    extra_down=0, 
-    frameLipHeight = 4,
-    cornerRadius = gf_cup_corner_radius,
-    reducedWallHeight = 0,
-    reducedWallOuterEdgesOnly=false) {
+  num_x, 
+  num_y, 
+  position_fill_grid_x = "near",
+  position_fill_grid_y = "near",
+  render_top = true,
+  render_bottom = true,
+  extra_down=0, 
+  frameLipHeight = 4,
+  cornerRadius = gf_cup_corner_radius,
+  reducedWallHeight = 0,
+  reducedWallOuterEdgesOnly=false) {
+
+  assert(is_num(num_x));
+  assert(is_num(num_y));
+  assert(is_string(position_fill_grid_x));
+  assert(is_string(position_fill_grid_y));
+  assert(is_bool(render_top));
+  assert(is_bool(render_bottom));
+  assert(is_num(extra_down));
+  assert(is_num(frameLipHeight));
+  assert(is_num(cornerRadius));
+  assert(is_num(reducedWallHeight));
+  assert(is_bool(reducedWallOuterEdgesOnly));
 
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
     translate([0, 0, -fudgeFactor]) 

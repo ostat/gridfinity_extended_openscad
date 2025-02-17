@@ -46,12 +46,31 @@ module SlidingLid(
   lidMinWallThickness,
   limitHeight = false,
   lipStyle = "normal",
+  lip_notches = true,
+  lip_top_relief_height = 0, 
   addLiptoLid = true,
   cutoutEnabled = false,
   cutoutSize = [0,0],
   cutoutRadius = 0,
   cutoutPosition = [0,0]
 ){
+  assert(is_num(num_x));
+  assert(is_num(num_y));
+  assert(is_num(wall_thickness));
+  assert(is_num(clearance));
+  assert(is_num(lidThickness));
+  assert(is_num(lidMinSupport));
+  assert(is_num(lidMinWallThickness));
+  assert(is_bool(limitHeight));
+  assert(is_string(lipStyle));
+  assert(is_bool(lip_notches));
+  assert(is_num(lip_top_relief_height));
+  assert(is_bool(addLiptoLid));
+  assert(is_bool(cutoutEnabled));
+  assert(is_list(cutoutSize));
+  assert(is_num(cutoutRadius));
+  assert(is_list(cutoutPosition));
+  
   innerWallRadius = gf_cup_corner_radius-wall_thickness-clearance;
   seventeen = [env_pitch().x/2-4,env_pitch().y/2-4];
   
@@ -70,7 +89,9 @@ module SlidingLid(
         cupLip(
           num_x = num_x, 
           num_y = num_y, 
-          lipStyle = lipStyle, 
+          lipStyle = lipStyle,
+          lip_notches = lip_notches,
+          lip_top_relief_height = lip_top_relief_height,
           wall_thickness = 1.2);
         translate([0,lidLowerRadius,lidThickness-fudgeFactor*4])
           cube([num_x*env_pitch().x,num_y*env_pitch().y,4+fudgeFactor*2]);
