@@ -68,10 +68,18 @@ depth = [1, 0]; //0.5
 height = [3, 0]; //3
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
-// Remove some or all of lip
-lip_style = "normal";  // [normal, reduced, minimum, none:not stackable]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
+
+/* [Cup Lip] */
+// Style of the cup lip
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+// Below this the inside of the lip will be reduced for easier access.
+lip_side_relief_trigger = [1,1]; //0.1
+// Create a relie
+lip_top_relief_height = -1; // 0.1
+// add a notch to the lip to prevent sliding.
+lip_top_notches  = true;
 
 /* [Base] */
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
@@ -111,8 +119,8 @@ $fs = fs;
 $fn = fn;
 
 //Version number printed on the bottom.
-marble_version = 0.4;
-show_demo_tracks = false;
+marble_version = 0.5;
+show_demo_tracks = true;
 
 function addClearance(dim, clearance) =
     [dim.x > 0 ? dim.x+clearance : 0
@@ -141,28 +149,30 @@ if(show_demo_tracks)
     
     color("green")
     translate([0,0,0])
-    track_straight(100)
-    profile_top(marbleDiameter=20,lipRadius=4.0);
+      track_straight(100)
+      profile_top(marbleDiameter=20,lipRadius=4.0);
 
     color("green")
     translate([0,40,0])
-    track_corner()
-    profile_top(marbleDiameter=20,lipRadius=4.0);
+      track_corner()
+      profile_top(marbleDiameter=20,lipRadius=4.0);
     
     color("green")
     translate([0,100,0])
-    track_ramp(100,40,10, rotation=-90)
-    profile_top(marbleDiameter=20,lipRadius=4.0);
+      track_ramp(100,40,10, rotation=-90)
+      profile_top(marbleDiameter=20,lipRadius=4.0);
     
     color("green")
     translate([0,140,0])
-    track_ramp(100,40,10)
-    profile_top(marbleDiameter=20,lipRadius=4.0);
+      track_ramp(100,40,10)
+      profile_top(marbleDiameter=20,lipRadius=4.0);
     
+    color("green")
     translate([0,180,0])
       bent_extrusion()
       profile_top(marbleDiameter=20,lipRadius=4.0);
 
+    color("green")
     translate([0,220,0])
       bent_extrusion(
         start_straight=10,
@@ -172,6 +182,13 @@ if(show_demo_tracks)
         bend_offset=1*gf_pitch/4)
         rotate(90)
         profile_ramp(marbleDiameter=20);
+        
+   color("green")
+   translate([0,-60,0])
+    track_corner_ramp()
+             //rotate(270)
+          profile_middle(marbleDiameter=19);
+    //profile_ramp(marbleDiameter=20);
   }
 }
 
@@ -187,9 +204,11 @@ module gridfinity_marble(
   floor_thickness = floor_thickness,
   half_pitch = half_pitch,
   wall_thickness=wall_thickness,
-  lip_style=lip_style,
-  cutx=cutx,
-  cuty=cuty) {
+  lip_settings = LipSettings(
+    lipStyle=lip_style, 
+    lipSideReliefTrigger=lip_side_relief_trigger, 
+    lipTopReliefHeight=lip_top_relief_height, 
+    lipNotch=lip_top_notches)) {
   
   lip_style = marble_style == "ramp" ? "none" : lip_style;
   halfPitch=marble_style == "cup" ? false : half_pitch;
@@ -212,7 +231,11 @@ module gridfinity_marble(
         flatBase=false,
         spacer=false),
       wall_thickness=wall_thickness,
-      lip_style=lip_style,
+      lip_settings = LipSettings(
+        lipStyle=lip_style, 
+        lipSideReliefTrigger=lip_side_relief_trigger, 
+        lipTopReliefHeight=lip_top_relief_height, 
+        lipNotch=lip_top_notches),
       zClearance=zClearance,
       cupBaseTextSettings = CupBaseTextSettings(
         baseTextLine1Enabled = true,
@@ -866,13 +889,14 @@ module profile_ramp(marbleDiameter,erraser=[0,0]){
 }
 
 render()
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true))
+  //pitch = pitch,
+  cut = [cutx, cuty, height],
+  setColour = set_colour,
+  randomSeed = random_seed) 
 gridfinity_marble();
