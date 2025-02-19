@@ -28,7 +28,7 @@ module gridfinity_lid(
   center_fill_grid_y = false,
   magnetSize = Default_Magnet_Size,
   plateStyle = "lid",
-  reducedWallHeight = 0,
+  reducedWallHeight = -1,
   lidOptions = Default_Lid_Options,
   lidIncludeMagnets = Default_Lid_Include_Magnets,
   lidEfficientFloorThickness =Default_Lid_Efficient_Floor_Thickness,

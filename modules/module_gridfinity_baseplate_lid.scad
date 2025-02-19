@@ -13,7 +13,7 @@ module baseplate_lid(
   position_fill_grid_x = "far",
   position_fill_grid_y = "far",
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
-  reducedWallHeight=0,
+  reducedWallHeight=-1,
   cornerScrewEnabled = true,
   cornerRadius = gf_cup_corner_radius) {
   flat_base = lidOptions == "flat" ? FlatBase_gridfinity : FlatBase_off;

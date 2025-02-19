@@ -52,7 +52,7 @@ lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
 // Create a relie
-lip_top_relief_height = 0; // 0.1
+lip_top_relief_height = -1; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = true;
 

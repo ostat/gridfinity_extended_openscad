@@ -204,7 +204,7 @@ module frame_cavity(
   assert(is_num(reducedWallHeight));
   assert(is_bool(reducedWallOuterEdgesOnly));
 
-  frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
+  frameWallReduction = reducedWallHeight >= 0 ? max(0, frameLipHeight-reducedWallHeight) : -1;
     translate([0, 0, -fudgeFactor]) 
       gridcopy(
         num_x, 
@@ -212,7 +212,7 @@ module frame_cavity(
         positionGridx = position_fill_grid_x,
         positionGridy = position_fill_grid_y) {
       if($gc_size.x > 0.2 && $gc_size.y >= 0.2){
-        if(frameWallReduction>0)
+        if(frameWallReduction>=0)
           for(side=[[0, [$gc_size.x, $gc_size.y]*env_pitch().x, "x"],[90, [$gc_size.y, $gc_size.x]*env_pitch().y, "y"]]){
             if(side[1].x >= env_pitch().x/2)
             if(!reducedWallOuterEdgesOnly || ($gc_is_corner[1] && side[2] =="x") || ($gc_is_corner[0] && side[2] =="y"))

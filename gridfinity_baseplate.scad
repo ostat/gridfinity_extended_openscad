@@ -22,7 +22,7 @@ outer_Height = 0; //0.1
 position_grid_in_outer_x = "center";//[near, center, far]
 position_grid_in_outer_y = "center";//[near, center, far]
 //Reduce the frame wall size to this value
-Reduced_Wall_Height = 0; //0.1
+Reduced_Wall_Height = -1; //0.1
 Reduced_Wall_Taper = false; 
 plate_corner_radius = 3.75; //[0:0.01:3.75]
 /* [Printer bed options] */
