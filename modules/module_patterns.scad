@@ -10,8 +10,10 @@ iPatternHoleSize=4;
 iPatternHoleSides=5;
 iPatternHoleSpacing=6;
 iPatternHoleRadius=7;
-iPatternVariable=8;
-iPatternFs=9;
+iPatternGridChamfer=8;
+iPatternVoronoiNoise=9;
+iPatternBrickWeight=10;
+iPatternFs=11;
 
 PatternStyle_grid = "grid";
 PatternStyle_gridrotated = "gridrotated";
@@ -55,7 +57,9 @@ function PatternSettings(
     patternHoleSides,
     patternHoleSpacing, 
     patternHoleRadius,
-    patternVariable = 0,
+    patternGridChamfer=0,
+    patternVoronoiNoise=0,
+    patternBrickWeight=0,
     patternFs = 0) = 
   let(
     result = [
@@ -67,14 +71,16 @@ function PatternSettings(
       patternHoleSides,
       patternHoleSpacing,
       patternHoleRadius,
-      patternVariable,
+      patternGridChamfer,
+      patternVoronoiNoise,
+      patternBrickWeight,
       patternFs],
     validatedResult = ValidatePatternSettings(result)
   ) validatedResult;
 
 function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_list(settings), "PatternStyle Settings must be a list")
-  assert(len(settings)==10, "PatternStyle Settings must length 10")
+  assert(len(settings)==12, "PatternStyle Settings must length 10")
     [settings[iPatternEnabled],
       validatePatternStyle(settings[iPatternStyle]),
       validatePatternFill(settings[iPatternFill]),
@@ -83,9 +89,11 @@ function ValidatePatternSettings(settings, num_x, num_y) =
       settings[iPatternHoleSides],
       settings[iPatternHoleSpacing],
       settings[iPatternHoleRadius],
-      settings[iPatternVariable],
+      settings[iPatternGridChamfer],
+      settings[iPatternVoronoiNoise],
+      settings[iPatternBrickWeight],
       settings[iPatternFs]];
-
+      
 module cutout_pattern(
   patternStyle,
   canvasSize,
@@ -94,24 +102,26 @@ module cutout_pattern(
   holeSize = [],
   holeSpacing,
   holeHeight,
+  holeRadius,
   center = true,
   centerz = false,
   fill,
-  patternVariable=0,
-  holeRadius,
+  patternGridChamfer=0,
+  patternVoronoiNoise=0,
+  patternBrickWeight=0,
   border = 0,
   patternFs = 0,
-  source = "",
-  help){
+  source = ""){
   
   canvasSize = border > 0
     ? [canvasSize.x-border*2, canvasSize.y-border*2]
     : canvasSize;
-  if(IsHelpEnabled("trace")) echo("cutout_pattern", canvasSize=canvasSize, patternVariable=patternVariable, patternFs=patternFs, source=source);
+  if(env_help_enabled("trace")) echo("cutout_pattern", source=source, canvasSize=canvasSize, patternFs=patternFs, border=border);
   
   $fs = patternFs > 0 ? patternFs : $fs;
   
   //translate(border>0 ? [border,border,0] : [0,0,0])
+  translate(center ? [0,0,0] : [border,border,0])
   translate(centerz ? [0,0,-holeHeight/2] : [0,0,0])
   union(){
     if(patternStyle == PatternStyle_grid || patternStyle == PatternStyle_hexgrid || patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated) {
@@ -125,27 +135,26 @@ module cutout_pattern(
         holeHeight = holeHeight,
         center=center,
         fill=fill, //"none", "space", "crop"
-        rotateGrid = (patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
+        rotateGrid = !(patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
         //border = border,
-        holeChamfer=[patternVariable,patternVariable],
-        help=help);
+        holeChamfer=[patternGridChamfer,patternGridChamfer]);
     }
     else if(patternStyle == PatternStyle_voronoi || patternStyle == PatternStyle_voronoigrid || patternStyle == "voronoihexgrid"){
-      if(IsHelpEnabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
+      if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
       rectangle_voronoi(
         canvasSize = [canvasSize.x,canvasSize.y,holeHeight], 
         spacing = holeSpacing.x, 
         cellsize = holeSize.x,
         grid = (patternStyle == PatternStyle_voronoigrid || patternStyle == PatternStyle_voronoihexgrid),
         gridOffset = (patternStyle == PatternStyle_voronoihexgrid),
-        noise=patternVariable,
+        noise=patternVoronoiNoise,
         radius = holeRadius,
         center=center,
-        seed=getRandomSeed());
+        seed=env_random_seed());
     }
     else if(patternStyle == PatternStyle_brick || patternStyle == PatternStyle_brickrotated ||
             patternStyle == PatternStyle_brickoffset || patternStyle == PatternStyle_brickoffsetrotated){
-      if(IsHelpEnabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
+      if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
       brick_pattern(
         canvis_size=[canvasSize.x,canvasSize.y],
         thickness = holeHeight,
@@ -153,8 +162,8 @@ module cutout_pattern(
         center=center,
         cell_size = holeSize,
         corner_radius = holeRadius,
-        center_weight = patternVariable,
-        rotateGrid = (patternStyle == PatternStyle_brickrotated || patternStyle == PatternStyle_brickoffsetrotated),
+        center_weight = patternBrickWeight,
+        rotateGrid = !(patternStyle == PatternStyle_brickrotated || patternStyle == PatternStyle_brickoffsetrotated),
         offset_layers = (patternStyle == PatternStyle_brickoffset || patternStyle == PatternStyle_brickoffsetrotated)
       );
     }

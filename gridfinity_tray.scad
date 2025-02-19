@@ -42,10 +42,19 @@ filled_in = true;
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 // Remove some or all of lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
+
+/* [Cup Lip] */
+// Style of the cup lip
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+// Below this the inside of the lip will be reduced for easier access.
+lip_side_relief_trigger = [1,1]; //0.1
+// Create a relie
+lip_top_relief_height = 0; // 0.1
+// add a notch to the lip to prevent sliding.
+lip_top_notches  = true;
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -90,7 +99,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
-flat_base = false;
+flat_base = "off";
 // Remove floor to create a vertical spacer
 spacer = false;
 
@@ -121,7 +130,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -135,9 +144,13 @@ wallpattern_hole_size = [5,5]; //0.1
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
-wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-//voronoi: noise, brick: center weight, grid: taper
-wallpattern_pattern_variable = 0.75;
+wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+//grid pattern hole taper
+wallpattern_pattern_grid_chamfer = 0; //0.01
+//voronoi pattern noise, 
+wallpattern_pattern_voronoi_noise = 0.75;
+//brick pattern center weight
+wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -235,21 +248,21 @@ module tray(
   if(len(customCompartments) == 0)
   {
     //Non custom components
-    if(IsHelpEnabled("trace")) echo(n=num_x*gf_pitch-(verticalCompartments+1)*spacing,d=verticalCompartments);
-    xSize = (num_x*gf_pitch-(verticalCompartments+1)*spacing)/verticalCompartments;
+    if(env_help_enabled("trace")) echo(n=num_x*env_pitch().x-(verticalCompartments+1)*spacing,d=verticalCompartments);
+    xSize = (num_x*env_pitch().x-(verticalCompartments+1)*spacing)/verticalCompartments;
     xStep = xSize + spacing;
-    ySize = (num_y*gf_pitch-(horizontalCompartments+1)*spacing)/horizontalCompartments;
+    ySize = (num_y*env_pitch().y-(horizontalCompartments+1)*spacing)/horizontalCompartments;
     yStep = ySize + spacing;
     
     for(x =[0:1:verticalCompartments-1])
     {
       for(y =[0:1:horizontalCompartments-1])
       {
-        if(IsHelpEnabled("trace")) echo(x=x,y=y,xStep=xStep,yStep=yStep);
+        if(env_help_enabled("trace")) echo(x=x,y=y,xStep=xStep,yStep=yStep);
         translate([spacing+x*xStep,spacing+y*yStep,baseHeight+max(trayZpos,floorThickness)])
         roundedCube(
             xSize, ySize,
-            num_z*gf_zpitch,
+            num_z*env_pitch().z,
             bottomRadius = cornerRadius,
             sideRadius = cornerRadius);
       }
@@ -257,13 +270,13 @@ module tray(
   }
   else
   {
-    if(IsHelpEnabled("debug")) echo(customCompartments = splitCustomConfig(customCompartments));
+    if(env_help_enabled("debug")) echo(customCompartments = splitCustomConfig(customCompartments));
     //custom components
     compartments = split(customCompartments, "|");
     
     scl = [
-      (num_x*gf_pitch-cellSpacing*2)/(num_x*gf_pitch),
-      (num_y*gf_pitch-cellSpacing*2)/(num_y*gf_pitch),1];
+      (num_x*env_pitch().x-cellSpacing*2)/(num_x*env_pitch().x),
+      (num_y*env_pitch().y-cellSpacing*2)/(num_y*env_pitch().y),1];
     translate([cellSpacing,cellSpacing,0])
     scale(scl)
     union()
@@ -277,12 +290,12 @@ module tray(
           radius = len(comp) >= 5 ? comp[iCornerRadius] : cornerRadius;
           depth = baseHeight+(len(comp) >= 6 ? comp[iDepth] : max(trayZpos,floorThickness));
         
-          translate([cellSpacing+xpos*gf_pitch,cellSpacing+ypos*gf_pitch,depth])
+          translate([cellSpacing+xpos*env_pitch().x,cellSpacing+ypos*env_pitch().y,depth])
           roundedCube(
-              xsize*gf_pitch-cellSpacing*2,
-              ysize*gf_pitch-cellSpacing*2,
+              xsize*env_pitch().x-cellSpacing*2,
+              ysize*env_pitch().y-cellSpacing*2,
               //Added 5, as I need to deal with the lip overhang
-              num_z*gf_zpitch-depth+fudgeFactor+5,
+              num_z*env_pitch().z-depth+fudgeFactor+5,
               bottomRadius = radius,
               sideRadius = radius);
     }
@@ -342,21 +355,30 @@ module gridfinity_tray(
   horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
   horizontal_separator_config=horizontal_separator_config, 
   half_pitch=half_pitch,
-  lip_style=lip_style,
+  lip_settings = LipSettings(
+    lipStyle=lip_style, 
+    lipSideReliefTrigger=lip_side_relief_trigger, 
+    lipTopReliefHeight=lip_top_relief_height, 
+    lipNotch=lip_top_notches),
   zClearance=zClearance,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
-  wallpattern_enabled=wallpattern_enabled,
-  wallpattern_style=wallpattern_style,
   wallpattern_walls=wallpattern_walls, 
   wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-  wallpattern_hole_sides=wallpattern_hole_sides,
-  wallpattern_hole_size=wallpattern_hole_size, 
-  wallpattern_hole_radius = wallpattern_hole_radius,
-  wallpattern_hole_spacing=wallpattern_hole_spacing,
-  wallpattern_fill=wallpattern_fill,
-  wallpattern_pattern_variable=wallpattern_pattern_variable,
+  wall_pattern_settings = PatternSettings(
+    patternEnabled = wallpattern_enabled, 
+    patternStyle = wallpattern_style, 
+    patternFill = wallpattern_fill,
+    patternBorder = wallpattern_hole_spacing, 
+    patternHoleSize = wallpattern_hole_size, 
+    patternHoleSides = wallpattern_hole_sides,
+    patternHoleSpacing = wallpattern_hole_spacing, 
+    patternHoleRadius = wallpattern_hole_radius,
+    patternGridChamfer = wallpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+    patternBrickWeight = wallpattern_pattern_brick_weight,
+    patternFs = wallpattern_pattern_quality), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,
   wallcutout_vertical_width=wallcutout_vertical_width,
@@ -384,7 +406,7 @@ module gridfinity_tray(
   num_y = calcDimensionDepth(depth);
   num_z = calcDimensionHeight(height);
   
-  if(IsHelpEnabled("info")) echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
+  if(env_help_enabled("info")) echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
   
   difference() {
     /*<!!start gridfinity_basic_cup!!>*/
@@ -410,24 +432,14 @@ module gridfinity_tray(
       horizontal_separator_cut_depth=horizontal_separator_cut_depth,
       horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
       horizontal_separator_config=horizontal_separator_config, 
-      lip_style=lip_style,
+      lip_settings=lip_settings,
       zClearance=zClearance,
       tapered_corner=tapered_corner,
       tapered_corner_size = tapered_corner_size,
       tapered_setback = tapered_setback,
       wallpattern_walls=wallpattern_walls, 
       wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-      wall_pattern_settings = PatternSettings(
-        patternEnabled = wallpattern_enabled, 
-        patternStyle = wallpattern_style, 
-        patternFill = wallpattern_fill,
-        patternBorder = wallpattern_hole_spacing, 
-        patternHoleSize = wallpattern_hole_size, 
-        patternHoleSides = wallpattern_hole_sides,
-        patternHoleSpacing = wallpattern_hole_spacing, 
-        patternHoleRadius = wallpattern_hole_radius,
-        patternVariable = wallpattern_pattern_variable,
-        patternFs = wallpattern_pattern_quality), 
+      wall_pattern_settings = wall_pattern_settings, 
       wallcutout_vertical=wallcutout_vertical,
       wallcutout_vertical_position=wallcutout_vertical_position,
       wallcutout_vertical_width=wallcutout_vertical_width,
@@ -458,7 +470,10 @@ module gridfinity_tray(
       spacing = tray_spacing,
       cornerRadius = tray_corner_radius, 
       trayZpos = tray_zpos, 
-      baseHeight = cupBaseClearanceHeight(magnet_size[iCylinderDimension_Height], screw_size[iCylinderDimension_Height]),
+      baseHeight = cupBaseClearanceHeight(
+                    magnet_size[iCylinderDimension_Height], 
+                    screw_size[iCylinderDimension_Height],
+                    center_magnet_size[iCylinderDimension_Height]),
       verticalCompartments = tray_vertical_compartments,
       horizontalCompartments = tray_horizontal_compartments,
       customCompartments = tray_custom_compartments);
@@ -472,18 +487,16 @@ module gridfinity_tray(
         [iCornerRadius, tray_corner_radius], 
         [iDepth, num_z]];
 
-      if(IsHelpEnabled("info")) echo(outputCustomConfig("tray", replace_Items(configArray, [])));
+      if(env_help_enabled("info")) echo(outputCustomConfig("tray", replace_Items(configArray, [])));
   }
 }
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true),
+  cut = [cutx, cuty, height],
   randomSeed = random_seed)
 gridfinity_tray();

@@ -85,10 +85,18 @@ height = [3, 0]; //0.1
 filled_in = "disabled"; //[disabled, enabled, "enabledfilllip":Fill cup and lip]
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
-// Remove some or all of lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
+
+/* [Cup Lip] */
+// Style of the cup lip
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+// Below this the inside of the lip will be reduced for easier access.
+lip_side_relief_trigger = [1,1]; //0.1
+// Create a relie
+lip_top_relief_height = 0; // 0.1
+// add a notch to the lip to prevent sliding.
+lip_top_notches  = true;
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -139,7 +147,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
-flat_base = false;
+flat_base = "off";
 // Remove floor to create a vertical spacer
 spacer = false;
 
@@ -183,7 +191,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -197,9 +205,15 @@ wallpattern_hole_size = [5,5]; //0.1
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
-wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-//voronoi: noise, brick: center weight, grid: taper
-wallpattern_pattern_variable = 0.75;
+wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+// border around the wall pattern, default is wall thickness
+wallpattern_border = 0;
+//grid pattern hole taper
+wallpattern_pattern_grid_chamfer = 0; //0.1
+//voronoi pattern noise, 
+wallpattern_pattern_voronoi_noise = 0.75; //0.01
+//brick pattern center weight
+wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -234,7 +248,7 @@ extension_tab_size= [10,0,0,0];
 
 /* [Bottom Text] */
 // Add bin size to bin bottom
-text_1 = true;
+text_1 = false;
 // Size of text, in mm
 text_size = 6; // 0.1
 // Depth of text, in mm
@@ -424,13 +438,13 @@ module itemholder(
   _multiCardCompact = itemCalc[icMcCompact];
   _depth = min(itemCalc[icHoleSize].z, floorThickness);
   
-  xSize = (num_x*gf_pitch-(compartments.x+1)*compartment_spacing)/compartments.x;
+  xSize = (num_x*env_pitch().x-(compartments.x+1)*compartment_spacing)/compartments.x;
   xStep = xSize + compartment_spacing;
-  ySize = (num_y*gf_pitch-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
+  ySize = (num_y*env_pitch().y-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
   yStep = ySize + compartment_spacing;
   
-  if(IsHelpEnabled("info")) echo("itemholder", item=item, multiCards=multiCards,longCenter=itemCalc[icMcLongCenterItem],smallCenter=itemCalc[icMcShortCenterItem],side=itemCalc[icMcSideItem], _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
-  if(IsHelpEnabled("info")) echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
+  if(env_help_enabled("info")) echo("itemholder", item=item, multiCards=multiCards,longCenter=itemCalc[icMcLongCenterItem],smallCenter=itemCalc[icMcShortCenterItem],side=itemCalc[icMcSideItem], _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
+  if(env_help_enabled("info")) echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
   
   for(x =[0:1:compartments.x-1])
   { 
@@ -450,8 +464,7 @@ module itemholder(
           holeHeight = _depth+fudgeFactor,
           holeChamfer = holeChamfer,
           center=compartment_centered,
-          fill=compartment_fill,
-          help=help)
+          fill=compartment_fill)
             if(item[ishape]=="multicard")
             {
               multiCard(
@@ -546,7 +559,7 @@ module samplesholder(
     _depth = itemCalc[icHoleSize].z;
     Rc = itemCalc[icSides]<=2 || itemCalc[icSides]>16 ? _holeSize[0]/2 : (_holeSize[0]/2)/cos(180/itemCalc[icSides]);
 
-  if(IsHelpEnabled("info")) echo("itemholder", knowItemCode=knowItemCode, holeDepth=holeDepth, item=item, itemCalc=itemCalc, mc=mc,longCenter=itemCalc[icMcLongCenterItem],smallCenter=itemCalc[icMcShortCenterItem],side=itemCalc[icMcSideItem], _sides=_sides, _holeSize=_holeSize,_depth=_depth, Rc=Rc, Dc=Rc*2);
+  if(env_help_enabled("info")) echo("itemholder", knowItemCode=knowItemCode, holeDepth=holeDepth, item=item, itemCalc=itemCalc, mc=mc,longCenter=itemCalc[icMcLongCenterItem],smallCenter=itemCalc[icMcShortCenterItem],side=itemCalc[icMcSideItem], _sides=_sides, _holeSize=_holeSize,_depth=_depth, Rc=Rc, Dc=Rc*2);
 
   if(knowItemCode=="multicard")
   {
@@ -667,7 +680,11 @@ module gridfinity_itemholder(
   horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
   horizontal_separator_config=horizontal_separator_config, 
   half_pitch=half_pitch,
-  lip_style=lip_style,
+  lip_settings = LipSettings(
+    lipStyle=lip_style, 
+    lipSideReliefTrigger=lip_side_relief_trigger, 
+    lipTopReliefHeight=lip_top_relief_height, 
+    lipNotch=lip_top_notches),
   zClearance=zClearance,
   box_corner_attachments_only=box_corner_attachments_only,
   flat_base = flat_base,
@@ -675,16 +692,21 @@ module gridfinity_itemholder(
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
-  wallpattern_enabled=wallpattern_enabled,
-  wallpattern_style=wallpattern_style,
   wallpattern_walls=wallpattern_walls, 
   wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-  wallpattern_hole_sides=wallpattern_hole_sides,
-  wallpattern_hole_size=wallpattern_hole_size, 
-  wallpattern_hole_spacing=wallpattern_hole_spacing,
-  wallpattern_fill=wallpattern_fill,
-  wallpattern_pattern_variable=wallpattern_pattern_variable,
-  wallpattern_hole_radius = wallpattern_hole_radius,
+  wall_pattern_settings = PatternSettings(
+    patternEnabled = wallpattern_enabled, 
+    patternStyle = wallpattern_style, 
+    patternFill = wallpattern_fill,
+    patternBorder = wallpattern_border, 
+    patternHoleSize = wallpattern_hole_size, 
+    patternHoleSides = wallpattern_hole_sides,
+    patternHoleSpacing = wallpattern_hole_spacing, 
+    patternHoleRadius = wallpattern_hole_radius,
+    patternGridChamfer = wallpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+    patternBrickWeight = wallpattern_pattern_brick_weight,
+    patternFs = wallpattern_pattern_quality), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,
   wallcutout_vertical_width=wallcutout_vertical_width,
@@ -732,19 +754,19 @@ module gridfinity_itemholder(
   calculatedItemDepth = itemCalc[icHoleSize].z;
 
   // min floor height
-  baseClearanceHeight = cupBaseClearanceHeight(magnet_depth, screw_depth);
-  minFloorHeight = calculateMinFloorHeight(magnet_depth, screw_depth);
+  baseClearanceHeight = cupBaseClearanceHeight(magnet_depth, screw_depth, center_magnet_thickness);
   
   //calculate the bin height. This math is not right
   height = !itemholder_auto_bin_height || calculatedItemDepth <=0 ? num_z
       : filled_in != "disabled"
-        ? (minFloorHeight + calculatedItemDepth)/gf_zpitch
-        : ceil((minFloorHeight + calculatedItemDepth)/gf_zpitch);
+        ? (baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z
+        : ceil((baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z);
   // calculate floor thickness
-  calculatedFloorThickness = calculateFloorThickness(magnet_depth, screw_depth, calculatedItemDepth + gf_cup_floor_thickness, height, filled_in);  
+  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_depth, screw_depth=screw_depth, floor_thickness=calculatedItemDepth + gf_cup_floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
 
-  if(IsHelpEnabled("info")) ;
-  echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedFloorThickness=calculatedFloorThickness, minFloorHeight=minFloorHeight, baseClearanceHeight=baseClearanceHeight, height=height); 
+  
+  if(env_help_enabled("info")) ;
+  echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedUsableFloorThickness=calculatedUsableFloorThickness, baseClearanceHeight=baseClearanceHeight, height=height); 
 
   if(itemholder_enable_sample == false)
   {
@@ -769,7 +791,7 @@ module gridfinity_itemholder(
           screwSize = enable_screws?screw_size:[0,0],
           holeOverhangRemedy = hole_overhang_remedy, 
           cornerAttachmentsOnly = box_corner_attachments_only,
-          floorThickness = calculatedFloorThickness,
+          floorThickness = calculatedUsableFloorThickness, //todo this seems like the wrong value
           cavityFloorRadius = cavity_floor_radius,
           efficientFloor=efficient_floor,
           halfPitch=half_pitch,
@@ -792,24 +814,14 @@ module gridfinity_itemholder(
         horizontal_separator_cut_depth=horizontal_separator_cut_depth,
         horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
         horizontal_separator_config=horizontal_separator_config, 
-        lip_style=lip_style,
+        lip_settings=lip_settings,
         zClearance=zClearance,
         tapered_corner=tapered_corner,
         tapered_corner_size = tapered_corner_size,
         tapered_setback = tapered_setback,
         wallpattern_walls=wallpattern_walls,
         wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-        wall_pattern_settings = PatternSettings(
-          patternEnabled = wallpattern_enabled, 
-          patternStyle = wallpattern_style, 
-          patternFill = wallpattern_fill,
-          patternBorder = wallpattern_hole_spacing, 
-          patternHoleSize = wallpattern_hole_size, 
-          patternHoleSides = wallpattern_hole_sides,
-          patternHoleSpacing = wallpattern_hole_spacing, 
-          patternHoleRadius = wallpattern_hole_radius,
-          patternVariable = wallpattern_pattern_variable,
-          patternFs = wallpattern_pattern_quality), 
+        wall_pattern_settings = wall_pattern_settings, 
         wallcutout_vertical=wallcutout_vertical,
         wallcutout_vertical_position=wallcutout_vertical_position,
         wallcutout_vertical_width=wallcutout_vertical_width,
@@ -850,7 +862,7 @@ module gridfinity_itemholder(
           baseClearanceHeight, 
           baseClearanceHeight + floor_thickness - calculatedItemDepth);
       
-      echo("gridfinity_itemholder", baseClearanceHeight=baseClearanceHeight, minFloorHeight=minFloorHeight, floor_thickness=floor_thickness, calculatedFloorThickness=calculatedFloorThickness, calculatedItemDepth=calculatedItemDepth, itemholder_z_bottom=itemholder_z_bottom)
+      echo("gridfinity_itemholder", baseClearanceHeight=baseClearanceHeight, floor_thickness=floor_thickness, calculatedUsableFloorThickness=calculatedUsableFloorThickness, calculatedItemDepth=calculatedItemDepth, itemholder_z_bottom=itemholder_z_bottom)
 
       color(color_extension)
       translate([0, 0, itemholder_z_bottom])
@@ -869,7 +881,7 @@ module gridfinity_itemholder(
         holeChamfer = itemholder_hole_chamfer,
         holeGrid  = itemholder_hole_grid,
         holeClearance = itemholder_hole_clearance,
-        floorThickness = calculatedFloorThickness,
+        floorThickness = calculatedUsableFloorThickness,
         wallThickness = wall_thickness,
         compartments = itemholder_compartments,
         compartment_spacing = itemholder_compartment_spacing,
@@ -896,14 +908,12 @@ module gridfinity_itemholder(
   }
 }
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true),
+  cut = [cutx, cuty, height],
   setColour = set_colour)
 gridfinity_itemholder();

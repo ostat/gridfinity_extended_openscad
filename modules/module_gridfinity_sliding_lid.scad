@@ -46,16 +46,35 @@ module SlidingLid(
   lidMinWallThickness,
   limitHeight = false,
   lipStyle = "normal",
+  lip_notches = true,
+  lip_top_relief_height = 0, 
   addLiptoLid = true,
   cutoutEnabled = false,
   cutoutSize = [0,0],
   cutoutRadius = 0,
   cutoutPosition = [0,0]
 ){
-  innerWallRadius = gf_cup_corner_radius-wall_thickness-clearance;
-  seventeen = gf_pitch/2-4;
+  assert(is_num(num_x));
+  assert(is_num(num_y));
+  assert(is_num(wall_thickness));
+  assert(is_num(clearance));
+  assert(is_num(lidThickness));
+  assert(is_num(lidMinSupport));
+  assert(is_num(lidMinWallThickness));
+  assert(is_bool(limitHeight));
+  assert(is_string(lipStyle));
+  assert(is_bool(lip_notches));
+  assert(is_num(lip_top_relief_height));
+  assert(is_bool(addLiptoLid));
+  assert(is_bool(cutoutEnabled));
+  assert(is_list(cutoutSize));
+  assert(is_num(cutoutRadius));
+  assert(is_list(cutoutPosition));
   
-  lidSize = [num_x*gf_pitch-lidMinWallThickness, num_y*gf_pitch-lidMinWallThickness];
+  innerWallRadius = gf_cup_corner_radius-wall_thickness-clearance;
+  seventeen = [env_pitch().x/2-4,env_pitch().y/2-4];
+  
+  lidSize = [num_x*env_pitch().x-lidMinWallThickness, num_y*env_pitch().y-lidMinWallThickness];
   
   lidLowerRadius = innerWallRadius+lidMinWallThickness;
   lidUpperRadius = limitHeight ? lidLowerRadius-lidThickness/2 : fudgeFactor;
@@ -64,19 +83,21 @@ module SlidingLid(
   {
     union(){
       if(addLiptoLid)
-      color(getColour(color_topcavity, isLip = true))
+      color(env_colour(color_topcavity, isLip = true))
       difference(){
         translate([0,0,lidThickness-fudgeFactor*3])
         cupLip(
           num_x = num_x, 
           num_y = num_y, 
-          lipStyle = lipStyle, 
+          lipStyle = lipStyle,
+          lip_notches = lip_notches,
+          lip_top_relief_height = lip_top_relief_height,
           wall_thickness = 1.2);
         translate([0,lidLowerRadius,lidThickness-fudgeFactor*4])
-          cube([num_x*gf_pitch,num_y*gf_pitch,4+fudgeFactor*2]);
+          cube([num_x*env_pitch().x,num_y*env_pitch().y,4+fudgeFactor*2]);
       }
 
-      color(getColour(color_lid))
+      color(env_colour(color_lid))
       union(){
         hull() 
           cornercopy(seventeen, num_x, num_y){
@@ -94,12 +115,12 @@ module SlidingLid(
               cylinder(r=gf_cup_corner_radius, h=lidThickness);
           }         
           translate([-fudgeFactor,lidLowerRadius,-fudgeFactor])
-            cube([num_x*gf_pitch+fudgeFactor*2,num_y*gf_pitch+fudgeFactor,lidThickness+fudgeFactor*2]);
+            cube([num_x*env_pitch().x+fudgeFactor*2,num_y*env_pitch().y+fudgeFactor,lidThickness+fudgeFactor*2]);
         }
       }
   }
   
-  if(IsHelpEnabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius );
+  if(env_help_enabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius );
   if(cutoutSize.x != 0 && cutoutSize.y != 0 && cutoutRadius>0){
     
     cSize = [
@@ -119,7 +140,7 @@ module SlidingLid(
     ];
 
     translate([cutoutPosition.x,cutoutPosition.y,0])
-    translate([lidSize.x/2-gf_pitch/2,lidSize.y/2-gf_pitch/2,-fudgeFactor])
+    translate([lidSize.x/2-env_pitch().x/2,lidSize.y/2-env_pitch().y/2,-fudgeFactor])
       hull(){
         for(i=[0:len(positions)-1]){
           translate([positions[i].x,positions[i].y,0])
@@ -129,8 +150,8 @@ module SlidingLid(
     }
   }
   
-  if(IsHelpEnabled("debug")) echo("SlidingLid", num_x=num_x, num_y=num_y, wall_thickness=wall_thickness, clearance=clearance, lidThickness=lidThickness, lidMinSupport=lidMinSupport, lidMinWallThickness=lidMinWallThickness);
-  if(IsHelpEnabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius, cutoutPosition=cutoutPosition);
+  if(env_help_enabled("debug")) echo("SlidingLid", num_x=num_x, num_y=num_y, wall_thickness=wall_thickness, clearance=clearance, lidThickness=lidThickness, lidMinSupport=lidMinSupport, lidMinWallThickness=lidMinWallThickness);
+  if(env_help_enabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius, cutoutPosition=cutoutPosition);
 }
 
 module SlidingLidSupportMaterial(
@@ -141,7 +162,7 @@ module SlidingLidSupportMaterial(
   innerWallRadius,
   zpoint){
   
-  seventeen = gf_pitch/2-4;
+  seventeen = [env_pitch().x/2-4,env_pitch().y/2-4];
     
   aboveLipHeight = sliding_lid_settings[iSlidingLidThickness];
   belowLedgeHeight = sliding_lid_settings[iSlidingLidThickness]/4;
@@ -213,17 +234,17 @@ module SlidingLidCavity(
   if(sliding_lid_settings[slidingLidLipEnabled])
   {
     translate([0,0,0])
-      cube([num_x*gf_pitch,gf_cup_corner_radius,aboveLidHeight+fudgeFactor*3]);
+      cube([num_x*env_pitch().x,gf_cup_corner_radius,aboveLidHeight+fudgeFactor*3]);
   } else {
-    //translate([-gf_pitch/2,-gf_pitch/2,zpoint]) 
-    //cube([num_x*gf_pitch,gf_cup_corner_radius,zClearance+gf_Lip_Height]);
+    //translate([-env_pitch().x/2,-env_pitch().y/2,zpoint]) 
+    //cube([num_x*env_pitch().x,gf_cup_corner_radius,zClearance+gf_Lip_Height]);
     //innerWallRadius = gf_cup_corner_radius-wall_thickness;
     translate([0,gf_cup_corner_radius,aboveLidHeight]) 
     rotate([270,0,0])
     chamferedCorner(
       cornerRadius = aboveLidHeight/4,
       chamferLength = aboveLidHeight,
-      length=num_x*gf_pitch, 
+      length=num_x*env_pitch().x, 
       height = aboveLidHeight,
       width = gf_cup_corner_radius);
   }

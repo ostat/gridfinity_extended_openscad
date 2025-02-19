@@ -23,12 +23,18 @@ height = [3, 0]; //0.1
 filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
-// Remove some or all of lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-//At what x and y size should we enable side lip reduction
-lip_side_relief_trigger = [1,1]; //0.1
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
+
+/* [Cup Lip] */
+// Style of the cup lip
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+// Below this the inside of the lip will be reduced for easier access.
+lip_side_relief_trigger = [1,1]; //0.1
+// Create a relie
+lip_top_relief_height = 0; // 0.1
+// add a notch to the lip to prevent sliding.
+lip_top_notches  = true;
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -132,7 +138,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 // Spacing between pattern
 wallpattern_hole_spacing = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -146,9 +152,15 @@ wallpattern_hole_size = [5,5]; //0.1
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
-wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-//voronoi: noise, brick: center weight, grid: taper
-wallpattern_pattern_variable = 0.75;
+wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+// border around the wall pattern, default is wall thickness
+wallpattern_border = 0;
+//grid pattern hole taper
+wallpattern_pattern_grid_chamfer = 0; //0.1
+//voronoi pattern noise, 
+wallpattern_pattern_voronoi_noise = 0.75; //0.01
+//brick pattern center weight
+wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -156,7 +168,7 @@ wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 // enable Grid floor patter
 floorpattern_enabled=false;
 // Style of the pattern
-floorpattern_style = "gridrotated"; //[grid, gridrotated, hexgrid, hexgridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+floorpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
 // Spacing between pattern
 floorpattern_hole_spacing = 2; //0.1
 //Number of sides of the hole op
@@ -166,8 +178,14 @@ floorpattern_hole_size = [5,5]; //0.1
 floorpattern_hole_radius = 0.5;
 // pattern fill mode
 floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-//voronoi: noise, brick: center weight, grid: taper
-floorpattern_pattern_variable = 0.75;
+// border around the wall pattern, default is wall thickness
+floorpattern_border = 0;
+//grid pattern hole taper
+floorpattern_pattern_grid_chamfer = 0; //0.1
+//voronoi pattern noise, 
+floorpattern_pattern_voronoi_noise = 0.75; //0.01
+//brick pattern center weight
+floorpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 floorpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -223,6 +241,8 @@ cuty = 0; //0.1
 enable_help = "disabled"; //[info,debug,trace]
 
 /* [Model detail] */
+//Work in progress,  Modify the default grid size. Will break compatibility
+pitch = [42,42,7];  //[0:1:9999]
 //assign colours to the bin
 set_colour = "enable"; //[disabled, enable, preview, lip]
 //where to render the model
@@ -247,15 +267,14 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true),
+  pitch = pitch,
+  cut = [cutx, cuty, height],
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)
@@ -305,8 +324,11 @@ gridfinity_cup(
   horizontal_separator_cut_depth=horizontal_separator_cut_depth,
   horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
   horizontal_separator_config=horizontal_separator_config, 
-  lip_style=lip_style,
-  lip_side_relief_trigger=lip_side_relief_trigger,
+  lip_settings = LipSettings(
+    lipStyle=lip_style, 
+    lipSideReliefTrigger=lip_side_relief_trigger, 
+    lipTopReliefHeight=lip_top_relief_height, 
+    lipNotch=lip_top_notches),
   zClearance=zClearance,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
@@ -317,23 +339,27 @@ gridfinity_cup(
     patternEnabled = wallpattern_enabled, 
     patternStyle = wallpattern_style, 
     patternFill = wallpattern_fill,
-    patternBorder = wallpattern_hole_spacing, 
+    patternBorder = wallpattern_border, 
     patternHoleSize = wallpattern_hole_size, 
     patternHoleSides = wallpattern_hole_sides,
     patternHoleSpacing = wallpattern_hole_spacing, 
     patternHoleRadius = wallpattern_hole_radius,
-    patternVariable = wallpattern_pattern_variable,
+    patternGridChamfer = wallpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+    patternBrickWeight = wallpattern_pattern_brick_weight,
     patternFs = wallpattern_pattern_quality), 
   floor_pattern_settings = PatternSettings(
     patternEnabled = floorpattern_enabled, 
     patternStyle = floorpattern_style, 
     patternFill = floorpattern_fill,
-    patternBorder = floorpattern_hole_spacing, 
+    patternBorder = floorpattern_border, 
     patternHoleSize = floorpattern_hole_size, 
     patternHoleSides = floorpattern_hole_sides,
     patternHoleSpacing = floorpattern_hole_spacing, 
     patternHoleRadius = floorpattern_hole_radius,
-    patternVariable = floorpattern_pattern_variable,
+    patternGridChamfer = floorpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
+    patternBrickWeight = floorpattern_pattern_brick_weight,
     patternFs = floorpattern_pattern_quality), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,

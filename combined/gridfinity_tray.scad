@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_tray.scad'. Generated 2025-01-29 22:28
+//Combined version of 'gridfinity_tray.scad'. Generated 2025-02-09 00:20
 ///////////////////////////////////////
 
 /*<!!start gridfinity_tray!!>*/
@@ -196,6 +196,23 @@ module end_of_customizer_opts() {}
 //Combined from path module_gridfinity_cup.scad
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // X dimension. grid units (multiples of 42mm) or mm.
 default_width = [2, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
@@ -207,6 +224,8 @@ default_position = "default"; //["default","center","zero"]
 default_filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Might want to remove inner lip of cup
 default_lip_style = "normal"; //[normal, reduced, minimum, none]
+//At what x and y size should we enable side lip reduction
+default_lip_side_relief_trigger = [1,1];
 //assign colours to the bin, will may 
 default_set_colour = "preview"; //[disabled, preview, lip]
 
@@ -369,10 +388,16 @@ default_cutx = 0;//0.01
 default_cuty = 0;//0.01
 default_help = "info"; //["off","info","debug","trace"]
 
+SetGridfinityEnvironment(//execution point
   width = default_width,
   depth = default_depth,
   height = default_height,
+  setColour = default_set_colour,//execution point
+  help = default_help,//execution point
+  cutx=default_cutx,//execution point
   cuty=default_cuty,
+  cutz = calcDimensionHeight(default_height, true))//execution point
+gridfinity_cup();//execution point
 */
 
 // It's recommended that all parameters other than x, y, z size should be specified by keyword 
@@ -428,6 +453,7 @@ module gridfinity_cup(
   horizontal_irregular_subdivisions = default_horizontal_irregular_subdivisions,
   horizontal_separator_config = default_horizontal_separator_config,
   lip_style=default_lip_style,
+  lip_side_relief_trigger=default_lip_side_relief_trigger,
   zClearance=default_zClearance,
   tapered_corner = default_tapered_corner,
   tapered_corner_size = default_tapered_corner_size,
@@ -580,7 +606,8 @@ module gridfinity_cup(
           chamber_wall_zClearance=chamber_wall_zClearance,
           calculated_vertical_separator_positions = calculated_vertical_separator_positions,
           calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
-          lip_style=lip_style, 
+          lip_style=lip_style,
+          lip_side_relief_trigger=lip_side_relief_trigger,
           zClearance=zClearance,
           sliding_lid_settings= slidingLidSettings);
       
@@ -960,7 +987,7 @@ module gridfinity_cup(
     }
 
     // add text to the bottom
-    _magnet_position = calculateMagnetPosition(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter]);
+    _magnet_position = calculateAttachmentPosition(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter], cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter]);
     if(IsHelpEnabled("trace")) echo("cup_base_text", _magnet_position=_magnet_position, iCupBase_MagnetSize=cupBase_settings[iCupBase_MagnetSize]);
     cup_base_text(
       cupBaseTextSettings = cupBaseTextSettings, 
@@ -1121,7 +1148,9 @@ module partitioned_cavity(num_x, num_y, num_z,
     chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_zClearance=default_chamber_wall_zClearance,
     calculated_vertical_separator_positions=calculated_vertical_separator_positions,
     calculated_horizontal_separator_positions=calculated_horizontal_separator_positions,
-    lip_style=default_lip_style, zClearance=default_zClearance, 
+    lip_style=default_lip_style, 
+    lip_side_relief_trigger=default_lip_side_relief_trigger,
+    zClearance=default_zClearance, 
     sliding_lid_settings=[]) {
   
   //Legacy variables
@@ -1142,9 +1171,12 @@ module partitioned_cavity(num_x, num_y, num_z,
   difference() {
     color(getColour(color_cupcavity))
     basic_cavity(num_x, num_y, num_z,
-    fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_lip_aligned=fingerslide_lip_aligned, fingerslide_radius=fingerslide_radius, cupBase_settings=cupBase_settings,
+      fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_lip_aligned=fingerslide_lip_aligned, fingerslide_radius=fingerslide_radius, 
+      cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
-      lip_style=lip_style, sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
+      lip_style=lip_style, 
+      lip_side_relief_trigger=lip_side_relief_trigger,
+      sliding_lid_settings=sliding_lid_settings, zClearance=zClearance);
     sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
     
     if(IsHelpEnabled("trace")) echo("partitioned_cavity", vertical_separator_positions=calculated_vertical_separator_positions);
@@ -1180,6 +1212,7 @@ module basic_cavity(num_x, num_y, num_z,
     fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,fingerslide_walls,fingerslide_lip_aligned=default_fingerslide_lip_aligned,
     wall_thickness=default_wall_thickness,
     lip_style=default_lip_style,
+    lip_side_relief_trigger=[1,1],
     cupBase_settings=[],
     sliding_lid_settings = [],
     zClearance = 0) {
@@ -1326,7 +1359,7 @@ module basic_cavity(num_x, num_y, num_z,
     }
 
     if (cupBase_settings[iCupBase_EfficientFloor] != "off") {
-      magnetPosition = calculateMagnetPosition(magnet_diameter);
+      magnetPosition = calculateAttachmentPosition(magnet_diameter, cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter]);
       magnetCoverHeight = max(
         cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
         cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height]);
@@ -1363,19 +1396,18 @@ module basic_cavity(num_x, num_y, num_z,
     
     //Sliding lid rebate.
     if(sliding_lid_settings[iSlidingLidEnabled])
-        tz(zpoint)
-        SlidingLidCavity(
-          num_x = num_x,
-          num_y = num_y,
-          wall_thickness = wall_thickness,
-          sliding_lid_settings = sliding_lid_settings,
-          aboveLidHeight = aboveLidHeight);
-
+      tz(zpoint)
+      SlidingLidCavity(
+        num_x = num_x,
+        num_y = num_y,
+        wall_thickness = wall_thickness,
+        sliding_lid_settings = sliding_lid_settings,
+        aboveLidHeight = aboveLidHeight);
   }}
   
   // cut away side lips if num_x is less than 1
   if(IsHelpEnabled("trace")) echo(str("cutaway input:", num_x, " rounded:", roundtoDecimal(num_x, sigFigs = 2), " numx<1:", num_x < 1," round<1:", roundtoDecimal(num_x, sigFigs = 2)<1, " numx=round:", num_x==roundtoDecimal(num_x, sigFigs = 2)));
-  if (roundtoDecimal(num_x,2) < 1) {
+  if (roundtoDecimal(num_x,2) < lip_side_relief_trigger.x) {
     top = num_z*gf_zpitch+gf_Lip_Height;
     height = top-lipBottomZ+fudgeFactor*2;
     
@@ -1387,6 +1419,18 @@ module basic_cavity(num_x, num_y, num_z,
     }
   }
 
+  if (roundtoDecimal(num_y,2) < lip_side_relief_trigger.y) {
+    top = num_z*gf_zpitch+gf_Lip_Height;
+    height = top-lipBottomZ+fudgeFactor*2;
+    
+    hull()
+    for (y=[1.5+0.25+wall_thickness, num_y*gf_pitch-1.5-0.25-wall_thickness]){
+      for (x=[11, (num_x)*gf_pitch-seventeen])
+      translate([x, y, top-height])
+      cylinder(d=3, h=height);
+    }
+  }
+  
   if (nofloor) {
     tz(-fudgeFactor)
       hull()
@@ -1484,6 +1528,8 @@ module FingerSlide(
 ;
 //CombinedEnd from path module_gridfinity_cup.scad
 //Combined from path gridfinity_constants.scad
+
+
 // dimensions as declared on https://gridfinity.xyz/specification/
 
 //Gridfinity grid size
@@ -1579,6 +1625,9 @@ color_cut = "Gold";
 color_lid = "MediumAquamarine";
 //CombinedEnd from path gridfinity_constants.scad
 //Combined from path functions_general.scad
+
+
+
 
 function sum(list, c = 0, end) = 
   let(end = is_undef(end) ? len(list) : end)
@@ -1815,6 +1864,8 @@ module conditional_render(enable=true){
 }
 //CombinedEnd from path functions_general.scad
 //Combined from path functions_string.scad
+
+
 // String functions found here https://github.com/thehans/funcutils/blob/master/string.scad
 join = function (l,delimiter="") 
   let(s = len(l), d = delimiter,
@@ -1871,6 +1922,11 @@ float = function(s) let(
 csv_parse = function(s) [for (e=split(s, ",")) float(e)];
 //CombinedEnd from path functions_string.scad
 //Combined from path module_patterns.scad
+
+
+
+
+
 
 iPatternEnabled=0;
 iPatternStyle=1;
@@ -2032,6 +2088,11 @@ module cutout_pattern(
 }
 //CombinedEnd from path module_patterns.scad
 //Combined from path module_item_holder.scad
+
+
+
+
+
 
 griditemholder_demo = false;
 
@@ -2409,6 +2470,11 @@ module chamferedCylinder(h, r, circleFn, chamfer=0, topChamfer = 0.5, bottomCham
 }
 //CombinedEnd from path module_item_holder.scad
 //Combined from path ub_hexgrid.scad
+
+
+
+
+
 // works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
 
 /** \mainpage
@@ -2548,6 +2614,9 @@ module HexGrid(e=[11,4],es=5,center=true,name,help){
 }
 //CombinedEnd from path ub_hexgrid.scad
 //Combined from path ub_helptxt.scad
+
+
+
 // works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
 
 /** \mainpage
@@ -2619,6 +2688,8 @@ else HelpTxt("Help",["titel",titel,"string",string,"help",help],help=1);
 }
 //CombinedEnd from path ub_helptxt.scad
 //Combined from path ub_common.scad
+
+
 // works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
 
 /** \mainpage
@@ -2981,6 +3052,8 @@ module Mklon(tx=0,ty=0,tz=0,rx=0,ry=0,rz=0,mx=0,my=0,mz=1)
 }
 //CombinedEnd from path ub_common.scad
 //Combined from path module_pattern_voronoi.scad
+
+
 /**
 * m_transpose.scad
 * use <../matrix/m_transpose.scad>
@@ -3111,6 +3184,11 @@ module rectangle_voronoi(
 //CombinedEnd from path module_pattern_voronoi.scad
 //Combined from path module_pattern_brick.scad
 
+
+
+
+
+
 module brick_pattern(
   canvis_size=[31,31],
   thickness = 1,
@@ -3178,6 +3256,10 @@ module brick_pattern(
 }
 //CombinedEnd from path module_pattern_brick.scad
 //Combined from path module_utility.scad
+
+
+
+
 
 module bentWall(
   length=100,
@@ -3698,6 +3780,12 @@ module rounded_taper(
 }
 //CombinedEnd from path module_utility.scad
 //Combined from path ub_sbogen.scad
+
+
+
+
+
+
 // works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
 
 /** \mainpage
@@ -4185,6 +4273,8 @@ module R(x=0,y=0,z=0,help=false)
 }
 //CombinedEnd from path ub_sbogen.scad
 //Combined from path module_utility_wallcutout.scad
+
+
 iwalcutoutconfig_type = 0;
 iwalcutoutconfig_position = 1;
 iwalcutoutconfig_width = 2;
@@ -4281,6 +4371,12 @@ module WallCutout(
 
 //CombinedEnd from path module_utility_wallcutout.scad
 //Combined from path module_gridfinity_label.scad
+
+
+
+
+
+
 
 labeldemo = false;
 if(labeldemo == true){
@@ -4579,8 +4675,9 @@ module labelSockets(
     }
     else if(label_style == LabelStyle_cullenect){
       extraHeightToCleanLip = 0.5;
+      cullenect_relief_x = label_num_x - 5.7;
       labelSize=[
-        label_relief.x == 0 ? 36.3 : label_relief.x,
+        label_relief.x == 0 ? cullenect_relief_x : label_relief.x,
         label_relief.y == 0 ? 11.3 : label_relief.y,
         (label_relief.z == 0 ? 1.5 : label_relief.z)+extraHeightToCleanLip];
       labelLeftPosition = CalculateLabelSocketPosition(
@@ -4691,6 +4788,13 @@ module label_cullenect_socket(
 //CombinedEnd from path module_gridfinity_label.scad
 //Combined from path module_gridfinity_sliding_lid.scad
 
+
+
+
+
+
+
+
 iSlidingLidEnabled=0;
 iSlidingLidThickness=1;
 iSlidingLidMinWallThickness=2;
@@ -4753,6 +4857,7 @@ module SlidingLid(
   {
     union(){
       if(addLiptoLid)
+      color(getColour(color_topcavity, isLip = true))
       difference(){
         translate([0,0,lidThickness-fudgeFactor*3])
         cupLip(
@@ -4919,6 +5024,20 @@ module SlidingLidCavity(
 //CombinedEnd from path module_gridfinity_sliding_lid.scad
 //Combined from path module_gridfinity.scad
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 //grid_block();
@@ -4951,7 +5070,7 @@ module grid_block(
   outer_size = gf_pitch - gf_tolerance;  // typically 41.5
   block_corner_position = outer_size/2 - gf_cup_corner_radius;  // need not match center of pad corners
 
-  magnet_position = calculateMagnetPosition(magnet_size[iCylinderDimension_Diameter]);
+  magnet_position = calculateAttachmentPosition(magnet_size[iCylinderDimension_Diameter], screw_size[iCylinderDimension_Diameter]);
    
   overhang_fix = hole_overhang_remedy > 0 && magnet_size[iCylinderDimension_Diameter] > 0 && screw_size[iCylinderDimension_Diameter] > 0 ? hole_overhang_remedy : 0;
   overhang_fix_depth = 0.3;  // assume this is enough
@@ -5339,6 +5458,9 @@ module debug_cut(cutx, cuty, cutz) {
 //CombinedEnd from path module_gridfinity.scad
 //Combined from path functions_gridfinity.scad
 
+
+
+
 // set this to produce sharp corners on baseplates and bins
 // not for general use (breaks compatibility) but may be useful for special cases
 sharp_corners = 0;
@@ -5382,10 +5504,12 @@ function cupBaseClearanceHeight(magnet_depth, screw_depth, flat_base="off") =
 
 function calculateMinFloorHeight(magnet_depth,screw_depth) = 
     cupBaseClearanceHeight(magnet_depth,screw_depth) + gf_cup_floor_thickness;
-function calculateMagnetPosition(magnet_diameter) = 
-  magnet_diameter == 0 
+    
+function calculateAttachmentPosition(magnet_diameter, screw_diameter) = 
+  let(attachment_diameter = max(magnet_diameter, screw_diameter))
+  attachment_diameter == 0 
     ? 0
-    : min(gf_pitch/2-8, gf_pitch/2-4-magnet_diameter/2);
+    : min(gf_pitch/2-8, gf_pitch/2-4-attachment_diameter/2);
 
 //Height of base including the floor.
 function calculateFloorHeight(magnet_depth, screw_depth, floor_thickness, num_z=1, filledin = false, efficient_floor = "off", flat_base="off") = 
@@ -5468,6 +5592,10 @@ Stackable_values = [Stackable_enabled,Stackable_disabled,Stackable_filllip];
   value;  
 //CombinedEnd from path functions_gridfinity.scad
 //Combined from path module_gridfinity_cup_base.scad
+
+
+
+
 
 /* [Base]
 // (Zack's design uses magnet diameter of 6.5) 
@@ -5640,6 +5768,10 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
 //CombinedEnd from path module_gridfinity_cup_base.scad
 //Combined from path module_lip.scad
 
+
+
+
+
 module cupLip(
   num_x = 2, 
   num_y = 3, 
@@ -5724,6 +5856,12 @@ module cupLip(
 //CombinedEnd from path module_lip.scad
 //Combined from path module_gridfinity_Extendable.scad
 
+
+
+
+
+
+
 /* [Extendable]
 extension_x_enabled = "disabled"; //[disabled, front, back]
 extension_x_position = 0.5; 
@@ -5798,6 +5936,12 @@ function ValidateExtendableSettings(settings, num_x, num_y) =
       settings[iExtendableTabSize]];
 //CombinedEnd from path module_gridfinity_Extendable.scad
 //Combined from path module_gridfinity_cup_base_text.scad
+
+
+
+
+
+
 
 iCupBaseTextLine1Enabled = 0;
 iCupBaseTextLine2Enabled = 1;
@@ -5910,6 +6054,8 @@ module cup_base_text(
 }
 //CombinedEnd from path module_gridfinity_cup_base_text.scad
 //Combined from path module_divider_walls.scad
+
+
 iSeparatorPosition = 0;
 iSeparatorLength = 1;
 iSeparatorHeight = 2;
@@ -6017,6 +6163,17 @@ assert(separator_orientation == "horizontal" || separator_orientation == "vertic
 //CombinedEnd from path module_divider_walls.scad
 //Combined from path module_gridfinity_efficient_floor.scad
 
+
+
+
+
+
+
+
+
+
+
+
 //creates the gird of efficient floor pads to be added to the cavity for removal from the overall filled in bin.
 module efficient_floor_grid(
   num_x, num_y, 
@@ -6072,7 +6229,7 @@ module EfficientFloorAttachmentCaps(
   assert(is_list(grid_copy_corner_index) && len(grid_copy_corner_index) >= 3, "grid_copy_corner_index must be a list of length > 3");
   
   fudgeFactor = 0.01; 
-  magnetPosition = calculateMagnetPosition(magnet_size[iCylinderDimension_Diameter]);
+  magnetPosition = calculateAttachmentPosition(magnet_size[iCylinderDimension_Diameter], screw_size[iCylinderDimension_Diameter]);
   blockSize = gf_pitch/2-magnetPosition+wall_thickness;
     
   //$gcci=[trans,xi,yi,xx,yy];
@@ -6238,6 +6395,8 @@ module EfficientFloor(
 }
 //CombinedEnd from path module_gridfinity_efficient_floor.scad
 //Combined from path module_rounded_negative_champher.scad
+
+
 champher_demo = false;
 
 if(champher_demo)
@@ -6349,6 +6508,12 @@ module chamferedSquare(size=0, radius = 0){
 }
 //CombinedEnd from path module_rounded_negative_champher.scad
 //Combined from path module_attachment_clip.scad
+
+
+
+
+
+
 
 /*
 attachment_clip(height = 13,
@@ -6490,6 +6655,15 @@ module attachment_clip(
 }
 //CombinedEnd from path module_attachment_clip.scad
 //Combined from path module_calipers.scad
+
+
+
+
+
+
+
+
+
 
 module ShowCalipers(
   cutx, cuty, 
@@ -6661,6 +6835,12 @@ module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_depth, 
 }
 //CombinedEnd from path module_calipers.scad
 //Combined from path ub_caliper.scad
+
+
+
+
+
+
 // works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
 
 /** \mainpage

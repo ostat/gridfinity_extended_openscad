@@ -136,29 +136,31 @@ module gridfinity_label(
   
   frontWall = [
     //width
-    num_x*gf_pitch,
+    num_x*env_pitch().x,
     //Position
-    [num_x*gf_pitch, 0, 0],
+    [num_x*env_pitch().x, 0, 0],
     //rotation
     [0,0,180],
     vertical_separator_positions,
     //is reversed
     true,
-    "front"];
+    "front",
+    env_pitch().x];
   backWall = [
     //width
-    num_x*gf_pitch,
+    num_x*env_pitch().x,
     //Position
-    [0, num_y*gf_pitch, 0],
+    [0, num_y*env_pitch().y, 0],
     //rotation
     [0,0,0],
     vertical_separator_positions,
     //is reversed
     false,
-    "back"];
+    "back",
+    env_pitch().x];
   leftWall = [
     //width
-    num_y*gf_pitch,
+    num_y*env_pitch().y,
     //Position
     [0, 0, 0],
     //rotation
@@ -166,22 +168,24 @@ module gridfinity_label(
     horizontal_separator_positions,
     //is reversed
     false,
-    "left"];
+    "left",
+    env_pitch().y];
   rightWall = [
     //width
-    num_y*gf_pitch,
+    num_y*env_pitch().y,
     //Position
-    [num_x*gf_pitch, num_y*gf_pitch, 0],
+    [num_x*env_pitch().x, num_y*env_pitch().y, 0],
     //rotation
     [0,0,270],
     horizontal_separator_positions,
     //is reversed
     true,
-    "right"];
+    "right",
+    env_pitch().y];
     
   wallLocations = [frontWall, backWall, leftWall, rightWall];
  
-  color(getColour(color_label))
+  color(env_colour(color_label))
   tz(zpoint+fudgeFactor)
   //Loop the sides 
   for(l = [0:1:len(wallLocations)-1]){
@@ -192,7 +196,7 @@ module gridfinity_label(
       [ 0, -labelCornerRadius ],
       [ 0, -labelCornerRadius-labelSize.z ]
     ];
-    labelWidthmm = labelSize.x <=0 ? wallLocation[ilabelWall_Width] : labelSize.x * gf_pitch;
+    labelWidthmm = labelSize.x <=0 ? wallLocation[ilabelWall_Width] : labelSize.x * wallLocation[6];
     
     // Calculate list of chambers. 
     chamberWidths = len(separator_positions) < 1 || 
@@ -206,7 +210,7 @@ module gridfinity_label(
             ? wallLocation[ilabelWall_Width]
             : separator_positions[i][iSeparatorPosition]) - (i==0 ? 0 : separator_positions[i-1][iSeparatorPosition]) ];
     
-    if(IsHelpEnabled("trace")) echo("gridfinity_label", l=l, wallLocation = wallLocation, chamberWidths=chamberWidths, separator_positions = separator_positions);
+    if(env_help_enabled("trace")) echo("gridfinity_label", l=l, wallLocation = wallLocation, chamberWidths=chamberWidths, separator_positions = separator_positions);
     union()
     if(label_walls[l] != 0)
       translate(wallLocation[ilabelWall_Position])
@@ -224,7 +228,7 @@ module gridfinity_label(
                           : (label_position == "right" || label_position == "rightchamber" )? chamberWidth - label_num_x 
                           : 0);
         
-        if(IsHelpEnabled("trace")) echo("gridfinity_label", i=i, chamberStart=chamberStart, label_num_x=label_num_x, label_pos_x=label_pos_x,  separator_position=separator_positions[i-1]);
+        if(env_help_enabled("trace")) echo("gridfinity_label", i=i, chamberStart=chamberStart, label_num_x=label_num_x, label_pos_x=label_pos_x,  separator_position=separator_positions[i-1]);
           translate([(chamberStart + label_pos_x)+labelCornerRadius,-labelCornerRadius,0])
           union(){
             difference(){

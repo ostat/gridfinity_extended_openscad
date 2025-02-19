@@ -22,7 +22,7 @@ module baseplate_cnclaser(
   magnetEnable = magnetSize[0] >0 && magnetSize[1] > 0;
   magnetSize = magnetEnable ? magnetSize : [0,0];
   
-  magnet_position = magnet_position(magnetSize[0]);
+  magnet_position = calculateAttachmentPositions(magnetSize[0]);
   magnetHeight = magnetSize[1];
   magnetborder = 5;
   
@@ -32,7 +32,7 @@ module baseplate_cnclaser(
     cornerRadius = cornerRadius,
     roundedCorners = roundedCorners)
       if(magnetEnable) {
-        translate([gf_pitch/2,gf_pitch/2])
+        translate([env_pitch().x/2,env_pitch().y/2])
           gridcopycorners(
             r=magnet_position, 
             num_x=($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
@@ -54,7 +54,7 @@ module cnclaser_baseplate_internal(
     cornerRadius = gf_cup_corner_radius,
     roundedCorners = 15) {
 
-  corner_position = gf_pitch/2-cornerRadius;
+  corner_position = [env_pitch().x/2-cornerRadius, env_pitch().y/2-cornerRadius];
   
   difference() {
     color(color_cup)
@@ -72,7 +72,7 @@ module cnclaser_baseplate_internal(
         union(){
           hull() 
             cornercopy(
-              corner_position,   
+              r=corner_position,   
               ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
               ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1))
                 cylinder(r=2,h=height+fudgeFactor*2);

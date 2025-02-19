@@ -19,7 +19,8 @@ module cncmagnet_baseplate(
   magnetEnable = magnetSize[0] >0 && magnetSize[1] > 0;
   magnetSize = magnetSize ? magnetSize : [0,0];
   
-  magnet_position = min(gf_pitch/2-8, gf_pitch/2-4-gf_baseplate_magnet_od/2);
+  magnet_position = calculateAttachmentPositions(gf_baseplate_magnet_od);
+  
   frameHeight = magnetSize[1];
   magnetborder = 5;
   
@@ -49,13 +50,13 @@ module cnc_baseplate(
     cornerRadius = gf_cup_corner_radius,
     roundedCorners = 15) {
 
-  corner_position = gf_pitch/2-cornerRadius;
+  corner_position = [env_pitch().x/2-cornerRadius, env_pitch().y/2-cornerRadius];
   
   difference() {
     color(color_cup)
     hull() 
       //render()
-      cornercopy(corner_position, num_x, num_y) {
+      cornercopy(r=corner_position, num_x, num_y) {
         radius = bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? cornerRadius : 0.01;// 0.01 is almost zero....
         ctrn = [
           ($idx[0] == 0 ? -1 : 1)*(cornerRadius-radius), 

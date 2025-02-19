@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_socket_holder.scad'. Generated 2025-01-29 03:51
+//Combined version of 'gridfinity_socket_holder.scad'. Generated 2025-02-09 00:20
 ///////////////////////////////////////
 
 part = 5; //[1: "METRIC", 2: "IMPERIAL", 3: "Imperial < 1/2\"", 4: "Imperial >= 1/2\"", 5: "Metric >=7mm", 6: "Metric <7mm"]

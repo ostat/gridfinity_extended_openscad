@@ -29,11 +29,19 @@ depth = [1, 0]; //0.5
 height = [3, 0]; //0.1
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
-// Remove some or all of lip
-lip_style = "normal";  // [normal, reduced, minimum, none:not stackable]
 //under size the bin top by this amount to allow for better stacking
 zClearance = 0; // 0.1
-      
+
+/* [Cup Lip] */
+// Style of the cup lip
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+// Below this the inside of the lip will be reduced for easier access.
+lip_side_relief_trigger = [1,1]; //0.1
+// Create a relie
+lip_top_relief_height = 0; // 0.1
+// add a notch to the lip to prevent sliding.
+lip_top_notches  = true;
+
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
@@ -123,9 +131,11 @@ module gridfinity_sieve(
     flatBase=flat_base,
     spacer=false),
   wall_thickness=wall_thickness,
-  lip_style=lip_style,
-  cutx=cutx,
-  cuty=cuty) {
+  lip_settings = LipSettings(
+    lipStyle=lip_style, 
+    lipSideReliefTrigger=lip_side_relief_trigger, 
+    lipTopReliefHeight=lip_top_relief_height, 
+    lipNotch=lip_top_notches)) {
   
   difference() {
     num_x = calcDimensionWidth(width);
@@ -140,7 +150,7 @@ module gridfinity_sieve(
       filled_in=false,
       cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
-      lip_style=lip_style,
+      lip_settings=lip_settings,
       zClearance=zClearance,
         floor_pattern_settings = PatternSettings(
         patternEnabled = true, 
@@ -150,18 +160,16 @@ module gridfinity_sieve(
         patternHoleSize = holeSize, 
         patternHoleSides = 6,
         patternHoleSpacing = sieve_hole_spacing,
-        patternVariable = sieve_hole_chamfer));
+        patternGridChamfer=sieve_hole_chamfer));
     /*<!!end gridfinity_basic_cup!!>*/
   }
 }
 
-SetGridfinityEnvironment(
+set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cutx = cutx,
-  cuty = cuty,
-  cutz = calcDimensionHeight(height, true))
+  cut = [cutx, cuty, height])
 gridfinity_sieve();
