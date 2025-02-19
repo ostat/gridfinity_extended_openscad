@@ -16,7 +16,7 @@ module baseplate_regular(
   magnetSize = [0,0],
   magnetZOffset=0,
   magnetTopCover=0,
-  reducedWallHeight=0,
+  reducedWallHeight=-1,
   reduceWallTaper = false,
   centerScrewEnabled = false,
   cornerScrewEnabled = false,

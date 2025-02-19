@@ -54,7 +54,7 @@ module frame_plain(
     baseTaper = 0, 
     height = 4,
     cornerRadius = gf_cup_corner_radius,
-    reducedWallHeight = 0,
+    reducedWallHeight = -1,
     roundedCorners = 15,
     reduceWallTaper = false) {
   frameLipHeight = extra_down > 0 ? height -0.6 : height;
@@ -92,7 +92,7 @@ module frame_plain(
           trim = trim, 
           height = outer_height > 0 
             ? outer_height 
-            : reducedWallHeight > 0 ? extra_down+reducedWallHeight : extra_down+frameLipHeight,
+            : reducedWallHeight >= 0 ? extra_down+reducedWallHeight : extra_down+frameLipHeight,
           cornerRadius = cornerRadius,
           roundedCorners = roundedCorners);
         
@@ -102,7 +102,7 @@ module frame_plain(
           num_x=grid_num_x, 
           num_y=grid_num_y, 
           trim=trim, 
-          height=extra_down + (reducedWallHeight > 0 ? reducedWallHeight : frameLipHeight),
+          height=extra_down + (reducedWallHeight >= 0 ? reducedWallHeight : frameLipHeight),
           cornerRadius = cornerRadius,
           roundedCorners = roundedCorners);
       }
@@ -134,53 +134,6 @@ module frame_plain(
       }
   }
 }
-
-/*
-module frame_cavity(
-    num_x, 
-    num_y, 
-    position_fill_grid_x = "near",
-    position_fill_grid_y = "near",
-    extra_down=0, 
-    frameLipHeight = 4,
-    cornerRadius = gf_cup_corner_radius,
-    reducedWallHeight = 0) {
-
-  frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
-    translate([0, 0, -fudgeFactor]) 
-      gridcopy(
-        num_x, 
-        num_y,
-        positionGridx = position_fill_grid_x,
-        positionGridy = position_fill_grid_y) {
-      if($gc_size.x > 0.2 && $gc_size.y >= 0.2){
-        if(frameWallReduction>0)
-          for(side=[[0, [$gc_size.x, $gc_size.y]*env_pitch().x],[90, [$gc_size.y, $gc_size.x]*env_pitch().y]]){
-            if(side[1].x >= env_pitch().x/2)
-            translate([$gc_size.x/2*env_pitch().x,$gc_size.y/2*env_pitch().y,frameLipHeight])
-            rotate([0,0,side[0]])
-              WallCutout(
-                lowerWidth=side[1].x-20,
-                wallAngle=80,
-                height=frameWallReduction,
-                thickness=side[1].y+fudgeFactor*2,
-                cornerRadius=frameWallReduction,
-                topHeight=1);
-              }
-
-          //wall reducers, cutouts and clips
-          if($children >=2) children(1);
-
-          pad_oversize(
-            margins=1,
-            extend_down=extra_down,
-            $gc_size.x,
-            $gc_size.y)
-              //cell cavity
-              if($children >=1) children(0);
-    }
-  }
-}*/
 
 module baseplate_cavities(
   num_x, 

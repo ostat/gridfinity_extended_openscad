@@ -12,7 +12,7 @@ lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
 // Create a relie
-lip_top_relief_height = 0; // 0.1
+lip_top_relief_height = -1; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = 0; // 0.1
 
@@ -53,7 +53,7 @@ module cupLip(
   lipStyle = "normal", 
   wall_thickness = 1.2,
   lip_notches = true,
-  lip_top_relief_height = 0){
+  lip_top_relief_height = -1){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
@@ -119,7 +119,7 @@ module cupLip(
           render_top = !lip_notches,
           render_bottom = true,
           frameLipHeight = 4,
-          reducedWallHeight = 0, 
+          reducedWallHeight = -1, 
           $pitch=[pitch.x*num_x,pitch.y*num_y,pitch.z]);
       }
      

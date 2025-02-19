@@ -47,7 +47,7 @@ module SlidingLid(
   limitHeight = false,
   lipStyle = "normal",
   lip_notches = true,
-  lip_top_relief_height = 0, 
+  lip_top_relief_height = -1, 
   addLiptoLid = true,
   cutoutEnabled = false,
   cutoutSize = [0,0],

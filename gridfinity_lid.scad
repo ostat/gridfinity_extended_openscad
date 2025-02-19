@@ -21,7 +21,7 @@ Enable_Magnets = true;
 //size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
 Magnet_Size = [6.5, 2.4];  // .1
 //Reduce the frame wall size to this value
-Reduced_Wall_Height = 0; //0.1
+Reduced_Wall_Height = -1; //0.1
 
 /* [Lid Options] */
 Lid_Include_Magnets = true;

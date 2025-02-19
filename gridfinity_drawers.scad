@@ -59,7 +59,7 @@ chest_top_base_plate_enable_magnets = true;
 // (Zack's design uses magnet diameter of 6.5, 2.4)
 chest_top_base_plate_magnet_size = [6.5, 2.4];  // .1
 //Reduce the frame wall size to this value
-chest_top_base_plate_reduced_wall_height = 0; //0.1
+chest_top_base_plate_reduced_wall_height = -1; //0.1
 chest_top_base_plate_reduced_wall_taper = false; 
 
 /* [Chest Base] */
