@@ -946,13 +946,10 @@ module gridfinity_cup(
     dividers_removable_for_cup(
       num_x = num_x, 
       num_y = num_y,
-      num_z = num_z,
-      support_walls=[divider_wall_removable_settings[iDividerRemovable_Walls].x,divider_wall_removable_settings[iDividerRemovable_Walls].y],
-      headroom=divider_wall_removable_settings[iDividerRemovable_Headroom],
-      divider_thickness=divider_wall_removable_settings[iDividerRemovable_DividerThickness], 
-      divider_support_indent=divider_wall_removable_settings[iDividerRemovable_DividerSupportIndent],
-      wall_thickness=wall_thickness,
-      floorHeight=floorHeight);
+      zpoint = zpoint,
+      divider_settings = divider_wall_removable_settings,
+      wall_thickness = wall_thickness,
+      floorHeight = floorHeight);
   
   if(env_help_enabled("info"))
     //translate(gridfinityRenderPosition(position,num_x,num_y))
@@ -1244,14 +1241,10 @@ module basic_cavity(num_x, num_y, num_z,
       removable_dividers_support(
           num_x = num_x, 
           num_y = num_y,
-          num_z = num_z,
-          support_walls=[divider_wall_removable_settings[iDividerRemovable_Walls].x,divider_wall_removable_settings[iDividerRemovable_Walls].y],
-          headroom=divider_wall_removable_settings[iDividerRemovable_Headroom],
-          support_thickness=divider_wall_removable_settings[iDividerRemovable_SupportThickness],
-          divider_clearance=divider_wall_removable_settings[iDividerRemovable_DividerClearance],
+          zpoint = zpoint,
+          divider_settings = divider_wall_removable_settings,
           wall_thickness=wall_thickness,
-          floorHeight=floorht,
-          seventeen=seventeen);
+          floorHeight=floorht);
 
     if (cupBase_settings[iCupBase_EfficientFloor] != "off") {
       magnetPosition = calculateAttachmentPositions(magnet_diameter, cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter]);
@@ -1293,15 +1286,10 @@ module basic_cavity(num_x, num_y, num_z,
       removable_dividers(
         num_x = num_x, 
         num_y = num_y,
-        num_z = num_z,
-        support_walls=[divider_wall_removable_settings[iDividerRemovable_Walls].x,divider_wall_removable_settings[iDividerRemovable_Walls].y],
-        headroom=divider_wall_removable_settings[iDividerRemovable_Headroom],
-        divider_spacing=divider_wall_removable_settings[iDividerRemovable_DividerSpacing],
-        divider_thickness=divider_wall_removable_settings[iDividerRemovable_DividerThickness], 
-        divider_support_indent=divider_wall_removable_settings[iDividerRemovable_DividerSupportIndent],
-        divider_clearance=divider_wall_removable_settings[iDividerRemovable_DividerClearance],
+        zpoint = zpoint,
+        divider_settings = divider_wall_removable_settings,
         wall_thickness=wall_thickness,
-        floorht=floorht);
+        floorHeight=floorht);
     
     //Sliding lid rebate.
     if(sliding_lid_settings[iSlidingLidEnabled])

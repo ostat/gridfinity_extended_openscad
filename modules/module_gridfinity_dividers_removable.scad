@@ -55,50 +55,45 @@ function ValidateDividerRemovableSettings(settings, wall_thickness = 0) =
     settings[iDividerRemovable_DividerClearance]];
     
 module removable_dividers(
-  num_x = num_x, 
-  num_y = num_y,
-  num_z = num_z,
-  support_walls=support_walls,
-  headroom=0.1,
-  divider_spacing=0,
-  divider_thickness=0, 
-  divider_support_indent=0,
-  divider_clearance=0.1,
-  wall_thickness=wall_thickness,
-  floorht=floorht){
+  num_x, 
+  num_y,
+  zpoint,
+  divider_settings = [],
+  wall_thickness,
+  floorHeight){
+  
   assert(is_num(num_x), "num_x must be a number");
   assert(is_num(num_y), "num_y must be a number");
-  assert(is_num(num_z), "num_z must be a number");
-  assert(is_list(support_walls), "support_walls must be a list");
-  assert(is_num(headroom), "headroom must be a number");
-  assert(is_num(divider_spacing), "divider_spacing must be a number");
-  assert(is_num(divider_thickness), "divider_thickness must be a number");
-  assert(is_num(divider_support_indent), "divider_support_indent must be a number");
+  assert(is_num(zpoint), "zpoint must be a number");
   assert(is_num(wall_thickness), "wall_thickness must be a number");
-  assert(is_num(floorht), "floorht must be a number");
+  assert(is_num(floorHeight), "floorHeight must be a number");
+  divider_settings = ValidateDividerRemovableSettings(divider_settings, wall_thickness);
+  
+  support_walls=[divider_settings[iDividerRemovable_Walls].x,divider_settings[iDividerRemovable_Walls].y];
+  headroom=divider_settings[iDividerRemovable_Headroom];
+  divider_spacing=divider_settings[iDividerRemovable_DividerSpacing];
+  divider_thickness=divider_settings[iDividerRemovable_DividerThickness];
+  divider_support_indent=divider_settings[iDividerRemovable_DividerSupportIndent];
+  divider_clearance=divider_settings[iDividerRemovable_DividerClearance];
   
   front = [
     //width
     num_x*env_pitch().x-0.5-wall_thickness*2-divider_support_indent*2,
     //Position
-    [ wall_thickness+divider_support_indent+0.25, 0, floorht],
+    [ wall_thickness+divider_support_indent+0.25, 0, floorHeight],
     //rotation
     [0,0,0],
     //cup width for calculating count
-    num_y*env_pitch().y,
-    //cup height
-    num_z*env_pitch().z];
+    num_y*env_pitch().y];
   left = [
     //width
     num_y*env_pitch().y-0.5-wall_thickness*2-divider_support_indent*2,
     //Position
-    [num_x*env_pitch().x, wall_thickness+divider_support_indent+0.25, floorht],
+    [num_x*env_pitch().x, wall_thickness+divider_support_indent+0.25, floorHeight],
     //rotation
     [0,0,90],
     //cup width for calculating count
-    num_x*env_pitch().x,
-    //cup height
-    num_z*env_pitch().z];
+    num_x*env_pitch().x];
     
   locations = [left, front];
       
@@ -113,78 +108,86 @@ module removable_dividers(
         translate(locations[i][1])
         rotate(locations[i][2])                  
         translate([0,wall_thickness+leadin+pos,0])
-        cube([locations[i][0], divider_thickness+divider_clearance, locations[i][4]-headroom]);
+        cube([locations[i][0], divider_thickness+divider_clearance, zpoint-headroom]);
       }
     }
 }
 
 module dividers_removable_for_cup(
-  num_x = num_x, 
-  num_y = num_y,
-  num_z = num_z,
-  support_walls=support_walls,
-  headroom=0.1,
-  divider_thickness=0, 
-  divider_support_indent=0,
-  wall_thickness=wall_thickness,
-  floorHeight=floorHeight){
+  num_x, 
+  num_y,
+  zpoint,
+  divider_settings = [],
+  wall_thickness,
+  floorHeight){
   
+  assert(is_num(num_x), "num_x must be a number");
+  assert(is_num(num_y), "num_y must be a number");
+  assert(is_num(zpoint), "zpoint must be a number");
+  assert(is_num(wall_thickness), "wall_thickness must be a number");
+  assert(is_num(floorHeight), "floorHeight must be a number");
+  divider_settings = ValidateDividerRemovableSettings(divider_settings, wall_thickness);
+  
+  support_walls=[divider_settings[iDividerRemovable_Walls].x,divider_settings[iDividerRemovable_Walls].y];
+  headroom=divider_settings[iDividerRemovable_Headroom];
+  divider_thickness=divider_settings[iDividerRemovable_DividerThickness];
+  divider_support_indent=divider_settings[iDividerRemovable_DividerSupportIndent];
+  divider_clearance=divider_settings[iDividerRemovable_DividerClearance];
+
   if(support_walls.x == 1){
     translate([-env_pitch().x,0,0])
     rotate([90,0,90])
-    divider_removable(num_x=num_x, num_y=num_y, num_z=num_z, support_walls=[0,1], headroom=headroom, divider_thickness=divider_thickness, divider_support_indent=divider_support_indent, wall_thickness=wall_thickness, floorHeight=floorHeight);
+    divider_removable(num_x=num_x, num_y=num_y, zpoint=zpoint, support_walls=[0,1], headroom=headroom, divider_thickness=divider_thickness, divider_support_indent=divider_support_indent, divider_clearance=divider_clearance, wall_thickness=wall_thickness, floorHeight=floorHeight);
   }
   if(support_walls.y == 1){
     translate([0,-env_pitch().y,0])
     rotate([90,0,0])
-    divider_removable(num_x=num_x, num_y=num_y, num_z=num_z, support_walls=[1,0], headroom=headroom, divider_thickness=divider_thickness, divider_support_indent=divider_support_indent, wall_thickness=wall_thickness, floorHeight=floorHeight);
+    divider_removable(num_x=num_x, num_y=num_y, zpoint=zpoint, support_walls=[1,0], headroom=headroom, divider_thickness=divider_thickness, divider_support_indent=divider_support_indent, divider_clearance=divider_clearance, wall_thickness=wall_thickness, floorHeight=floorHeight);
   }
 }
 
 module divider_removable(
-  num_x = num_x, 
-  num_y = num_y,
-  num_z = num_z,
-  support_walls=support_walls,
-  headroom=0.1,
-  divider_thickness=0, 
-  divider_support_indent=0,
-  wall_thickness=wall_thickness,
-  floorHeight=floorHeight){
+  num_x, 
+  num_y,
+  zpoint,
+  support_walls,
+  headroom,
+  divider_thickness, 
+  divider_support_indent,
+  divider_clearance,
+  wall_thickness,
+  floorHeight){
   
   size = 
     [support_walls.x == 1
-      ? num_x*env_pitch().x-0.5-wall_thickness*2-divider_support_indent*2
-      : num_y*env_pitch().y-0.5-wall_thickness*2-divider_support_indent*2,
+      ? num_x*env_pitch().x-0.5-wall_thickness*2-divider_support_indent*2-divider_clearance
+      : num_y*env_pitch().y-0.5-wall_thickness*2-divider_support_indent*2-divider_clearance,
       divider_thickness,
-      num_z*env_pitch().z-headroom-floorHeight];
+      zpoint-headroom-floorHeight];
   
   cube(size);
 }
 
-///Creates the finger slide that will be subtracted from the cavity  
+///Creates the divider wall slide subracted from the cavity
 module removable_dividers_support(
-  num_x = num_x, 
-  num_y = num_y,
-  num_z = num_z,
-  support_walls=support_walls,
-  headroom=0,
-  support_thickness=0,
-  divider_clearance=0.1,
-  wall_thickness=wall_thickness,
-  floorHeight=floorHeight,
-  seventeen=seventeen) {
+  num_x, 
+  num_y,
+  zpoint,
+  divider_settings = [],
+  wall_thickness,
+  floorHeight) {
+  
   assert(is_num(num_x), "num_x must be a number");
   assert(is_num(num_y), "num_y must be a number");
-  assert(is_num(num_z), "num_z must be a number");
-  assert(is_list(support_walls), "support_walls must be a list");
-  assert(is_num(headroom), "headroom must be a number");
-  assert(is_num(support_thickness), "support_thickness must be a number");
+  assert(is_num(zpoint), "zpoint must be a number");
   assert(is_num(wall_thickness), "wall_thickness must be a number");
   assert(is_num(floorHeight), "floorHeight must be a number");
-  assert(is_list(seventeen), "seventeen must be a number");
+  divider_settings = ValidateDividerRemovableSettings(divider_settings, wall_thickness);
   
-  support_thickness = support_thickness <= 0 ? wall_thickness*2 : support_thickness;
+  support_walls=[divider_settings[iDividerRemovable_Walls].x,divider_settings[iDividerRemovable_Walls].y];
+  headroom=divider_settings[iDividerRemovable_Headroom];
+  support_thickness=divider_settings[iDividerRemovable_SupportThickness];
+  divider_clearance=divider_settings[iDividerRemovable_DividerClearance];
 
   front = [
     //width
@@ -192,44 +195,28 @@ module removable_dividers_support(
     //Position
     [0, 0, 0],
     //rotation
-    [0,0,0],
-    //cup width for finger slide (opposite dimension)
-    num_y*env_pitch().y,
-    //cup height
-    num_z*env_pitch().z];
+    [0,0,0]];
   back = [
     //width
     num_x*env_pitch().x,
     //Position
     [num_x*env_pitch().x, num_y*env_pitch().y, 0],
     //rotation
-    [0,0,180],
-    //cup width for finger slide (opposite dimension)
-    num_y*env_pitch().y,
-    //cup height
-    num_z*env_pitch().z];
+    [0,0,180]];
   left = [
     //width
     num_y*env_pitch().y,
     //Position
     [0, num_y*env_pitch().y, 0],
     //rotation
-    [0,0,270],
-    //cup width for finger slide (opposite dimension)
-    num_x*env_pitch().x,
-    //cup height
-    num_z*env_pitch().z];
+    [0,0,270]];
   right = [
     //width
     num_y*env_pitch().y,
     //Position
     [num_x*env_pitch().x, 0, 0],
     //rotation
-    [0,0,90],
-    //cup width for finger slide (opposite dimension)
-    num_x*env_pitch().x,
-    //cup height
-    num_z*env_pitch().z];
+    [0,0,90]];
     
   locations = [front, back, left, right];
   walls = [support_walls.x, support_walls.x, support_walls.y, support_walls.y];
@@ -240,5 +227,5 @@ module removable_dividers_support(
       translate(locations[i][1])
       rotate(locations[i][2])                  
       translate([0,wall_thickness,0])
-      cube([locations[i][0], support_thickness, locations[i][4]-headroom]);
+      cube([locations[i][0], support_thickness, zpoint-headroom]);
 }
