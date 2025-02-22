@@ -135,12 +135,12 @@ module dividers_removable_for_cup(
   divider_clearance=divider_settings[iDividerRemovable_DividerClearance];
 
   if(support_walls.x == 1){
-    translate([-env_pitch().x,0,0])
-    rotate([90,0,90])
+    translate([-env_pitch().x/2,num_y*env_pitch().y,0])
+    rotate([90,0,270])
     divider_removable(num_x=num_x, num_y=num_y, zpoint=zpoint, support_walls=[0,1], headroom=headroom, divider_thickness=divider_thickness, divider_support_indent=divider_support_indent, divider_clearance=divider_clearance, wall_thickness=wall_thickness, floorHeight=floorHeight);
   }
   if(support_walls.y == 1){
-    translate([0,-env_pitch().y,0])
+    translate([0,-env_pitch().y/2,0])
     rotate([90,0,0])
     divider_removable(num_x=num_x, num_y=num_y, zpoint=zpoint, support_walls=[1,0], headroom=headroom, divider_thickness=divider_thickness, divider_support_indent=divider_support_indent, divider_clearance=divider_clearance, wall_thickness=wall_thickness, floorHeight=floorHeight);
   }
@@ -195,7 +195,7 @@ module removable_dividers_support(
     //Position
     [0, 0, 0],
     //rotation
-    [0,0,0]];
+    [0, 0, 0]];
   back = [
     //width
     num_x*env_pitch().x,
@@ -209,14 +209,14 @@ module removable_dividers_support(
     //Position
     [0, num_y*env_pitch().y, 0],
     //rotation
-    [0,0,270]];
+    [0, 0, 270]];
   right = [
     //width
     num_y*env_pitch().y,
     //Position
     [num_x*env_pitch().x, 0, 0],
     //rotation
-    [0,0,90]];
+    [0, 0, 90]];
     
   locations = [front, back, left, right];
   walls = [support_walls.x, support_walls.x, support_walls.y, support_walls.y];
