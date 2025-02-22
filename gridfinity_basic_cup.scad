@@ -60,6 +60,25 @@ horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 horizontal_separator_config = "10.5|21|42|50|60";
 
+/* [Removable Divider Walls] */
+divider_walls_enabled = false;
+// Wall to enable on, x direction, y direction
+divider_walls = [1,1];
+// Height of the support walls.
+divider_walls_support_height = 0;
+// Thickness of the support walls.
+divider_walls_support_thickness = 0;
+// Spacing between the divider walls.
+divider_walls_spacing = 0;
+// Thickness of the divider walls.
+divider_walls_thickness = 0;
+// Indent of the support from the wall
+divider_walls_support_indent = 0;
+// Clearance between the divider walls top
+divider_headroom = 0.1;
+// Clearance between the divider walls and the supports
+divider_clearance = 0.1;
+
 /* [Base] */
 // Enable magnets
 enable_magnets = true;
@@ -310,6 +329,15 @@ gridfinity_cup(
   wall_thickness=wall_thickness,
   chamber_wall_thickness=chamber_wall_thickness,
   chamber_wall_zClearance=chamber_wall_zClearance,
+  divider_wall_removable_settings = DividerRemovableSettings(
+    enabled=divider_walls_enabled,
+    walls=divider_walls,
+    headroom=divider_headroom,
+    support_thickness=divider_walls_support_thickness,
+    divider_spacing=divider_walls_spacing,
+    divider_thickness=divider_walls_thickness,
+    divider_support_indent=divider_walls_support_indent,
+    divider_clearance=divider_clearance),
   vertical_chambers = vertical_chambers,
   vertical_separator_bend_position=vertical_separator_bend_position,
   vertical_separator_bend_angle=vertical_separator_bend_angle,
