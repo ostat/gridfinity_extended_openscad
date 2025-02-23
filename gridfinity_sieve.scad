@@ -30,7 +30,7 @@ height = [3, 0]; //0.1
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 //under size the bin top by this amount to allow for better stacking
-zClearance = 0; // 0.1
+headroom = 0.8; // 0.1
 
 /* [Cup Lip] */
 // Style of the cup lip
@@ -151,7 +151,7 @@ module gridfinity_sieve(
       cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
       lip_settings=lip_settings,
-      zClearance=zClearance,
+      headroom=headroom,
         floor_pattern_settings = PatternSettings(
         patternEnabled = true, 
         patternStyle = sieve_grid_style, 

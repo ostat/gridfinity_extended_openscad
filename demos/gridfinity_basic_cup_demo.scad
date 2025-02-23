@@ -42,7 +42,7 @@ label_walls="label_walls";
 
 iwall_thickness="wall_thickness";
 ilip_style="lip_style";
-izClearance="zClearance";
+iheadroom="headroom";
 ichamber_wall_thickness="chamber_wall_thickness";
 ivertical_chambers="vertical_chambers";
 ivertical_separator_bend_position="vertical_separator_bend_position";
@@ -145,7 +145,7 @@ echo("start",vp=vp, vpr = getcustomVpr(vp), vpt = getcustomVpt(vp), vpd = getcus
 //Basic cup default settings for demo
 defaultDemoSetting = [
     [iwidth,3], [idepth,2], [iheight,5], [iposition,"default"], [ifilled_in, false],
-    [iwall_thickness,0.0], [ilip_style,"normal"], [izClearance,0], 
+    [iwall_thickness,0.0], [ilip_style,"normal"], [iheadroom,0], 
     
     [ilabel_style,"disabled"], [ilabel_position,"left"], [ilabel_size,[0,14,0,0.6]], [ilabel_relief,[0,0,0,0.6]], [label_walls,[0,1,0,0]],
     
@@ -712,7 +712,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
         labelRelief=DictGet(currentStepSettings, ilabel_relief),
         labelWalls=DictGet(currentStepSettings, label_walls)),
       wall_thickness=DictGet(currentStepSettings, iwall_thickness),
-      zClearance=DictGet(currentStepSettings, izClearance),
+      headroom=DictGet(currentStepSettings, iheadroom),
       chamber_wall_thickness=DictGet(currentStepSettings, ichamber_wall_thickness),
       vertical_chambers=DictGet(currentStepSettings, ivertical_chambers),
       vertical_separator_bend_position=DictGet(currentStepSettings, ivertical_separator_bend_position),
