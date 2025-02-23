@@ -1283,7 +1283,7 @@ module basic_cavity(num_x, num_y, num_z,
     }  // difference removals from main body.
 
     if(divider_wall_removable_settings[iDividerRemovable_Enabled])
-      removable_dividers(
+      removable_dividers_slots(
         num_x = num_x, 
         num_y = num_y,
         zpoint = zpoint,

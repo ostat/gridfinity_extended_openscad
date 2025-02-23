@@ -2,9 +2,9 @@ iDividerRemovable_Enabled = 0;
 iDividerRemovable_Walls = 1;
 iDividerRemovable_Headroom = 2;
 iDividerRemovable_SupportThickness = 3;
-iDividerRemovable_DividerSpacing  = 4;
-iDividerRemovable_DividerThickness = 5;
-iDividerRemovable_DividerSupportIndent = 6;
+iDividerRemovable_SlotSize = 4;
+iDividerRemovable_DividerSpacing  = 5;
+iDividerRemovable_DividerThickness = 6;
 iDividerRemovable_DividerClearance = 7;
 
 function DividerRemovableSettings(
@@ -12,49 +12,54 @@ function DividerRemovableSettings(
     walls = [0,0],
     headroom = 0,
     support_thickness = 0,
+    slot_size = [0,0],
     divider_spacing = 0,
     divider_thickness = 0,
-    divider_support_indent = 0,
-    divider_clearance = 0.1) = 
+    divider_clearance = [0.1, 0.1]) = 
   let(
     result = [
       enabled,
       walls,
       headroom,
       support_thickness,
+      slot_size,
       divider_spacing,
       divider_thickness,
-      divider_support_indent,
       divider_clearance],
     validatedResult = ValidateDividerRemovableSettings(result)
   ) validatedResult;
 
 function ValidateDividerRemovableSettings(settings, wall_thickness = 0) =
+  
   assert(is_list(settings), "Divider Removable Settings must be a list")
   assert(len(settings)==8, "Divider Removable Settings must length 8")
   assert(is_bool(settings[iDividerRemovable_Enabled]), "Divider Removable Enabled must be a boolean")
   assert(is_list(settings[iDividerRemovable_Walls]) && len(settings[iDividerRemovable_Walls])==2, "Divider Removable Walls Settings must length 2")
   assert(is_num(settings[iDividerRemovable_Headroom]), "Divider Removable Headroom must be a number")
   assert(is_num(settings[iDividerRemovable_SupportThickness]), "Divider Removable Support Thickness must be a number")
+  assert(is_list(settings[iDividerRemovable_SlotSize]), "Divider Removable Slot Size must be a number")
   assert(is_num(settings[iDividerRemovable_DividerSpacing]), "Divider Removable Divider Spacing must be a number")
   assert(is_num(settings[iDividerRemovable_DividerThickness]), "Divider Removable Divider Thickness must be a number")
-  assert(is_num(settings[iDividerRemovable_DividerSupportIndent]), "Divider Removable Divider Support Indent must be a number")
-  assert(is_num(settings[iDividerRemovable_DividerClearance]), "Divider Removable Divider Clearance must be a number")
+  assert(is_list(settings[iDividerRemovable_DividerClearance]), "Divider Removable Divider Clearance must be a list")
+
   let(
     support_thickness = settings[iDividerRemovable_SupportThickness] <= 0 && wall_thickness > 0 ? wall_thickness*2 : settings[iDividerRemovable_SupportThickness],
     divider_thickness = settings[iDividerRemovable_DividerThickness] <= 0 && wall_thickness > 0 ? wall_thickness*2 : settings[iDividerRemovable_DividerThickness],
+    slot_size_y = settings[iDividerRemovable_SlotSize].y <= 0 && support_thickness > 0 ? support_thickness : settings[iDividerRemovable_SlotSize].y,
+    slot_size = [settings[iDividerRemovable_SlotSize].x <= 0 && divider_thickness > 0 ? divider_thickness : settings[iDividerRemovable_SlotSize].x,
+                min(support_thickness <=0 ? slot_size_y : support_thickness, slot_size_y)],
     divider_spacing = settings[iDividerRemovable_DividerSpacing] <= 0 && divider_thickness > 0 ? divider_thickness*2 : settings[iDividerRemovable_DividerSpacing]
   ) [
     settings[iDividerRemovable_Enabled],
     settings[iDividerRemovable_Walls],
     settings[iDividerRemovable_Headroom],
     support_thickness,
+    slot_size,
     divider_spacing,
     divider_thickness,
-    settings[iDividerRemovable_DividerSupportIndent],
     settings[iDividerRemovable_DividerClearance]];
     
-module removable_dividers(
+module removable_dividers_slots(
   num_x, 
   num_y,
   zpoint,
@@ -69,46 +74,45 @@ module removable_dividers(
   assert(is_num(floorHeight), "floorHeight must be a number");
   divider_settings = ValidateDividerRemovableSettings(divider_settings, wall_thickness);
   
-  support_walls=[divider_settings[iDividerRemovable_Walls].x,divider_settings[iDividerRemovable_Walls].y];
-  headroom=divider_settings[iDividerRemovable_Headroom];
-  divider_spacing=divider_settings[iDividerRemovable_DividerSpacing];
-  divider_thickness=divider_settings[iDividerRemovable_DividerThickness];
-  divider_support_indent=divider_settings[iDividerRemovable_DividerSupportIndent];
-  divider_clearance=divider_settings[iDividerRemovable_DividerClearance];
+  support_walls = [divider_settings[iDividerRemovable_Walls].x, divider_settings[iDividerRemovable_Walls].y];
+  headroom = divider_settings[iDividerRemovable_Headroom];
+  divider_spacing = divider_settings[iDividerRemovable_DividerSpacing];
+  slot_size = divider_settings[iDividerRemovable_SlotSize];
+  support_thickness = divider_settings[iDividerRemovable_SupportThickness];
+  divider_thickness = divider_settings[iDividerRemovable_DividerThickness];
   
   front = [
     //width
-    num_x*env_pitch().x-0.5-wall_thickness*2-divider_support_indent*2,
+    num_x*env_pitch().x-0.5-wall_thickness*2-support_thickness*2+slot_size.y*2,
     //Position
-    [ wall_thickness+divider_support_indent+0.25, 0, floorHeight],
+    [ wall_thickness+support_thickness-slot_size.y+0.25, 0, floorHeight],
     //rotation
     [0,0,0],
     //cup width for calculating count
     num_y*env_pitch().y];
   left = [
     //width
-    num_y*env_pitch().y-0.5-wall_thickness*2-divider_support_indent*2,
+    num_y*env_pitch().y-0.5-wall_thickness*2-support_thickness*2+slot_size.y*2,
     //Position
-    [num_x*env_pitch().x, wall_thickness+divider_support_indent+0.25, floorHeight],
+    [num_x*env_pitch().x, wall_thickness+support_thickness-slot_size.y+0.25, floorHeight],
     //rotation
     [0,0,90],
     //cup width for calculating count
     num_x*env_pitch().x];
     
   locations = [left, front];
-      
   for(i = [0:1:len(locations)-1])
     union()
     if(support_walls[i] != 0){
-      count = floor(((locations[i][3]+divider_thickness)/(divider_spacing+divider_thickness))-1);
-      leadin = (locations[i][3]-(count-1)*divider_spacing-count*divider_thickness)/2;
-      for(x = [0:1:count-2]) {
-        pos = divider_spacing/2+x*(divider_spacing+divider_thickness);
+      count = floor(((locations[i][3]+slot_size.x)/(divider_spacing+slot_size.x))-1);
+      leadin = (locations[i][3]-(count-1)*divider_spacing-count*slot_size.x)/2;
+      for(x = [0:1:count-1]) {
+        pos = leadin+x*(divider_spacing+slot_size.x);
         //patterns in the outer walls
         translate(locations[i][1])
         rotate(locations[i][2])                  
-        translate([0,wall_thickness+leadin+pos,0])
-        cube([locations[i][0], divider_thickness+divider_clearance, zpoint-headroom]);
+        translate([0,wall_thickness+pos-slot_size.x/2,0])
+        cube([locations[i][0], slot_size.x, zpoint-headroom]);
       }
     }
 }
@@ -130,19 +134,19 @@ module dividers_removable_for_cup(
   
   support_walls=[divider_settings[iDividerRemovable_Walls].x,divider_settings[iDividerRemovable_Walls].y];
   headroom=divider_settings[iDividerRemovable_Headroom];
+  slot_size = divider_settings[iDividerRemovable_SlotSize];
   divider_thickness=divider_settings[iDividerRemovable_DividerThickness];
-  divider_support_indent=divider_settings[iDividerRemovable_DividerSupportIndent];
   divider_clearance=divider_settings[iDividerRemovable_DividerClearance];
 
   if(support_walls.x == 1){
     translate([-env_pitch().x/2,num_y*env_pitch().y,0])
     rotate([90,0,270])
-    divider_removable(num_x=num_x, num_y=num_y, zpoint=zpoint, support_walls=[0,1], headroom=headroom, divider_thickness=divider_thickness, divider_support_indent=divider_support_indent, divider_clearance=divider_clearance, wall_thickness=wall_thickness, floorHeight=floorHeight);
+    divider_removable(num_x=num_x, num_y=num_y, zpoint=zpoint, support_walls=[0,1], headroom=headroom, slot_size=slot_size, divider_thickness=divider_thickness, divider_clearance=divider_clearance, wall_thickness=wall_thickness, floorHeight=floorHeight);
   }
   if(support_walls.y == 1){
     translate([0,-env_pitch().y/2,0])
     rotate([90,0,0])
-    divider_removable(num_x=num_x, num_y=num_y, zpoint=zpoint, support_walls=[1,0], headroom=headroom, divider_thickness=divider_thickness, divider_support_indent=divider_support_indent, divider_clearance=divider_clearance, wall_thickness=wall_thickness, floorHeight=floorHeight);
+    divider_removable(num_x=num_x, num_y=num_y, zpoint=zpoint, support_walls=[1,0], headroom=headroom, slot_size=slot_size, divider_thickness=divider_thickness, divider_clearance=divider_clearance, wall_thickness=wall_thickness, floorHeight=floorHeight);
   }
 }
 
@@ -152,20 +156,33 @@ module divider_removable(
   zpoint,
   support_walls,
   headroom,
+  slot_size,
   divider_thickness, 
-  divider_support_indent,
   divider_clearance,
   wall_thickness,
   floorHeight){
-  
+
+  slot = [
+      slot_size.y-divider_clearance.y/2, //Divide by 2 as there are two end
+      slot_size.x-divider_clearance.x, 
+      zpoint-headroom-floorHeight];
+
   size = 
     [support_walls.x == 1
-      ? num_x*env_pitch().x-0.5-wall_thickness*2-divider_support_indent*2-divider_clearance
-      : num_y*env_pitch().y-0.5-wall_thickness*2-divider_support_indent*2-divider_clearance,
-      divider_thickness,
+      ? num_x*env_pitch().x-0.5-wall_thickness*2-slot_size.y*2
+      : num_y*env_pitch().y-0.5-wall_thickness*2-slot_size.y*2,
+      slot_size.x == divider_thickness ? divider_thickness-divider_clearance.x : divider_thickness,
       zpoint-headroom-floorHeight];
   
-  cube(size);
+  union(){
+    cube(slot);
+
+    translate([slot[0],0,0])
+    cube(size);
+
+    translate([slot[0]+size[0],0,0])
+    cube(slot);
+  }
 }
 
 ///Creates the divider wall slide subracted from the cavity
@@ -187,7 +204,6 @@ module removable_dividers_support(
   support_walls=[divider_settings[iDividerRemovable_Walls].x,divider_settings[iDividerRemovable_Walls].y];
   headroom=divider_settings[iDividerRemovable_Headroom];
   support_thickness=divider_settings[iDividerRemovable_SupportThickness];
-  divider_clearance=divider_settings[iDividerRemovable_DividerClearance];
 
   front = [
     //width
