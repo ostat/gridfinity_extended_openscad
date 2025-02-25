@@ -21,28 +21,45 @@ function calculateSeparators(
                   cut_depth = 0) = 
   is_string(separator_config) 
     ? let(seps = [for (s = split(separator_config, "|")) csv_parse(s)]) // takes part of an array
-      [for (i = [0:len(seps)-1]) [
-          is_list(seps[i]) && len(seps[i]) >= 1 ? seps[i][0] : 0,               //0 iSeparatorPosition
-          length,                                                   //1 iSeparatorLength
-          height,                                                   //2 iSeparatorHeight
-          is_list(seps[i]) && len(seps[i]) >= 6 ? seps[i][5] : wall_thickness,             //3 iSeparatorWallThickness
-          bend_position,                                                      //4 iSeparatorBendPosition
-          is_list(seps[i]) && len(seps[i]) >= 2 ? seps[i][1] : bend_separation,           //5 iSeparatorBendSeparation
-          is_list(seps[i]) && len(seps[i]) >= 3 ? seps[i][2] : bend_angle*(i%2==1?1:-1),  //6 iSeparatorBendAngle
-          is_list(seps[i]) && len(seps[i]) >= 4 ? seps[i][3] : cut_depth,                 //7 iSeparatorWallCutDepth
-          is_list(seps[i]) && len(seps[i]) >= 5 ? seps[i][4] : 0                          //8 iSeparatorWallCutoutWidth
+      [for (i = [0:len(seps)-1]) 
+        let(
+          sepConfig = seps[i],
+          separator_position = is_list(sepConfig) && len(sepConfig) >= 1 ? sepConfig[0] : is_num(sepConfig) ? sepConfig : 0,
+          bend_separation = is_list(sepConfig) && len(sepConfig) >= 2 ? sepConfig[1] : bend_separation,
+          bend_angle = is_list(sepConfig) && len(sepConfig) >= 3 ? sepConfig[2] : bend_angle*(i%2==1?1:-1),
+          cut_depth = is_list(sepConfig) && len(sepConfig) >= 4 ? sepConfig[3] : cut_depth,
+          cut_width = is_list(sepConfig) && len(sepConfig) >= 5 ? sepConfig[4] : 0,
+          wall_thickness = is_list(sepConfig) && len(sepConfig) >= 6 ? sepConfig[5] : wall_thickness
+        ) [
+          separator_position,         //0 iSeparatorPosition
+          length,                     //1 iSeparatorLength
+          height,                     //2 iSeparatorHeight
+          wall_thickness,             //3 iSeparatorWallThickness
+          bend_position,              //4 iSeparatorBendPosition
+          bend_separation,            //5 iSeparatorBendSeparation
+          bend_angle,                 //6 iSeparatorBendAngle
+          cut_depth,                  //7 iSeparatorWallCutDepth
+          cut_width                   //8 iSeparatorWallCutoutWidth
         ]]
     : (is_list(separator_config) && len(separator_config) > 0) 
-      ? [for (i = [0:len(separator_config)-1])[
-          separator_config[i],       //0 iSeparatorPosition
-          length,                    //1 iSeparatorLength      
-          height,                    //2 iSeparatorHeight
-          wall_thickness,            //3 iSeparatorWallThickness
-          bend_position,             //4 iSeparatorBendPosition
-          bend_separation,           //5 iSeparatorBendSeparation
-          bend_angle*(i%2==1?1:-1),  //6 iSeparatorBendAngle
-          cut_depth,                 //7 iSeparatorWallCutDepth
-          0                          //8 iSeparatorWallCutoutWidth
+      ? [for (i = [0:len(separator_config)-1])
+          let(sepConfig = separator_config[i],
+            separator_position = is_list(sepConfig) && len(sepConfig) >= 1 ? sepConfig[0] : is_num(sepConfig) ? sepConfig : 0,
+            bend_separation = is_list(sepConfig) && len(sepConfig) >= 2 ? sepConfig[1] : bend_separation,
+            bend_angle = is_list(sepConfig) && len(sepConfig) >= 3 ? sepConfig[2] : bend_angle*(i%2==1?1:-1),
+            cut_depth = is_list(sepConfig) && len(sepConfig) >= 4 ? sepConfig[3] : cut_depth,
+            cut_width = is_list(sepConfig) && len(sepConfig) >= 5 ? sepConfig[4] : 0,
+            wall_thickness = is_list(sepConfig) && len(sepConfig) >= 6 ? sepConfig[5] : wall_thickness
+          ) [
+            separator_position,         //0 iSeparatorPosition
+            length,                     //1 iSeparatorLength
+            height,                     //2 iSeparatorHeight
+            wall_thickness,             //3 iSeparatorWallThickness
+            bend_position,              //4 iSeparatorBendPosition
+            bend_separation,            //5 iSeparatorBendSeparation
+            bend_angle,                 //6 iSeparatorBendAngle
+            cut_depth,                  //7 iSeparatorWallCutDepth
+            cut_width                   //8 iSeparatorWallCutoutWidth
           ]]
       : [];
 
