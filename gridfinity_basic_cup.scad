@@ -24,7 +24,7 @@ filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 //under size the bin top by this amount to allow for better stacking
-zClearance = 0; // 0.1
+headroom = 0.8; // 0.1
 
 /* [Cup Lip] */
 // Style of the cup lip
@@ -39,7 +39,7 @@ lip_top_notches  = true;
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
 //Reduce the wall height by this amount
-chamber_wall_zClearance = 0;//0.1
+chamber_wall_headroom = 0;//0.1
 // X dimension subdivisions
 vertical_chambers = 1;
 vertical_separator_bend_position = 0;
@@ -328,7 +328,7 @@ gridfinity_cup(
     flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
   wall_thickness=wall_thickness,
   chamber_wall_thickness=chamber_wall_thickness,
-  chamber_wall_zClearance=chamber_wall_zClearance,
+  chamber_wall_headroom=chamber_wall_headroom,
   divider_wall_removable_settings = DividerRemovableSettings(
     enabled=divider_walls_enabled,
     walls=divider_walls,
@@ -358,7 +358,7 @@ gridfinity_cup(
     lipSideReliefTrigger=lip_side_relief_trigger, 
     lipTopReliefHeight=lip_top_relief_height, 
     lipNotch=lip_top_notches),
-  zClearance=zClearance,
+  headroom=headroom,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,

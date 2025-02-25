@@ -8,8 +8,8 @@ iAllowConnectorsBack = 1;
 iAllowConnectorsLeft = 2;
 iAllowConnectorsRight = 3;
 
-show_demo = false;
-if(show_demo){
+show_baseplate_connector_demo = false;
+if(show_baseplate_connector_demo){
   translate([0,0,0]) {
     ClippedWall(fullIntersection = true);
     translate([15,0,0])

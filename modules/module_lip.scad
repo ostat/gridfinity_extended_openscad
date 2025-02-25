@@ -6,16 +6,6 @@ iLipSideReliefTrigger=1;
 iLipTopReliefHeight=2;
 iLipNotch=3;
 
-/* [Cup Lip] */
-// Style of the cup lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-// Below this the inside of the lip will be reduced for easier access.
-lip_side_relief_trigger = [1,1]; //0.1
-// Create a relie
-lip_top_relief_height = -1; // 0.1
-// add a notch to the lip to prevent sliding.
-lip_top_notches  = 0; // 0.1
-
 LipStyle_normal = "normal";
 LipStyle_reduced = "reduced";
 LipStyle_minimum = "minimum";
