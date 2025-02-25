@@ -76,6 +76,8 @@ divider_wall_slot_size = [0,0];
 divider_headroom = 0.1;
 // Clearance subtracted from the removable divider wall. Width, Length
 divider_clearance = [0.3, 0.2];
+// Number of slot spanning divider to generate.
+divider_slot_spanning = 2;
 
 /* [Base] */
 // Enable magnets
@@ -335,7 +337,8 @@ gridfinity_cup(
     slot_size=divider_wall_slot_size,
     divider_spacing=divider_walls_spacing,
     divider_thickness=divider_walls_thickness,
-    divider_clearance=divider_clearance),
+    divider_clearance=divider_clearance,
+    divider_slot_spanning=divider_slot_spanning),
   vertical_chambers = vertical_chambers,
   vertical_separator_bend_position=vertical_separator_bend_position,
   vertical_separator_bend_angle=vertical_separator_bend_angle,
