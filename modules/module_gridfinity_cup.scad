@@ -891,9 +891,13 @@ module gridfinity_cup(
       tabStyle = extendable_Settings[iExtendableTabSize][iExtendableTabSizeStyle];
       
       floorHeight = calculateFloorHeight(
-        cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-        cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
-        floor_thickness) + calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,efficient_floor)-tabThickness;
+        magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+        screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+        center_magnet=cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
+        floor_thickness=floor_thickness,
+        filled_in="disabled",
+        efficient_floor=cupBase_settings[iCupBase_EfficientFloor], 
+        flat_base=cupBase_settings[iCupBase_FlatBase]) + calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,efficient_floor)-tabThickness;
       
       //todo need to correct this
       lipheight = lip_settings[iLipStyle] == "none" ? tabThickness
