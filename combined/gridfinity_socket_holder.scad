@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_socket_holder.scad'. Generated 2025-02-09 00:20
+//Combined version of 'gridfinity_socket_holder.scad'. Generated 2025-03-03 21:13
 ///////////////////////////////////////
 
 part = 5; //[1: "METRIC", 2: "IMPERIAL", 3: "Imperial < 1/2\"", 4: "Imperial >= 1/2\"", 5: "Metric >=7mm", 6: "Metric <7mm"]
@@ -44,7 +44,7 @@ function sum(v, i=0, r=0) = i < len(v) ? sum(v, i+1, v[i] + r) : r;
 
 module sockets(widths=[], width = 100) {
   leftover = width - sum(widths);
-  if(IsHelpEnabled("debug")) echo(leftover=leftover, "(should be greater than 0)");
+  if(env_help_enabled("debug")) echo(leftover=leftover, "(should be greater than 0)");
   for (i = [0:len(widths)-1]) {
     s = move(widths, i, 0, leftover/(len(widths)-1));
     translate([widths[0]/2,0,0])
