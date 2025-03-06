@@ -1,11 +1,11 @@
 ﻿///////////////////////////////////////
-//Combined version of 'gridfinity_item_holder.scad'. Generated 2025-03-03 21:13
+//Combined version of 'gridfinity_item_holder.scad'. Generated 2025-03-06 19:40
 ///////////////////////////////////////
 
 /*<!!start gridfinity_itemholder!!>*/
 /* [Item Holder] */
 itemholder_known_tools = "1/4hexshank"; // [ "custom":Custom, "4hexshank":4mm Hex Shank, "1/4hexshank":1/4 Hex Shank, "1/4hexshanklong":1/4 Hex Long Shank, "5/16hexshank":5/16 Hex Shank, "3/8hexshank":3/8 Hex Shank, "1/2shank":1/2 inch router bit, "12shank":12mm router bit, "10shank":10mm router bit, "3/8shank":3/8 inch router bit, "8shank":8mm router bit, "1/4shank":1/4 inch router bit, "6shank":6mm router bit, "1/8shank":1/8 inch Dremel router bit]
-itemholder_known_batteries = "custom"; // [ "custom":Custom, "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "9v":9v, "c":C cell, "d":d cell, "7540":7540 cell, "8570":8570 cell, "10180":10180 cell, "10280":10280 cell, "10440":10440 cell, "10850":10850 cell, "13400":13400 cell, "14250":14250 cell, "14300":14300 cell, "14430":14430 cell, "14500":14500 cell, "14650":14650 cell, "15270":15270 cell, "16340":16340 cell, "16650":16650 cell, "17500":17500 cell, "17650":17650 cell, "17670":17670 cell, "18350":18350 cell, "18490":18490 cell, "18500":18500 cell, "18650":18650 cell, "20700":20700 cell, "21700":21700 cell, "25500":25500 cell, "26500":26500 cell, "26650":26650 cell, "26700":26700 cell, "26800":26800 cell, "32600":32600 cell, "32650":32650 cell, "32700":32700 cell, "38120":38120 cell, "38140":38140 cell, "40152":40152 cell, "4680":4680 cell]
+itemholder_known_batteries = "custom"; // [ "custom":Custom, "aaaa":AAAA cell, "aaa":AAA cell, "aa":AA cell, "9v":9v, "c":C cell, "d":d cell, "7540cell":7540 cell, "8570cell":8570 cell, "10180cell":10180 cell, "10280cell":10280 cell, "10440cell":10440 cell, "10850cell":10850 cell, "13400cell":13400 cell, "14250cell":14250 cell, "14300cell":14300 cell, "14430cell":14430 cell, "14500cell":14500 cell, "14650cell":14650 cell, "15270cell":15270 cell, "16340cell":16340 cell, "16650cell":16650 cell, "17500cell":17500 cell, "17650cell":17650 cell, "17670cell":17670 cell, "18350cell":18350 cell, "18490cell":18490 cell, "18500cell":18500 cell, "18650cell":18650 cell, "20700cell":20700 cell, "21700cell":21700 cell, "25500cell":25500 cell, "26500cell":26500 cell, "26650cell":26650 cell, "26700cell":26700 cell, "26800cell":26800 cell, "32600cell":32600 cell, "32650cell":32650 cell, "32700cell":32700 cell, "38120cell":38120 cell, "38140cell":38140 cell, "40152cell":40152 cell, "4680cell":4680 cell]
 itemholder_known_cell_batteries = "custom"; // [ "custom":Custom, "cr927":CR927 cell, "cr1025":CR1025 cell, "cr1130":CR1130 cell, "cr1216":CR1216 cell, "cr1220":CR1220 cell, "cr1225":CR1225 cell, "cr1616":CR1616 cell, "cr1620":CR1620 cell, "cr1632":CR1632 cell, "cr2012":CR2012 cell, "cr2016":CR2016 cell, "cr2020":CR2020 cell, "cr2025":CR2025 cell, "cr2032":CR2032 cell, "cr2040":CR2040 cell, "cr2050":CR2050 cell, "cr2320":CR2320 cell, "cr2325":CR2325 cell, "cr2330":CR2330 cell, "br2335":BR2335 cell, "cr2354":CR2354 cell, "cr2412":CR2412 cell, "cr2430":CR2430 cell, "cr2450":CR2450 cell, "cr2477":CR2477 cell, "cr3032":CR3032 cell, "cr11108":CR11108 cell]
 itemholder_known_cards = "custom"; // [ "custom":Custom, "multicard":Multi card slot, "compactflashi":CompactFlash. Type I, "compactflashii":CompactFlash. Type II, "smartmedia":SmartMedia, "mmc":MMC. MMCplus, "mmcmobile":RS-MMC. MMCmobile, "mmcmicro":MMCmicro, "sd":SD. SDHC. SDXC. SDIO. MicroP2, "minisd":miniSD. miniSDHC. miniSDIO, "microsd":microSD. microSDHC. microSDXC, "memorystickstandard":Memory Stick Standard. PRO, "memorystickduo":Memory Stick Duo. PRO Duo. PRO-HG. XC, "memorystickmicro":Memory Stick Micro (M2). XC, "nano":Nano Memory, "psvita":PS Vita Memory Card, "xqd":XQD card, "xD":xD, "usba":USB A, "usbc":USB C]
 itemholder_known_cartridges = "custom"; // [ "custom":Custom, "atari800":Atari 800, "atari2600":Atari 2600/7800/Colecovision, "atari5200":Atari 5200, "atari7800":Atari 7800, "commodore":Commodore Vic20, "magnavoxodyssey":Magnavox Odyssey, "magnavoxodysseymulticard":Magnavox Odyssey (multicard), "magnavoxodyssey2":Magnavox Odyssey2, "mattelintellivision":Mattel Intellivision I & II, "nintendofamicom":Nintendo Famicom, "nintendofamicomdisk":Nintendo Famicom Disk, "nintendosuperfamicom":Nintendo Super Famicom / SNES (Pal), "nes":NES, "snes":SNES, "nintendo64":Nintendo 64, "nintendogb":Nintendo GB, "nintendogbc":Nintendo GBC, "nintendogba":Nintendo GBA, "nintendods":Nintendo DS, "nintendo2ds":Nintendo 2DS/3DS, "nintendovb":Nintendo Virtual Boy, "nintendoswitch":Nintendo Switch, "segagamegear":Sega Game Gear, "segagenesis":Sega Genesis, "segagenesistall":Sega Genesis (tall cart), "segamegadrive":Sega MegaDrive, "segamegadrivecodemasters":Sega MegaDrive Codemasters, "segamastersystem":Sega Master System, "sega32x":Sega 32x, "segacard":Sega Card/TG16, "segapico":Sega Pico, "sonyumd":Sony UMD, "sonypsvita":Sony PS Vita, "sonypsvitamemcard":Sony PS Vita (Mem Card), "necpcehucard":NEC PCE HuCard, "snkneogeoaes":SNK Neo Geo AES, "snkneogeomvs":SNK Neo Geo MVS, "bandai":Bandai Wonderswan/Color, "msx":MSX]
@@ -2067,42 +2067,42 @@ function LookupKnownBattery(name="custom") =
   name == "9v" ? [1, 17.5, 26.5, 12.5, 48.5, "square"] :
   name == "c" ? [26.2, 0, 0, 12.5, 50, "round"] :
   name == "d" ? [34.2, 0, 0, 15.375, 61.5, "round"] :
-  name == "7540" ? [7.5, 0, 0, 10, 40, "round"] :
-  name == "8570" ? [8.5, 0, 0, 17.5, 70, "round"] :
-  name == "10180" ? [10, 0, 0, 4.5, 18, "round"] :
-  name == "10280" ? [10, 0, 0, 7, 28, "round"] :
-  name == "10440" ? [10, 0, 0, 11, 44, "round"] :
-  name == "10850" ? [10, 0, 0, 21.25, 85, "round"] :
-  name == "13400" ? [13, 0, 0, 10, 40, "round"] :
-  name == "14250" ? [14, 0, 0, 6.25, 25, "round"] :
-  name == "14300" ? [14, 0, 0, 7.5, 30, "round"] :
-  name == "14430" ? [14, 0, 0, 10.75, 43, "round"] :
-  name == "14500" ? [14, 0, 0, 13.25, 53, "round"] :
-  name == "14650" ? [14, 0, 0, 16.25, 65, "round"] :
-  name == "15270" ? [15, 0, 0, 6.75, 27, "round"] :
-  name == "16340" ? [16, 0, 0, 8.5, 34, "round"] :
-  name == "16650" ? [16, 0, 0, 16.25, 65, "round"] :
-  name == "17500" ? [17, 0, 0, 12.5, 50, "round"] :
-  name == "17650" ? [17, 0, 0, 16.25, 65, "round"] :
-  name == "17670" ? [17, 0, 0, 16.75, 67, "round"] :
-  name == "18350" ? [18, 0, 0, 8.75, 35, "round"] :
-  name == "18490" ? [18, 0, 0, 12.25, 49, "round"] :
-  name == "18500" ? [18, 0, 0, 12.5, 50, "round"] :
-  name == "18650" ? [18, 0, 0, 16.25, 65, "round"] :
-  name == "20700" ? [20, 0, 0, 17.5, 70, "round"] :
-  name == "21700" ? [21, 0, 0, 17.5, 70, "round"] :
-  name == "25500" ? [25, 0, 0, 12.5, 50, "round"] :
-  name == "26500" ? [26, 0, 0, 12.5, 50, "round"] :
-  name == "26650" ? [26, 0, 0, 16.25, 65, "round"] :
-  name == "26700" ? [26, 0, 0, 17.5, 70, "round"] :
-  name == "26800" ? [26, 0, 0, 20, 80, "round"] :
-  name == "32600" ? [32, 0, 0, 15, 60, "round"] :
-  name == "32650" ? [32, 0, 0, 16.925, 67.7, "round"] :
-  name == "32700" ? [32, 0, 0, 17.5, 70, "round"] :
-  name == "38120" ? [38, 0, 0, 30, 120, "round"] :
-  name == "38140" ? [38, 0, 0, 35, 140, "round"] :
-  name == "40152" ? [40, 0, 0, 38, 152, "round"] :
-  name == "4680" ? [46, 0, 0, 20, 80, "round"] :
+  name == "7540cell" ? [7.5, 0, 0, 10, 40, "round"] :
+  name == "8570cell" ? [8.5, 0, 0, 17.5, 70, "round"] :
+  name == "10180cell" ? [10, 0, 0, 4.5, 18, "round"] :
+  name == "10280cell" ? [10, 0, 0, 7, 28, "round"] :
+  name == "10440cell" ? [10, 0, 0, 11, 44, "round"] :
+  name == "10850cell" ? [10, 0, 0, 21.25, 85, "round"] :
+  name == "13400cell" ? [13, 0, 0, 10, 40, "round"] :
+  name == "14250cell" ? [14, 0, 0, 6.25, 25, "round"] :
+  name == "14300cell" ? [14, 0, 0, 7.5, 30, "round"] :
+  name == "14430cell" ? [14, 0, 0, 10.75, 43, "round"] :
+  name == "14500cell" ? [14, 0, 0, 13.25, 53, "round"] :
+  name == "14650cell" ? [14, 0, 0, 16.25, 65, "round"] :
+  name == "15270cell" ? [15, 0, 0, 6.75, 27, "round"] :
+  name == "16340cell" ? [16, 0, 0, 8.5, 34, "round"] :
+  name == "16650cell" ? [16, 0, 0, 16.25, 65, "round"] :
+  name == "17500cell" ? [17, 0, 0, 12.5, 50, "round"] :
+  name == "17650cell" ? [17, 0, 0, 16.25, 65, "round"] :
+  name == "17670cell" ? [17, 0, 0, 16.75, 67, "round"] :
+  name == "18350cell" ? [18, 0, 0, 8.75, 35, "round"] :
+  name == "18490cell" ? [18, 0, 0, 12.25, 49, "round"] :
+  name == "18500cell" ? [18, 0, 0, 12.5, 50, "round"] :
+  name == "18650cell" ? [18, 0, 0, 16.25, 65, "round"] :
+  name == "20700cell" ? [20, 0, 0, 17.5, 70, "round"] :
+  name == "21700cell" ? [21, 0, 0, 17.5, 70, "round"] :
+  name == "25500cell" ? [25, 0, 0, 12.5, 50, "round"] :
+  name == "26500cell" ? [26, 0, 0, 12.5, 50, "round"] :
+  name == "26650cell" ? [26, 0, 0, 16.25, 65, "round"] :
+  name == "26700cell" ? [26, 0, 0, 17.5, 70, "round"] :
+  name == "26800cell" ? [26, 0, 0, 20, 80, "round"] :
+  name == "32600cell" ? [32, 0, 0, 15, 60, "round"] :
+  name == "32650cell" ? [32, 0, 0, 16.925, 67.7, "round"] :
+  name == "32700cell" ? [32, 0, 0, 17.5, 70, "round"] :
+  name == "38120cell" ? [38, 0, 0, 30, 120, "round"] :
+  name == "38140cell" ? [38, 0, 0, 35, 140, "round"] :
+  name == "40152cell" ? [40, 0, 0, 38, 152, "round"] :
+  name == "4680cell" ? [46, 0, 0, 20, 80, "round"] :
   [0,0,0,0,0,"","LookupKnownBattery"];
 
 //[diameter, width, thickness, depthneeded, itemHeight, shape]
@@ -2313,19 +2313,21 @@ default_horizontal_separator_config = "10.5|21|42|50|60";
 /* Removable Divider Walls */
 default_divider_walls_enabled = false;
 // Wall to enable on, x direction, y direction
-default_divider_walls = [1,1];
-// Thickness of the support walls.
-default_divider_walls_support_thickness = 0;
-// Spacing between the divider walls.
-default_divider_walls_spacing = 0;
+default_divider_walls = [1,1];  //[0:1:1]
 // Thickness of the divider walls.
-default_divider_walls_thickness = 0;
-// Indent of the support from the wall
-default_divider_walls_support_indent = 0;
+default_divider_walls_thickness = 2.5;  //0.1
+// Spacing between the divider walls (0=divider_walls_thickness*2).
+default_divider_walls_spacing = 0; //0.1
+// Thickness of the support walls.
+default_divider_walls_support_thickness = 2;
+// Size of the slot in the divider walls. width(0=divider_walls_thickness), depth(0=divider_walls_support_thickness)
+default_divider_wall_slot_size = [0,0];
 // Clearance between the divider walls top
 default_divider_headroom = 0.1;
-// Clearance between the divider walls and the supports
-default_divider_clearance = 0.1;
+// Clearance subtracted from the removable divider wall. Width, Length
+default_divider_clearance = [0.3, 0.2];
+// Number of slot spanning divider to generate.
+default_divider_slot_spanning = 0;
 
 /* Base */
 //size of magnet, diameter and height. Zack's original used 6.5 and 2.4 
@@ -2471,12 +2473,23 @@ module gridfinity_cup(
   divider_wall_removable_settings = DividerRemovableSettings(
     enabled=default_divider_walls_enabled,
     walls=default_divider_walls,
-    divider_headroom=default_divider_headroom,
-    support_thickness=default_divider_walls_support_thickness,
+    headroom=default_divider_headroom,
+    slot_size=default_divider_wall_slot_size,
     divider_spacing=default_divider_walls_spacing,
     divider_thickness=default_divider_walls_thickness,
-    divider_support_indent=default_divider_walls_support_indent,
-    divider_clearance=default_divider_clearance),
+    divider_clearance=default_divider_clearance,
+    divider_slot_spanning=default_divider_slot_spanning),
+  divider_wall_removable_settings = DividerRemovableSettings(
+    enabled=divider_walls_enabled,
+    walls=divider_walls,
+    headroom=divider_headroom,
+    support_thickness=divider_walls_support_thickness,
+    slot_size=divider_wall_slot_size,
+    divider_spacing=divider_walls_spacing,
+    divider_thickness=divider_walls_thickness,
+    divider_clearance=divider_clearance,
+    divider_slot_spanning=divider_slot_spanning),
+  vertical_chambers = vertical_chambers,
   vertical_chambers = default_vertical_chambers,
   vertical_separator_bend_position = default_vertical_separator_bend_position,
   vertical_separator_bend_angle = default_vertical_separator_bend_angle,
