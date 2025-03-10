@@ -93,8 +93,8 @@ module cupLip(
         frame_cavity(
           num_x = num_x, 
           num_y = num_y, 
-          position_fill_grid_x = "near",
-          position_fill_grid_y = "near",
+          position_fill_grid_x = "far",
+          position_fill_grid_y = "far",
           render_top = lip_notches,
           render_bottom = false,
           frameLipHeight = 4,
@@ -104,8 +104,8 @@ module cupLip(
         frame_cavity(
           num_x = 1, 
           num_y = 1, 
-          position_fill_grid_x = "near",
-          position_fill_grid_y = "near",
+          position_fill_grid_x = "far",
+          position_fill_grid_y = "far",
           render_top = !lip_notches,
           render_bottom = true,
           frameLipHeight = 4,
