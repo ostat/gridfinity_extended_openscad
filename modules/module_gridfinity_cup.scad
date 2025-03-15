@@ -102,19 +102,21 @@ default_horizontal_separator_config = "10.5|21|42|50|60";
 /* [Removable Divider Walls] */
 default_divider_walls_enabled = false;
 // Wall to enable on, x direction, y direction
-default_divider_walls = [1,1];
-// Thickness of the support walls.
-default_divider_walls_support_thickness = 0;
-// Spacing between the divider walls.
-default_divider_walls_spacing = 0;
+default_divider_walls = [1,1];  //[0:1:1]
 // Thickness of the divider walls.
-default_divider_walls_thickness = 0;
-// Indent of the support from the wall
-default_divider_walls_support_indent = 0;
+default_divider_walls_thickness = 2.5;  //0.1
+// Spacing between the divider walls (0=divider_walls_thickness*2).
+default_divider_walls_spacing = 0; //0.1
+// Thickness of the support walls.
+default_divider_walls_support_thickness = 2;
+// Size of the slot in the divider walls. width(0=divider_walls_thickness), depth(0=divider_walls_support_thickness)
+default_divider_wall_slot_size = [0,0];
 // Clearance between the divider walls top
 default_divider_headroom = 0.1;
-// Clearance between the divider walls and the supports
-default_divider_clearance = 0.1;
+// Clearance subtracted from the removable divider wall. Width, Length
+default_divider_clearance = [0.3, 0.2];
+// Number of slot spanning divider to generate.
+default_divider_slot_spanning = 0;
 
 /* [Base] */
 //size of magnet, diameter and height. Zack's original used 6.5 and 2.4 
@@ -266,12 +268,23 @@ module gridfinity_cup(
   divider_wall_removable_settings = DividerRemovableSettings(
     enabled=default_divider_walls_enabled,
     walls=default_divider_walls,
-    divider_headroom=default_divider_headroom,
-    support_thickness=default_divider_walls_support_thickness,
+    headroom=default_divider_headroom,
+    slot_size=default_divider_wall_slot_size,
     divider_spacing=default_divider_walls_spacing,
     divider_thickness=default_divider_walls_thickness,
-    divider_support_indent=default_divider_walls_support_indent,
-    divider_clearance=default_divider_clearance),
+    divider_clearance=default_divider_clearance,
+    divider_slot_spanning=default_divider_slot_spanning),
+  divider_wall_removable_settings = DividerRemovableSettings(
+    enabled=divider_walls_enabled,
+    walls=divider_walls,
+    headroom=divider_headroom,
+    support_thickness=divider_walls_support_thickness,
+    slot_size=divider_wall_slot_size,
+    divider_spacing=divider_walls_spacing,
+    divider_thickness=divider_walls_thickness,
+    divider_clearance=divider_clearance,
+    divider_slot_spanning=divider_slot_spanning),
+  vertical_chambers = vertical_chambers,
   vertical_chambers = default_vertical_chambers,
   vertical_separator_bend_position = default_vertical_separator_bend_position,
   vertical_separator_bend_angle = default_vertical_separator_bend_angle,
@@ -804,7 +817,7 @@ module gridfinity_cup(
               translate([
                 0,
                 tapered_setback+cutoutclearance_border,
-                env_pitch().z*num_z+gf_Lip_Height-gf_tolerance+cutoutclearance_border])
+                env_pitch().z*num_z+gf_Lip_Height-gf_tolerance-cutoutclearance_border])
               rotate([270,0,0])
               union()
                 if(tapered_corner == "rounded"){
@@ -815,9 +828,10 @@ module gridfinity_cup(
                 }
                 else if(tapered_corner == "chamfered"){
                   chamferedCorner(
-                    chamferLength = tapered_corner_size+cutoutclearance_border*2, 
+                    chamferLength = tapered_corner_size, 
                     length=(num_x)*env_pitch().x, 
-                    height = tapered_corner_size);
+                    height = max((num_x)*env_pitch().x, (num_z)*env_pitch().z),
+                    angled_extension =false);
                 }
             }  
             
