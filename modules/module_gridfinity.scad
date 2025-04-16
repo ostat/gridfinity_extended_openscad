@@ -7,6 +7,43 @@ include <functions_gridfinity.scad>
 include <module_gridfinity_cup_base.scad>     
 include <module_lip.scad>      
 
+show_gridfinity_demo = false;
+if(show_gridfinity_demo){
+  
+  grid_block($fn=64);
+ 
+  translate([50,0,0])
+  union(){
+    frame_cavity($fn=64);
+
+    translate([0,50*3,0])
+    frame_cavity(remove_bottom_taper=true,$fn=64);
+    
+    translate([0,50*4,0])
+    frame_cavity(reducedWallHeight=1,$fn=64);
+  }
+  
+  translate([150,0,0])
+  union(){
+    pad_oversize($fn=64);
+    
+    translate([0,50,0])
+    pad_oversize(extend_down=5,$fn=64);
+    
+    translate([0,50*2,0])
+    pad_oversize(margins=1,$fn=64);
+    
+    translate([0,50*3,0])
+    pad_oversize(remove_bottom_taper=true,$fn=64);
+    
+    translate([0,50*4,0])
+    pad_oversize(render_top=false,$fn=64);
+    
+    translate([0,50*5,0])
+    pad_oversize(render_bottom=false,$fn=64);
+  }  
+}
+
 // basic block with cutout in top to be stackable, optional holes in bottom
 // start with this and begin 'carving'
 //grid_block();
@@ -179,21 +216,22 @@ module cylsq2(d1, d2, h) {
   linear_extrude(height=h, scale=d2/d1)
   square([d1, d1], center=true);
 }
-  
+
 module frame_cavity(
-  num_x, 
-  num_y, 
+  num_x = 2, 
+  num_y = 1, 
   position_fill_grid_x = "near",
   position_fill_grid_y = "near",
   render_top = true,
   render_bottom = true,
+  remove_bottom_taper = false,
   extra_down=0, 
   frameLipHeight = 4,
   cornerRadius = gf_cup_corner_radius,
-  reducedWallHeight = 0,
-  reducedWallOuterEdgesOnly=false) {
   reducedWallHeight = -1,
   reducedWallWidth = -1,
+  reducedWallOuterEdgesOnly=false,
+  enable_grippers = false) {
 
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -201,13 +239,17 @@ module frame_cavity(
   assert(is_string(position_fill_grid_y));
   assert(is_bool(render_top));
   assert(is_bool(render_bottom));
+  assert(is_bool(remove_bottom_taper));
   assert(is_num(extra_down));
   assert(is_num(frameLipHeight));
   assert(is_num(cornerRadius));
   assert(is_num(reducedWallHeight));
+  assert(is_num(reducedWallWidth));
   assert(is_bool(reducedWallOuterEdgesOnly));
+  assert(is_bool(enable_grippers));
 
   frameWallReduction = reducedWallHeight >= 0 ? max(0, frameLipHeight-reducedWallHeight) : -1;
+
     translate([0, 0, -fudgeFactor]) 
       gridcopy(
         num_x, 
@@ -239,7 +281,8 @@ module frame_cavity(
             margins=1,
             extend_down=extra_down,
             render_top=render_top,
-            render_bottom=render_bottom)
+            render_bottom=render_bottom,
+            remove_bottom_taper=remove_bottom_taper)
               //cell cavity
               if($children >=1) children(0);
     }
@@ -255,6 +298,7 @@ module pad_oversize(
   margins=0,
   render_top = true,
   render_bottom = true,
+  remove_bottom_taper = false,
   extend_down = 0) {
   
   assert(!is_undef(num_x), "num_x is undefined");
@@ -302,10 +346,11 @@ module pad_oversize(
         cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
             cylsq(d=1.6+2*radialgap, h=0.1);
-            translate([0, 0, bevel1_top]) cylsq(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
+            translate([0, 0, bevel1_top]) 
+            cylsq(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
-            cylinder(d=1.6+2*radialgap, h=0.1);
+            cylinder(d=remove_bottom_taper ? 3.2+2*radialgap : 1.6+2*radialgap, h=0.1);
             translate([0, 0, bevel1_top]) 
               cylinder(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
