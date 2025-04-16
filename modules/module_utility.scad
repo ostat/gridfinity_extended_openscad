@@ -1,6 +1,8 @@
 include <thridparty/ub_sbogen.scad>
 include <module_utility_wallcutout.scad>
 
+utility_demo = false;
+
 module bentWall(
   length=100,
   bendPosition=0,
@@ -208,6 +210,14 @@ module roundedCubeV1(
   }
 }
 
+if(utility_demo){
+
+roundedCorner(
+  radius = 10, 
+  length = 100, 
+  height = 25,
+  $fn=128); 
+}
 //create a negative rouneded corner that subtracted from a shape
 //radius = the radius of the corner 
 //length = the extrusion/length
@@ -238,18 +248,32 @@ module roundedCorner(
   }  
 }
 
+if(utility_demo){
+  
+translate([0,50,0])
+chamferedCorner(
+  chamferLength = 10, 
+  cornerRadius = 4, 
+  length=100, 
+  height=25,
+  width = 20,
+  $fn=128);
+}
+  
 //create a negative chamfer corner that subtracted from a shape
 //chamferLength = the amount that will be subtracted from the 
 //cornerRadius = the radius of the corners 
 //length = the extrusion/length
-//height = the distance past the corner.
+//height = the distance past the corner
 module chamferedCorner(
   chamferLength = 10, 
   cornerRadius = 4, 
   length, 
   height,
-  width = 0)
+  width = 0,
+  angled_extension = false)
 {
+  fudgeFactor = 0.01;
   width = width>0 ? width : chamferLength;
  
   difference(){
@@ -258,11 +282,13 @@ module chamferedCorner(
       translate([0,-width, -width])
         cube([length, chamferLength+width,  chamferLength+width]);
       //corner extension in y
-      translate([0,0, -width])
-        cube([length, height, width]);
+      translate([0,chamferLength-fudgeFactor, -width])
+        rotate_around_point(point=[0,0,width], rotation=angled_extension ? [-45,0,0] : [0,0,0])
+        cube([length, height-chamferLength, width]);
       //corner extension in x
-      translate([0,-width, 0])
-        cube([length, width, height]);
+      translate([0,-width, chamferLength-fudgeFactor])
+        rotate_around_point(point=[0,width,0], rotation=angled_extension ? [45,0,0] : [0,0,0])
+        cube([length, width, height-chamferLength]);
 
     }
     hull(){
@@ -278,6 +304,13 @@ module chamferedCorner(
       }
     }
   }        
+}
+
+module rotate_around_point(point=[], rotation=[]){
+  translate(point)
+  rotate(rotation)
+  translate(-point)
+  children();
 }
 
 //sequential bridging for hanging hole. 

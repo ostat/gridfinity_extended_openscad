@@ -4,7 +4,7 @@
 */
 include <functions_general.scad>
 include <gridfinity_constants.scad>
-
+include <functions_environment.scad>
 /*
 attachment_clip(height = 13,
   width = 0,

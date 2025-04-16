@@ -24,22 +24,24 @@ filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 //under size the bin top by this amount to allow for better stacking
-zClearance = 0; // 0.1
+headroom = 0.8; // 0.1
 
 /* [Cup Lip] */
 // Style of the cup lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
-// Create a relie
+// Create a relief in the lip
 lip_top_relief_height = -1; // 0.1
+// how much of the lip to retain on each end
+lip_top_relief_width = -1; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = true;
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
 //Reduce the wall height by this amount
-chamber_wall_zClearance = 0;//0.1
+chamber_wall_headroom = 0;//0.1
 // X dimension subdivisions
 vertical_chambers = 1;
 vertical_separator_bend_position = 0;
@@ -59,6 +61,25 @@ vertical_separator_config = "10.5|21|42|50|60";
 horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 horizontal_separator_config = "10.5|21|42|50|60";
+
+/* [Removable Divider Walls] */
+divider_walls_enabled = false;
+// Wall to enable on, x direction, y direction
+divider_walls = [1,1]; //[0:1:1]
+// Thickness of the divider walls.
+divider_walls_thickness = 2.5;  //0.1
+// Spacing between the divider walls (0=divider_walls_thickness*2).
+divider_walls_spacing = 0; //0.1
+// Thickness of the support walls (0=walls_thickness*2).
+divider_walls_support_thickness = 2;
+// Size of the slot in the divider walls. width(0=divider_walls_thickness), depth(0=divider_walls_support_thickness)
+divider_wall_slot_size = [0,0];
+// Clearance between the divider walls top
+divider_headroom = 0.1;
+// Clearance subtracted from the removable divider wall. Width, Length
+divider_clearance = [0.3, 0.2];
+// Number of slot spanning divider to generate.
+divider_slot_spanning = 2;
 
 /* [Base] */
 // Enable magnets
@@ -97,7 +118,7 @@ flat_base_rounded_radius = -1;
 flat_base_rounded_easyPrint = -1;
 
 /* [Label] */
-label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
+label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
@@ -309,7 +330,17 @@ gridfinity_cup(
     flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
   wall_thickness=wall_thickness,
   chamber_wall_thickness=chamber_wall_thickness,
-  chamber_wall_zClearance=chamber_wall_zClearance,
+  chamber_wall_headroom=chamber_wall_headroom,
+  divider_wall_removable_settings = DividerRemovableSettings(
+    enabled=divider_walls_enabled,
+    walls=divider_walls,
+    headroom=divider_headroom,
+    support_thickness=divider_walls_support_thickness,
+    slot_size=divider_wall_slot_size,
+    divider_spacing=divider_walls_spacing,
+    divider_thickness=divider_walls_thickness,
+    divider_clearance=divider_clearance,
+    divider_slot_spanning=divider_slot_spanning),
   vertical_chambers = vertical_chambers,
   vertical_separator_bend_position=vertical_separator_bend_position,
   vertical_separator_bend_angle=vertical_separator_bend_angle,
@@ -328,8 +359,9 @@ gridfinity_cup(
     lipStyle=lip_style, 
     lipSideReliefTrigger=lip_side_relief_trigger, 
     lipTopReliefHeight=lip_top_relief_height, 
+    lipTopReliefWidth=lip_top_relief_width, 
     lipNotch=lip_top_notches),
-  zClearance=zClearance,
+  headroom=headroom,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,

@@ -237,7 +237,7 @@ module SlidingLidCavity(
       cube([num_x*env_pitch().x,gf_cup_corner_radius,aboveLidHeight+fudgeFactor*3]);
   } else {
     //translate([-env_pitch().x/2,-env_pitch().y/2,zpoint]) 
-    //cube([num_x*env_pitch().x,gf_cup_corner_radius,zClearance+gf_Lip_Height]);
+    //cube([num_x*env_pitch().x,gf_cup_corner_radius,headroom+gf_Lip_Height]);
     //innerWallRadius = gf_cup_corner_radius-wall_thickness;
     translate([0,gf_cup_corner_radius,aboveLidHeight]) 
     rotate([270,0,0])

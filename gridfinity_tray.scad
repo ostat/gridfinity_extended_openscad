@@ -44,7 +44,7 @@ wall_thickness = 0;  // .01
 // Remove some or all of lip
 position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
-zClearance = 0; // 0.1
+headroom = 0.8; // 0.1
 
 /* [Cup Lip] */
 // Style of the cup lip
@@ -360,7 +360,7 @@ module gridfinity_tray(
     lipSideReliefTrigger=lip_side_relief_trigger, 
     lipTopReliefHeight=lip_top_relief_height, 
     lipNotch=lip_top_notches),
-  zClearance=zClearance,
+  headroom=headroom,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
@@ -433,7 +433,7 @@ module gridfinity_tray(
       horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
       horizontal_separator_config=horizontal_separator_config, 
       lip_settings=lip_settings,
-      zClearance=zClearance,
+      headroom=headroom,
       tapered_corner=tapered_corner,
       tapered_corner_size = tapered_corner_size,
       tapered_setback = tapered_setback,

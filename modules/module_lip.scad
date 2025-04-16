@@ -4,17 +4,8 @@ include <gridfinity_constants.scad>
 iLipStyle=0;
 iLipSideReliefTrigger=1;
 iLipTopReliefHeight=2;
-iLipNotch=3;
-
-/* [Cup Lip] */
-// Style of the cup lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-// Below this the inside of the lip will be reduced for easier access.
-lip_side_relief_trigger = [1,1]; //0.1
-// Create a relie
-lip_top_relief_height = -1; // 0.1
-// add a notch to the lip to prevent sliding.
-lip_top_notches  = 0; // 0.1
+iLipTopReliefWidth=3;
+iLipNotch=4;
 
 LipStyle_normal = "normal";
 LipStyle_reduced = "reduced";
@@ -28,23 +19,28 @@ function validateLipStyle(value) =
 function LipSettings(
   lipStyle = LipStyle_normal, 
   lipSideReliefTrigger = [1,1], 
-  lipTopReliefHeight = 0, 
+  lipTopReliefHeight = -1, 
+  lipTopReliefWidth = -1, 
   lipNotch = true) =  
   let(
     result = [
       lipStyle,
       lipSideReliefTrigger,
       lipTopReliefHeight,
+      lipTopReliefWidth,
       lipNotch],
     validatedResult = ValidateLipSettings(result)
   ) validatedResult;
 
 function ValidateLipSettings(settings) =
   assert(is_list(settings), "LipStyle Settings must be a list")
-  assert(len(settings)==4, "LipStyle Settings must length 4")
+  assert(len(settings)==5, "LipStyle Settings must length 4")
+  assert(is_bool(settings[iLipNotch]), "Lip Notch must be a bool")
+  
     [validateLipStyle(settings[iLipStyle]),
       settings[iLipSideReliefTrigger],
       settings[iLipTopReliefHeight],
+      settings[iLipTopReliefWidth],
       settings[iLipNotch]];
 
 module cupLip(
@@ -53,13 +49,15 @@ module cupLip(
   lipStyle = "normal", 
   wall_thickness = 1.2,
   lip_notches = true,
-  lip_top_relief_height = -1){
+  lip_top_relief_height = -1,
+  lip_top_relief_width = -1){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
   assert(is_string(lipStyle));
   assert(is_num(wall_thickness) && wall_thickness > 0, "wall_thickness must be a number greater than 0");
   assert(is_num(lip_top_relief_height));
+  assert(is_num(lip_top_relief_width));
   assert(is_bool(lip_notches));
   
   //Difference between the wall and support thickness
@@ -103,23 +101,25 @@ module cupLip(
         frame_cavity(
           num_x = num_x, 
           num_y = num_y, 
-          position_fill_grid_x = "near",
-          position_fill_grid_y = "near",
+          position_fill_grid_x = "far",
+          position_fill_grid_y = "far",
           render_top = lip_notches,
           render_bottom = false,
           frameLipHeight = 4,
           reducedWallHeight = lip_top_relief_height,
+          reducedWallWidth = lip_top_relief_width,
           reducedWallOuterEdgesOnly=true);
         //lower cavity
         frame_cavity(
           num_x = 1, 
           num_y = 1, 
-          position_fill_grid_x = "near",
-          position_fill_grid_y = "near",
+          position_fill_grid_x = "far",
+          position_fill_grid_y = "far",
           render_top = !lip_notches,
           render_bottom = true,
           frameLipHeight = 4,
           reducedWallHeight = -1, 
+          reducedWallWidth = -1,
           $pitch=[pitch.x*num_x,pitch.y*num_y,pitch.z]);
       }
      
