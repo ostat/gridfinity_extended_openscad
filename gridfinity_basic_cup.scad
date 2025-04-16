@@ -31,8 +31,10 @@ headroom = 0.8; // 0.1
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
-// Create a relie
+// Create a relief in the lip
 lip_top_relief_height = -1; // 0.1
+// how much of the lip to retain on each end
+lip_top_relief_width = -1; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = true;
 
@@ -116,7 +118,7 @@ flat_base_rounded_radius = -1;
 flat_base_rounded_easyPrint = -1;
 
 /* [Label] */
-label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
+label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
@@ -357,6 +359,7 @@ gridfinity_cup(
     lipStyle=lip_style, 
     lipSideReliefTrigger=lip_side_relief_trigger, 
     lipTopReliefHeight=lip_top_relief_height, 
+    lipTopReliefWidth=lip_top_relief_width, 
     lipNotch=lip_top_notches),
   headroom=headroom,
   tapered_corner=tapered_corner,
