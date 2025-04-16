@@ -192,6 +192,8 @@ module frame_cavity(
   cornerRadius = gf_cup_corner_radius,
   reducedWallHeight = 0,
   reducedWallOuterEdgesOnly=false) {
+  reducedWallHeight = -1,
+  reducedWallWidth = -1,
 
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -220,7 +222,7 @@ module frame_cavity(
             translate([$gc_size.x/2*env_pitch().x,$gc_size.y/2*env_pitch().y,frameLipHeight])
             rotate([0,0,side[0]])
               WallCutout(
-                lowerWidth=side[1].x-20,
+                lowerWidth=side[1].x-(reducedWallWidth > 0 ? reducedWallWidth*2 : 20),
                 wallAngle=80,
                 height=frameWallReduction,
                 thickness=side[1].y+fudgeFactor*2,
