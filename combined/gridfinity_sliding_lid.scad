@@ -8,7 +8,7 @@
 // https://www.printables.com/model/630057-gridfinity-extended-openscad
 //
 // Documentation
-// https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup.html
+// https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup
 
 
 /* [Sliding Lid] */
