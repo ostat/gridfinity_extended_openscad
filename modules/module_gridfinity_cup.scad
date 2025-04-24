@@ -284,7 +284,6 @@ module gridfinity_cup(
     divider_thickness=divider_walls_thickness,
     divider_clearance=divider_clearance,
     divider_slot_spanning=divider_slot_spanning),
-  vertical_chambers = vertical_chambers,
   vertical_chambers = default_vertical_chambers,
   vertical_separator_bend_position = default_vertical_separator_bend_position,
   vertical_separator_bend_angle = default_vertical_separator_bend_angle,
