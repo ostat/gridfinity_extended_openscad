@@ -83,7 +83,7 @@ module grid_block(
       cornercopy(block_corner_position, num_x, num_y) 
       cylinder(r=gf_cup_corner_radius, h=lipHeight);
   } else {
-    echo("cupLip_test", lip_settings);
+    
     cupLip(
       num_x = num_x, 
       num_y = num_y, 
@@ -143,7 +143,11 @@ module grid_block(
         for(y =[0:1:num_y-1])
         {
           color(env_colour(color_basehole))
-          translate([x*env_pitch().x,y*env_pitch().y,-fudgeFactor])
+            translate([
+               x * env_pitch().x + env_pitch().x / 2, // Add half pitch in X
+               y * env_pitch().y + env_pitch().y / 2, // Add half pitch in Y
+               -fudgeFactor
+            ])
             cylinder(h=center_magnet_size[iCylinderDimension_Height]-fudgeFactor, d=center_magnet_size[iCylinderDimension_Diameter]);
         }
       }
