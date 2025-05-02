@@ -3,7 +3,7 @@ include <modules/gridfinity_constants.scad>
 include <modules/functions_general.scad>
 use <modules/module_gridfinity_cup.scad>
 include <modules/module_gridfinity_cup_base.scad>
-use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_block.scad>
 
 /* [Divider] */
 divider_count = 4;

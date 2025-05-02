@@ -1,6 +1,6 @@
 // include instead of use, so we get the pitch
 include <modules/gridfinity_constants.scad>
-use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_block.scad>
 use <modules/module_gridfinity_lid.scad>
 
 /* [Size] */

@@ -1,6 +1,6 @@
 include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity_cup.scad>
-use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_block.scad>
 
 use <modules/thridparty/dotscad/ring_extrude.scad>;
 
@@ -81,9 +81,11 @@ lip_side_relief_trigger = [1,1]; //0.1
 // Create a relief in the lip
 lip_top_relief_height = 0; // 0.1
 // how much of the lip to retain on each end
-lip_top_relief_width = 8; // 0.1
+lip_top_relief_width = 8.5; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = true;
+// enable lip clip for connection cups
+lip_clip_position = "disabled"; //[disabled, intersection]
 
 /* [Base] */
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
@@ -207,13 +209,7 @@ module gridfinity_marble(
   position = render_position,
   floor_thickness = floor_thickness,
   half_pitch = half_pitch,
-  wall_thickness=wall_thickness,
-  lip_settings = LipSettings(
-    lipStyle=lip_style, 
-    lipSideReliefTrigger=lip_side_relief_trigger, 
-    lipTopReliefHeight=lip_top_relief_height, 
-    lipTopReliefWidth=lip_top_relief_width,
-    lipNotch=lip_top_notches)) {
+  wall_thickness=wall_thickness) {
   
   lip_style = marble_style == "ramp" ? "none" : lip_style;
   halfPitch=marble_style == "cup" ? false : half_pitch;
@@ -241,7 +237,8 @@ module gridfinity_marble(
         lipSideReliefTrigger=lip_side_relief_trigger, 
         lipTopReliefHeight=lip_top_relief_height, 
         lipTopReliefWidth=lip_top_relief_width,
-        lipNotch=lip_top_notches),
+        lipNotch=lip_top_notches,
+        lipClipPosition=lip_clip_position),
       headroom=headroom,
       cupBaseTextSettings = CupBaseTextSettings(
         baseTextLine1Enabled = true,

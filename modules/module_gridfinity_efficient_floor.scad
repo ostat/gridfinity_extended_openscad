@@ -1,7 +1,7 @@
 include <gridfinity_constants.scad>
 include <module_rounded_negative_champher.scad>
 include <module_gridfinity_cup_base.scad>
-use <module_gridfinity.scad>
+use <module_gridfinity_block.scad>
 use <module_utility.scad>
 
 //creates the gird of efficient floor pads to be added to the cavity for removal from the overall filled in bin.

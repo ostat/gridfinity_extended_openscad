@@ -1,10 +1,10 @@
 // include instead of use, so we get the pitch
 include <gridfinity_constants.scad>
-use <module_gridfinity.scad>
+use <module_gridfinity_block.scad>
 use <module_gridfinity_baseplate_common.scad>
 use <module_gridfinity_baseplate_regular.scad>
 use <module_gridfinity_baseplate_cnclaser.scad>
-use <module_gridfinity_baseplate_connectors.scad>
+use <module_gridfinity_frame_connectors.scad>
 
 /* [BasePlate] */
 // Plate Style
@@ -207,7 +207,7 @@ module baseplate(
           weightHolder = weightedEnable,
           cornerRadius = plate_corner_radius,
           roundedCorners=roundedCorners)
-          baseplate_connectors(
+          frame_connectors(
             width = width, 
             depth = depth,
             connectorPosition = connectorPosition,

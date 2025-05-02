@@ -9,7 +9,7 @@ include <module_gridfinity_cup_base.scad>
 include <module_gridfinity_dividers_removable.scad>
 include <module_divider_walls.scad>
 
-use <module_gridfinity.scad>
+use <module_gridfinity_block.scad>
 use <module_gridfinity_efficient_floor.scad>
 use <module_attachment_clip.scad>
 use <module_calipers.scad>
