@@ -1,5 +1,5 @@
 use <modules/module_gridfinity_cup.scad>
-use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_block.scad>
 include <modules/gridfinity_constants.scad>
 include <modules/functions_general.scad>
 include <modules/module_gridfinity_cup_base.scad>

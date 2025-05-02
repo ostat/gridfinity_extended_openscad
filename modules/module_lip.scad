@@ -1,4 +1,6 @@
 include <gridfinity_constants.scad>
+include <module_gridfinity_frame_connectors.scad>
+include <module_gridfinity.scad>
 
 //Lip object configuration
 iLipStyle=0;
@@ -6,6 +8,7 @@ iLipSideReliefTrigger=1;
 iLipTopReliefHeight=2;
 iLipTopReliefWidth=3;
 iLipNotch=4;
+iLipClipPosition=5;
 
 LipStyle_normal = "normal";
 LipStyle_reduced = "reduced";
@@ -16,41 +19,55 @@ function validateLipStyle(value) =
   assert(list_contains(LipStyle_values, value), typeerror("LipStyle", value))
   value;
 
+LipClipPosition_disabled = "disabled";
+LipClipPosition_center_wall = "center_wall";
+LipClipPosition_intersection = "intersection";
+LipClipPosition_both = "both";
+LipClipPosition_values = [LipClipPosition_disabled,LipClipPosition_center_wall,LipClipPosition_intersection,LipClipPosition_both];
+function validateLipClipPosition(value) = 
+  assert(list_contains(LipClipPosition_values, value), typeerror("LipClipPosition", value))
+  value;
+
 function LipSettings(
   lipStyle = LipStyle_normal, 
   lipSideReliefTrigger = [1,1], 
   lipTopReliefHeight = -1, 
   lipTopReliefWidth = -1, 
-  lipNotch = true) =  
+  lipNotch = true,
+  lipClipPosition = LipClipPosition_disabled) =  
   let(
     result = [
       lipStyle,
       lipSideReliefTrigger,
       lipTopReliefHeight,
       lipTopReliefWidth,
-      lipNotch],
+      lipNotch,
+      lipClipPosition],
     validatedResult = ValidateLipSettings(result)
   ) validatedResult;
 
 function ValidateLipSettings(settings) =
   assert(is_list(settings), "LipStyle Settings must be a list")
-  assert(len(settings)==5, "LipStyle Settings must length 4")
+  assert(len(settings)==6, "LipStyle Settings must length 6")
   assert(is_bool(settings[iLipNotch]), "Lip Notch must be a bool")
   
     [validateLipStyle(settings[iLipStyle]),
       settings[iLipSideReliefTrigger],
       settings[iLipTopReliefHeight],
       settings[iLipTopReliefWidth],
-      settings[iLipNotch]];
+      settings[iLipNotch],
+      validateLipClipPosition(settings[iLipClipPosition])];
 
 module cupLip(
   num_x = 2, 
   num_y = 3, 
-  lipStyle = "normal", 
+  lipStyle = LipStyle_normal, 
   wall_thickness = 1.2,
   lip_notches = true,
   lip_top_relief_height = -1,
-  lip_top_relief_width = -1){
+  lip_top_relief_width = -1,
+  lip_clip_position = LipClipPosition_disabled
+  ){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
@@ -59,7 +76,12 @@ module cupLip(
   assert(is_num(lip_top_relief_height));
   assert(is_num(lip_top_relief_width));
   assert(is_bool(lip_notches));
-  
+  assert(is_string(lip_clip_position));
+
+  connectorsEnabled = lip_clip_position != LipClipPosition_disabled;
+  $allowConnectors = connectorsEnabled ? [1,1,1,1] : [0,0,0,0];
+  $frameBaseHeight = 0; //$num_z * env_pitch().z;
+
   //Difference between the wall and support thickness
   lipSupportThickness = (lipStyle == "minimum" || lipStyle == "none") ? 0
     : lipStyle == "reduced" ? gf_lip_upper_taper_height - wall_thickness
@@ -108,7 +130,15 @@ module cupLip(
           frameLipHeight = 4,
           reducedWallHeight = lip_top_relief_height,
           reducedWallWidth = lip_top_relief_width,
-          reducedWallOuterEdgesOnly=true);
+          reducedWallOuterEdgesOnly=true){
+            echo("donothign");
+            frame_connectors(
+              width = num_x, 
+              depth = num_y,
+              connectorPosition = lip_clip_position,
+              connectorClipEnabled = connectorsEnabled);
+          };
+
         //lower cavity
         frame_cavity(
           num_x = 1, 

@@ -1,6 +1,6 @@
 include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity_cup.scad>
-use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_block.scad>
 
 /*<!!start gridfinity_sieve!!>*/
 /* [Sieve] */

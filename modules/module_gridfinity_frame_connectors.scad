@@ -1,15 +1,15 @@
 // include instead of use, so we get the pitch
 include <gridfinity_constants.scad>
-use <module_gridfinity.scad>
-use <module_gridfinity_baseplate_common.scad>
+include <module_gridfinity.scad>
 
 iAllowConnectorsFront = 0;
 iAllowConnectorsBack = 1;
 iAllowConnectorsLeft = 2;
 iAllowConnectorsRight = 3;
 
-show_baseplate_connector_demo = false;
-if(show_baseplate_connector_demo){
+show_frame_connector_demo = true;
+if(show_frame_connector_demo){
+  $fn = 64;
   translate([0,0,0]) {
     ClippedWall(fullIntersection = true);
     translate([15,0,0])
@@ -27,8 +27,9 @@ if(show_baseplate_connector_demo){
    }
 
   translate([0,30,0]) {
-    translate([15,0,0])
     ClippedWall(cornerIntersection = true);
+    //translate([15,0,0])
+    //ClipConnector(cornerIntersection = true);
     translate([30,0,0])
     ClipCutter(cornerIntersection = true);
   }
@@ -42,18 +43,18 @@ if(show_baseplate_connector_demo){
    }
 }
 
-module baseplate_connectors(
+module frame_connectors(
   width = 1, 
   depth = 1,
   connectorPosition = "both",
-  connectorClipEnabled = true,
+  connectorClipEnabled = false,
   connectorClipSize = 10,
   connectorClipTolerance = 0.1,
-  connectorButterflyEnabled = true,
+  connectorButterflyEnabled = false,
   connectorButterflySize = [5,3,2],
   connectorButterflyRadius = 0.5,
   connectorButterflyTolerance = 0.1,
-  connectorFilamentEnabled = true,
+  connectorFilamentEnabled = false,
   connectorFilamentLength = 10,
   connectorFilamentDiameter = 2) {
   if(connectorButterflyEnabled || connectorFilamentEnabled || connectorClipEnabled){
