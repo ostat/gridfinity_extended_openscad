@@ -9,7 +9,7 @@
 
 include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity_cup.scad>
-use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_block.scad>
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -37,6 +37,8 @@ lip_top_relief_height = -1; // 0.1
 lip_top_relief_width = -1; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = true;
+// enable lip clip for connection cups
+lip_clip_position = "disabled"; //[disabled, intersection, center_wall, both]
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -360,7 +362,8 @@ gridfinity_cup(
     lipSideReliefTrigger=lip_side_relief_trigger, 
     lipTopReliefHeight=lip_top_relief_height, 
     lipTopReliefWidth=lip_top_relief_width, 
-    lipNotch=lip_top_notches),
+    lipNotch=lip_top_notches,
+    lipClipPosition=lip_clip_position),
   headroom=headroom,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,

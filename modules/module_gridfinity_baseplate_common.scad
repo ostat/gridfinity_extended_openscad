@@ -1,6 +1,6 @@
 // include instead of use, so we get the pitch
 include <gridfinity_constants.scad>
-use <module_gridfinity.scad>
+use <module_gridfinity_block.scad>
 
 iBaseplateTypeSettings_SupportsMagnets = true;
   
