@@ -653,10 +653,9 @@ module gridfinity_itemholder(
     labelWalls=label_walls),
   fingerslide=fingerslide,
   fingerslide_radius=fingerslide_radius,
-  magnet_diameter=magnet_size[0],
-  magnet_depth=magnet_size[1],
+  magnet_size=enable_magnets?magnet_size:[0,0],
   magnet_easy_release=magnet_easy_release,
-  screw_depth=screw_size[1],
+  screw_size=enable_screws?screw_size:[0,0],
   center_magnet_diameter=center_magnet_size[0],
   center_magnet_thickness=center_magnet_size[1],
   floor_thickness=floor_thickness,
@@ -754,7 +753,7 @@ module gridfinity_itemholder(
   calculatedItemDepth = itemCalc[icHoleSize].z;
 
   // min floor height
-  baseClearanceHeight = cupBaseClearanceHeight(magnet_depth, screw_depth, center_magnet_thickness);
+  baseClearanceHeight = cupBaseClearanceHeight(magnet_size[1], screw_size[1], center_magnet_thickness);
   
   //calculate the bin height. This math is not right
   height = !itemholder_auto_bin_height || calculatedItemDepth <=0 ? num_z
@@ -762,11 +761,10 @@ module gridfinity_itemholder(
         ? (baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z
         : ceil((baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z);
   // calculate floor thickness
-  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_depth, screw_depth=screw_depth, floor_thickness=calculatedItemDepth + gf_cup_floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
+  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=calculatedItemDepth + gf_cup_floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
 
   
-  if(env_help_enabled("info")) ;
-  echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedUsableFloorThickness=calculatedUsableFloorThickness, baseClearanceHeight=baseClearanceHeight, height=height); 
+  if(env_help_enabled("info")) echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedUsableFloorThickness=calculatedUsableFloorThickness, baseClearanceHeight=baseClearanceHeight, height=height); 
 
   if(itemholder_enable_sample == false)
   {
@@ -785,7 +783,7 @@ module gridfinity_itemholder(
         fingerslide_radius=fingerslide_radius,
         fingerslide_walls=fingerslide_walls,
         cupBase_settings = CupBaseSettings(
-          magnetSize = enable_magnets?magnet_size:[0,0],
+          magnetSize = magnet_size,
           magnetEasyRelease = magnet_easy_release, 
           centerMagnetSize = center_magnet_size, 
           screwSize = enable_screws?screw_size:[0,0],
