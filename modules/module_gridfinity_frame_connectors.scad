@@ -7,7 +7,7 @@ iAllowConnectorsBack = 1;
 iAllowConnectorsLeft = 2;
 iAllowConnectorsRight = 3;
 
-show_frame_connector_demo = true;
+show_frame_connector_demo = false;
 if(show_frame_connector_demo){
   $fn = 64;
   translate([0,0,0]) {
