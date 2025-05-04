@@ -39,6 +39,8 @@ lip_top_relief_width = -1; // 0.1
 lip_top_notches  = true;
 // enable lip clip for connection cups
 lip_clip_position = "disabled"; //[disabled, intersection, center_wall, both]
+//allow stacking when bin is not multiples of 42
+lip_non_blocking = false;
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -363,7 +365,8 @@ gridfinity_cup(
     lipTopReliefHeight=lip_top_relief_height, 
     lipTopReliefWidth=lip_top_relief_width, 
     lipNotch=lip_top_notches,
-    lipClipPosition=lip_clip_position),
+    lipClipPosition=lip_clip_position,
+    lipNonBlocking=lip_non_blocking),
   headroom=headroom,
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,

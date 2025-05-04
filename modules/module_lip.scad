@@ -9,6 +9,7 @@ iLipTopReliefHeight=2;
 iLipTopReliefWidth=3;
 iLipNotch=4;
 iLipClipPosition=5;
+iLipNonBlocking=6;
 
 LipStyle_normal = "normal";
 LipStyle_reduced = "reduced";
@@ -34,7 +35,8 @@ function LipSettings(
   lipTopReliefHeight = -1, 
   lipTopReliefWidth = -1, 
   lipNotch = true,
-  lipClipPosition = LipClipPosition_disabled) =  
+  lipClipPosition = LipClipPosition_disabled,
+  lipNonBlocking = false) =  
   let(
     result = [
       lipStyle,
@@ -42,13 +44,14 @@ function LipSettings(
       lipTopReliefHeight,
       lipTopReliefWidth,
       lipNotch,
-      lipClipPosition],
+      lipClipPosition,
+      lipNonBlocking],
     validatedResult = ValidateLipSettings(result)
   ) validatedResult;
 
 function ValidateLipSettings(settings) =
   assert(is_list(settings), "LipStyle Settings must be a list")
-  assert(len(settings)==6, "LipStyle Settings must length 6")
+  assert(len(settings)==7, "LipStyle Settings must length 7")
   assert(is_bool(settings[iLipNotch]), "Lip Notch must be a bool")
   
     [validateLipStyle(settings[iLipStyle]),
@@ -56,7 +59,8 @@ function ValidateLipSettings(settings) =
       settings[iLipTopReliefHeight],
       settings[iLipTopReliefWidth],
       settings[iLipNotch],
-      validateLipClipPosition(settings[iLipClipPosition])];
+      validateLipClipPosition(settings[iLipClipPosition]),
+      settings[iLipNonBlocking]];
 
 module cupLip(
   num_x = 2, 
@@ -66,8 +70,8 @@ module cupLip(
   lip_notches = true,
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
-  lip_clip_position = LipClipPosition_disabled
-  ){
+  lip_clip_position = LipClipPosition_disabled,
+  lip_non_blocking = false){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
@@ -77,6 +81,7 @@ module cupLip(
   assert(is_num(lip_top_relief_width));
   assert(is_bool(lip_notches));
   assert(is_string(lip_clip_position));
+  assert(is_bool(lip_non_blocking));
 
   connectorsEnabled = lip_clip_position != LipClipPosition_disabled;
   $allowConnectors = connectorsEnabled ? [1,1,1,1] : [0,0,0,0];
@@ -121,8 +126,8 @@ module cupLip(
       union(){
         //Top cavity, with lip relief
         frame_cavity(
-          num_x = num_x, 
-          num_y = num_y, 
+          num_x = lip_non_blocking ? ceil(num_x) : num_x, 
+          num_y = lip_non_blocking ? ceil(num_y) : num_y, 
           position_fill_grid_x = "far",
           position_fill_grid_y = "far",
           render_top = lip_notches,
@@ -150,7 +155,10 @@ module cupLip(
           frameLipHeight = 4,
           reducedWallHeight = -1, 
           reducedWallWidth = -1,
-          $pitch=[pitch.x*num_x,pitch.y*num_y,pitch.z]);
+          $pitch=[
+            pitch.x*(lip_non_blocking ? ceil(num_x) : num_x),
+            pitch.y*(lip_non_blocking ? ceil(num_y) : num_y),
+            pitch.z]);
       }
      
       if (lipStyle == "minimum" || lipStyle == "none") {

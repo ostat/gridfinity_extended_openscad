@@ -92,7 +92,8 @@ module grid_block(
       lip_notches = lip_settings[iLipNotch],
       lip_top_relief_height = lip_settings[iLipTopReliefHeight],
       lip_top_relief_width = lip_settings[iLipTopReliefWidth],
-      lip_clip_position = lip_settings[iLipClipPosition]);
+      lip_clip_position = lip_settings[iLipClipPosition],
+      lip_non_blocking = lip_settings[iLipNonBlocking]);
   }
         
   translate(gridfinityRenderPosition(position,num_x,num_y))
