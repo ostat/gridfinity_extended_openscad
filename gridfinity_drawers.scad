@@ -466,8 +466,8 @@ module chestCutouts(
           holeHeight = wallPattern_thickness,
           center=true,
           fill=wallPatternFill, //"none", "space", "crop"
-          voronoiNoise=wallPatternVoronoiNoise,
-          voronoiRadius = wallPatternVoronoiRadius);
+          patternVoronoiNoise=wallPatternVoronoiNoise,
+          holeRadius = wallPatternVoronoiRadius);
    
   color(colour_chest) 
   if(drawerSlideWidth > 0 && drawerCount > 1)
