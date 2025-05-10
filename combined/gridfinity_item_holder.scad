@@ -2826,7 +2826,8 @@ module gridfinity_cup(
                 heightz = env_pitch().z*(num_z)-wallpatternzpos + (
                   //Position specific to each LIP style
                   lip_settings[iLipStyle] == "reduced" ? 0.6 :
-                  lip_settings[iLipStyle] == "minimum" ? 3 -border*2 
+                  lip_settings[iLipStyle] == "reduced_double" ? 0.6 :
+                  lip_settings[iLipStyle] == "minimum" ? 3 -border*2
                    : -gf_lip_height-1.8);
                 z=wallpatternzpos+heightz/2;
                 
@@ -3120,6 +3121,7 @@ module gridfinity_cup(
       //todo need to correct this
       lipheight = lip_settings[iLipStyle] == "none" ? tabThickness
         : lip_settings[iLipStyle] == "reduced" ? gf_lip_upper_taper_height+tabThickness
+        : lip_settings[iLipStyle] == "reduced_double" ? gf_lip_upper_taper_height+tabThickness
         //Add tabThickness, as the taper can bleed in to the lip
         : gf_lip_upper_taper_height + gf_lip_lower_taper_height-tabThickness;
       ceilingHeight = env_pitch().z*num_z-headroom-lipheight;

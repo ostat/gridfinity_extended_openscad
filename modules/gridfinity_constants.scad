@@ -91,3 +91,7 @@ color_extension = "lightpink";
 color_text = "Yellow"; //Gold
 color_cut = "Black";
 color_lid = "MediumAquamarine";
+
+FlatBase_off = "off";
+FlatBase_gridfinity = "gridfinity";
+FlatBase_rounded = "rounded";
