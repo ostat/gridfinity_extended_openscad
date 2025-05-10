@@ -3007,6 +3007,7 @@ module cupLip(
   //Difference between the wall and support thickness
   lipSupportThickness = (lipStyle == "minimum" || lipStyle == "none") ? 0
     : lipStyle == "reduced" ? gf_lip_upper_taper_height - wall_thickness
+    : lipStyle == "reduced_double" ? gf_lip_upper_taper_height - wall_thickness
     : gf_lip_upper_taper_height + gf_lip_lower_taper_height- wall_thickness;
       
   floorht=0;
@@ -3070,7 +3071,7 @@ module cupLip(
           tz(-fudgeFactor) 
           cylinder(r=innerWallRadius, h=gf_Lip_Height);   // remove entire lip
       } 
-      else if (lipStyle == "reduced") {
+      else if (lipStyle == "reduced" || lipStyle == "reduced_double") {
         lowerTaperZ = gf_lip_lower_taper_height;
         hull() cornercopy(seventeen, num_x, num_y)
         union(){
@@ -3509,7 +3510,7 @@ module baseplate_lid(
         num_x, 
         num_y, 
         efficient_base ? lidEfficientBaseHeight+0.6 : height, 
-        lipStyle = "normal",    //"minimum" "none" "reduced" "normal"
+        lipStyle = "normal",    //"minimum" "none" "reduced" "reduced_double" "normal"
         filledin = tray ? "enabled" : "enabledfilllip" , //[disabled, enabled, enabledfilllip]
         cupBase_settings = CupBaseSettings(
           flatBase=flat_base,

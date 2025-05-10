@@ -324,7 +324,7 @@ module chest(
           num_y=drawerInnerUnitSize.y, 
           num_z=baseHeight, 
           position = "zero",
-          lipStyle = "none",    //"minimum" "none" "reduced" "normal"
+          lipStyle = "none",    //"minimum" "none" "reduced" "reduced_double" "normal"
           filledin = "disabled", //[disabled, enabled, enabledfilllip]
           cupBase_settings = CupBaseSettings(
             magnetSize=[bottomMagnetDiameter, 2.6], 

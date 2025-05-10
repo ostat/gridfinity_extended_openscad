@@ -13,9 +13,10 @@ iLipNonBlocking=6;
 
 LipStyle_normal = "normal";
 LipStyle_reduced = "reduced";
+LipStyle_reduced_double = "reduced_double";
 LipStyle_minimum = "minimum";
 LipStyle_none = "none";
-LipStyle_values = [LipStyle_normal,LipStyle_reduced,LipStyle_minimum,LipStyle_none];
+LipStyle_values = [LipStyle_normal,LipStyle_reduced, LipStyle_reduced_double, LipStyle_minimum,LipStyle_none];
 function validateLipStyle(value) = 
   assert(list_contains(LipStyle_values, value), typeerror("LipStyle", value))
   value;
@@ -90,6 +91,7 @@ module cupLip(
   //Difference between the wall and support thickness
   lipSupportThickness = (lipStyle == "minimum" || lipStyle == "none") ? 0
     : lipStyle == "reduced" ? gf_lip_upper_taper_height - wall_thickness
+    : lipStyle == "reduced_double" ? gf_lip_upper_taper_height - wall_thickness
     : gf_lip_upper_taper_height + gf_lip_lower_taper_height- wall_thickness;
       
   floorht=0;
@@ -166,7 +168,7 @@ module cupLip(
           tz(-fudgeFactor) 
           cylinder(r=innerWallRadius, h=gf_Lip_Height);   // remove entire lip
       } 
-      else if (lipStyle == "reduced") {
+      else if (lipStyle == "reduced" || lipStyle == "reduced_double") {
         lowerTaperZ = gf_lip_lower_taper_height;
         hull() cornercopy(seventeen, num_x, num_y)
         union(){

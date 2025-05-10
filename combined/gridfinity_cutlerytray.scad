@@ -62,7 +62,7 @@ module grid_block(
   num_y=2, 
   num_z=2, 
   position = "zero",
-  lipStyle = "normal",    //"minimum" "none" "reduced" "normal"
+  lipStyle = "normal",    //"minimum" "none" "reduced" "reduced_double" "normal"
   filledin = "disabled", //[disabled, enabled, enabledfilllip]
   wall_thickness = 1.2,
   cupBase_settings = CupBaseSettings(),
@@ -2743,6 +2743,7 @@ module cupLip(
   //Difference between the wall and support thickness
   lipSupportThickness = (lipStyle == "minimum" || lipStyle == "none") ? 0
     : lipStyle == "reduced" ? gf_lip_upper_taper_height - wall_thickness
+    : lipStyle == "reduced_double" ? gf_lip_upper_taper_height - wall_thickness
     : gf_lip_upper_taper_height + gf_lip_lower_taper_height- wall_thickness;
       
   floorht=0;
@@ -2781,7 +2782,7 @@ module cupLip(
           tz(-fudgeFactor) 
           cylinder(r=innerWallRadius, h=gf_Lip_Height);   // remove entire lip
       } 
-      else if (lipStyle == "reduced") {
+      else if (lipStyle == "reduced" || lipStyle == "reduced_double") {
         lowerTaperZ = gf_lip_lower_taper_height;
         hull() cornercopy(seventeen, num_x, num_y)
         union(){
