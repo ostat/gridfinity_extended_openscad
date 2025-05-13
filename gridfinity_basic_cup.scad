@@ -36,7 +36,7 @@ lip_top_relief_height = -1; // 0.1
 // how much of the lip to retain on each end
 lip_top_relief_width = -1; // 0.1
 // add a notch to the lip to prevent sliding.
-lip_top_notches  = false;
+lip_top_notches  = true;
 // enable lip clip for connection cups
 lip_clip_position = "disabled"; //[disabled, intersection, center_wall, both]
 //allow stacking when bin is not multiples of 42
