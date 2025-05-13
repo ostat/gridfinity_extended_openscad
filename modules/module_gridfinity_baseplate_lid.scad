@@ -42,7 +42,7 @@ module baseplate_lid(
       grid_block(
         num_x, 
         num_y, 
-        efficient_base ? lidEfficientBaseHeight+0.6 : height, 
+        efficient_base ? lidEfficientBaseHeight+0.6 : height,
         filledin = tray ? "enabled" : "enabledfilllip" , //[disabled, enabled, enabledfilllip]
         cupBase_settings = CupBaseSettings(
           flatBase=flat_base,

@@ -620,7 +620,8 @@ module gridfinity_cup(
                 heightz = env_pitch().z*(num_z)-wallpatternzpos + (
                   //Position specific to each LIP style
                   lip_settings[iLipStyle] == "reduced" ? 0.6 :
-                  lip_settings[iLipStyle] == "minimum" ? 3 -border*2 
+                  lip_settings[iLipStyle] == "reduced_double" ? 0.6 :
+                  lip_settings[iLipStyle] == "minimum" ? 3 -border*2
                    : -gf_lip_height-1.8);
                 z=wallpatternzpos+heightz/2;
                 
@@ -915,6 +916,7 @@ module gridfinity_cup(
       //todo need to correct this
       lipheight = lip_settings[iLipStyle] == "none" ? tabThickness
         : lip_settings[iLipStyle] == "reduced" ? gf_lip_upper_taper_height+tabThickness
+        : lip_settings[iLipStyle] == "reduced_double" ? gf_lip_upper_taper_height+tabThickness
         //Add tabThickness, as the taper can bleed in to the lip
         : gf_lip_upper_taper_height + gf_lip_lower_taper_height-tabThickness;
       ceilingHeight = env_pitch().z*num_z-headroom-lipheight;
@@ -1168,12 +1170,14 @@ module basic_cavity(num_x, num_y, num_z,
   //Difference between the wall and support thickness
   lipSupportThickness = (reducedlipstyle == "minimum" || reducedlipstyle == "none") ? 0
     : reducedlipstyle == "reduced" ? gf_lip_upper_taper_height - wall_thickness
+    : reducedlipstyle == "reduced_double" ? gf_lip_upper_taper_height - wall_thickness
     : gf_lip_upper_taper_height + gf_lip_lower_taper_height- wall_thickness;
   lipHeight = (reducedlipstyle == "none") ? 0 : gf_Lip_Height-0.65;
   //bottom of the lip where it touches the wall
   lipBottomZ = ((reducedlipstyle == "minimum" || reducedlipstyle == "none") ? env_pitch().z*num_z +fudgeFactor*3
     : reducedlipstyle == "reduced" ? env_pitch().z*num_z+fudgeFactor*3
-    : env_pitch().z*num_z-gf_lip_height-lipSupportThickness); 
+    : reducedlipstyle == "reduced_double" ? env_pitch().z*num_z+fudgeFactor*3
+    : env_pitch().z*num_z-gf_lip_height-lipSupportThickness);
   //lipBottomZ = env_pitch().z*num_z+fudgeFactor*3;
   innerLipRadius = gf_cup_corner_radius-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
   innerWallRadius = gf_cup_corner_radius-wall_thickness;
@@ -1200,6 +1204,8 @@ module basic_cavity(num_x, num_y, num_z,
       } 
       else if (reducedlipstyle == "reduced") {
       } 
+      else if (reducedlipstyle == "reduced_double") {
+      }
       else { // normal
         lowerTaperZ = filledInZ-gf_lip_height-lipSupportThickness;
         if(lowerTaperZ <= floorht){
@@ -1443,6 +1449,7 @@ module FingerSlide(
       translate([0, 
         lipAligned && reducedlipstyle =="normal" ? -seventeen.x-1.15+env_pitch().x/2
         : lipAligned && reducedlipstyle == "reduced" ? -seventeen.x-1.15+env_pitch().x/2-gf_lip_lower_taper_height
+        : lipAligned && reducedlipstyle == "reduced_double" ? -seventeen.x-1.15+env_pitch().x/2-gf_lip_lower_taper_height
         : 0.25+wall_thickness, floorht]) //todo:pitch issue here?
     //translate([0,-seventeen-1.15+env_pitch().x/2, floorht])
       union(){
