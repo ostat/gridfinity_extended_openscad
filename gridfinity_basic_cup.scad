@@ -24,7 +24,7 @@ filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 //under size the bin top by this amount to allow for better stacking
-headroom = 0.6; // 0.1
+headroom = 0.8; // 0.1
 
 /* [Cup Lip] */
 // Style of the cup lip
