@@ -28,7 +28,7 @@ headroom = 0.6; // 0.1
 
 /* [Cup Lip] */
 // Style of the cup lip
-lip_style = "reduced_double";  // [ normal, reduced, reduced_double, minimum, none:not stackable ]
+lip_style = "normal";  // [ normal, reduced, reduced_double, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
 // Create a relief in the lip
