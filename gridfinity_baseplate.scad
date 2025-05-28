@@ -3,6 +3,7 @@ include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity_block.scad>
 use <modules/module_gridfinity_baseplate.scad>
 use <modules/module_gridfinity_frame_connectors.scad>
+use <modules/module_snapfinity.scad>;
 
 // Plate Style
 Base_Plate_Options = "default";//[default:Efficient base, cnclaser:CNC or Laser cut]
@@ -85,6 +86,12 @@ xpos4 = [2,2,2,2,2,2,0];
 xpos5 = [6,2,2,2,2,10,0];
 xpos6 = [0,0,0,0,0,0,0];
 xpos7 = [0,0,0,0,0,0,0];
+
+/* [Snapfinity Options] */
+// Enable Snapfinity features (snap-fit tabs on baseplate)
+enable_snapfinity = false; // [true, false]
+// Width of the Snapfinity tabs
+snapfinity_tab_width = 5; // [1:0.1:20]
 
 /* [Model detail] */
 //Work in progress,  Modify the default grid size. Will break compatibility
@@ -287,6 +294,8 @@ else
       cornerScrewEnabled  = Corner_Screw_Enabled,
       centerScrewEnabled = Center_Screw_Enabled,
       weightedEnable = Enable_Weight,
+      enable_snapfinity = enable_snapfinity,
+      snapfinity_tab_width = snapfinity_tab_width,
       oversizeMethod=oversize_method,
       plateOptions = Base_Plate_Options,
       customGridEnabled = Custom_Grid_Enabled,

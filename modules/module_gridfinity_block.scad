@@ -1,5 +1,6 @@
 include <module_gridfinity.scad>     
 include <module_lip.scad>      
+use <modules/module_snapfinity.scad>;
 
 show_gridfinity_demo = false;
 if(show_gridfinity_demo){
@@ -50,7 +51,9 @@ module grid_block(
   wall_thickness = 1.2,
   cupBase_settings = CupBaseSettings(),
   lip_settings = LipSettings(),
-  help)
+  help,
+  enable_snapfinity = false,
+  snapfinity_tab_width = 5)
 {
   lipHeight = 3.75;
 
@@ -171,6 +174,45 @@ module grid_block(
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
           easyMagnetRelease = magnet_easy_release != MagnetEasyRelease_off);
+    }
+
+    // Snapfinity Slot Subtractions
+    if (enable_snapfinity) {
+        cup_total_width = num_x * env_pitch().x;
+        cup_total_depth = num_y * env_pitch().y;
+        snapfinity_slot_z_offset = 0; // Slots start at Z=0 of the cup's base
+
+        // Side +Y (far edge in Y-dimension of the cup)
+        // Slot Depth along World -Y, Slot Width along World +X.
+        translate([
+            (cup_total_width + snapfinity_tab_width) / 2, 
+            cup_total_depth, 
+            snapfinity_slot_z_offset
+        ]) rotate([0,0,-90]) mirror([0,1,0]) snapfinity_cup_slot(snapfinity_tab_width);
+
+        // Side +X (far edge in X-dimension of the cup)
+        // Slot Depth along World +X, Slot Width along World +Y. (Default module orientation)
+        translate([
+            cup_total_width,
+            (cup_total_depth - snapfinity_tab_width) / 2,
+            snapfinity_slot_z_offset
+        ]) rotate([0,0,0]) snapfinity_cup_slot(snapfinity_tab_width);
+
+        // Side -Y (near edge in Y-dimension of the cup, y=0)
+        // Slot Depth along World +Y, Slot Width along World -X.
+        translate([
+            (cup_total_width - snapfinity_tab_width) / 2, 
+            0, 
+            snapfinity_slot_z_offset
+        ]) rotate([0,0,90]) mirror([0,1,0]) snapfinity_cup_slot(snapfinity_tab_width);
+
+        // Side -X (near edge in X-dimension of the cup, x=0)
+        // Slot Depth along World -X, Slot Width along World -Y.
+        translate([
+            0, 
+            (cup_total_depth + snapfinity_tab_width) / 2, 
+            snapfinity_slot_z_offset
+        ]) rotate([0,0,180]) mirror([0,1,0]) snapfinity_cup_slot(snapfinity_tab_width);
     }
   }
  

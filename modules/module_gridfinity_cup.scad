@@ -235,6 +235,8 @@ module gridfinity_cup(
   width=default_width,
   depth=default_depth,
   height=default_height,
+  enable_snapfinity = false,
+  snapfinity_tab_width = 5,
   filled_in=default_filled_in,
   label_settings=LabelSettings(
     labelStyle=default_label_style, 
@@ -445,7 +447,9 @@ module gridfinity_cup(
         cupBase_settings = cupBase_settings,
         wall_thickness = wall_thickness,
         lip_settings = lip_settings,
-        filledin = filled_in);
+        filledin = filled_in,
+        enable_snapfinity = enable_snapfinity,
+        snapfinity_tab_width = snapfinity_tab_width);
         
       if(filled_in == FilledIn_disabled) 
       union(){

@@ -10,6 +10,7 @@
 include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity_cup.scad>
 use <modules/module_gridfinity_block.scad>
+use <modules/module_snapfinity.scad>;
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -243,6 +244,12 @@ extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 extension_tab_size= [10,0,0,0];
 
+/* [Snapfinity Options] */
+// Enable Snapfinity features (slots in cup base)
+enable_snapfinity = false; // [true, false]
+// Width of the Snapfinity slots (should match tab_width from baseplate)
+snapfinity_tab_width = 5; // [1:0.1:20]
+
 /* [Bottom Text] */
 // Add bin size to bin bottom
 text_1 = false;
@@ -305,6 +312,8 @@ set_environment(
   force_render = force_render)
 gridfinity_cup(
   width=width, depth=depth, height=height,
+  enable_snapfinity = enable_snapfinity,
+  snapfinity_tab_width = snapfinity_tab_width,
   filled_in=filled_in,
   label_settings=LabelSettings(
     labelStyle=label_style, 
