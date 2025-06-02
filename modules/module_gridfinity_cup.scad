@@ -959,6 +959,25 @@ module gridfinity_cup(
           attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, footingThickness=wall_thickness, tabStyle=tabStyle);
       }
     }
+    
+    if (lip_settings[iLipStyle] == "reduced_double") {
+      label_size=calculateLabelSize(label_settings[iLabelSettings_size]);
+      labelCornerRadius = label_size[3];
+      lipHeight = 3.75;
+      tz(- lipHeight -labelCornerRadius)
+      tz(zpoint)
+      cupLip(
+      num_x = num_x,
+      num_y = num_y,
+      lipStyle = lip_settings[iLipStyle],
+      wall_thickness = wall_thickness,
+      lip_notches = false,
+      lip_top_relief_height = lip_settings[iLipTopReliefHeight],
+      lip_top_relief_width = lip_settings[iLipTopReliefWidth],
+      lip_clip_position = lip_settings[iLipClipPosition],
+      lip_non_blocking = lip_settings[iLipNonBlocking]);
+
+    }
   }  
   
   if(divider_wall_removable_settings[iDividerRemovable_Enabled])
@@ -1095,14 +1114,14 @@ module partitioned_cavity(num_x, num_y, num_z,
     color(env_colour(color_divider))
     tz(sepFloorHeight-fudgeFactor)
     separators(
-      calculatedSeparators = calculated_vertical_separator_positions,  
+      calculatedSeparators = calculated_vertical_separator_positions,
       separator_orientation = "vertical");
 
     if(env_help_enabled("trace")) echo("partitioned_cavity", horizontal_separator_positions=calculated_horizontal_separator_positions);
     
     color(env_colour(color_divider))
     translate([env_pitch().x*num_x, 0, sepFloorHeight-fudgeFactor])
-    separators( 
+    separators(
       calculatedSeparators = calculated_horizontal_separator_positions, 
       separator_orientation = "horizontal");
       
