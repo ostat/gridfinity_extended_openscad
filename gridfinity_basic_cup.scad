@@ -18,7 +18,7 @@ width = [2, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
 depth = [1, 0]; //0.1
 // Z dimension excluding. grid units (multiples of 7mm) or mm.
-height = [3, 0]; //0.1
+height = [6, 0]; //0.1
 // Fill in solid block (overrides all following options)
 filled_in = "disabled"; //[disabled, enabled, enabledfilllip:"Fill cup and lip"]
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
@@ -28,7 +28,7 @@ headroom = 0.8; // 0.1
 
 /* [Cup Lip] */
 // Style of the cup lip
-lip_style = "normal";  // [ normal, reduced, reduced_double, minimum, none:not stackable ]
+lip_style = "reduced_double";  // [ normal, reduced, reduced_double, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
 // Create a relief in the lip
@@ -122,11 +122,11 @@ flat_base_rounded_radius = -1;
 flat_base_rounded_easyPrint = -1;
 
 /* [Label] */
-label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
+label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
-label_size = [0,14,0,0.6]; // 0.01
+label_size = [0,10,0,0.6]; // 0.01
 // Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
@@ -145,7 +145,7 @@ sliding_lid_lip_enabled = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
-fingerslide = "none"; //[none, rounded, chamfered]
+fingerslide = "rounded"; //[none, rounded, chamfered]
 // Radius of the corner fillet, 0:none, >1: radius in mm, <0 dimention/abs(n) (i.e. -3 is 1/3 the width)
 fingerslide_radius = 8;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled using radius; >1: override radius.
@@ -291,7 +291,7 @@ module end_of_customizer_opts() {}
 $fa = fa; 
 $fs = fs; 
 $fn = fn;  
-
+intersection() {
 set_environment(
   width = width,
   depth = depth,
@@ -431,3 +431,7 @@ gridfinity_cup(
     baseTextFontSize = text_size,
     baseTextFont = text_font,
     baseTextDepth = text_depth));
+  
+  
+//    cube([500, 500, 500]);
+}

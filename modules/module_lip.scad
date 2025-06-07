@@ -2,6 +2,9 @@ include <gridfinity_constants.scad>
 include <module_gridfinity_frame_connectors.scad>
 include <module_gridfinity.scad>
 
+
+clr = 0;
+clr = 0.1;
 //Lip object configuration
 iLipStyle=0;
 iLipSideReliefTrigger=1;
@@ -165,21 +168,21 @@ module cupLip(
      
       if (lipStyle == "minimum" || lipStyle == "none") {
         hull() cornercopy(seventeen, num_x, num_y)
-          tz(-fudgeFactor) 
+          tz(-fudgeFactor)
           cylinder(r=innerWallRadius, h=gf_Lip_Height);   // remove entire lip
       } 
       else if (lipStyle == "reduced" || lipStyle == "reduced_double") {
         lowerTaperZ = gf_lip_lower_taper_height;
         hull() cornercopy(seventeen, num_x, num_y)
         union(){
-          tz(lowerTaperZ) 
+          tz(lowerTaperZ)
           cylinder(
-            r1=innerWallRadius, 
-            r2=gf_cup_corner_radius-gf_lip_upper_taper_height, 
+            r1=innerWallRadius-clr,
+            r2=gf_cup_corner_radius-gf_lip_upper_taper_height-clr,
             h=lipSupportThickness);
-          tz(-fudgeFactor) 
+          tz(-fudgeFactor)
           cylinder(
-            r=innerWallRadius, 
+            r=innerWallRadius-clr,
             h=lowerTaperZ+fudgeFactor*2);
         }
       } 

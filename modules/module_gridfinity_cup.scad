@@ -437,36 +437,103 @@ module gridfinity_cup(
     ? wallpattern_dividers_enabled ? "vertical" : "disabled"
     : wallpattern_dividers_enabled;
   
-  debug_cut()
+//  debug_cut()
   union(){
+//    difference() {
+//      grid_block(
+//        num_x, num_y, num_z,
+//        cupBase_settings = cupBase_settings,
+//        wall_thickness = wall_thickness,
+//        lip_settings = lip_settings,
+//        filledin = filled_in);
+
     difference() {
-      grid_block(
-        num_x, num_y, num_z,
-        cupBase_settings = cupBase_settings,
-        wall_thickness = wall_thickness,
-        lip_settings = lip_settings,
-        filledin = filled_in);
+      intersection() {
+        gridfinity_label(
+        num_x = num_x,
+        num_y = num_y,
+        zpoint = zpoint,
+        vertical_separator_positions = calculated_vertical_separator_positions,
+        horizontal_separator_positions = calculated_horizontal_separator_positions,
+        label_settings = label_settings,
+        render_option = "labelwithsocket");
         
+        partitioned_cavity(
+        num_x, num_y, num_z,
+        label_settings=label_settings,
+        cupBase_settings = cupBase_settings,
+        fingerslide=fingerslide,
+        fingerslide_radius=fingerslide_radius,
+        fingerslide_walls=fingerslide_walls,
+        fingerslide_lip_aligned=fingerslide_lip_aligned,
+        wall_thickness=wall_thickness+clr,
+        chamber_wall_thickness=chamber_wall_thickness,
+        chamber_wall_headroom=chamber_wall_headroom,
+        calculated_vertical_separator_positions = calculated_vertical_separator_positions,
+        calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
+        lip_settings=lip_settings,
+        headroom=headroom,
+        sliding_lid_settings= slidingLidSettings,
+        divider_wall_removable_settings = divider_wall_removable_settings);
+      }
+      
+
+      label_size = calculateLabelSize(label_settings[iLabelSettings_size]);
+      labelCornerRadius = label_size[3];
+      lipHeight = 3.75;
+      tz(-lipHeight - labelCornerRadius)
+      tz(zpoint)
+      cupLip(
+      num_x = num_x,
+      num_y = num_y,
+      lipStyle = lip_settings[iLipStyle],
+      wall_thickness = wall_thickness,
+      lip_notches = false,
+      lip_top_relief_height = lip_settings[iLipTopReliefHeight],
+      lip_top_relief_width = lip_settings[iLipTopReliefWidth],
+      lip_clip_position = lip_settings[iLipClipPosition],
+      lip_non_blocking = lip_settings[iLipNonBlocking]
+      );
+      
+//      label_size = calculateLabelSize(label_settings[iLabelSettings_size]);
+//      labelCornerRadius = label_size[3];
+//      lipHeight = 3.75;
+//      tz(-lipHeight - labelCornerRadius)
+//      tz(zpoint)
+//      #cupLip(
+//      num_x = num_x,
+//      num_y = num_y,
+//      lipStyle = lip_settings[iLipStyle],
+//      wall_thickness = wall_thickness,
+//      lip_notches = false,
+//      lip_top_relief_height = lip_settings[iLipTopReliefHeight],
+//      lip_top_relief_width = lip_settings[iLipTopReliefWidth],
+//      lip_clip_position = lip_settings[iLipClipPosition],
+//      lip_non_blocking = lip_settings[iLipNonBlocking]
+//      );
+    }
+    
       if(filled_in == FilledIn_disabled) 
       union(){
         //primary cavity
-        partitioned_cavity(
-          num_x, num_y, num_z,
-          label_settings=label_settings,
-          cupBase_settings = cupBase_settings,
-          fingerslide=fingerslide,
-          fingerslide_radius=fingerslide_radius,
-          fingerslide_walls=fingerslide_walls,
-          fingerslide_lip_aligned=fingerslide_lip_aligned,
-          wall_thickness=wall_thickness,
-          chamber_wall_thickness=chamber_wall_thickness,
-          chamber_wall_headroom=chamber_wall_headroom,
-          calculated_vertical_separator_positions = calculated_vertical_separator_positions,
-          calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
-          lip_settings=lip_settings,
-          headroom=headroom,
-          sliding_lid_settings= slidingLidSettings,
-          divider_wall_removable_settings = divider_wall_removable_settings);
+        
+//        partitioned_cavity(
+//          num_x, num_y, num_z,
+//          label_settings=label_settings,
+//          cupBase_settings = cupBase_settings,
+//          fingerslide=fingerslide,
+//          fingerslide_radius=fingerslide_radius,
+//          fingerslide_walls=fingerslide_walls,
+//          fingerslide_lip_aligned=fingerslide_lip_aligned,
+//          wall_thickness=wall_thickness,
+//          chamber_wall_thickness=chamber_wall_thickness,
+//          chamber_wall_headroom=chamber_wall_headroom,
+//          calculated_vertical_separator_positions = calculated_vertical_separator_positions,
+//          calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
+//          lip_settings=lip_settings,
+//          headroom=headroom,
+//          sliding_lid_settings= slidingLidSettings,
+//          divider_wall_removable_settings = divider_wall_removable_settings);
       
       color(env_colour(color_wallcutout))
       union(){
@@ -559,10 +626,10 @@ module gridfinity_cup(
               if(floor_pattern_settings[iPatternEnabled]){
                 difference(){
                 pad_copy(
-                  num_x = num_x, 
-                  num_y = num_y, 
-                  half_pitch = cupBase_settings[iCupBase_HalfPitch], 
-                  flat_base = cupBase_settings[iCupBase_FlatBase], 
+                  num_x = num_x,
+                  num_y = num_y,
+                  half_pitch = cupBase_settings[iCupBase_HalfPitch],
+                  flat_base = cupBase_settings[iCupBase_FlatBase],
                   minimium_size = cupBase_settings[iCupBase_MinimumPrintablePadSize])
                     translate([$pad_copy_size.x*env_pitch().x/2, $pad_copy_size.y*env_pitch().y/2,-fudgeFactor])
                     cutout_pattern(
@@ -605,15 +672,15 @@ module gridfinity_cup(
                 border = 0; //Believe this to be no longer needed
                
                 wallpatternzpos = wallpatternClearanceHeight(
-                  magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-                  screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
-                  center_magnet=cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
+                  magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height],
+                  screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height],
+                  center_magnet=cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height],
                   floor_thickness = cupBase_settings[iCupBase_FloorThickness],
-                  num_z=num_z, 
-                  filled_in=FilledIn_disabled, 
-                  efficient_floor=efficient_floor, 
-                  flat_base=cupBase_settings[iCupBase_FlatBase], 
-                  floor_inner_radius = cavityFloorRadius, 
+                  num_z=num_z,
+                  filled_in=FilledIn_disabled,
+                  efficient_floor=efficient_floor,
+                  flat_base=cupBase_settings[iCupBase_FlatBase],
+                  floor_inner_radius = cavityFloorRadius,
                   outer_cup_radius = 1);
 
                 //I feel this should use wallTop, but it seems to work...
@@ -634,8 +701,8 @@ module gridfinity_cup(
                   [num_x*env_pitch().x-gf_cup_corner_radius*2-border,
                     heightz - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)],
                   //Position
-                  [(num_x)*env_pitch().x/2, 
-                    gf_tolerance/2+wall_thickness/2, 
+                  [(num_x)*env_pitch().x/2,
+                    gf_tolerance/2+wall_thickness/2,
                     z - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)/2],
                   //rotation
                   [90,0,0],
@@ -646,11 +713,11 @@ module gridfinity_cup(
                   [num_x*env_pitch().x-gf_cup_corner_radius*2-border,
                     heightz - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)],
                   //Position
-                  [(num_x)*env_pitch().x/2, 
-                    (num_y)*env_pitch().y-gf_tolerance/2-wall_thickness/2, 
+                  [(num_x)*env_pitch().x/2,
+                    (num_y)*env_pitch().y-gf_tolerance/2-wall_thickness/2,
                      z - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)/2],
                   //rotation
-                  [90,0,0], 
+                  [90,0,0],
                   //enabled
                   wallpattern_walls[1]];
                 left = [
@@ -658,8 +725,8 @@ module gridfinity_cup(
                   [num_y*env_pitch().y-gf_cup_corner_radius*2-border,
                     heightz - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)],
                   //Position
-                  [gf_tolerance/2+wall_thickness/2, 
-                    (num_y)*env_pitch().y/2, 
+                  [gf_tolerance/2+wall_thickness/2,
+                    (num_y)*env_pitch().y/2,
                     z - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)/2],
                   //rotation
                   [90,0,90],
@@ -670,8 +737,8 @@ module gridfinity_cup(
                   [num_y*env_pitch().y-gf_cup_corner_radius*2-border,
                     heightz - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)],
                   //Position
-                  [(num_x)*env_pitch().x-wall_thickness/2-gf_tolerance/2,   
-                    (num_y)*env_pitch().y/2, 
+                  [(num_x)*env_pitch().x-wall_thickness/2-gf_tolerance/2,
+                    (num_y)*env_pitch().y/2,
                     z - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)/2],
                   //rotation
                   [90,0,90],
@@ -712,16 +779,16 @@ module gridfinity_cup(
                             
                       if(wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
                         position_separators(
-                          calculatedSeparators = calculated_vertical_separator_positions, 
+                          calculatedSeparators = calculated_vertical_separator_positions,
                           separator_orientation = "vertical")
                             let(verSepThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
-                            translate([-verSepThickness/2, left[1].y, left[1].z]) 
+                            translate([-verSepThickness/2, left[1].y, left[1].z])
                             rotate(left[2])
                             render_conditional(env_force_render())
                               //separator wall pattern
                               cutout_pattern(
                                 patternStyle = wall_pattern_settings[iPatternStyle],
-                                canvasSize = left[0], 
+                                canvasSize = left[0],
                                 border = wall_pattern_settings[iPatternBorder],
                                 customShape = false,
                                 circleFn = wall_pattern_settings[iPatternHoleSides],
@@ -736,8 +803,8 @@ module gridfinity_cup(
                                 holeRadius = wall_pattern_settings[iPatternHoleRadius],
                                 source="vertical separator wall pattern",
                                 patternFs = wall_pattern_settings[iPatternFs]);
-                  }    
-                    
+                  }
+                  
                   //subtract dividers from wall patterns
                   translate([env_pitch().x*num_x, 0, -fudgeFactor])
                   separators(
@@ -745,7 +812,7 @@ module gridfinity_cup(
                     separator_orientation = "horizontal",
                     override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
                 }
-                  
+                
                 //patterns in the outer walls y
                 difference(){
                   union(){
@@ -775,7 +842,7 @@ module gridfinity_cup(
                             
                         if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
                           position_separators(
-                            calculatedSeparators = calculated_horizontal_separator_positions, 
+                            calculatedSeparators = calculated_horizontal_separator_positions,
                             separator_orientation = "horizontal")
                               let(hozSepThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
                               rotate([0,0,-90])
@@ -785,7 +852,7 @@ module gridfinity_cup(
                                 //separator wall pattern
                                 cutout_pattern(
                                   patternStyle = wall_pattern_settings[iPatternStyle],
-                                  canvasSize = front[0], 
+                                  canvasSize = front[0],
                                   border = wall_pattern_settings[iPatternBorder],
                                   customShape = false,
                                   circleFn = wall_pattern_settings[iPatternHoleSides],
@@ -793,7 +860,7 @@ module gridfinity_cup(
                                   holeSpacing = [wall_pattern_settings[iPatternHoleSpacing],wall_pattern_settings[iPatternHoleSpacing]],
                                   holeHeight = hozSepThickness,
                                   center = true,
-                                  fill = wall_pattern_settings[iPatternFill], 
+                                  fill = wall_pattern_settings[iPatternFill],
                                   patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                                   patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                                   patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
@@ -801,7 +868,7 @@ module gridfinity_cup(
                                   source = "horizontal separator wall pattern",
                                   patternFs = wall_pattern_settings[iPatternFs]);
                   }
-                    
+                  
                   //subtract dividers from outer wall pattern
                   translate([0, 0, -fudgeFactor])
                   separators(
@@ -811,7 +878,7 @@ module gridfinity_cup(
                 }
               }
             }
-                    
+            
             //Subtract setback from wall pattern
             if(tapered_corner == "rounded" || tapered_corner == "chamfered") {
               translate([
@@ -822,18 +889,18 @@ module gridfinity_cup(
               union()
                 if(tapered_corner == "rounded"){
                   roundedCorner(
-                    radius = tapered_corner_size+cutoutclearance_border*2, 
-                    length=(num_x)*env_pitch().x, 
+                    radius = tapered_corner_size+cutoutclearance_border*2,
+                    length=(num_x)*env_pitch().x,
                     height = tapered_corner_size);
                 }
                 else if(tapered_corner == "chamfered"){
                   chamferedCorner(
-                    chamferLength = tapered_corner_size, 
-                    length=(num_x)*env_pitch().x, 
+                    chamferLength = tapered_corner_size,
+                    length=(num_x)*env_pitch().x,
                     height = max((num_x)*env_pitch().x, (num_z)*env_pitch().z),
                     angled_extension =false);
                 }
-            }  
+            }
             
             //Subtract cutout from wall pattern
             if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
@@ -896,7 +963,7 @@ module gridfinity_cup(
         else
           translate([0,unitPositionTo_mm(extendable_Settings.y[1],num_y,env_pitch().y),-fudgeFactor])
           cube([env_pitch().x*num_x,num_y*env_pitch().x-unitPositionTo_mm(extendable_Settings.y[1],num_y,env_pitch().y),(num_z+1)*env_pitch().z]);
-    }
+//    }
     
     if((extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_disabled || extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_disabled) && extendable_Settings[iExtendableTabsEnabled]) {
       refTabHeight = extendable_Settings[iExtendableTabSize].x;
@@ -960,24 +1027,24 @@ module gridfinity_cup(
       }
     }
     
-    if (lip_settings[iLipStyle] == "reduced_double") {
-      label_size=calculateLabelSize(label_settings[iLabelSettings_size]);
-      labelCornerRadius = label_size[3];
-      lipHeight = 3.75;
-      tz(- lipHeight -labelCornerRadius)
-      tz(zpoint)
-      cupLip(
-      num_x = num_x,
-      num_y = num_y,
-      lipStyle = lip_settings[iLipStyle],
-      wall_thickness = wall_thickness,
-      lip_notches = false,
-      lip_top_relief_height = lip_settings[iLipTopReliefHeight],
-      lip_top_relief_width = lip_settings[iLipTopReliefWidth],
-      lip_clip_position = lip_settings[iLipClipPosition],
-      lip_non_blocking = lip_settings[iLipNonBlocking]);
-
-    }
+//    if (lip_settings[iLipStyle] == "reduced_double") {
+//      label_size=calculateLabelSize(label_settings[iLabelSettings_size]);
+//      labelCornerRadius = label_size[3];
+//      lipHeight = 3.75;
+//      tz(- lipHeight -labelCornerRadius)
+//      tz(zpoint)
+//      cupLip(
+//      num_x = num_x,
+//      num_y = num_y,
+//      lipStyle = lip_settings[iLipStyle],
+//      wall_thickness = wall_thickness,
+//      lip_notches = false,
+//      lip_top_relief_height = lip_settings[iLipTopReliefHeight],
+//      lip_top_relief_width = lip_settings[iLipTopReliefWidth],
+//      lip_clip_position = lip_settings[iLipClipPosition],
+//      lip_non_blocking = lip_settings[iLipNonBlocking]);
+//
+//    }
   }  
   
   if(divider_wall_removable_settings[iDividerRemovable_Enabled])
@@ -1124,19 +1191,9 @@ module partitioned_cavity(num_x, num_y, num_z,
     separators(
       calculatedSeparators = calculated_horizontal_separator_positions, 
       separator_orientation = "horizontal");
-      
-    if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
-      gridfinity_label(
-        num_x = num_x,
-        num_y = num_y,
-        zpoint = zpoint,
-        vertical_separator_positions = calculated_vertical_separator_positions,
-        horizontal_separator_positions = calculated_horizontal_separator_positions,
-        label_settings=label_settings,
-        render_option = "labelwithsocket");
-    }
+    
   }
-}           
+}
 
 module basic_cavity(num_x, num_y, num_z, 
     fingerslide=default_fingerslide, fingerslide_radius=default_fingerslide_radius,fingerslide_walls,fingerslide_lip_aligned=default_fingerslide_lip_aligned,
