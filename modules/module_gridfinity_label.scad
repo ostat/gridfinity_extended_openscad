@@ -191,10 +191,14 @@ module gridfinity_label(
   for(l = [0:1:len(wallLocations)-1]){
     wallLocation = wallLocations[l];
     separator_positions = wallLocation[ilabelWall_SeparatorConfig];//calculateSeparators(wallLocation[3]);
-   
+
+    label_thickness = 3;
+    ratio=label_thickness/(label_size.y+labelCornerRadius);
+
     labelPoints = [[ 0-labelSize.y, -labelCornerRadius],
-      [ 0, -labelCornerRadius ],
-      [ 0, -labelCornerRadius-labelSize.z ]
+      [ 0, -labelCornerRadius],
+      [ 0, -labelCornerRadius-labelSize.z*ratio ],
+      [ 0-labelSize.y*(1-ratio), -labelCornerRadius-labelSize.z*ratio ]
     ];
     labelWidthmm = labelSize.x <=0 ? wallLocation[ilabelWall_Width] : labelSize.x * wallLocation[6];
     
@@ -234,7 +238,7 @@ module gridfinity_label(
             difference(){
               if(render_option == "label" || render_option == "labelwithsocket")
               union(){
-                hull() for (y=[0, 1, 2])
+                hull() for (y=[0, 1, 2, 3])
                 translate([0, labelPoints[y][0], labelPoints[y][1]])
                   rotate([0, 90, 0])
                   union(){
