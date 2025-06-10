@@ -9,12 +9,13 @@
 
 include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity_cup.scad>
+use <modules/module_gridfinity_removable_label.scad>
 use <modules/module_gridfinity_block.scad>
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
 // X dimension. grid units (multiples of 42mm) or mm.
-width = [2, 0]; //0.1
+width = [1, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
 depth = [1, 0]; //0.1
 // Z dimension excluding. grid units (multiples of 7mm) or mm.
@@ -28,7 +29,7 @@ headroom = 0.8; // 0.1
 
 /* [Cup Lip] */
 // Style of the cup lip
-lip_style = "normal";  // [ normal, reduced, reduced_double, minimum, none:not stackable ]
+lip_style = "reduced_double";  // [ normal, reduced, reduced_double, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
 // Create a relief in the lip
@@ -122,11 +123,11 @@ flat_base_rounded_radius = -1;
 flat_base_rounded_easyPrint = -1;
 
 /* [Label] */
-label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
+label_style = "normal"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
-label_size = [0,14,0,0.6]; // 0.01
+label_size = [0,10,0,0.6]; // 0.01
 // Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
@@ -303,7 +304,7 @@ set_environment(
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)
-gridfinity_cup(
+gridfinity_removable_label(
   width=width, depth=depth, height=height,
   filled_in=filled_in,
   label_settings=LabelSettings(

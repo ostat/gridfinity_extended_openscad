@@ -116,7 +116,8 @@ module pad_oversize(
   render_top = true,
   render_bottom = true,
   remove_bottom_taper = false,
-  extend_down = 0) {
+  extend_down = 0,
+  clr = 0) {
   
   assert(!is_undef(num_x), "num_x is undefined");
   assert(is_num(num_x), "num_x must be a number");

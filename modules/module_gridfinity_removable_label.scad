@@ -448,7 +448,7 @@ module gridfinity_removable_label(
         vertical_separator_positions = calculated_vertical_separator_positions,
         horizontal_separator_positions = calculated_horizontal_separator_positions,
         label_settings = label_settings,
-        render_option = "labelwithsocket");
+        render_option = "removablelabel");
         
         partitioned_cavity(
           num_x, num_y, num_z,
@@ -880,19 +880,6 @@ module gridfinity_removable_label(
           }
         }
       }
-      
-      if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
-        //generate the label sockets
-        gridfinity_label(
-          num_x = num_x,
-          num_y = num_y,
-          zpoint = zpoint,
-          vertical_separator_positions = calculated_vertical_separator_positions,
-          horizontal_separator_positions = calculated_horizontal_separator_positions,
-          label_settings=label_settings,
-          render_option = "socket",
-          socket_padding = [0,0,4]);
-    }
 
     // add text to the bottom
     _magnet_position = calculateAttachmentPositions(cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter], cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter]);

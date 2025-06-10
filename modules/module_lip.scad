@@ -2,9 +2,6 @@ include <gridfinity_constants.scad>
 include <module_gridfinity_frame_connectors.scad>
 include <module_gridfinity.scad>
 
-
-clr = 0;
-clr = 0.1;
 //Lip object configuration
 iLipStyle=0;
 iLipSideReliefTrigger=1;
@@ -75,7 +72,9 @@ module cupLip(
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
-  lip_non_blocking = false){
+  lip_non_blocking = false,
+  lip_as_void = false,
+  sliding_clearance = 0.1){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
@@ -166,6 +165,8 @@ module cupLip(
             pitch.z]);
       }
      
+      clr = lip_as_void?sliding_clearance:0;
+
       if (lipStyle == "minimum" || lipStyle == "none") {
         hull() cornercopy(seventeen, num_x, num_y)
           tz(-fudgeFactor)
