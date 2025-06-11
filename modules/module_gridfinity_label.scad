@@ -113,7 +113,7 @@ module gridfinity_label(
   vertical_separator_positions,
   horizontal_separator_positions,
   label_settings,
-  render_option = "labelwithsocket", //"label", "socket", "labelwithsocket"
+  render_option = "labelwithsocket", //"label", "socket", "labelwithsocket", "removablelabel"
   socket_padding = [0,0,0]
 )
 {
@@ -191,11 +191,21 @@ module gridfinity_label(
   for(l = [0:1:len(wallLocations)-1]){
     wallLocation = wallLocations[l];
     separator_positions = wallLocation[ilabelWall_SeparatorConfig];//calculateSeparators(wallLocation[3]);
-   
-    labelPoints = [[ 0-labelSize.y, -labelCornerRadius],
-      [ 0, -labelCornerRadius ],
-      [ 0, -labelCornerRadius-labelSize.z ]
-    ];
+
+    label_thickness = 3;
+    ratio=label_thickness/(label_size.y+labelCornerRadius);
+  
+    labelPoints = render_option == "removablelabel"
+      ? [[ 0-labelSize.y, -labelCornerRadius],
+        [ 0, -labelCornerRadius],
+        [ 0, -labelCornerRadius-labelSize.z*ratio ],
+        [ 0-labelSize.y*(1-ratio), -labelCornerRadius-labelSize.z*ratio ]
+      ]
+      : [[ 0-labelSize.y, -labelCornerRadius],
+        [ 0, -labelCornerRadius ],
+        [ 0, -labelCornerRadius-labelSize.z ]
+      ];
+
     labelWidthmm = labelSize.x <=0 ? wallLocation[ilabelWall_Width] : labelSize.x * wallLocation[6];
     
     // Calculate list of chambers. 
@@ -245,6 +255,21 @@ module gridfinity_label(
                     sphere(r=labelCornerRadius);
                   }
                 }
+
+              if(render_option == "removablelabel")
+              union(){
+                hull() for (y=[0, 1, 2, 3])
+                translate([0, labelPoints[y][0], labelPoints[y][1]])
+                  rotate([0, 90, 0])
+                  union(){
+                    //left
+                    tz(abs(label_num_x-labelCornerRadius*2))//tz(abs(label_num_x))
+                    sphere(r=labelCornerRadius);
+                    //Right
+                    sphere(r=labelCornerRadius);
+                  }
+                }
+              
                 
               //Create Label Sockets as negative volume
               if(render_option == "labelwithsocket")

@@ -4,7 +4,7 @@ include <functions_environment.scad>
 include <functions_general.scad>
 include <gridfinity_constants.scad>
 include <functions_gridfinity.scad>
-include <module_gridfinity_cup_base.scad>     
+include <module_gridfinity_cup_base.scad>
 
 module pad_grid(num_x, num_y, half_pitch=false, flat_base="off", minimium_size = 0.2) {
   assert(is_num(num_x));
@@ -48,7 +48,8 @@ module frame_cavity(
   reducedWallHeight = -1,
   reducedWallWidth = -1,
   reducedWallOuterEdgesOnly=false,
-  enable_grippers = false) {
+  enable_grippers = false,
+  clr=0) {
 
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -99,7 +100,8 @@ module frame_cavity(
             extend_down=extra_down,
             render_top=render_top,
             render_bottom=render_bottom,
-            remove_bottom_taper=remove_bottom_taper)
+            remove_bottom_taper=remove_bottom_taper,
+            clr=clr)
               //cell cavity
               if($children >=1) children(0);
     }
@@ -116,7 +118,8 @@ module pad_oversize(
   render_top = true,
   render_bottom = true,
   remove_bottom_taper = false,
-  extend_down = 0) {
+  extend_down = 0,
+  clr = 0) {
   
   assert(!is_undef(num_x), "num_x is undefined");
   assert(is_num(num_x), "num_x must be a number");
@@ -149,11 +152,11 @@ module pad_oversize(
         hull() cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
             translate(bevel2_bottom) 
-            cylsq2(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+            cylsq2(d1=3.2+2*radialgap-clr*2, d2=7.5+0.5+2*radialgap+2*bonus_ht-clr*2, h=bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
-            tz(bevel2_bottom) 
-            cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+            tz(bevel2_bottom)
+            cylinder(d1=3.2+2*radialgap-clr*2, d2=7.5+0.5+2*radialgap+2*bonus_ht-clr*2, h=bevel2_top-bevel2_bottom+bonus_ht);
           }
         }
       }
@@ -162,14 +165,14 @@ module pad_oversize(
         hull()
         cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
-            cylsq(d=1.6+2*radialgap, h=0.1);
+            cylsq(d=1.6+2*radialgap-clr*2, h=0.1);
             translate([0, 0, bevel1_top]) 
             cylsq(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
-            cylinder(d=remove_bottom_taper ? 3.2+2*radialgap : 1.6+2*radialgap, h=0.1);
+            cylinder(d=remove_bottom_taper ? 3.2+2*radialgap-clr*2 : 1.6+2*radialgap-clr*2, h=0.1);
             translate([0, 0, bevel1_top]) 
-              cylinder(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
+              cylinder(d=3.2+2*radialgap-clr*2, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
         }
       }

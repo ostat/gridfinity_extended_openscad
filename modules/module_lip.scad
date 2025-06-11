@@ -72,7 +72,9 @@ module cupLip(
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
-  lip_non_blocking = false){
+  lip_non_blocking = false,
+  lip_as_void = false,
+  sliding_clearance = 0.1){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
@@ -110,6 +112,9 @@ module cupLip(
   block_corner_position = [outer_size.x/2 - gf_cup_corner_radius, outer_size.y/2 - gf_cup_corner_radius];  // need not match center of pad corners
  
   coloredLipHeight=min(2,lipHeight);
+
+  clr = lip_as_void?sliding_clearance:0;
+
 
   if(lipStyle != "none")
   color(env_colour(color_topcavity, isLip = true))
@@ -160,26 +165,27 @@ module cupLip(
           $pitch=[
             pitch.x*(lip_non_blocking ? ceil(num_x) : num_x),
             pitch.y*(lip_non_blocking ? ceil(num_y) : num_y),
-            pitch.z]);
+            pitch.z], clr=clr);
       }
-     
+
+
       if (lipStyle == "minimum" || lipStyle == "none") {
         hull() cornercopy(seventeen, num_x, num_y)
-          tz(-fudgeFactor) 
+          tz(-fudgeFactor)
           cylinder(r=innerWallRadius, h=gf_Lip_Height);   // remove entire lip
       } 
       else if (lipStyle == "reduced" || lipStyle == "reduced_double") {
         lowerTaperZ = gf_lip_lower_taper_height;
         hull() cornercopy(seventeen, num_x, num_y)
         union(){
-          tz(lowerTaperZ) 
+          tz(lowerTaperZ)
           cylinder(
-            r1=innerWallRadius, 
-            r2=gf_cup_corner_radius-gf_lip_upper_taper_height, 
+            r1=innerWallRadius-clr,
+            r2=gf_cup_corner_radius-gf_lip_upper_taper_height-clr,
             h=lipSupportThickness);
-          tz(-fudgeFactor) 
+          tz(-fudgeFactor)
           cylinder(
-            r=innerWallRadius, 
+            r=innerWallRadius-clr,
             h=lowerTaperZ+fudgeFactor*2);
         }
       } 
