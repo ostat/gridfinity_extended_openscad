@@ -113,6 +113,9 @@ module cupLip(
  
   coloredLipHeight=min(2,lipHeight);
 
+  clr = lip_as_void?sliding_clearance:0;
+
+
   if(lipStyle != "none")
   color(env_colour(color_topcavity, isLip = true))
 
@@ -162,10 +165,9 @@ module cupLip(
           $pitch=[
             pitch.x*(lip_non_blocking ? ceil(num_x) : num_x),
             pitch.y*(lip_non_blocking ? ceil(num_y) : num_y),
-            pitch.z]);
+            pitch.z], clr=clr);
       }
-     
-      clr = lip_as_void?sliding_clearance:0;
+
 
       if (lipStyle == "minimum" || lipStyle == "none") {
         hull() cornercopy(seventeen, num_x, num_y)

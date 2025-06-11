@@ -48,7 +48,8 @@ module frame_cavity(
   reducedWallHeight = -1,
   reducedWallWidth = -1,
   reducedWallOuterEdgesOnly=false,
-  enable_grippers = false) {
+  enable_grippers = false,
+  clr=0) {
 
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -99,7 +100,8 @@ module frame_cavity(
             extend_down=extra_down,
             render_top=render_top,
             render_bottom=render_bottom,
-            remove_bottom_taper=remove_bottom_taper)
+            remove_bottom_taper=remove_bottom_taper,
+            clr=clr)
               //cell cavity
               if($children >=1) children(0);
     }
