@@ -1,7 +1,8 @@
 // include instead of use, so we get the pitch
 include <gridfinity_constants.scad>
-use <module_gridfinity.scad>
+use <module_gridfinity_block.scad>
 use <module_gridfinity_baseplate_common.scad>
+include <module_gridfinity_cup_base.scad>
 
 module baseplate_lid(
   num_x, 
@@ -13,10 +14,10 @@ module baseplate_lid(
   position_fill_grid_x = "far",
   position_fill_grid_y = "far",
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
-  reducedWallHeight=0,
+  reducedWallHeight=-1,
   cornerScrewEnabled = true,
   cornerRadius = gf_cup_corner_radius) {
-  flat_base = lidOptions == "flat";
+  flat_base = lidOptions == "flat" ? FlatBase_gridfinity : FlatBase_off;
   half_pitch = lidOptions == "halfpitch";
   efficient_base = lidOptions == "efficient";
   
@@ -41,12 +42,12 @@ module baseplate_lid(
       grid_block(
         num_x, 
         num_y, 
-        efficient_base ? lidEfficientBaseHeight+0.6 : height, 
-        lipStyle = "normal",    //"minimum" "none" "reduced" "normal"
+        efficient_base ? lidEfficientBaseHeight+0.6 : height,
         filledin = tray ? "enabled" : "enabledfilllip" , //[disabled, enabled, enabledfilllip]
         cupBase_settings = CupBaseSettings(
           flatBase=flat_base,
-          halfPitch=half_pitch));
+          halfPitch=half_pitch),
+        lip_settings = LipSettings());
     }
   
   if(!tray)
@@ -67,11 +68,10 @@ module baseplate_lid(
     extra_down = frameBaseHeight, 
     frameLipHeight = frameLipHeight,
     cornerRadius = cornerRadius,
-    reducedWallHeight = reducedWallHeight,
-    $fn = 44)
+    reducedWallHeight = reducedWallHeight)
       difference(){
         translate([fudgeFactor,fudgeFactor,-fudgeFactor])
-          cube([gf_pitch-fudgeFactor*2,gf_pitch-fudgeFactor*2,frameBaseHeight-fudgeFactor*2]);
+          cube([env_pitch().x-fudgeFactor*2,env_pitch().y-fudgeFactor*2,frameBaseHeight-fudgeFactor*2]);
           
         baseplate_cavities(
           num_x = $gc_size.x,

@@ -1,4 +1,4 @@
-include <modules/module_gridfinity.scad>
+include <modules/module_gridfinity_block.scad>
 
 /* [Utensil count and measurements] */
 // Utensil definitions above this number are ignored
@@ -87,7 +87,7 @@ width = ceil((silver_w + 5.7)/42);
 // Y dimension in gridfinity units
 depth = ceil((maxlen(silver_defs)+2*margin+5.7)/42);
 
-if(IsHelpEnabled("debug")) echo("maxlen: ", maxlen(silver_defs));
+if(env_help_enabled("debug")) echo("maxlen: ", maxlen(silver_defs));
 
 // ##### Top level model
 
@@ -138,7 +138,7 @@ module silverware_pockets(defs, md=magnet_diameter, sd=screw_depth) {
   floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
   
   difference() {
-    translate(cupPosition("center",width,depth))
+    translate(gridfinityRenderPosition("center",width,depth))
     grid_block(width, depth, height, magnet_diameter=md, screw_depth=sd);
     translate([0, 0, floorht]) 
       linear_extrude(height=7*height) 

@@ -5,11 +5,11 @@ idepthneeded = 3;
 iitemHeight = 4;
 ishape = 5;
 
-function LookupKnownShapes(name="round", default = 64) = 
+function LookupKnownShapes(name="round", default_sides=64) = 
   name == "square" || name == "halfround" || name == "multicard" ? 4 :
   name == "hex" ? 6 : 
   name == "round" ? 64 :
-  default;
+  default_sides;
   
 // result is dimensions for commonly know items
 //[diameter, x, y, z, item height, shape]
@@ -44,42 +44,42 @@ function LookupKnownBattery(name="custom") =
   name == "9v" ? [1, 17.5, 26.5, 12.5, 48.5, "square"] :
   name == "c" ? [26.2, 0, 0, 12.5, 50, "round"] :
   name == "d" ? [34.2, 0, 0, 15.375, 61.5, "round"] :
-  name == "7540" ? [7.5, 0, 0, 10, 40, "round"] :
-  name == "8570" ? [8.5, 0, 0, 17.5, 70, "round"] :
-  name == "10180" ? [10, 0, 0, 4.5, 18, "round"] :
-  name == "10280" ? [10, 0, 0, 7, 28, "round"] :
-  name == "10440" ? [10, 0, 0, 11, 44, "round"] :
-  name == "10850" ? [10, 0, 0, 21.25, 85, "round"] :
-  name == "13400" ? [13, 0, 0, 10, 40, "round"] :
-  name == "14250" ? [14, 0, 0, 6.25, 25, "round"] :
-  name == "14300" ? [14, 0, 0, 7.5, 30, "round"] :
-  name == "14430" ? [14, 0, 0, 10.75, 43, "round"] :
-  name == "14500" ? [14, 0, 0, 13.25, 53, "round"] :
-  name == "14650" ? [14, 0, 0, 16.25, 65, "round"] :
-  name == "15270" ? [15, 0, 0, 6.75, 27, "round"] :
-  name == "16340" ? [16, 0, 0, 8.5, 34, "round"] :
-  name == "16650" ? [16, 0, 0, 16.25, 65, "round"] :
-  name == "17500" ? [17, 0, 0, 12.5, 50, "round"] :
-  name == "17650" ? [17, 0, 0, 16.25, 65, "round"] :
-  name == "17670" ? [17, 0, 0, 16.75, 67, "round"] :
-  name == "18350" ? [18, 0, 0, 8.75, 35, "round"] :
-  name == "18490" ? [18, 0, 0, 12.25, 49, "round"] :
-  name == "18500" ? [18, 0, 0, 12.5, 50, "round"] :
-  name == "18650" ? [18, 0, 0, 16.25, 65, "round"] :
-  name == "20700" ? [20, 0, 0, 17.5, 70, "round"] :
-  name == "21700" ? [21, 0, 0, 17.5, 70, "round"] :
-  name == "25500" ? [25, 0, 0, 12.5, 50, "round"] :
-  name == "26500" ? [26, 0, 0, 12.5, 50, "round"] :
-  name == "26650" ? [26, 0, 0, 16.25, 65, "round"] :
-  name == "26700" ? [26, 0, 0, 17.5, 70, "round"] :
-  name == "26800" ? [26, 0, 0, 20, 80, "round"] :
-  name == "32600" ? [32, 0, 0, 15, 60, "round"] :
-  name == "32650" ? [32, 0, 0, 16.925, 67.7, "round"] :
-  name == "32700" ? [32, 0, 0, 17.5, 70, "round"] :
-  name == "38120" ? [38, 0, 0, 30, 120, "round"] :
-  name == "38140" ? [38, 0, 0, 35, 140, "round"] :
-  name == "40152" ? [40, 0, 0, 38, 152, "round"] :
-  name == "4680" ? [46, 0, 0, 20, 80, "round"] :
+  name == "7540cell" ? [7.5, 0, 0, 10, 40, "round"] :
+  name == "8570cell" ? [8.5, 0, 0, 17.5, 70, "round"] :
+  name == "10180cell" ? [10, 0, 0, 4.5, 18, "round"] :
+  name == "10280cell" ? [10, 0, 0, 7, 28, "round"] :
+  name == "10440cell" ? [10, 0, 0, 11, 44, "round"] :
+  name == "10850cell" ? [10, 0, 0, 21.25, 85, "round"] :
+  name == "13400cell" ? [13, 0, 0, 10, 40, "round"] :
+  name == "14250cell" ? [14, 0, 0, 6.25, 25, "round"] :
+  name == "14300cell" ? [14, 0, 0, 7.5, 30, "round"] :
+  name == "14430cell" ? [14, 0, 0, 10.75, 43, "round"] :
+  name == "14500cell" ? [14, 0, 0, 13.25, 53, "round"] :
+  name == "14650cell" ? [14, 0, 0, 16.25, 65, "round"] :
+  name == "15270cell" ? [15, 0, 0, 6.75, 27, "round"] :
+  name == "16340cell" ? [16, 0, 0, 8.5, 34, "round"] :
+  name == "16650cell" ? [16, 0, 0, 16.25, 65, "round"] :
+  name == "17500cell" ? [17, 0, 0, 12.5, 50, "round"] :
+  name == "17650cell" ? [17, 0, 0, 16.25, 65, "round"] :
+  name == "17670cell" ? [17, 0, 0, 16.75, 67, "round"] :
+  name == "18350cell" ? [18, 0, 0, 8.75, 35, "round"] :
+  name == "18490cell" ? [18, 0, 0, 12.25, 49, "round"] :
+  name == "18500cell" ? [18, 0, 0, 12.5, 50, "round"] :
+  name == "18650cell" ? [18, 0, 0, 16.25, 65, "round"] :
+  name == "20700cell" ? [20, 0, 0, 17.5, 70, "round"] :
+  name == "21700cell" ? [21, 0, 0, 17.5, 70, "round"] :
+  name == "25500cell" ? [25, 0, 0, 12.5, 50, "round"] :
+  name == "26500cell" ? [26, 0, 0, 12.5, 50, "round"] :
+  name == "26650cell" ? [26, 0, 0, 16.25, 65, "round"] :
+  name == "26700cell" ? [26, 0, 0, 17.5, 70, "round"] :
+  name == "26800cell" ? [26, 0, 0, 20, 80, "round"] :
+  name == "32600cell" ? [32, 0, 0, 15, 60, "round"] :
+  name == "32650cell" ? [32, 0, 0, 16.925, 67.7, "round"] :
+  name == "32700cell" ? [32, 0, 0, 17.5, 70, "round"] :
+  name == "38120cell" ? [38, 0, 0, 30, 120, "round"] :
+  name == "38140cell" ? [38, 0, 0, 35, 140, "round"] :
+  name == "40152cell" ? [40, 0, 0, 38, 152, "round"] :
+  name == "4680cell" ? [46, 0, 0, 20, 80, "round"] :
   [0,0,0,0,0,"","LookupKnownBattery"];
 
 //[diameter, width, thickness, depthneeded, itemHeight, shape]

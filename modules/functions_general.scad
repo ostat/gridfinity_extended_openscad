@@ -1,5 +1,18 @@
 include <functions_string.scad>
 
+function sum(list, c = 0, end) = 
+  let(end = is_undef(end) ? len(list) : end)
+  c < 0 || end < 0 ? 0 : 
+  c < len(list) - 1 && c < end
+    ? list[c] + sum(list, c + 1, end=end) 
+    : list[c];
+
+function vector_sum(v, start=0, end, itemIndex) = 
+  let(v=is_list(v)?v:[v], end = is_undef(end)?len(v)-1:min(len(v)-1,end))
+  is_num(itemIndex) 
+    ? start<end ? v[start][itemIndex] + vector_sum(v, start+1, end, itemIndex) : v[start][itemIndex]
+    : start<end ? v[start] + vector_sum(v, start+1, end, itemIndex) : v[start];    
+    
 //round a number to a decimal with a defined number of significant figures
 function roundtoDecimal(value, sigFigs = 0) = 
   assert(is_num(value), "value must be a number")
@@ -37,7 +50,7 @@ function DictSet(list, keyValue) =
   assert(len(keyValue)==2, str("DictSet(keyValueArray, arr) - keyValueArray is not a list. keyValue:",keyValue))
   let(matchResults = search([keyValue[0]],list,1),
     matchIndex = is_list(matchResults) && len(matchResults)==1 && is_num(matchResults[0]) ? matchResults[0] : undef)
-  assert(!is_undef(matchIndex), str("count not find key in list key:'", keyValue[0], "'", DictToString(list)))
+  assert(!is_undef(matchIndex), str("count not find key in list, key:'", keyValue[0], "'", DictToString(list)))
     replace(list, matchIndex, keyValue);
 
 module DictDisplay(list, name = ""){
@@ -108,85 +121,37 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
     strNext = createCustomConfig(arr, pos+1, sep)
   ) str(current, strNext!=""?str(sep, strNext):"");
 
-//Set up the Environment, if not run object should still render
-module SetGridfinityEnvironment(
-  width,
-  depth,
-  height = 0,
-  setColour = "preview",
-  help = false,
-  render_position = "center", //[default,center,zero]
-  cutx = 0, 
-  cuty = 0,
-  cutz = 0){
-  
-  //Set special variables, that child modules can use
-  $setColour = setColour;
-  $showHelp = help;
-  $cutx = cutx;
-  $cuty = cuty;
-  $cutz = cutz;
-
-  $user_width = width;
-  $user_depth = depth;
-  $user_height = height;
-  num_x = calcDimensionWidth(width); 
-  num_y = calcDimensionDepth(depth); 
-  num_z = calcDimensionHeight(height); 
-  $num_x = num_x; 
-  $num_y = num_y; 
-  $num_z = num_z; 
-
-  //Position the object
-  translate(gridfinityRenderPosition(render_position,num_x,num_y))
-  union(){
-    difference(){
-      //Render the object
-      children(0);
-      
-      //Render the cut, used for debugging
-      if(cutx > 0 && cutz > 0 && $preview){
-        color(color_cut)
-        translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-          cube([gf_pitch*cutx,num_y*gf_pitch+fudgeFactor*2,(cutz+1)*gf_zpitch]);
-      }
-      if(cuty > 0 && cutz > 0 && $preview){
-        color(color_cut)
-        translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-          cube([num_x*gf_pitch+fudgeFactor*2,gf_pitch*cuty,(cutz+1)*gf_zpitch]);
-      }
-    }
-
-    //Render the calipers
-    //children(1);
-  }
-}
-
-function getCutx() = is_undef($cutx) || !is_num($cutx) ? 0 : $cutx;
-function getCuty() = is_undef($cuty) || !is_num($cuty) ? 0 : $cuty;
-          
-//set_colour = "preview"; //[disabled, preview, lip]
-function getColour(colour, isLip = false, fallBack = color_cup) = 
-    is_undef($setColour) 
-      ? $preview ? colour : fallBack
-      : is_string($setColour) 
-        ? $setColour == "enable" ? colour
-        : $setColour == "preview" && $preview ? colour
-          : $setColour == "lip" && isLip ? colour
-            : fallBack
-          : fallBack;
-          
-function IsHelpEnabled(level) = 
-  is_string(level) && level == "force" ? true
-    : is_undef($showHelp) ? false
-      : is_bool($showHelp) ? $showHelp
-        : is_string($showHelp) 
-          ? $showHelp == "info" && level == "info" ? true
-            : $showHelp == "debug" && (level == "info" || level == "debug") ? true
-            : $showHelp == "trace" && (level == "info" || level == "debug" || level == "trace") ? true
-            : false
-          : false;
-
 module assert_openscad_version(){
   assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+}
+
+module color_conditional(enable=true, c){
+  if(enable)
+  color(c)
+    children();
+  else
+    children();
+}
+
+module render_conditional(enable=true){
+  if(enable)
+  render()
+    children();
+  else
+  union()
+    children();
+}
+
+module hull_conditional(enabled = true)
+{
+  if(enabled){
+    hull(){
+      children();
+    }
+  }
+  else{
+    union(){
+      children();
+    }
+  }
 }

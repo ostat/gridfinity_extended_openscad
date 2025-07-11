@@ -1,15 +1,26 @@
-include <ub.scad>
+include <thridparty/ub_hexgrid.scad>
 include <functions_general.scad>
+include <functions_environment.scad>
 
+griditemholder_demo = false;
 
-//GridItemHolder(fill="space", center=true, rotateGrid = true);
-//translate([0,50,0])
-//GridItemHolder(fill="space", center=true, rotateGrid = false);
+if(griditemholder_demo)
+{
+  GridItemHolder(fill="space", center=true, rotateGrid = true);
+  
+  translate([0,50,0])
+  GridItemHolder(fill="space", center=true, rotateGrid = false);
 
-//translate([100,0,0])
-//GridItemHolder(fill="space", hexGrid=false, rotateGrid = true);
-//translate([100,50,0])
-//GridItemHolder(fill="space", hexGrid=false, rotateGrid = false);
+  translate([100,0,0])
+  GridItemHolder(fill="space", hexGrid=false, rotateGrid = true);
+  
+  translate([100,50,0])
+  GridItemHolder(fill="space", hexGrid=false, rotateGrid = false);
+  
+  translate([0,0,20])
+  chamfered_cube(size = [13,20,10], chamfer = 1, cornerRadius = 0);
+}
+
 module GridItemHolder(
   canvasSize = [100,50],
   hexGrid = true, //false, true, "auto"
@@ -24,22 +35,26 @@ module GridItemHolder(
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
   //crop = true,
-  rotateGrid = false,
-  help) 
+  rotateGrid = false) 
 {
   assert(is_list(canvasSize) && len(canvasSize)==2, "canvasSize must be list of len 2");
   assert(is_bool(hexGrid) || is_string(hexGrid), "hexGrid must be bool or string");
   assert(is_bool(customShape), "customShape must be bool");    
   assert(is_num(circleFn), "circleFn must be number");    
   assert(is_list(holeSize) && len(holeSize)>=2, "holeSize must be list of len 2");
+  assert(is_num(holeSize[0]), "holeSize[0] must be list of number");
+  assert(is_num(holeSize[1]), "holeSize[1] must be list of number");
   assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
   assert(is_list(holeGrid) && len(holeGrid)==2, "canvasSize must be list of len 2");  
   assert(is_num(holeHeight), "holeHeight must be number");    
-  assert(is_num(holeChamfer), "holeChamfer must be number");    
-  assert(is_num(holeChamfer), "holeChamfer must be number");  
+  assert(is_num(border), "border must be number");    
   assert(is_string(fill), "fill must be a string");
   assert(is_bool(rotateGrid), "rotateGrid must be bool");  
 
+  holeChamfer = let(chamfer = is_num(holeChamfer) ? [0, holeChamfer] : holeChamfer) [min(chamfer.x,holeHeight/2),min(chamfer.y,holeHeight/2)];
+  
+  assert(is_list(holeChamfer), "holeChamfer must be list");  
+  
   fudgeFactor = 0.01;
   
   //Sides, 
@@ -94,14 +109,14 @@ module GridItemHolder(
     _canvasSize.x<=holeSize.x+holeSpacing.x || 
     _canvasSize.y<=holeSize.y+holeSpacing.y ||
     holeGrid.x ==1 || holeGrid.y ==1 ? false : hexGrid;
-  if(IsHelpEnabled("trace")) echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
+  if(env_help_enabled("trace")) echo("GridItemHolder", eHexGrid0 =eHexGrid[0], eHexGrid1 = eHexGrid[1], mod=eHexGrid[0]%2);
   hexGridCount = let(count = eHexGrid[0]*eHexGrid[1]) eHexGrid[0] % 2 == 0 ? floor(count) : ceil(count);
   squareCount = eSquareGrid[0]*eSquareGrid[1];
   _hexGrid = hexGrid != "auto" ? hexGrid //if not auto use what was chose
           : hexGridCount == squareCount ? false //if equal prefer square
           : hexGridCount > squareCount;
           
-  if(IsHelpEnabled("info")) echo(str("🟩ItemGrid: count ", _hexGrid?hexGridCount:squareCount, " using grid ", _hexGrid?"hex":"square"), input=hexGrid==true?"hex":hexGrid==false?"square":hexGrid, hexGridCount=hexGridCount, squareCount=squareCount);
+  if(env_help_enabled("info")) echo(str("🟩ItemGrid: count ", _hexGrid?hexGridCount:squareCount, " using grid ", _hexGrid?"hex":"square"), input=hexGrid==true?"hex":hexGrid==false?"square":hexGrid, hexGridCount=hexGridCount, squareCount=squareCount);
   
 
   translate(center ? [0, 0, 0] : [(rotateGrid?canvasSize.x:0)+ border, border, 0])
@@ -142,13 +157,13 @@ module GridItemHolder(
       module HexGrid(e=[11,4],es=5,center=true,name,help){
       */
 
-      HexGrid(e=eFill, es=es, center=center, help=help)
+      HexGrid(e=eFill, es=es, center=center)
         if(customShape){
           translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
             children();
         } else {
           translate(!center ? [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0] : [0,0,0])
-            chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
+            chamferedCylinder(h=holeHeight, r=Rc, bottomChamfer=holeChamfer[0], topChamfer=holeChamfer[1], circleFn = circleFn);
         }
     }
     else {
@@ -174,13 +189,13 @@ module GridItemHolder(
       module Grid(e=[2,2,1],es=10,s,center=true,name,help)
       */
       
-      Grid(e=eFill, es=es, center=center, help=help)
+      Grid(e=eFill, es=es, center=center)
         if(customShape){
           translate(center ? [-calcHoledimensions[0]/2,-calcHoledimensions[1]/2,0] : [0,0,0])
           children();
         } else {
           translate(center ? [0,0,0] : [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0])
-            chamferedCylinder(h=holeHeight, r=Rc, chamfer=holeChamfer, circleFn = circleFn);
+            chamferedCylinder(h=holeHeight, r=Rc, bottomChamfer=holeChamfer[0], topChamfer=holeChamfer[1], circleFn = circleFn);
         }
     }
   }
@@ -204,7 +219,7 @@ module GridItemHolder(
     ,"squareCount",squareCount  
      ,"Rc",Rc
     ,"Ri",Ri]
-    ,help);
+    ,env_help_enabled("info"));
 }
 
 module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
@@ -221,43 +236,43 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
   iitemHeight = 4;
   ishape = 5;
 
-  if(IsHelpEnabled("trace")) echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
+  if(env_help_enabled("trace")) echo(longCenter=longCenter,smallCenter=smallCenter,side=side,chamfer=chamfer,alternate=alternate);
   render() //Render on item holder multiCard as it can be complex
   union(){
     minspacing = 3;
     translate([(longCenter[iitemx])/2,side[iitemx]/2,0])
     union(){
     translate([-(longCenter[iitemx])/2,-longCenter[iitemy]/2,0])
-    chamferedSquare([longCenter[iitemx], longCenter[iitemy], longCenter[idepthneeded]+fudgeFactor], chamfer);
+    chamfered_cube([longCenter[iitemx], longCenter[iitemy], longCenter[idepthneeded]+fudgeFactor], chamfer);
     
     translate([-smallCenter[iitemx]/2,-smallCenter[iitemy]/2,(longCenter[idepthneeded]-smallCenter[idepthneeded])])
-    chamferedSquare([smallCenter[iitemx], smallCenter[iitemy], smallCenter[idepthneeded]+fudgeFactor], chamfer);
+    chamfered_cube([smallCenter[iitemx], smallCenter[iitemy], smallCenter[idepthneeded]+fudgeFactor], chamfer);
 
     if(alternate){
       pos = let(targetPos = (longCenter[iitemx])/4-(side[iitemy])/2) max(targetPos, smallCenter[iitemy]+minspacing);
       translate([-pos-side[iitemy]/2, 0, 0])
         rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
       translate([+pos+side[iitemy]/2, 0, 0])
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
     } else {
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       
       translate([-(longCenter[iitemx])/2+(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
         
       translate([(longCenter[iitemx])/2-(side[iitemy])/2, 0, 0])
       rotate([0,0,90])
         translate([-(side[iitemx])/2,-(side[iitemy])/2,(longCenter[idepthneeded]-side[idepthneeded])])
-        chamferedSquare([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
+        chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       }
     }
   }
@@ -269,7 +284,7 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
 //depth = depth of slot
 //height = height of slot
 //chamfer = chamfer size
-module chamferedSquare(size, chamfer = 1, cornerRadius = 0)
+module chamfered_cube(size, chamfer = 1, cornerRadius = 0)
 {
   assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
 
@@ -310,7 +325,7 @@ module chamferedRectangleTop(size, chamfer, cornerRadius){
   conesizeTop = chamfer+cornerRadius+champherExtention;
   conesizeBottom = conesizeTop>size.z ? conesizeTop-size.z: 0;
   
-  if(IsHelpEnabled("trace")) echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
+  if(env_help_enabled("trace")) echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
   //if cornerRadius = 0, we can further increase the height of the 'cone' so we can extend inside the shape
   hull(){
     translate([cornerRadius+champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
@@ -347,13 +362,18 @@ module chamferedHalfCylinder(h, r, circleFn, chamfer=0.5) {
   }
 }
 
-module chamferedCylinder(h, r, circleFn, chamfer=0.5) {
-  chamfer = min(h, chamfer);
+module chamferedCylinder(h, r, circleFn, chamfer=0, topChamfer = 0.5, bottomChamfer = 0) {
+  topChamfer = min(h, chamfer > 0 ? chamfer : topChamfer);
+  bottomChamfer = min(h, chamfer > 0 ? chamfer : bottomChamfer);
+  
   union(){
     cylinder(h=h, r=r, $fn = circleFn);
     
-    if(r>0)
-      translate([0, 0, h-chamfer]) 
-      cylinder(h=chamfer, r1=r, r2=r+chamfer,$fn = circleFn);
+    if(topChamfer >0)
+      translate([0, 0, h-topChamfer]) 
+      cylinder(h=topChamfer, r1=r, r2=r+topChamfer,$fn = circleFn);
+
+    if(bottomChamfer >0)
+      cylinder(h=bottomChamfer, r1=r+bottomChamfer, r2=r,$fn = circleFn);
   }
 }
