@@ -24,7 +24,7 @@ Running locally is how I recommend running the scripts. The scripts run faster a
 
 1. Clone or download this repository to your local machine:
    ```bash
-   git clone https://github.com/ostat/gridfinity-extended-openscad.git
+   git clone https://github.com/ostat/gridfinity_extended_openscad.git
    ```
    Alternatively, you can download the ZIP file from the repository page and extract it.
 
