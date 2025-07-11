@@ -1,13 +1,11 @@
-include <modules/module_item_holder.scad>
 include <modules/gridfinity_constants.scad>
-include <modules/functions_general.scad>
 use <modules/module_gridfinity_cup.scad>
-use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_block.scad>
 
 /*<!!start gridfinity_sieve!!>*/
-
+/* [Sieve] */
 // Should the grid be square or hex
-sieve_grid_style = "hex"; //["square","hex","auto"]
+sieve_grid_style = "hexgrid"; //[grid, gridrotated, hexgrid, hexgridrotated]
 //Spacing around the holes
 sieve_hole_spacing = 3; //0.1
 // 45 deg chamfer added to the top of the hole (mm)
@@ -18,8 +16,6 @@ sieve_hole_sides = 6;
 sieve_hole_size = [10, 10]; //0.1
 // Spacing around the compartments
 sieve_compartment_clearance= 7; //0.1
-// Center the holes within the compartments
-sieve_compartment_centered = true; //0.1
 sieve_compartment_fill = "none"; //["none", "space", "crop"]
 /*<!!end gridfinity_sieve!!>*/
 
@@ -33,12 +29,19 @@ depth = [1, 0]; //0.5
 height = [3, 0]; //0.1
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
-// Remove some or all of lip
-lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
-position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
-zClearance = 0; // 0.1
-      
+headroom = 0.8; // 0.1
+
+/* [Cup Lip] */
+// Style of the cup lip
+lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
+// Below this the inside of the lip will be reduced for easier access.
+lip_side_relief_trigger = [1,1]; //0.1
+// Create a relie
+lip_top_relief_height = -1; // 0.1
+// add a notch to the lip to prevent sliding.
+lip_top_notches  = true;
+
 /* [Base] */
 // (Zack's design uses magnet diameter of 6.5)
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
@@ -66,10 +69,30 @@ cutx = 0; //0.1
 //Slice along the y axis
 cuty = 0; //0.1
 // enable loging of help messages during render.
-enable_help = false;
+enable_help = "disabled"; //[info,debug,trace]
+
+/* [Model detail] */
+//assign colours to the bin
+set_colour = "enable"; //[disabled, enable, preview, lip]
+//where to render the model
+render_position = "center"; //[default,center,zero]
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+fa = 6; 
+// minimum size of a fragment.  Low is more fragments
+fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+fn = 0;  
+// set random seed for 
+random_seed = 0; //0.0001
 /*<!!end gridfinity_basic_cup!!>*/
 
+/* [Hidden] */
 module end_of_customizer_opts() {}
+
+//Some online generators do not like direct setting of fa,fs,fn
+$fa = fa; 
+$fs = fs; 
+$fn = fn;  
 
 function addClearance(dim, clearance) =
     [dim.x > 0 ? dim.x+clearance : 0
@@ -85,13 +108,12 @@ module gridfinity_sieve(
   sieve_hole_size = sieve_hole_size,
   sieve_hole_spacing = sieve_hole_spacing,
   sieve_hole_chamfer = sieve_hole_chamfer,
-  sieve_compartment_centered = sieve_compartment_centered,
   sieve_compartment_clearance = sieve_compartment_clearance,
   sieve_compartment_fill  = sieve_compartment_fill,
     
   //gridfinity settings
   width=width, depth=depth, height=height,
-  position=position,
+  position=render_position,
   label_settings=LabelSettings(
     labelStyle=label_style, 
     labelPosition=label_position, 
@@ -109,10 +131,11 @@ module gridfinity_sieve(
     flatBase=flat_base,
     spacer=false),
   wall_thickness=wall_thickness,
-  lip_style=lip_style,
-  cutx=cutx,
-  cuty=cuty,
-  help=help) {
+  lip_settings = LipSettings(
+    lipStyle=lip_style, 
+    lipSideReliefTrigger=lip_side_relief_trigger, 
+    lipTopReliefHeight=lip_top_relief_height, 
+    lipNotch=lip_top_notches)) {
   
   difference() {
     num_x = calcDimensionWidth(width);
@@ -123,35 +146,30 @@ module gridfinity_sieve(
     /*<!!start gridfinity_basic_cup!!>*/
     gridfinity_cup(
       width=width, depth=depth, height=height,
-      position=position,
       label_settings=label_settings,
       filled_in=false,
       cupBase_settings=cupBase_settings,
       wall_thickness=wall_thickness,
-      lip_style=lip_style,
-      zClearance=zClearance,
-      cutx=cutx,
-      cuty=cuty,
-      help = enable_help);
+      lip_settings=lip_settings,
+      headroom=headroom,
+        floor_pattern_settings = PatternSettings(
+        patternEnabled = true, 
+        patternStyle = sieve_grid_style, 
+        patternFill = sieve_compartment_fill,
+        patternBorder = sieve_compartment_clearance, 
+        patternHoleSize = holeSize, 
+        patternHoleSides = 6,
+        patternHoleSpacing = sieve_hole_spacing,
+        patternGridChamfer=sieve_hole_chamfer));
     /*<!!end gridfinity_basic_cup!!>*/
-
-    color(color_extension)
-    translate([0,0,-fudgeFactor])
-      GridItemHolder(
-        canvasSize = [num_x*gf_pitch,num_y*gf_pitch],
-        hexGrid = sieve_grid_style == "hex",
-        //customShape = item[4] == "square",
-        circleFn = sieve_hole_sides,
-        holeSize = holeSize,
-        holeSpacing = [sieve_hole_spacing,sieve_hole_spacing],
-        holeGrid = [0,0],
-        holeHeight = floor_thickness+fudgeFactor*6,//_depth+fudgeFactor,
-        holeChamfer = sieve_hole_chamfer,
-        border = sieve_compartment_clearance,
-        center=sieve_compartment_centered,
-        fill=sieve_compartment_fill,
-        help=help);
   }
 }
 
+set_environment(
+  width = width,
+  depth = depth,
+  height = height,
+  render_position = render_position,
+  help = enable_help,
+  cut = [cutx, cuty, height])
 gridfinity_sieve();

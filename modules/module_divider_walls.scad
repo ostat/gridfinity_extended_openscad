@@ -84,7 +84,7 @@ module position_separators(
 assert(separator_orientation == "horizontal" || separator_orientation == "vertical", "separator_orientation must be 'horizontal' or 'vertical'");
 
   sepConfigs = calculatedSeparators;
-  if(IsHelpEnabled("trace")) echo("separators",sepConfigs=sepConfigs);
+  if(env_help_enabled("trace")) echo("separators",sepConfigs=sepConfigs);
  
   if(is_list(sepConfigs) && len(sepConfigs) > 0){
     for (i=[0:len(sepConfigs)-1]) {

@@ -38,6 +38,9 @@ iCupBase_EfficientFloor=8;
 iCupBase_HalfPitch=9;
 iCupBase_FlatBase=10;
 iCupBase_Spacer=11;
+iCupBase_MinimumPrintablePadSize=12;
+iCupBase_FlatBaseRoundedRadius=13;
+iCupBase_FlatBaseRoundedEasyPrint=14;
 
 iCylinderDimension_Diameter=0;
 iCylinderDimension_Height=1;
@@ -67,7 +70,18 @@ EfficientFloor_values = [EfficientFloor_off, EfficientFloor_on, EfficientFloor_r
     let(value = is_bool(value) ? value ? EfficientFloor_on : EfficientFloor_off : value)
     assert(list_contains(EfficientFloor_values, value), typeerror("EfficientFloor", value))
     value;  
- 
+
+FlatBase_off = "off";
+FlatBase_gridfinity = "gridfinity";
+FlatBase_rounded = "rounded";
+
+FlatBase_values = [FlatBase_off, FlatBase_gridfinity, FlatBase_rounded];
+  function validateFlatBase(value) = 
+    //Convert boolean to list value
+    let(value = is_bool(value) ? value ? FlatBase_gridfinity : FlatBase_off : value)
+    assert(list_contains(FlatBase_values, value), typeerror("FlatBase", value))
+    value;  
+    
 function CupBaseSettings(
     magnetSize = [0,0], 
     magnetEasyRelease = MagnetEasyRelease_auto, 
@@ -79,8 +93,12 @@ function CupBaseSettings(
     cavityFloorRadius = -1,
     efficientFloor = EfficientFloor_off,
     halfPitch = false,
-    flatBase = false,
-    spacer = false) = 
+    flatBase = FlatBase_off,
+    spacer = false,
+    minimumPrintablePadSize = 0,
+    flatBaseRoundedRadius=-1,
+    flatBaseRoundedEasyPrint=-1
+    ) = 
   let(
     magnetSize = 
       is_num(magnetSize) 
@@ -106,13 +124,17 @@ function CupBaseSettings(
       cavityFloorRadius,
       validateEfficientFloor(efficientFloor),
       halfPitch,
-      flatBase,
-      spacer],
+      validateFlatBase(flatBase),
+      spacer,
+      minimumPrintablePadSize,
+      flatBaseRoundedRadius,
+      flatBaseRoundedEasyPrint
+      ],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
   
 function ValidateCupBaseSettings(settings, num_x, num_y) =
-  assert(is_list(settings) && len(settings) == 12, typeerror_list("CupBase Settings", settings, 12))
+  assert(is_list(settings) && len(settings) == 15, typeerror_list("CupBase Settings", settings, 15))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_CenterMagnetSize]) && len(settings[iCupBase_CenterMagnetSize])==2, "CenterMagnet Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_ScrewSize]) && len(settings[iCupBase_ScrewSize])==2, "ScrewSize Magnet Setting must be a list of length 2")
@@ -121,12 +143,14 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_num(settings[iCupBase_FloorThickness]), "CupBase FloorThickness Settings must be a number")
   assert(is_num(settings[iCupBase_CavityFloorRadius]), "CupBase CavityFloorRadius Settings must be a number")
   assert(is_bool(settings[iCupBase_HalfPitch]), "CupBase HalfPitch Settings must be a boolean")
-  assert(is_bool(settings[iCupBase_FlatBase]), "CupBase FlatBase Settings must be a boolean")
+  assert(is_string(settings[iCupBase_FlatBase]), "CupBase FlatBase Settings must be a string")
   assert(is_bool(settings[iCupBase_Spacer]), "CupBase Spacer Settings must be a boolean")
+  assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
   
   let(
     efficientFloor = validateEfficientFloor(settings[iCupBase_EfficientFloor]),
     magnetEasyRelease = validateMagnetEasyRelease(settings[iCupBase_MagnetEasyRelease], efficientFloor),
+    flatBase = validateFlatBase(settings[iCupBase_FlatBase])
   ) [
       settings[iCupBase_MagnetSize],
       magnetEasyRelease,
@@ -138,6 +162,9 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       settings[iCupBase_CavityFloorRadius],
       efficientFloor,
       settings[iCupBase_HalfPitch],
-      settings[iCupBase_FlatBase],
-      settings[iCupBase_Spacer]
+      flatBase,
+      settings[iCupBase_Spacer],
+      settings[iCupBase_MinimumPrintablePadSize],
+      settings[iCupBase_FlatBaseRoundedRadius],
+      settings[iCupBase_FlatBaseRoundedEasyPrint]
       ];

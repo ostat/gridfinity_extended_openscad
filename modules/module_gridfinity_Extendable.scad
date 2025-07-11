@@ -1,5 +1,5 @@
 include <gridfinity_constants.scad>
-include <module_gridfinity.scad>
+include <module_gridfinity_block.scad>
 
 /* [Extendable]
 extension_x_enabled = "disabled"; //[disabled, front, back]
@@ -66,8 +66,8 @@ function ValidateExtendableSettings(settings, num_x, num_y) =
   let(
     xetendableEnabled = validateBinExtensionEnabled(settings[iExtendablex][iExtendableEnabled]),
     yetendableEnabled = validateBinExtensionEnabled(settings[iExtendabley][iExtendableEnabled]),
-    cutx = !is_undef(num_x) ? unitPositionTo_mm(settings.x[iExtendablePosition],num_x) : num_x,
-    cuty = !is_undef(num_y) ? unitPositionTo_mm(settings.y[iExtendablePosition],num_y) : num_y,
+    cutx = !is_undef(num_x) ? unitPositionTo_mm(settings.x[iExtendablePosition],num_x,env_pitch().x) : num_x,
+    cuty = !is_undef(num_y) ? unitPositionTo_mm(settings.y[iExtendablePosition],num_y,env_pitch().y) : num_y
   ) [
       [xetendableEnabled, settings[iExtendablex][iExtendablePosition], cutx],
       [yetendableEnabled, settings[iExtendabley][iExtendablePosition], cuty],

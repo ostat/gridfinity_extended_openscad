@@ -4,14 +4,14 @@ use <gridfinity_baseplate.scad>   // for frame_plain
 
 ear_hole_x = 182.5; // distance between existing screw holes on FLSUN q5.
 ear_hole_y = 7; // distance of screw hole from the front panel.
-from_ends = (ear_hole_x - gridfinity_pitch*4) / 2;
+from_ends = (ear_hole_x - gf_pitch*4) / 2;
 cube_z = 4.4; // ht from above.
 M4_d = 4.2; // diameter needed for an M4 bolt.
 
 wallThickness = 0.2; //Extend and imbed in to wall to fit around corner
 
 union(){
-  translate([gridfinity_pitch/2, gridfinity_pitch/2, 0]) 
+  translate([gf_pitch/2, gf_pitch/2, 0]) 
     frame_plain(4, 1, height = cube_z);
     
   for (i = [0,1]) {
