@@ -67,7 +67,7 @@ module grid_block(
   center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
   magnet_easy_release = cupBase_settings[iCupBase_MagnetEasyRelease];
   
-  outer_size = [env_pitch().x - gf_tolerance, env_pitch().y - gf_tolerance];  // typically 41.5
+  outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
   block_corner_position = [outer_size.x/2 - gf_cup_corner_radius, outer_size.y/2 - gf_cup_corner_radius];  // need not match center of pad corners
 
   magnet_position = calculateAttachmentPositions(magnet_size[iCylinderDimension_Diameter], screw_size[iCylinderDimension_Diameter]);
@@ -95,7 +95,7 @@ module grid_block(
       lip_clip_position = lip_settings[iLipClipPosition],
       lip_non_blocking = lip_settings[iLipNonBlocking]);
   }
-        
+  
   translate(gridfinityRenderPosition(position,num_x,num_y))
   difference() {
     baseHeight = 5;
@@ -113,10 +113,10 @@ module grid_block(
             fbr == -1 ? gf_cup_corner_radius/2 : fbr;
 
           color(env_colour(color_cup))
-          translate([0.25,0.25,0])
+          translate([env_clearance().x/2,env_clearance().y/2,0])
           roundedCube(
-            x = num_x*env_pitch().x-0.5,
-            y = num_y*env_pitch().y-0.5,
+            x = num_x*env_pitch().x-env_clearance().x,
+            y = num_y*env_pitch().y-env_clearance().y,
             z = env_pitch().z,
             size=[],
             topRadius = 0,

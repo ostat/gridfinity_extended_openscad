@@ -269,9 +269,9 @@ module Gridfinity_Divider(
       labelStyle="disabled"));
   
   for(i = [0 : divider_count-1]){
-    canvis = [dividerHeight, num_x*env_pitch().x-gf_tolerance];
+    canvis = [dividerHeight, num_x*env_pitch().x-env_clearance().x];
     ypos = (num_y*env_pitch().y-gf_cup_corner_radius*2-dividerWidth)/(divider_count-1)*i;
-    translate([gf_tolerance/2,gf_cup_corner_radius+dividerWidth+ypos,floorHeight])
+    translate([env_clearance().x/2,gf_cup_corner_radius+dividerWidth+ypos,floorHeight])
     PatternedDivider(
       height = canvis.x,
       length = canvis.y,

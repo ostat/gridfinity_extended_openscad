@@ -1,11 +1,15 @@
 
 include <functions_gridfinity.scad>
+include <gridfinity_constants.scad>
 
 //Set up the Environment, if not run object should still render using defaults
 module set_environment(
   width,
   depth,
   height = 0,
+  height_includes_lip = false,
+  lip_enabled = false,
+  clearance = [0.5, 0.5, 0],
   setColour = "preview",
   help = false,
   render_position = "center", //[default,center,zero]
@@ -13,9 +17,7 @@ module set_environment(
   pitch = [gf_pitch, gf_pitch, gf_zpitch],
   randomSeed = 0,
   force_render = true){
-
-  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn, pitch=pitch);
-    
+  
   //Set special variables, that child modules can use
   $pitch = pitch;
 
@@ -23,14 +25,18 @@ module set_environment(
   $showHelp = help;
   $randomSeed = randomSeed;
   $forceRender = force_render;
-
+  $clearance = clearance;
+  
   $user_width = width;
   $user_depth = depth;
   $user_height = height;
-
+  
   num_x = calcDimensionWidth(width, true); 
   num_y = calcDimensionDepth(depth, true); 
-  num_z = calcDimensionHeight(height, true); 
+  num_z = 
+    let(z_temp = calcDimensionHeight(height, true)) 
+    height_includes_lip && lip_enabled ? z_temp - gf_Lip_Height/pitch.z : z_temp;
+    
   $num_x = num_x; 
   $num_y = num_y; 
   $num_z = num_z; 
@@ -38,6 +44,11 @@ module set_environment(
   $cutx = calcDimensionWidth(cut.x);
   $cuty = calcDimensionWidth(cut.y);
   $cutz = calcDimensionWidth(cut.z);
+
+  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn, pitch=pitch, clearance=clearance, height_includes_lip=height_includes_lip, lip_enabled=lip_enabled);
+  echo("🟩set_environment", width=width, depth=depth, height=height);
+  echo("🟩set_environment", num_x=num_x, num_y=num_y, num_z=num_z);
+  
   
   //Position the object
   translate(gridfinityRenderPosition(render_position,num_x,num_y))
@@ -67,6 +78,7 @@ module set_environment(
 function env_numx() = is_undef($num_x) || !is_num($num_x) ? 0 : $num_x;
 function env_numy() = is_undef($num_y) || !is_num($num_y) ? 0 : $num_y;
 function env_numz() = is_undef($num_z) || !is_num($num_z) ? 0 : $num_z;
+function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0,0,0] : $clearance;
 
 function env_pitch() =  is_undef($pitch) || !is_list($pitch) ? [gf_pitch, gf_pitch, gf_zpitch] : $pitch; 
 

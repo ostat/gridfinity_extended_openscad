@@ -367,9 +367,9 @@ module gridfinity_cup(
     baseTextFont = default_text_font,
     baseTextDepth = default_text_depth)) {
   
-  num_x = calcDimensionWidth(width, true);
-  num_y = calcDimensionDepth(depth, true);
-  num_z = calcDimensionHeight(height, true);
+  num_x = is_undef($num_x) ? calcDimensionWidth(width, true) : $num_x;
+  num_y = is_undef($num_y) ? calcDimensionDepth(depth, true) : $num_y;
+  num_z = is_undef($num_z) ? calcDimensionHeight(height, true) : $num_z;
   //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
   wall_thickness = wallThickness(wall_thickness, num_z);
 
@@ -520,7 +520,8 @@ module gridfinity_cup(
         wallcutout_locations = [wallcutouts_vertical[0], wallcutouts_vertical[1], wallcutouts_horizontal[0], wallcutouts_horizontal[1]];
         if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
           //tapered_corner_size = tapered_corner_size == 0 ? env_pitch().z*num_z/2 : tapered_corner_size;
-          translate([0,tapered_setback+gf_tolerance,env_pitch().z*num_z+gf_Lip_Height-gf_tolerance])
+          //env_clearance().z here might be a bug.
+          translate([0,tapered_setback+env_clearance().y,env_pitch().z*num_z+gf_Lip_Height-env_clearance().z])
           rotate([270,0,0])
           union(){
             if(tapered_corner == "rounded"){
@@ -635,7 +636,7 @@ module gridfinity_cup(
                     heightz - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)],
                   //Position
                   [(num_x)*env_pitch().x/2, 
-                    gf_tolerance/2+wall_thickness/2, 
+                    env_clearance().x/2+wall_thickness/2, 
                     z - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)/2],
                   //rotation
                   [90,0,0],
@@ -647,7 +648,7 @@ module gridfinity_cup(
                     heightz - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)],
                   //Position
                   [(num_x)*env_pitch().x/2, 
-                    (num_y)*env_pitch().y-gf_tolerance/2-wall_thickness/2, 
+                    (num_y)*env_pitch().y-env_clearance().y/2-wall_thickness/2, 
                      z - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)/2],
                   //rotation
                   [90,0,0], 
@@ -658,7 +659,7 @@ module gridfinity_cup(
                   [num_y*env_pitch().y-gf_cup_corner_radius*2-border,
                     heightz - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)],
                   //Position
-                  [gf_tolerance/2+wall_thickness/2, 
+                  [env_clearance().x/2+wall_thickness/2, 
                     (num_y)*env_pitch().y/2, 
                     z - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)/2],
                   //rotation
@@ -670,7 +671,7 @@ module gridfinity_cup(
                   [num_y*env_pitch().y-gf_cup_corner_radius*2-border,
                     heightz - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)],
                   //Position
-                  [(num_x)*env_pitch().x-wall_thickness/2-gf_tolerance/2,   
+                  [(num_x)*env_pitch().x-wall_thickness/2-env_clearance().x/2,   
                     (num_y)*env_pitch().y/2, 
                     z - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)/2],
                   //rotation
@@ -817,7 +818,7 @@ module gridfinity_cup(
               translate([
                 0,
                 tapered_setback+cutoutclearance_border,
-                env_pitch().z*num_z+gf_Lip_Height-gf_tolerance-cutoutclearance_border])
+                env_pitch().z*num_z+gf_Lip_Height-env_clearance().z-cutoutclearance_border])
               rotate([270,0,0])
               union()
                 if(tapered_corner == "rounded"){
@@ -930,22 +931,22 @@ module gridfinity_cup(
       cutx = extendable_Settings.x[iExtendablePositionmm];
       cuty = extendable_Settings.y[iExtendablePositionmm];
       even = (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_back) ?
-                [[0,180,90], [cutx,num_y*env_pitch().y-wall_thickness-gf_tolerance/2,floorHeight], "darkgreen"]
+                [[0,180,90], [cutx,num_y*env_pitch().y-wall_thickness-env_clearance().y/2,floorHeight], "darkgreen"]
               : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,180,180], [wall_thickness+gf_tolerance/2,cuty,floorHeight], "green"]
+                [[0,180,180], [wall_thickness+env_clearance().x/2,cuty,floorHeight], "green"]
               : (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,180,270], [cutx,wall_thickness+gf_tolerance/2,floorHeight], "lime"]
+                [[0,180,270], [cutx,wall_thickness+env_clearance().y/2,floorHeight], "lime"]
               : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,180,0], [num_x*env_pitch().x-wall_thickness-gf_tolerance/2,cuty,floorHeight], "aqua"] 
+                [[0,180,0], [num_x*env_pitch().x-wall_thickness-env_clearance().x/2,cuty,floorHeight], "aqua"] 
               : [[0,0,0],[0,0,0], extendable_Settings, "grey"];
       odd = (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,0,90], [cutx,wall_thickness+gf_tolerance/2,floorHeight], "pink"]
+                [[0,0,90], [cutx,wall_thickness+env_clearance().y/2,floorHeight], "pink"]
             : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_back) ?
-                [[0,0,180], [num_x*env_pitch().x-wall_thickness-gf_tolerance/2,cuty,floorHeight], "red"]
+                [[0,0,180], [num_x*env_pitch().x-wall_thickness-env_clearance().y/2,cuty,floorHeight], "red"]
             : (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_back) ?
-                [[0,0,270], [cutx,num_y*env_pitch().y-wall_thickness-gf_tolerance/2,floorHeight], "orange"]
+                [[0,0,270], [cutx,num_y*env_pitch().y-wall_thickness-env_clearance().y/2,floorHeight], "orange"]
             : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,0,0], [wall_thickness+gf_tolerance/2,cuty,floorHeight], "yellow"]
+                [[0,0,0], [wall_thickness+env_clearance().x/2,cuty,floorHeight], "yellow"]
             : [[0,0,0],[0,0,0], extendable_Settings, "grey"];
               
       for(i=[0:1:tabsCount-1])
@@ -1161,8 +1162,8 @@ module basic_cavity(num_x, num_y, num_z,
   
   AssertSlidingLidSettings(sliding_lid_settings);
   
-  seventeen = [env_pitch().x/2-4,env_pitch().y/2-4];
-    
+  inner_corner_center = [env_pitch().x/2-gf_cup_corner_radius-env_clearance().x/2, env_pitch().y/2-gf_cup_corner_radius-env_clearance().y/2];
+
   reducedlipstyle = 
     // replace "reduced" with "none" if z-height is less than 1.2
     (num_z < 1.2) ? "none" 
@@ -1199,9 +1200,8 @@ module basic_cavity(num_x, num_y, num_z,
     : env_pitch().z*num_z-gf_lip_height-lipSupportThickness);
   //lipBottomZ = env_pitch().z*num_z+fudgeFactor*3;
   innerLipRadius = gf_cup_corner_radius-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
-  innerWallRadius = gf_cup_corner_radius-wall_thickness;
-  
-
+  innerWallRadius = max(0.1, gf_cup_corner_radius-wall_thickness); //prevent radius going negative
+  echo("basic_cavity", gf_cup_corner_radius=gf_cup_corner_radius,wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
   aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
   
   //cavityHeight= max(lipBottomZ-floorht,0);
@@ -1228,15 +1228,15 @@ module basic_cavity(num_x, num_y, num_z,
       else { // normal
         lowerTaperZ = filledInZ-gf_lip_height-lipSupportThickness;
         if(lowerTaperZ <= floorht){
-          hull() cornercopy(seventeen, num_x, num_y)
+          hull() cornercopy(inner_corner_center, num_x, num_y)
             tz(floorht) 
             cylinder(r=innerLipRadius, h=filledInZ-floorht+fudgeFactor*4); // lip
         } else {
-          hull() cornercopy(seventeen, num_x, num_y)
+          hull() cornercopy(inner_corner_center, num_x, num_y)
             tz(filledInZ-gf_lip_height-fudgeFactor) 
             cylinder(r=innerLipRadius, h=gf_lip_height+fudgeFactor*4); // lip
     
-          hull() cornercopy(seventeen, num_x, num_y)
+          hull() cornercopy(inner_corner_center, num_x, num_y)
             tz(filledInZ-gf_lip_height-lipSupportThickness-fudgeFactor) 
             cylinder(
               r1=innerWallRadius,
@@ -1246,7 +1246,7 @@ module basic_cavity(num_x, num_y, num_z,
     
       //Cavity below lip
       if(cavityHeight > 0)
-       hull() cornercopy(seventeen, num_x, num_y)
+       hull() cornercopy(inner_corner_center, num_x, num_y)
         tz(floorht)
           roundedCylinder(
             h=cavityHeight,
@@ -1276,7 +1276,7 @@ module basic_cavity(num_x, num_y, num_z,
         reducedlipstyle=reducedlipstyle,
         wall_thickness=wall_thickness,
         floorht=floorht,
-        seventeen=seventeen);
+        inner_corner_center=inner_corner_center);
     }
   
     if(divider_wall_removable_settings[iDividerRemovable_Enabled])
@@ -1352,7 +1352,7 @@ module basic_cavity(num_x, num_y, num_z,
     
     hull()
     for (x=[1.5+0.25+wall_thickness, num_x*env_pitch().x-1.5-0.25-wall_thickness]){
-      for (y=[11, (num_y)*env_pitch().y-seventeen.y])
+      for (y=[11, (num_y)*env_pitch().y-inner_corner_center.y])
       translate([x, y, top-height])
       cylinder(d=3, h=height);
     }
@@ -1364,7 +1364,7 @@ module basic_cavity(num_x, num_y, num_z,
     
     hull()
     for (y=[1.5+0.25+wall_thickness, num_y*env_pitch().y-1.5-0.25-wall_thickness]){
-      for (x=[11, (num_x)*env_pitch().x-seventeen.x])
+      for (x=[11, (num_x)*env_pitch().x-inner_corner_center.x])
       translate([x, y, top-height])
       cylinder(d=3, h=height);
     }
@@ -1373,7 +1373,7 @@ module basic_cavity(num_x, num_y, num_z,
   if (nofloor) {
     tz(-fudgeFactor)
       hull()
-      cornercopy(num_x=num_x, num_y=num_y, r=seventeen)
+      cornercopy(num_x=num_x, num_y=num_y, r=inner_corner_center)
       cylinder(r=2, h=gf_cupbase_lower_taper_height+fudgeFactor);
     gridcopy(1, 1)
       EfficientFloor(num_x, num_y,-fudgeFactor, q);
@@ -1392,7 +1392,7 @@ module FingerSlide(
         wall_thickness=wall_thickness,
         floorht=floorht,
         lipAligned = true,
-        seventeen=seventeen) {
+        inner_corner_center=inner_corner_center) {
   assert(is_num(num_x), "num_x must be a number");
   assert(is_num(num_y), "num_y must be a number");
   assert(is_num(num_z), "num_z must be a number");
@@ -1403,7 +1403,7 @@ module FingerSlide(
   assert(is_num(wall_thickness), "wall_thickness must be a number");
   assert(is_num(floorht), "floorht must be a number");
   assert(is_bool(lipAligned), "lipAligned must be a bool");
-  assert(is_list(seventeen), "seventeen must be a number");
+  assert(is_list(inner_corner_center), "inner_corner_center must be a number");
   
   echo("fingerslide", fingerslide_walls=fingerslide_walls, fingerslide=fingerslide);
   front = [
@@ -1466,11 +1466,11 @@ module FingerSlide(
         translate(locations[i][1])
         rotate(locations[i][2])                  
       translate([0, 
-        lipAligned && reducedlipstyle =="normal" ? -seventeen.x-1.15+env_pitch().x/2
-        : lipAligned && reducedlipstyle == "reduced" ? -seventeen.x-1.15+env_pitch().x/2-gf_lip_lower_taper_height
-        : lipAligned && reducedlipstyle == "reduced_double" ? -seventeen.x-1.15+env_pitch().x/2-gf_lip_lower_taper_height
+        lipAligned && reducedlipstyle =="normal" ? -inner_corner_center.x-1.15+env_pitch().x/2
+        : lipAligned && reducedlipstyle == "reduced" ? -inner_corner_center.x-1.15+env_pitch().x/2-gf_lip_lower_taper_height
+        : lipAligned && reducedlipstyle == "reduced_double" ? -inner_corner_center.x-1.15+env_pitch().x/2-gf_lip_lower_taper_height
         : 0.25+wall_thickness, floorht]) //todo:pitch issue here?
-    //translate([0,-seventeen-1.15+env_pitch().x/2, floorht])
+    //translate([0,-inner_corner_center-1.15+env_pitch().x/2, floorht])
       union(){
         if(fingerslide == "rounded"){
           roundedCorner(

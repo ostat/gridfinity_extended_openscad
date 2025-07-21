@@ -40,19 +40,19 @@ function calculateWallCutout(
             : wallcutout_height,
         wallcutoutLowerWidth=wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, wall_length*pitch/3) : wallcutout_width,
         closeThickness = fullEnabled ? opposite_wall_distance*pitch_opposite : wallcutoutThickness,
-              
+        clearance = env_clearance().x, //This should take in to account if its x or y, but for now we assume they are the same.
       //This could be more specific based on the base height, and the lip style.
       wallcutout_close = [
           [wallcutout_type, wallcutout_position, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius],
           closeEnabled || fullEnabled,
-          [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), closeThickness/2+gf_tolerance/2-fudgeFactor, wallTop],
+          [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), closeThickness/2+clearance/2-fudgeFactor, wallTop],
           [wallcutoutLowerWidth, closeThickness, wallcutoutHeight],
           wallcutout_rotation,
           wallcutout_reposition],
       wallcutout_far = [
           [wallcutout_type, wallcutout_position, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius],
           farEnabled,
-          [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), opposite_wall_distance*pitch_opposite-wallcutoutThickness/2-gf_tolerance/2+fudgeFactor, wallTop],
+          [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), opposite_wall_distance*pitch_opposite-wallcutoutThickness/2-clearance/2+fudgeFactor, wallTop],
           [wallcutoutLowerWidth, wallcutoutThickness, wallcutoutHeight],
           wallcutout_rotation,
           wallcutout_reposition]) [wallcutout_close, wallcutout_far];

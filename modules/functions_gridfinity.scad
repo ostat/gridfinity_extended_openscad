@@ -28,7 +28,8 @@ function unitPositionTo_mm(userPosition, wallLength, pitch) =
   
 //0.6 is needed to align the top of the cutout, need to fix this
 function calculateWallTop(num_z, lip_style) =
-  env_pitch().z * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
+  //env_pitch().z * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
+  env_pitch().z * num_z + (lip_style != "none" ? gf_Lip_Height : 0);
 
   //calculates the magent position in from the center of the pitch in a single dimention
 function calculateAttachmentPosition(magnet_diameter=0, screw_diameter=0, pitch = env_pitch().x) = 

@@ -41,6 +41,7 @@ lip_top_notches  = true;
 lip_clip_position = "disabled"; //[disabled, intersection, center_wall, both]
 //allow stacking when bin is not multiples of 42
 lip_non_blocking = false;
+height_includes_lip = false;
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -258,21 +259,23 @@ text_2 = false;
 text_2_text = "Gridfinity Extended";
 
 /* [debug] */
-//Slice along the x axis
+// Slice along the x axis
 cutx = 0; //0.1
-//Slice along the y axis
+// Slice along the y axis
 cuty = 0; //0.1
-// enable loging of help messages during render.
+// Enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
 /* [Model detail] */
-//Work in progress,  Modify the default grid size. Will break compatibility
+// Work in progress,  Modify the default grid size. Will break compatibility
 pitch = [42,42,7];  //[0:1:9999]
-//assign colours to the bin
+// clearance around the bin, will reduce the bin by this amount in mm.
+clearance = [0.5, 0.5, 0];
+// Assign colours to the bin
 set_colour = "enable"; //[disabled, enable, preview, lip]
-//where to render the model
+// Where to render the model
 render_position = "center"; //[default,center,zero]
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+// Minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
 fa = 6; 
 // minimum size of a fragment.  Low is more fragments
 fs = 0.4; 
@@ -296,15 +299,17 @@ set_environment(
   width = width,
   depth = depth,
   height = height,
+  height_includes_lip = height_includes_lip,
+  lip_enabled = lip_style != "none",
   render_position = render_position,
   help = enable_help,
   pitch = pitch,
+  clearance = clearance,
   cut = [cutx, cuty, height],
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)
 gridfinity_cup(
-  width=width, depth=depth, height=height,
   filled_in=filled_in,
   label_settings=LabelSettings(
     labelStyle=label_style, 

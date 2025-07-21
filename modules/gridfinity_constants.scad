@@ -5,9 +5,6 @@ gf_pitch = 42;
 //Gridfinity height size
 gf_zpitch = 7;
 
-// each bin is undersize by this much
-gf_tolerance = 0.5;
-
 gf_taper_angle = 45;
 
 // cup
@@ -55,7 +52,7 @@ gf_baseplate_magnet_od = 6.5;
 gf_baseplate_magnet_thickness = 2.4;
 
 // top lip height 4.4mm
-gf_Lip_Height = 4.4;//gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;
+gf_Lip_Height = 4.4-0.6;//gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;
 
 // cupbase height 4.75mm + 0.25.
 function gfBaseHeight() = gf_cupbase_lower_taper_height + gf_cupbase_riser_height + gf_cupbase_upper_taper_height+0.25; //results in 5
@@ -71,7 +68,6 @@ function gfBasePlateHeight() = gf_baseplate_lower_taper_height + gf_baseplate_ri
 gridfinity_lip_height = gf_Lip_Height; 
 gridfinity_corner_radius = gf_cup_corner_radius ; 
 gridfinity_zpitch = env_pitch().z;
-gridfinity_clearance = gf_tolerance; 
 minFloorThickness = gf_cup_floor_thickness;  
 const_magnet_height = gf_magnet_thickness;
 */
