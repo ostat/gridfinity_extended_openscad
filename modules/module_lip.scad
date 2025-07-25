@@ -96,9 +96,13 @@ module cupLip(
       
   floorht=0;
   
-  seventeen = [env_pitch().x/2-4, env_pitch().y/2-4];
-  innerLipRadius = gf_cup_corner_radius-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
-  innerWallRadius = gf_cup_corner_radius-wall_thickness;
+  //seventeen = [env_pitch().x/2-4, env_pitch().y/2-4];
+  seventeen = [
+    env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
+    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
+    
+  innerLipRadius = env_corner_radius()-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
+  innerWallRadius = env_corner_radius()-wall_thickness;
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
@@ -107,10 +111,11 @@ module cupLip(
   lipHeight = 3.75;
   
   outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
-  block_corner_position = [outer_size.x/2 - gf_cup_corner_radius, outer_size.y/2 - gf_cup_corner_radius];  // need not match center of pad corners
+  block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
  
   coloredLipHeight=min(2,lipHeight);
-
+  echo(seventeen=seventeen, innerLipRadius=innerLipRadius, innerWallRadius=innerWallRadius);
+  
   if(lipStyle != "none")
   color(env_colour(color_topcavity, isLip = true))
 
@@ -120,7 +125,7 @@ module cupLip(
       tz(fudgeFactor*2)
       hull() 
         cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=gf_cup_corner_radius, h=lipHeight+fudgeFactor);
+        cylinder(r=env_corner_radius(), h=lipHeight+fudgeFactor);
     
       pitch=env_pitch();
       // remove top so XxY can fit on top
@@ -135,6 +140,7 @@ module cupLip(
           render_top = lip_notches,
           render_bottom = false,
           frameLipHeight = 4,
+          cornerRadius = env_corner_radius(),
           reducedWallHeight = lip_top_relief_height,
           reducedWallWidth = lip_top_relief_width,
           reducedWallOuterEdgesOnly=true){
@@ -155,6 +161,7 @@ module cupLip(
           render_top = !lip_notches,
           render_bottom = true,
           frameLipHeight = 4,
+          cornerRadius = env_corner_radius(),
           reducedWallHeight = -1, 
           reducedWallWidth = -1,
           $pitch=[
@@ -175,7 +182,7 @@ module cupLip(
           tz(lowerTaperZ) 
           cylinder(
             r1=innerWallRadius, 
-            r2=gf_cup_corner_radius-gf_lip_upper_taper_height, 
+            r2=env_corner_radius()-gf_lip_upper_taper_height, 
             h=lipSupportThickness);
           tz(-fudgeFactor) 
           cylinder(

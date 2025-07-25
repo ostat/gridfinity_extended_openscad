@@ -472,10 +472,10 @@ module gridfinity_cup(
       union(){
         cavityFloorRadius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
         wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
-        cutoutclearance_divider = gf_cup_corner_radius/2;
+        cutoutclearance_divider = env_corner_radius()/2;
         cutoutclearance_border = max(wall_thickness, wall_pattern_settings[iPatternBorder]);
 
-        tapered_setback = tapered_setback < 0 ? gf_cup_corner_radius : tapered_setback;
+        tapered_setback = tapered_setback < 0 ? env_corner_radius() : tapered_setback;
         tapered_corner_size =
               tapered_corner_size == -2 ? (wallTop - floorHeight)/2
             : tapered_corner_size < 0 ? wallTop - floorHeight //meant for -1, but also catch others
@@ -632,7 +632,7 @@ module gridfinity_cup(
                 
                 front = [
                   //width,height
-                  [num_x*env_pitch().x-gf_cup_corner_radius*2-border,
+                  [num_x*env_pitch().x-env_corner_radius()*2-border,
                     heightz - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)],
                   //Position
                   [(num_x)*env_pitch().x/2, 
@@ -644,7 +644,7 @@ module gridfinity_cup(
                   wallpattern_walls[0]];
                 back = [
                   //width,height
-                  [num_x*env_pitch().x-gf_cup_corner_radius*2-border,
+                  [num_x*env_pitch().x-env_corner_radius()*2-border,
                     heightz - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)],
                   //Position
                   [(num_x)*env_pitch().x/2, 
@@ -656,7 +656,7 @@ module gridfinity_cup(
                   wallpattern_walls[1]];
                 left = [
                   //width,height
-                  [num_y*env_pitch().y-gf_cup_corner_radius*2-border,
+                  [num_y*env_pitch().y-env_corner_radius()*2-border,
                     heightz - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)],
                   //Position
                   [env_clearance().x/2+wall_thickness/2, 
@@ -668,7 +668,7 @@ module gridfinity_cup(
                   wallpattern_walls[2]];
                 right = [
                   //width,height
-                  [num_y*env_pitch().y-gf_cup_corner_radius*2-border,
+                  [num_y*env_pitch().y-env_corner_radius()*2-border,
                     heightz - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)],
                   //Position
                   [(num_x)*env_pitch().x-wall_thickness/2-env_clearance().x/2,   
@@ -1162,7 +1162,9 @@ module basic_cavity(num_x, num_y, num_z,
   
   AssertSlidingLidSettings(sliding_lid_settings);
   
-  inner_corner_center = [env_pitch().x/2-gf_cup_corner_radius-env_clearance().x/2, env_pitch().y/2-gf_cup_corner_radius-env_clearance().y/2];
+  inner_corner_center = [
+    env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
+    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
 
   reducedlipstyle = 
     // replace "reduced" with "none" if z-height is less than 1.2
@@ -1199,9 +1201,9 @@ module basic_cavity(num_x, num_y, num_z,
     : reducedlipstyle == "reduced_double" ? env_pitch().z*num_z+fudgeFactor*3
     : env_pitch().z*num_z-gf_lip_height-lipSupportThickness);
   //lipBottomZ = env_pitch().z*num_z+fudgeFactor*3;
-  innerLipRadius = gf_cup_corner_radius-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
-  innerWallRadius = max(0.1, gf_cup_corner_radius-wall_thickness); //prevent radius going negative
-  echo("basic_cavity", gf_cup_corner_radius=gf_cup_corner_radius,wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
+  innerLipRadius = env_corner_radius()-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
+  innerWallRadius = max(0.1, env_corner_radius()-wall_thickness); //prevent radius going negative
+  echo("basic_cavity", gf_cup_corner_radius=env_corner_radius(),wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
   aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
   
   //cavityHeight= max(lipBottomZ-floorht,0);

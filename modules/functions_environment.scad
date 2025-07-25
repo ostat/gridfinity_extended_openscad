@@ -15,6 +15,7 @@ module set_environment(
   render_position = "center", //[default,center,zero]
   cut = [0,0,0],
   pitch = [gf_pitch, gf_pitch, gf_zpitch],
+  corner_radius = gf_cup_corner_radius,
   randomSeed = 0,
   force_render = true){
   
@@ -26,7 +27,7 @@ module set_environment(
   $randomSeed = randomSeed;
   $forceRender = force_render;
   $clearance = clearance;
-  
+  $corner_radius = corner_radius;
   $user_width = width;
   $user_depth = depth;
   $user_height = height;
@@ -81,6 +82,7 @@ function env_numz() = is_undef($num_z) || !is_num($num_z) ? 0 : $num_z;
 function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0,0,0] : $clearance;
 
 function env_pitch() =  is_undef($pitch) || !is_list($pitch) ? [gf_pitch, gf_pitch, gf_zpitch] : $pitch; 
+function env_corner_radius() =  is_undef($corner_radius) || !is_num($corner_radius) ? gf_cup_corner_radius : $corner_radius; 
 
 function env_cutx() = is_undef($cutx) || !is_num($cutx) ? 0 : $cutx;
 function env_cuty() = is_undef($cuty) || !is_num($cuty) ? 0 : $cuty;

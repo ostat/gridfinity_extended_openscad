@@ -128,7 +128,10 @@ module pad_oversize(
   assert(is_num(extend_down), "extend_down must be a number >= 0");
   
   if(env_help_enabled("trace")) echo("pad_oversize", num_x=num_x, num_y=num_y, margins= margins);
-  pad_corner_position = [env_pitch().x/2 - 4,env_pitch().y/2 - 4]; // must be 17 to be compatible
+  //pad_corner_position = [env_pitch().x/2 - 4,env_pitch().y/2 - 4]; 
+  pad_corner_position = [
+    env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
+    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];// must be 17 to be compatible
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
   bevel2_top = 5;       // z of top of second bevel
@@ -149,11 +152,11 @@ module pad_oversize(
         hull() cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
             translate(bevel2_bottom) 
-            cylsq2(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+            cylsq2(d1=(env_corner_radius()-2.15+radialgap)*2, d2=(env_corner_radius()+0.25+radialgap+bonus_ht)*2, h=bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
             tz(bevel2_bottom) 
-            cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+            cylinder(d1=(env_corner_radius()-2.15+radialgap)*2, d2=(env_corner_radius()+0.25+radialgap+bonus_ht)*2, h=bevel2_top-bevel2_bottom+bonus_ht);
           }
         }
       }
@@ -164,12 +167,12 @@ module pad_oversize(
           if (sharp_corners) {
             cylsq(d=1.6+2*radialgap, h=0.1);
             translate([0, 0, bevel1_top]) 
-            cylsq(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
+            cylsq(d=(env_corner_radius()-2.15+radialgap)*2, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
-            cylinder(d=remove_bottom_taper ? 3.2+2*radialgap : 1.6+2*radialgap, h=0.1);
+            cylinder(d=remove_bottom_taper ? (env_corner_radius()-2.15+radialgap)*2 : 1.6+2*radialgap, h=0.1);
             translate([0, 0, bevel1_top]) 
-              cylinder(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
+              cylinder(d=(env_corner_radius()-2.15+radialgap)*2, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
         }
       }

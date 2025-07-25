@@ -76,7 +76,7 @@ module frame_connectors(
               height= 0.8, //height of bevel1_top
               frameHeight = 4,
               clearance = connectorClipTolerance,
-              cornerRadius = gf_cup_corner_radius,
+              cornerRadius = env_corner_radius(),
               straightWall=true);
         
           if(connectorButterflyEnabled)
@@ -111,7 +111,7 @@ module frame_connectors(
               height= 0.8, //height of bevel1_top
               frameHeight = 4,
               clearance = connectorButterflyTolerance,
-              cornerRadius = gf_cup_corner_radius,
+              cornerRadius = env_corner_radius(),
               straightIntersection = !$corner,
               cornerIntersection = $corner);
         

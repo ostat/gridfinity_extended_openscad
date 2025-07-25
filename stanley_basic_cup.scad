@@ -14,6 +14,9 @@ use <modules/module_gridfinity_block.scad>
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
 // X dimension. grid units (multiples of 42mm) or mm.
+stanley_model = "proshallow"; //[proshallow:Pro Shallow,prodeep:Pro Deep,fatmaxshallow:FatMax Pro,fatmaxdeep:FatMax Pro Deep,compartment25, STANLEY 25-Compartment 1-92-762]
+
+// X dimension. grid units (multiples of 42mm) or mm.
 width = [1, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
 depth = [1, 0]; //0.1
@@ -30,7 +33,7 @@ headroom = 0.8; // 0.1
 // Style of the cup lip
 lip_style = "reduced";  // [ normal, reduced, reduced_double, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
-lip_side_relief_trigger = [1,1]; //0.1
+lip_side_relief_trigger = [0,0]; //0.1
 // Create a relief in the lip
 lip_top_relief_height = -1; // 0.1
 // how much of the lip to retain on each end
@@ -41,7 +44,7 @@ lip_top_notches  = false;
 lip_clip_position = "disabled"; //[disabled, intersection, center_wall, both]
 //allow stacking when bin is not multiples of 42
 lip_non_blocking = false;
-height_includes_lip = false;
+height_includes_lip = true;
 
 /* [Subdivisions] */
 chamber_wall_thickness = 1.2;
@@ -91,7 +94,7 @@ divider_slot_spanning = 2;
 floor_thickness = 1.2;
 cavity_floor_radius = -1;// .1
 // Adjust the radius of the rounded flat base. -1 uses the corner radius.
-flat_base_rounded_radius = 2;
+flat_base_rounded_radius = 4;
 // Add chamfer to the rounded bottom corner to make easier to print. -1 add auto 45deg.
 flat_base_rounded_easyPrint = -1;
 
@@ -244,6 +247,7 @@ enable_help = "disabled"; //[info,debug,trace]
 pitch = [55,40,41];  //[0:1:9999]
 // clearance around the bin, will reduce the bin by this amount in mm.
 clearance = [0.5, 0.5, 0];
+corner_radius = 3.75;
 // Assign colours to the bin
 set_colour = "enable"; //[disabled, enable, preview, lip]
 // Where to render the model
@@ -266,7 +270,19 @@ module end_of_customizer_opts() {}
 //Some online generators do not like direct setting of fa,fs,fn
 $fa = fa; 
 $fs = fs; 
-$fn = fn;  
+$fn = fn;
+
+istanley_model_settings_pitch = 0;
+istanley_model_settings_wall = 1;
+istanley_model_corner_radius = 2;
+
+stanley_model_settings = 
+  stanley_model == "proshallow" ? [[55,40,41], 1.2, 3.75]
+  : stanley_model == "prodeep" ? [[55,40,81], 1.2, 3.75]
+  : stanley_model == "fatmaxshallow" ? [[110,80,49], 1.8, 10]
+  : stanley_model == "fatmaxdeep" ? [[110,80,91], 1.8, 10]
+  : stanley_model == "compartment25" ? [[52,72,72], 1.2, 8]
+  : [pitch, wall_thickness, corner_radius];
 
 set_environment(
   width = width,
@@ -276,8 +292,9 @@ set_environment(
   lip_enabled = lip_style != "none",
   render_position = render_position,
   help = enable_help,
-  pitch = pitch,
+  pitch = stanley_model_settings[istanley_model_settings_pitch],
   clearance = clearance,
+  corner_radius=stanley_model_settings[istanley_model_corner_radius],
   cut = [cutx, cuty, height],
   setColour = set_colour,
   randomSeed = random_seed,
@@ -301,7 +318,7 @@ gridfinity_cup(
     screwSize = [0,0],
     holeOverhangRemedy = 0, 
     cornerAttachmentsOnly = false,
-    floorThickness = floor_thickness,
+    floorThickness = stanley_model_settings[istanley_model_settings_wall],
     cavityFloorRadius = cavity_floor_radius,
     efficientFloor="off",
     halfPitch=false,
@@ -310,7 +327,7 @@ gridfinity_cup(
     minimumPrintablePadSize=0.2,
     flatBaseRoundedRadius = flat_base_rounded_radius,
     flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
-  wall_thickness=wall_thickness,
+  wall_thickness=stanley_model_settings[istanley_model_settings_wall],
   chamber_wall_thickness=chamber_wall_thickness,
   chamber_wall_headroom=chamber_wall_headroom,
   divider_wall_removable_settings = DividerRemovableSettings(

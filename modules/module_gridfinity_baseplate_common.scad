@@ -127,7 +127,7 @@ module frame_plain(
       position_fill_grid_y = position_fill_grid_y,
       extra_down = extra_down, 
       frameLipHeight = frameLipHeight,
-      cornerRadius = gf_cup_corner_radius,
+      cornerRadius = env_corner_radius(),
       reducedWallHeight = reducedWallHeight){
         if($children >=1) children(0); 
         if($children >=2) children(1);

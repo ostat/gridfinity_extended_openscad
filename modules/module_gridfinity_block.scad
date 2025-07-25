@@ -68,7 +68,7 @@ module grid_block(
   magnet_easy_release = cupBase_settings[iCupBase_MagnetEasyRelease];
   
   outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
-  block_corner_position = [outer_size.x/2 - gf_cup_corner_radius, outer_size.y/2 - gf_cup_corner_radius];  // need not match center of pad corners
+  block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
 
   magnet_position = calculateAttachmentPositions(magnet_size[iCylinderDimension_Diameter], screw_size[iCylinderDimension_Diameter]);
    
@@ -81,7 +81,7 @@ module grid_block(
       tz(-fudgeFactor)
       hull() 
       cornercopy(block_corner_position, num_x, num_y) 
-      cylinder(r=gf_cup_corner_radius, h=lipHeight);
+      cylinder(r=env_corner_radius(), h=lipHeight);
   } else {
     
     cupLip(
@@ -105,12 +105,12 @@ module grid_block(
         tz(-fudgeFactor)
         hull() 
         cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=gf_cup_corner_radius, h=env_pitch().z*num_z);
+        cylinder(r=env_corner_radius(), h=env_pitch().z*num_z);
 
       union(){
         if(flat_base == FlatBase_rounded){
           basebottomRadius = let(fbr = cupBase_settings[iCupBase_FlatBaseRoundedRadius])
-            fbr == -1 ? gf_cup_corner_radius/2 : fbr;
+            fbr == -1 ? env_corner_radius()/2 : fbr;
 
           color(env_colour(color_cup))
           translate([env_clearance().x/2,env_clearance().y/2,0])
@@ -121,7 +121,7 @@ module grid_block(
             size=[],
             topRadius = 0,
             bottomRadius = basebottomRadius,
-            sideRadius = gf_cup_corner_radius,
+            sideRadius = env_corner_radius(),
             centerxy = false,
             supportReduction_z = [cupBase_settings[iCupBase_FlatBaseRoundedEasyPrint],0]
             );
