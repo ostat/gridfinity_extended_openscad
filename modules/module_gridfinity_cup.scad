@@ -123,6 +123,8 @@ default_divider_slot_spanning = 0;
 default_magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 default_magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+// move magnet inside part for print-in magnets
+default_magnet_captive = false;
 //size of screw, diameter and height. Zack's original used 3 and 6
 default_screw_size = [3, 6]; // .1
 //size of center magnet, diameter and height. 
@@ -252,6 +254,7 @@ module gridfinity_cup(
   cupBase_settings = CupBaseSettings(
     magnetSize = default_magnet_size, 
     magnetEasyRelease = default_magnet_easy_release, 
+    magnetCaptive = default_magnet_captive,
     centerMagnetSize = default_center_magnet_size, 
     screwSize = default_screw_size, 
     holeOverhangRemedy = default_hole_overhang_remedy, 
