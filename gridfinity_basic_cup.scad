@@ -95,6 +95,8 @@ enable_screws = true;
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+// inner voids for captive magnets
+magnetCaptive = false;
 //size of screw, diameter and height. Zack's original used 3 and 6
 screw_size = [3, 6]; // .1
 //size of center magnet, diameter and height. 
@@ -324,6 +326,7 @@ gridfinity_cup(
   cupBase_settings = CupBaseSettings(
     magnetSize = enable_magnets?magnet_size:[0,0],
     magnetEasyRelease = magnet_easy_release, 
+    magnetCaptive = magnetCaptive,
     centerMagnetSize = center_magnet_size, 
     screwSize = enable_screws?screw_size:[0,0],
     holeOverhangRemedy = hole_overhang_remedy, 

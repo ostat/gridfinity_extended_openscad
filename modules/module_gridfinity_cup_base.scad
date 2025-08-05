@@ -41,6 +41,7 @@ iCupBase_Spacer=11;
 iCupBase_MinimumPrintablePadSize=12;
 iCupBase_FlatBaseRoundedRadius=13;
 iCupBase_FlatBaseRoundedEasyPrint=14;
+iCupBase_MagnetCaptive=15;
 
 iCylinderDimension_Diameter=0;
 iCylinderDimension_Height=1;
@@ -97,7 +98,8 @@ function CupBaseSettings(
     spacer = false,
     minimumPrintablePadSize = 0,
     flatBaseRoundedRadius=-1,
-    flatBaseRoundedEasyPrint=-1
+    flatBaseRoundedEasyPrint=-1,
+    magnetCaptive = false,
     ) = 
   let(
     magnetSize = 
@@ -128,13 +130,14 @@ function CupBaseSettings(
       spacer,
       minimumPrintablePadSize,
       flatBaseRoundedRadius,
-      flatBaseRoundedEasyPrint
+      flatBaseRoundedEasyPrint,
+      magnetCaptive,
       ],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
   
 function ValidateCupBaseSettings(settings, num_x, num_y) =
-  assert(is_list(settings) && len(settings) == 15, typeerror_list("CupBase Settings", settings, 15))
+  assert(is_list(settings) && len(settings) == 16, typeerror_list("CupBase Settings", settings, 16))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_CenterMagnetSize]) && len(settings[iCupBase_CenterMagnetSize])==2, "CenterMagnet Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_ScrewSize]) && len(settings[iCupBase_ScrewSize])==2, "ScrewSize Magnet Setting must be a list of length 2")
@@ -146,6 +149,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_string(settings[iCupBase_FlatBase]), "CupBase FlatBase Settings must be a string")
   assert(is_bool(settings[iCupBase_Spacer]), "CupBase Spacer Settings must be a boolean")
   assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
+  assert(is_bool(settings[iCupBase_MagnetCaptive]), "CupBase Magnet Captive setting must be bool")
   
   let(
     efficientFloor = validateEfficientFloor(settings[iCupBase_EfficientFloor]),
@@ -166,5 +170,6 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       settings[iCupBase_Spacer],
       settings[iCupBase_MinimumPrintablePadSize],
       settings[iCupBase_FlatBaseRoundedRadius],
-      settings[iCupBase_FlatBaseRoundedEasyPrint]
+      settings[iCupBase_FlatBaseRoundedEasyPrint],
+      settings[iCupBase_MagnetCaptive]
       ];
