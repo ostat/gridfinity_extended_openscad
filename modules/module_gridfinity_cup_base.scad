@@ -41,7 +41,7 @@ iCupBase_Spacer=11;
 iCupBase_MinimumPrintablePadSize=12;
 iCupBase_FlatBaseRoundedRadius=13;
 iCupBase_FlatBaseRoundedEasyPrint=14;
-iCupBase_MagnetCaptive=15;
+iCupBase_MagnetCaptiveHeight=15;
 
 iCylinderDimension_Diameter=0;
 iCylinderDimension_Height=1;
@@ -99,7 +99,7 @@ function CupBaseSettings(
     minimumPrintablePadSize = 0,
     flatBaseRoundedRadius=-1,
     flatBaseRoundedEasyPrint=-1,
-    magnetCaptive = false,
+    magnetCaptiveHeight = 0,
     ) = 
   let(
     magnetSize = 
@@ -131,7 +131,7 @@ function CupBaseSettings(
       minimumPrintablePadSize,
       flatBaseRoundedRadius,
       flatBaseRoundedEasyPrint,
-      magnetCaptive,
+      magnetCaptiveHeight,
       ],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
@@ -149,7 +149,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_string(settings[iCupBase_FlatBase]), "CupBase FlatBase Settings must be a string")
   assert(is_bool(settings[iCupBase_Spacer]), "CupBase Spacer Settings must be a boolean")
   assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
-  assert(is_bool(settings[iCupBase_MagnetCaptive]), "CupBase Magnet Captive setting must be bool")
+  assert(is_num(settings[iCupBase_MagnetCaptiveHeight]), "CupBase Magnet Captive height setting must a number")
   
   let(
     efficientFloor = validateEfficientFloor(settings[iCupBase_EfficientFloor]),
@@ -171,5 +171,5 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       settings[iCupBase_MinimumPrintablePadSize],
       settings[iCupBase_FlatBaseRoundedRadius],
       settings[iCupBase_FlatBaseRoundedEasyPrint],
-      settings[iCupBase_MagnetCaptive]
+      settings[iCupBase_MagnetCaptiveHeight]
       ];

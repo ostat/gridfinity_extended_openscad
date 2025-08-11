@@ -123,8 +123,8 @@ default_divider_slot_spanning = 0;
 default_magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 default_magnet_easy_release = "auto";//["off","auto","inner","outer"] 
-// move magnet inside part for print-in magnets
-default_magnet_captive = false;
+// move magnet inside part for print-in magnets 
+default_magnet_captive_height = 0;
 //size of screw, diameter and height. Zack's original used 3 and 6
 default_screw_size = [3, 6]; // .1
 //size of center magnet, diameter and height. 
@@ -254,7 +254,7 @@ module gridfinity_cup(
   cupBase_settings = CupBaseSettings(
     magnetSize = default_magnet_size, 
     magnetEasyRelease = default_magnet_easy_release, 
-    magnetCaptive = default_magnet_captive,
+    magnetCaptiveHeight = default_magnet_captive_height,
     centerMagnetSize = default_center_magnet_size, 
     screwSize = default_screw_size, 
     holeOverhangRemedy = default_hole_overhang_remedy, 
@@ -406,7 +406,8 @@ module gridfinity_cup(
     num_z=num_z,
     filled_in=filled_in, 
     efficient_floor=efficient_floor, 
-    flat_base=cupBase_settings[iCupBase_FlatBase]);
+    flat_base=cupBase_settings[iCupBase_FlatBase],
+    captive_magnet_height=cupBase_settings[iCupBase_MagnetCaptiveHeight]);
   sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
        
   calculated_vertical_separator_positions = calculateSeparators(
@@ -915,7 +916,8 @@ module gridfinity_cup(
         floor_thickness=floor_thickness,
         filled_in="disabled",
         efficient_floor=cupBase_settings[iCupBase_EfficientFloor], 
-        flat_base=cupBase_settings[iCupBase_FlatBase]) + calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,efficient_floor)-tabThickness;
+        flat_base=cupBase_settings[iCupBase_FlatBase],
+        captive_magnet_height=cupBase_settings[iCupBase_MagnetCaptiveHeight]) + calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,efficient_floor)-tabThickness;
       
       //todo need to correct this
       lipheight = lip_settings[iLipStyle] == "none" ? tabThickness
@@ -1096,7 +1098,8 @@ module partitioned_cavity(num_x, num_y, num_z,
     num_z=num_z,
     filled_in="disabled", 
     efficient_floor=efficient_floor, 
-    flat_base=cupBase_settings[iCupBase_FlatBase]);
+    flat_base=cupBase_settings[iCupBase_FlatBase],
+    captive_magnet_height=cupBase_settings[iCupBase_MagnetCaptiveHeight]);
     
   difference() {
     color(env_colour(color_cupcavity))
@@ -1185,7 +1188,8 @@ module basic_cavity(num_x, num_y, num_z,
       num_z=num_z,
       filled_in=FilledIn_disabled,
       efficient_floor=cupBase_settings[iCupBase_EfficientFloor],
-      flat_base=cupBase_settings[iCupBase_FlatBase]));
+      flat_base=cupBase_settings[iCupBase_FlatBase],
+      captive_magnet_height=cupBase_settings[iCupBase_MagnetCaptiveHeight]));
     
   //Remove floor to create a vertical spacer.
   nofloor = spacer && fingerslide == "none";
@@ -1316,10 +1320,11 @@ module basic_cavity(num_x, num_y, num_z,
            //Screw and magnet covers required for efficient floor
            if(hasCornerAttachments)
              gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only)
+                let(magnet_size=cupBase_settings[iCupBase_MagnetSize])
                 EfficientFloorAttachmentCaps(
                   grid_copy_corner_index = $gcci,
                   floor_thickness = floor_thickness,
-                  magnet_size = cupBase_settings[iCupBase_MagnetSize],
+                  magnet_size = cupBase_settings[iCupBase_MagnetSize] + [0, cupBase_settings[iCupBase_MagnetCaptiveHeight]],
                   screw_size = cupBase_settings[iCupBase_ScrewSize],
                   wall_thickness = magnet_easy_release == MagnetEasyRelease_inner ? wall_thickness*2 : wall_thickness );
           }

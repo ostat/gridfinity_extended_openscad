@@ -66,7 +66,6 @@ module grid_block(
   flat_base=cupBase_settings[iCupBase_FlatBase];
   center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
   magnet_easy_release = cupBase_settings[iCupBase_MagnetEasyRelease];
-  magnetCaptive = cupBase_settings[iCupBase_MagnetCaptive];
   
   outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
   block_corner_position = [outer_size.x/2 - gf_cup_corner_radius, outer_size.y/2 - gf_cup_corner_radius];  // need not match center of pad corners
@@ -164,7 +163,6 @@ module grid_block(
           $gcci[2] == [-1,-1] ? -90 :
           $gcci[2] == [ 1,-1] ? 0 : 0;
         rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
-        echo(cupBase_settings[iCupBase_MagnetCaptive])
         MagnetAndScrewRecess(
           magnetDiameter = magnet_size[iCylinderDimension_Diameter],
           magnetThickness = magnet_size[iCylinderDimension_Height]+0.1,
@@ -173,7 +171,7 @@ module grid_block(
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
           easyMagnetRelease = magnet_easy_release != MagnetEasyRelease_off,
-          magnetCaptive = magnetCaptive);
+          magnetCaptiveHeight = cupBase_settings[iCupBase_MagnetCaptiveHeight]);
     }
   }
  

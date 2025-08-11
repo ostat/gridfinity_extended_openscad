@@ -362,7 +362,7 @@ module SequentialBridgingDoubleHole(
   overhangBridgeCount = 2,
   overhangBridgeThickness = 0.3,
   overhangBridgeCutin = 0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
-  magnetCaptive = false,
+  magnetCaptiveHeight = 0,
   ) 
 {
   fudgeFactor = 0.01;
@@ -377,15 +377,9 @@ module SequentialBridgingDoubleHole(
   union(){
     difference(){
       if (hasOuter) {
-        if (magnetCaptive) {
-          // move the cylinder up into the body (should make a factor of layer height)
-          translate([0,0,0.4])
-          echo("carving voids")
-          cylinder(r=outerHoleRadius, h=outerPlusBridgeHeight);
-        }
-        else {
-          cylinder(r=outerHoleRadius, h=outerPlusBridgeHeight+fudgeFactor);
-        }
+        // move the cylinder up into the body to create internal void
+        translate([0,0,magnetCaptiveHeight])
+        cylinder(r=outerHoleRadius, h=outerPlusBridgeHeight+fudgeFactor);
       }
       
       if (overhangBridgeCount > 0) {
@@ -461,7 +455,7 @@ module MagnetAndScrewRecess(
   overhangFixLayers = 3,
   overhangFixDepth = 0.2,
   easyMagnetRelease = true,
-  magnetCaptive = false){
+  magnetCaptiveHeight = 0){
     fudgeFactor = 0.01;
     
     releaseWidth = 1.3;
@@ -475,7 +469,7 @@ module MagnetAndScrewRecess(
         innerHoleDepth = screwDepth > 0 ? screwDepth+fudgeFactor : 0,
         overhangBridgeCount = overhangFixLayers,
         overhangBridgeThickness = overhangFixDepth,
-        magnetCaptive = magnetCaptive);
+        magnetCaptiveHeight = magnetCaptiveHeight);
       
       if(easyMagnetRelease && magnetDiameter > 0)
       difference(){
