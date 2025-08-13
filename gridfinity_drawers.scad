@@ -53,6 +53,7 @@ drawer_magnet_size = [6.5, 2.4];  // .1
 /* [Chest Top Plate] */
 chest_top_wallpattern_style = "none"; //[none, grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
 // Plate Style
+
 chest_top_style = "none"; //[none: None, baseplate:Base Plate, lugs: Supportless feet]
 // Enable magnets in the bin corner
 chest_top_base_plate_enable_magnets = true;
@@ -318,6 +319,7 @@ module chest(
       if(bottomGrid != "none") {
         baseHeight=0.7;
         translate(bottomGridOffset) 
+
         tz(-env_pitch().z*baseHeight+fudgeFactor)
         if(bottomGrid == "grid") grid_block(
           num_x=drawerInnerUnitSize.x, 
@@ -336,7 +338,7 @@ module chest(
             //echo(x=drawerInnerUnitSize.x, y=drawerInnerUnitSize.y);
          if(bottomGrid == "lugs") feet(drawerInnerUnitSize.x, drawerInnerUnitSize.y, outerChest.x);
       }
-  
+
       if(topStyle == "baseplate") {
         //translate(topGridOffset) 
         tz(totalH-fudgeFactor) 
@@ -352,6 +354,9 @@ module chest(
           //reducedWallHeight = ,
           reduceWallTaper = topBasePlateReducedWallTaper);
       } else if(topStyle == "lugs"){
+          translate([0, 0, totalH - fudgeFactor]) footrecess(drawerInnerUnitSize.x, drawerInnerUnitSize.y, outerChest.x, outerChest.y, widen = chestLegClearance);
+      }
+      if(topGridStyle == "lugs"){
           translate([0, 0, totalH - fudgeFactor]) footrecess(drawerInnerUnitSize.x, drawerInnerUnitSize.y, outerChest.x, outerChest.y, widen = chestLegClearance);
       }
     }
