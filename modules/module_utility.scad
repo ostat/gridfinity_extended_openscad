@@ -3,17 +3,23 @@ include <module_utility_wallcutout.scad>
 
 utility_demo = false;
 
+if(utility_demo && $preview){
+  bentWall(separation=0);
+}
+
+//Wall is centred on the middle of the start. Bend is not taken in to account
 module bentWall(
   length=100,
   bendPosition=0,
   bendAngle=45,
-  separation=10,
+  separation=20,
   lowerBendRadius=0,
   upperBendRadius=0,
   height=30,
   thickness=10,
-  wall_cutout_depth = 0,
-  wall_cutout_width = 0) {
+  wall_cutout_depth = 10,
+  wall_cutout_width = 10,
+  centred_x=true) {
   bendPosition = bendPosition > 0 ?bendPosition: length/2;
   
   fudgeFactor = 0.01;
@@ -22,7 +28,8 @@ module bentWall(
   difference()
   {
     if(separation != 0) { 
-      translate([thickness/2,bendPosition,0])
+      translate(centred_x ? [0,0,0] : [(thickness+separation)/2,0,0])
+      translate([0,bendPosition,0])
       linear_extrude(height)
       SBogen(
         2D=thickness,
@@ -34,8 +41,9 @@ module bentWall(
         l1=bendPosition,
         l2=length-bendPosition);   
     } else {
+      translate(centred_x ? [-thickness/2,0,0] : [0,0,0])
       cube([thickness, length, height]);
-   }
+    }
    
     cutoutHeight = 
       wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
@@ -45,7 +53,8 @@ module bentWall(
         : wall_cutout_width == 0 ? length/2
         : wall_cutout_width;
     if(wall_cutout_depth != 0){
-      translate([thickness/2,length/2,height])
+      translate(centred_x ? [0,0,0] : [(separation+thickness)/2+fudgeFactor,0,0])
+      translate([0,length/2,height])
       rotate([0,0,90])
       WallCutout(
         height = cutoutHeight,

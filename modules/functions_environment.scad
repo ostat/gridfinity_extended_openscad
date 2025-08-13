@@ -46,8 +46,8 @@ module set_environment(
   $cuty = calcDimensionWidth(cut.y);
   $cutz = calcDimensionWidth(cut.z);
 
-  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn, pitch=pitch, clearance=clearance, height_includes_lip=height_includes_lip, lip_enabled=lip_enabled);
-  echo("🟩set_environment", width=width, depth=depth, height=height);
+  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn,  clearance=clearance, corner_radius=corner_radius, height_includes_lip=height_includes_lip, lip_enabled=lip_enabled);
+  echo("🟩set_environment", width=width, depth=depth, height=height, pitch=pitch);
   echo("🟩set_environment", num_x=num_x, num_y=num_y, num_z=num_z);
   
   

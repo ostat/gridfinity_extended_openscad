@@ -124,11 +124,6 @@ function calculateUsableFloorThickness(magnet_depth, screw_depth, center_magnet=
   env_help_enabled("trace") ? 
   echo("calculateFloorThickness", usableFloorThickness=usableFloorThickness, cfh=cfh, cbch=cbch, num_z=num_z, magnet_depth=magnet_depth,screw_depth=screw_depth, floor_thickness=floor_thickness, filledin=filledin) usableFloorThickness :
   usableFloorThickness;
-    
-// calculate the position of separators from the size
-function splitChamber(num_separators, width) = num_separators < 1 
-      ? [] 
-      : [ for (i=[1:num_separators]) i*(width/(num_separators+1))];
   
 function gridfinityRenderPosition(position, num_x, num_y) = 
     position == "center" ? [-(num_x)*env_pitch().x/2, -(num_y)*env_pitch().y/2, 0] 

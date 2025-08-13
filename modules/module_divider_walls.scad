@@ -8,6 +8,13 @@ iSeparatorBendAngle = 6;
 iSeparatorWallCutDepth = 7;
 iSeparatorWallCutoutWidth = 8;  
 
+// calculate the position of separators from the size
+function splitChamber(num_separators, container_width, divider_width) = num_separators < 1 
+      ? [] 
+      : let(
+          chamber_count = num_separators + 1, // number of chambers
+          chamber_width = (container_width - divider_width * num_separators)/chamber_count) // calculate the width of each chamber
+      [ for (i=[1:num_separators]) i*chamber_width + (i-1)*divider_width+divider_width/2];
 
 //Takes the user config and calculates the separators positions
 function calculateSeparators(
@@ -60,7 +67,6 @@ module separators(
     calculatedSeparators = calculatedSeparators,
     separator_orientation = separator_orientation){
       thickness = is_num(override_wall_thickness) ? override_wall_thickness : $sepCfg[iSeparatorWallThickness];
-      translate([-thickness/2,0])
       bentWall(
         length=$sepCfg[iSeparatorLength],
         bendPosition=$sepCfg[iSeparatorBendPosition],

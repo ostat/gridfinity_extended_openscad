@@ -232,9 +232,9 @@ gridfinity_cup();//execution point
 // additional parameters may be added over time and break things.
 // separator positions are defined in units from the left side
 module gridfinity_cup(
-  width=default_width,
-  depth=default_depth,
-  height=default_height,
+  width,
+  depth,
+  height,
   filled_in=default_filled_in,
   label_settings=LabelSettings(
     labelStyle=default_label_style, 
@@ -367,9 +367,15 @@ module gridfinity_cup(
     baseTextFont = default_text_font,
     baseTextDepth = default_text_depth)) {
   
-  num_x = is_undef($num_x) ? calcDimensionWidth(width, true) : $num_x;
-  num_y = is_undef($num_y) ? calcDimensionDepth(depth, true) : $num_y;
-  num_z = is_undef($num_z) ? calcDimensionHeight(height, true) : $num_z;
+  //num_x = is_undef($num_x) ? calcDimensionWidth(width, true) : $num_x;
+  //num_y = is_undef($num_y) ? calcDimensionDepth(depth, true) : $num_y;
+  //num_z = is_undef($num_z) ? calcDimensionHeight(height, true) : $num_z;
+  
+  num_x = is_undef(width) ?  $num_x : calcDimensionWidth(width, true);
+  num_y = is_undef(depth) ? $num_y : calcDimensionDepth(depth, true);
+  num_z = is_undef(height) ? $num_z : calcDimensionHeight(height, true);
+
+
   //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
   wall_thickness = wallThickness(wall_thickness, num_z);
 
@@ -409,7 +415,7 @@ module gridfinity_cup(
   calculated_vertical_separator_positions = calculateSeparators(
     separator_config = vertical_irregular_subdivisions 
       ? vertical_separator_config 
-      : splitChamber(vertical_chambers-1, num_x*env_pitch().x), 
+      : splitChamber(vertical_chambers-1, divider_width=chamber_wall_thickness, container_width=num_x*env_pitch().x - env_clearance().x - wall_thickness*2), 
     length = env_pitch().y*num_y,
     height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, chamber_wall_headroom),
     wall_thickness = chamber_wall_thickness,
@@ -420,7 +426,7 @@ module gridfinity_cup(
   calculated_horizontal_separator_positions = calculateSeparators(
     separator_config = horizontal_irregular_subdivisions 
       ? horizontal_separator_config 
-      : splitChamber(horizontal_chambers-1, num_y*env_pitch().y), 
+      : splitChamber(horizontal_chambers-1, divider_width=chamber_wall_thickness, container_width=num_y*env_pitch().y - env_clearance().y - wall_thickness*2), 
     length = env_pitch().x*num_x,
     height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, chamber_wall_headroom),
     wall_thickness = chamber_wall_thickness,
@@ -585,21 +591,22 @@ module gridfinity_cup(
                       source="floor_pattern");
 
                   //subtract dividers from floor pattern
-                  translate([0, 0, -fudgeFactor])
+                  //Potential bug if the wall height is less than the floor height
+                  translate([wall_thickness+env_clearance().x/2, 0, -fudgeFactor])
                   separators(
                     calculatedSeparators = calculated_vertical_separator_positions,
                     separator_orientation = "vertical",
                     override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
                     
                   //subtract dividers from floor pattern
-                  translate([gf_pitch*num_x, 0, -fudgeFactor])
+                  //Potential bug if the wall height is less than the floor height
+                  translate([env_pitch().x*num_x, wall_thickness+env_clearance().y/2, -fudgeFactor])
                   separators(
                     calculatedSeparators = calculated_horizontal_separator_positions,
                     separator_orientation = "horizontal",
                     override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
                 }
               }
-              
           
               if(wall_pattern_settings[iPatternEnabled]){
                 wallpattern_thickness = wall_thickness + fudgeFactor*4;
@@ -716,7 +723,7 @@ module gridfinity_cup(
                           calculatedSeparators = calculated_vertical_separator_positions, 
                           separator_orientation = "vertical")
                             let(verSepThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
-                            translate([-verSepThickness/2, left[1].y, left[1].z]) 
+                            //translate([0, left[1].y, left[1].z]) 
                             rotate(left[2])
                             render_conditional(env_force_render())
                               //separator wall pattern
@@ -740,7 +747,7 @@ module gridfinity_cup(
                   }    
                     
                   //subtract dividers from wall patterns
-                  translate([env_pitch().x*num_x, 0, -fudgeFactor])
+                  translate([env_pitch().x*num_x, wall_thickness+env_clearance().y/2, sepFloorHeight-fudgeFactor])
                   separators(
                     calculatedSeparators = calculated_horizontal_separator_positions,
                     separator_orientation = "horizontal",
@@ -780,7 +787,7 @@ module gridfinity_cup(
                             separator_orientation = "horizontal")
                               let(hozSepThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
                               rotate([0,0,-90])
-                              translate([front[1].x, hozSepThickness/2, front[1].z])
+                              //translate([front[1].x, 0, front[1].z])
                               rotate(front[2])
                               render_conditional(env_force_render())
                                 //separator wall pattern
@@ -804,7 +811,7 @@ module gridfinity_cup(
                   }
                     
                   //subtract dividers from outer wall pattern
-                  translate([0, 0, -fudgeFactor])
+                  translate([wall_thickness+env_clearance().x/2, 0, sepFloorHeight-fudgeFactor])
                   separators(
                     calculatedSeparators = calculated_vertical_separator_positions,
                     separator_orientation = "vertical",
@@ -1063,7 +1070,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     cupBase_settings=[],
     fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
     fingerslide_walls=default_fingerslide_walls,
-    fingerslide_lip_aligned=fingerslide_lip_aligned,
+    fingerslide_lip_aligned=default_fingerslide_lip_aligned,
     wall_thickness=default_wall_thickness,
     chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_headroom=default_chamber_wall_headroom,
     calculated_vertical_separator_positions=calculated_vertical_separator_positions,
@@ -1114,6 +1121,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     
     color(env_colour(color_divider))
     tz(sepFloorHeight-fudgeFactor)
+    translate([wall_thickness+env_clearance().x/2, 0, 0])
     separators(
       calculatedSeparators = calculated_vertical_separator_positions,
       separator_orientation = "vertical");
@@ -1121,7 +1129,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     if(env_help_enabled("trace")) echo("partitioned_cavity", horizontal_separator_positions=calculated_horizontal_separator_positions);
     
     color(env_colour(color_divider))
-    translate([env_pitch().x*num_x, 0, sepFloorHeight-fudgeFactor])
+    translate([env_pitch().x*num_x, wall_thickness+env_clearance().y/2, sepFloorHeight-fudgeFactor])
     separators(
       calculatedSeparators = calculated_horizontal_separator_positions, 
       separator_orientation = "horizontal");
@@ -1456,7 +1464,7 @@ module FingerSlide(
   locations = [front, back, left, right];
   function get_fingerslide_radius(wall, cup_size, cup_height, fingerslide_radius) = 
   let(radius_start = wall == 1 ? fingerslide_radius : wall,
-      calculated_radius = radius_start < 0 ? cup_size/abs(radius_start) : radius_start,
+      calculated_radius = radius_start < 0 ? min(cup_height, cup_size)/abs(radius_start) : radius_start,
       limited_radius = min(calculated_radius,cup_height,cup_size/2))
     echo("get_fingerslide_radius", is_ratio=(wall < 0),result=limited_radius, wall=wall, cup_size=cup_size, cup_height=cup_height, fingerslide_radius=fingerslide_radius)
     limited_radius;
