@@ -14,7 +14,7 @@ use <modules/module_gridfinity_block.scad>
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
 // X dimension. grid units (multiples of 42mm) or mm.
-stanley_model = "proshallow"; //[proshallow:Pro Shallow,prodeep:Pro Deep,fatmaxshallow:FatMax Pro,fatmaxdeep:FatMax Pro Deep,compartment25, STANLEY 25-Compartment 1-92-762]
+stanley_model = "proshallow"; //[proshallow:Pro Shallow,prodeep:Pro Deep,fatmaxshallow:FatMax Pro 1-97-519,fatmaxdeep:FatMax Pro Deep 1-97-521,compartment25:25-Compartment 1-92-762,compartment25front:25-Compartment Front 1-92-762]
 
 // X dimension. grid units (multiples of 42mm) or mm.
 width = [1, 0]; //0.1
@@ -107,7 +107,7 @@ label_size = [0,10,0,0.6]; // 0.01
 // Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
-label_walls=[0,0,1,0];  //[0:1:1]
+label_walls=[0,1,0,0];  //[0:1:1]
     
 /* [Sliding Lid] */
 sliding_lid_enabled = false;
@@ -123,8 +123,8 @@ sliding_lid_lip_enabled = false;
 /* [Finger Slide] */
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
-// Radius of the corner fillet, 0:none, >1: radius in mm, <0 dimention/abs(n) (i.e. -3 is 1/3 the width)
-fingerslide_radius = 8;
+// Radius of the corner fillet, 0:none, >1: radius in mm, <0 dimention/abs(n) (i.e. -3 is 1/3 the min(width,height))
+fingerslide_radius = -3;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled using radius; >1: override radius.
 fingerslide_walls=[1,0,0,0];
 //Align the fingerslide with the lip
@@ -263,6 +263,41 @@ random_seed = 0; //0.0001
 // force render on costly components
 force_render = true;
 
+/* [Stanley Pro Shallow] */
+proshallow_size = [40,55,41];
+proshallow_wall_thickenss = 1.2;
+proshallow_corner_radius = 3.75;
+proshallow_bottom_radius = 3;
+
+/* [Stanley Pro Deep] */
+prodeep_size = [40,55,81];
+prodeep_wall_thickenss = 1.2;
+prodeep_corner_radius = 3.75;
+prodeep_bottom_radius = 3;
+
+/* [Stanley FatMax Pro 1-97-519] */
+fatmaxshallow_size = [80,110,49];
+fatmaxshallow_wall_thickenss = 1.8;
+fatmaxshallow_corner_radius = 10;
+fatmaxshallow_bottom_radius = 4;
+
+/* [Stanley FatMax Pro Deep 1-97-521] */
+fatmaxdeep_size = [80,108,91];
+fatmaxdeep_wall_thickenss = 1.8;
+fatmaxdeep_corner_radius = 10;
+fatmaxdeep_bottom_radius = 4;
+
+/* [Stanley 25-Compartment 1-92-762] */
+compartment25_size = [52,72,70];
+compartment25_wall_thickenss = 1.2;
+compartment25_corner_radius = 8;
+compartment25_bottom_radius = 4;
+ 
+compartment25front_size = [142,72,70];
+compartment25front_wall_thickenss = 1.2;
+compartment25front_corner_radius = 8;
+compartment25front_bottom_radius = 4;
+ 
 /* [Hidden] */
 module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
@@ -275,14 +310,18 @@ $fn = fn;
 istanley_model_settings_pitch = 0;
 istanley_model_settings_wall = 1;
 istanley_model_corner_radius = 2;
+istanley_model_bottom_radius = 3;
 
 stanley_model_settings = 
-  stanley_model == "proshallow" ? [[55,40,41], 1.2, 3.75]
-  : stanley_model == "prodeep" ? [[55,40,81], 1.2, 3.75]
-  : stanley_model == "fatmaxshallow" ? [[110,80,49], 1.8, 10]
-  : stanley_model == "fatmaxdeep" ? [[110,80,91], 1.8, 10]
-  : stanley_model == "compartment25" ? [[52,72,72], 1.2, 8]
-  : [pitch, wall_thickness, corner_radius];
+  stanley_model == "proshallow" ? [proshallow_size, proshallow_wall_thickenss, proshallow_corner_radius, proshallow_bottom_radius]
+  : stanley_model == "prodeep" ? [prodeep_size, prodeep_wall_thickenss, prodeep_corner_radius, prodeep_bottom_radius]
+  : stanley_model == "fatmaxshallow" ? [fatmaxshallow_size, fatmaxshallow_wall_thickenss, fatmaxshallow_corner_radius, fatmaxshallow_bottom_radius]
+  : stanley_model == "fatmaxdeep" ? [fatmaxdeep_size, fatmaxdeep_wall_thickenss, fatmaxdeep_corner_radius, fatmaxdeep_bottom_radius]
+  : stanley_model == "compartment25" ? [compartment25_size, compartment25_wall_thickenss, compartment25_corner_radius, compartment25_bottom_radius]
+  : stanley_model == "compartment25front" ? [compartment25front_size, compartment25front_wall_thickenss, compartment25front_corner_radius, compartment25front_bottom_radius]
+  : [pitch, wall_thickness, corner_radius, flat_base_rounded_radius];
+
+  echo("stanley_model_settings", stanley_model_settings=stanley_model_settings);
 
 set_environment(
   width = width,
@@ -325,7 +364,7 @@ gridfinity_cup(
     flatBase="rounded",
     spacer=false,
     minimumPrintablePadSize=0.2,
-    flatBaseRoundedRadius = flat_base_rounded_radius,
+    flatBaseRoundedRadius = stanley_model_settings[istanley_model_bottom_radius],
     flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
   wall_thickness=stanley_model_settings[istanley_model_settings_wall],
   chamber_wall_thickness=chamber_wall_thickness,
