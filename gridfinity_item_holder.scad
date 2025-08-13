@@ -51,7 +51,8 @@ itemholder_hole_gridx = 0; //1
 // Number of holes in the y dimension, 0 is dynamic, y.5, is only valid for hex.
 itemholder_hole_gridy = 0; //0.5
 //Auto set the bin height based on the hole size.
-itemholder_auto_bin_height = true;
+itemholder_auto_bin_height = "enabled"; //["enabled","enabled_full","disabled"]
+// The number of sides for a round hole 
 itemholder_compartments = [1,1]; //[1:10]
 // Spacing around the compartments
 itemholder_compartment_spacing = 3; //0.1
@@ -751,15 +752,19 @@ module gridfinity_itemholder(
           holeClearance = itemholder_hole_clearance);
 
   calculatedItemDepth = itemCalc[icHoleSize].z;
-
+  calculatedItemClearanceHeight = item[iitemHeight];
   // min floor height
   baseClearanceHeight = cupBaseClearanceHeight(magnet_size[1], screw_size[1], center_magnet_thickness);
   
   //calculate the bin height. This math is not right
-  height = !itemholder_auto_bin_height || calculatedItemDepth <=0 ? num_z
+  height = 
+    let(itemheightneeded = itemholder_auto_bin_height == "enabled_full" ? calculatedItemClearanceHeight: calculatedItemDepth)
+    itemholder_auto_bin_height == "disabled" || itemheightneeded <=0 
+      ? num_z
       : filled_in != "disabled"
-        ? (baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z
-        : ceil((baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z);
+        ? (baseClearanceHeight + floor_thickness + itemheightneeded)/env_pitch().z
+        : ceil((baseClearanceHeight + floor_thickness + itemheightneeded)/env_pitch().z);
+   echo("gridfinity_itemholder", height=height, itemholder_auto_bin_height=itemholder_auto_bin_height  );
   // calculate floor thickness
   calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=calculatedItemDepth + gf_cup_floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
 
