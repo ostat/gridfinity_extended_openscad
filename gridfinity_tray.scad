@@ -99,7 +99,7 @@ efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
-flat_base = "off";
+flat_base = "off";//[off,gridfinity,rounded]
 // Remove floor to create a vertical spacer
 spacer = false;
 
