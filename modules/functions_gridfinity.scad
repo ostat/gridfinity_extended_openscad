@@ -87,7 +87,7 @@ function cupBaseClearanceHeight(magnet_depth, screw_depth, center_magnet, flat_b
     : max(magnet_depth, screw_depth, gfBaseHeight());
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_depth, screw_depth, center_magnet=0, floor_thickness, num_z=1, filled_in="disabled", efficient_floor, flat_base) = 
+function calculateFloorHeight(magnet_depth, screw_depth, center_magnet=0, floor_thickness, num_z=1, filled_in="disabled", efficient_floor, flat_base, captive_magnet_height=0) = 
   assert(is_num(magnet_depth))
   assert(is_num(screw_depth))
   assert(is_num(center_magnet))
@@ -96,10 +96,11 @@ function calculateFloorHeight(magnet_depth, screw_depth, center_magnet=0, floor_
   assert(is_string(filled_in))
   assert(is_string(efficient_floor))
   assert(is_string(flat_base))
+  assert(is_num(captive_magnet_height))
   let(
     filled_in = validateFilledIn(filled_in),
     floorThickness = max(floor_thickness, gf_cup_floor_thickness),
-    clearanceHeight = cupBaseClearanceHeight(magnet_depth=magnet_depth, screw_depth=screw_depth, center_magnet=center_magnet, flat_base=flat_base), 
+    clearanceHeight = cupBaseClearanceHeight(magnet_depth=magnet_depth + captive_magnet_height, screw_depth=screw_depth, center_magnet=center_magnet, flat_base=flat_base), 
     result = 
       filled_in != FilledIn_disabled ? num_z * env_pitch().z 
         : efficient_floor != "off" 

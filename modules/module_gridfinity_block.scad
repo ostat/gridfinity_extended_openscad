@@ -170,7 +170,8 @@ module grid_block(
           screwDepth = screw_size[iCylinderDimension_Height],
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagnetRelease = magnet_easy_release != MagnetEasyRelease_off);
+          easyMagnetRelease = magnet_easy_release != MagnetEasyRelease_off,
+          magnetCaptiveHeight = cupBase_settings[iCupBase_MagnetCaptiveHeight]);
     }
   }
  
