@@ -22,15 +22,22 @@ Running locally is how I recommend running the scripts. The scripts run faster a
 
 1. Install OpenSCAD. This project relies on features available in the **OpenSCAD Developer Version**. Make sure to download it from [OpenSCAD Developer Version](https://openscad.org/downloads.html#snapshots).
 
-1. Clone or download this repository to your local machine:
+2. Clone or download this repository to your local machine:
    ```bash
    git clone https://github.com/ostat/gridfinity_extended_openscad.git
    ```
    Alternatively, you can download the ZIP file from the repository page and extract it.
 
-2. Open the project files in OpenSCAD. **Note:** You must use the developer version of OpenSCAD for this project. Download it here: [OpenSCAD Developer Version](https://openscad.org/downloads.html#snapshots).
+3. Enable OpenSCAD Features.
+   - Open OpenSCAD application
+   - Go to `Menu > Edit > Preferences`. 
+   - In the **Preferences** dialog go to the Features Tab and Enable:
+     - **manifold**: makes OpenSCAD faster.
+     - **textmetrics**: Enables text related features for the base text.
 
-3. Start exploring and customising the Gridfinity bins and extensions!
+4. Open the project files in OpenSCAD. **Note:** You must use the developer version of OpenSCAD for this project. Download it here: [OpenSCAD Developer Version](https://openscad.org/downloads.html#snapshots).
+
+5. Start exploring and customising the Gridfinity bins and extensions!
 
 
 ## Official Documentation
