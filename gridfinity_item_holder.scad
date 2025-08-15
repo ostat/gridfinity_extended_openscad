@@ -766,7 +766,7 @@ module gridfinity_itemholder(
         : ceil((baseClearanceHeight + floor_thickness + itemheightneeded)/env_pitch().z);
    echo("gridfinity_itemholder", height=height, itemholder_auto_bin_height=itemholder_auto_bin_height  );
   // calculate floor thickness
-  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=calculatedItemDepth + gf_cup_floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
+  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=calculatedItemDepth + floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
 
   
   if(env_help_enabled("info")) echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedUsableFloorThickness=calculatedUsableFloorThickness, baseClearanceHeight=baseClearanceHeight, height=height); 
