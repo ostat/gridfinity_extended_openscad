@@ -17,8 +17,8 @@ module bentWall(
   upperBendRadius=0,
   height=30,
   thickness=10,
-  wall_cutout_depth = 10,
-  wall_cutout_width = 10,
+  wall_cutout_depth = 0,
+  wall_cutout_width = 0,
   centred_x=true) {
   bendPosition = bendPosition > 0 ?bendPosition: length/2;
   
