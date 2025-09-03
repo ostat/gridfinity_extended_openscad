@@ -125,6 +125,14 @@ module assert_openscad_version(){
   assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
+// Gets one value base on another.
+// if user_value = 0 use the base value
+// user_value > 0 use that value
+// user_value < 0 base_value/abs(user_value) (i.e. -3 is 1/3 the base_value)
+function get_related_value(user_value, base_value) = 
+    user_value == 0 ? base_value :
+    user_value < 0 ? base_value/abs(user_value) : user_value;
+
 module color_conditional(enable=true, c){
   if(enable)
   color(c)
