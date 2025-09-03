@@ -4,30 +4,33 @@ include <module_pattern_brick.scad>
 
 iPatternEnabled=0;
 iPatternStyle=1;
-iPatternFill=2;
-iPatternBorder=3;
-iPatternHoleSize=4;
-iPatternHoleSides=5;
-iPatternHoleSpacing=6;
-iPatternHoleRadius=7;
-iPatternGridChamfer=8;
-iPatternVoronoiNoise=9;
-iPatternBrickWeight=10;
-iPatternFs=11;
+iPatternRotate=2;
+iPatternFill=3;
+iPatternBorder=4;
+iPatternDepth=5;
+iPatternCellSize=6;
+iPatternHoleSides=7;
+iPatternStrength=8;
+iPatternHoleRadius=9;
+iPatternFs=10;
+iPatternGridChamfer=11;
+iPatternVoronoiNoise=12;
+iPatternBrickWeight=13;
+
 
 PatternStyle_grid = "grid";
-PatternStyle_gridrotated = "gridrotated";
 PatternStyle_hexgrid = "hexgrid";
-PatternStyle_hexgridrotated = "hexgridrotated";
 PatternStyle_voronoi = "voronoi";
 PatternStyle_voronoigrid = "voronoigrid";
 PatternStyle_voronoihexgrid = "voronoihexgrid";
 PatternStyle_brick = "brick";
-PatternStyle_brickrotated = "brickrotated";
 PatternStyle_brickoffset = "brickoffset";
-PatternStyle_brickoffsetrotated = "brickoffsetrotated";
 
-PatternStyle_values = [PatternStyle_grid, PatternStyle_gridrotated, PatternStyle_hexgrid, PatternStyle_hexgridrotated, PatternStyle_voronoi, PatternStyle_voronoigrid, PatternStyle_voronoihexgrid, PatternStyle_brick, PatternStyle_brickrotated, PatternStyle_brickoffset, PatternStyle_brickoffsetrotated];
+PatternStyle_values = [
+    PatternStyle_grid, PatternStyle_hexgrid,
+    PatternStyle_voronoi, PatternStyle_voronoigrid, PatternStyle_voronoihexgrid, 
+    PatternStyle_brick, PatternStyle_brickoffset
+    ];
 function validatePatternStyle(value, name = "PatternStyle") = 
   assert(list_contains(PatternStyle_values, value), typeerror(name, value))
   value;
@@ -51,56 +54,81 @@ function validatePatternFill(value, name = "PatternFill") =
 function PatternSettings(
     patternEnabled, 
     patternStyle, 
+    patternRotate,
     patternFill,
     patternBorder = -1, 
-    patternHoleSize, 
+    patternDepth = 0,
+    patternCellSize, 
     patternHoleSides,
-    patternHoleSpacing, 
+    patternStrength, 
     patternHoleRadius,
+    patternFs = 0,
     patternGridChamfer=0,
     patternVoronoiNoise=0,
-    patternBrickWeight=0,
-    patternFs = 0) = 
+    patternBrickWeight=0
+    ) = 
   let(
     result = [
       patternEnabled,
       patternStyle,
+      patternRotate,
       patternFill,
       patternBorder,
-      is_num(patternHoleSize) ? [patternHoleSize, patternHoleSize] : patternHoleSize,
+      patternDepth,
+      is_num(patternCellSize) ? [patternCellSize, patternCellSize] : patternCellSize,
       patternHoleSides,
-      patternHoleSpacing,
+      is_num(patternStrength) ? [patternStrength, patternStrength] : patternStrength,
       patternHoleRadius,
+      patternFs,
       patternGridChamfer,
       patternVoronoiNoise,
-      patternBrickWeight,
-      patternFs],
+      patternBrickWeight
+      ],
     validatedResult = ValidatePatternSettings(result)
   ) validatedResult;
 
 function ValidatePatternSettings(settings, num_x, num_y) =
-  assert(is_list(settings), "PatternStyle Settings must be a list")
-  assert(len(settings)==12, "PatternStyle Settings must length 10")
+  assert(is_list(settings), "Settings must be a list")
+  assert(len(settings)==15, "Settings must length 10")
+  assert(is_bool(settings[iPatternEnabled]), "settings[iPatternEnabled] must be a boolean")
+  assert(is_string(settings[iPatternStyle]), "settings[iPatternStyle] must be a string")
+  assert(is_bool(settings[iPatternRotate]), "settings[iPatternRotate] must be a boolean")
+  assert(is_string(settings[iPatternFill]), "settings[iPatternFill] must be a string")
+  assert(is_num(settings[iPatternBorder]), "settings[iPatternBorder] must be a non-negative number or -1")
+  assert(is_num(settings[iPatternDepth]), "settings[iPatternDepth] must be a number")
+  assert(is_list(settings[iPatternCellSize]) && len(settings[iPatternCellSize])==2, "settings[iPatternCellSize] must be a list two positive numbers")
+  assert(is_num(settings[iPatternHoleSides]) && settings[iPatternHoleSides] >=  3, "settings[iPatternHoleSides] must be a number >= 3")
+  assert(is_list(settings[iPatternStrength]) && len(settings[iPatternStrength])==2 && 
+  is_num(settings[iPatternStrength].x) && settings[iPatternStrength].x > 0 && 
+  is_num(settings[iPatternStrength].y) && settings[iPatternStrength].y > 0, "settings[iPatternStrength] must be a list of two positive numbers")
+  assert(is_num(settings[iPatternHoleRadius]) && settings[iPatternHoleRadius] >= 0, "settings[iPatternHoleRadius] must be a non-negative number")
+  assert(is_num(settings[iPatternFs]) && settings[iPatternFs] >= 0, "settings[iPatternFs] must be a non-negative number")
+  assert(is_num(settings[iPatternGridChamfer]) && settings[iPatternGridChamfer] >= 0, "settings[iPatternGridChamfer] must be a non-negative number")
+  assert(is_num(settings[iPatternVoronoiNoise]) && settings[iPatternVoronoiNoise] >= 0 && settings[iPatternVoronoiNoise] <= 1, "settings[iPatternVoronoiNoise] must be between 0 and 1")
+  assert(is_num(settings[iPatternBrickWeight]) && settings[iPatternBrickWeight] >= 0, "settings[iPatternBrickWeight] must be a non-negative number")
     [settings[iPatternEnabled],
       validatePatternStyle(settings[iPatternStyle]),
+      settings[iPatternRotate],
       validatePatternFill(settings[iPatternFill]),
       settings[iPatternBorder],
-      settings[iPatternHoleSize],
+      settings[iPatternDepth],
+      settings[iPatternCellSize],
       settings[iPatternHoleSides],
-      settings[iPatternHoleSpacing],
+      settings[iPatternStrength],
       settings[iPatternHoleRadius],
+      settings[iPatternFs],
       settings[iPatternGridChamfer],
       settings[iPatternVoronoiNoise],
-      settings[iPatternBrickWeight],
-      settings[iPatternFs]];
+      settings[iPatternBrickWeight]
+      ];
       
 module cutout_pattern(
   patternStyle,
   canvasSize,
   customShape = false,
   circleFn,
-  holeSize = [],
-  holeSpacing,
+  cellSize = [],
+  strength,
   holeHeight,
   holeRadius,
   center = true,
@@ -111,40 +139,57 @@ module cutout_pattern(
   patternBrickWeight=0,
   border = 0,
   patternFs = 0,
+  rotateGrid = false,
+  cut_depth =1,
   source = ""){
-  
-  canvasSize = border > 0
-    ? [canvasSize.x-border*2, canvasSize.y-border*2]
-    : canvasSize;
-  if(env_help_enabled("trace")) echo("cutout_pattern", source=source, canvasSize=canvasSize, patternFs=patternFs, border=border);
+
+  // validate inputs
+  assert(is_num(canvasSize.x) && canvasSize.x > 0, "canvasSize.x must be a positive number");
+  assert(is_num(canvasSize.y) && canvasSize.y > 0, "canvasSize.y must be a positive number");
+  assert(is_num(holeHeight) && holeHeight > 0, "holeHeight must be a positive number");
+  assert(is_num(holeRadius) && holeRadius >= 0, "holeRadius must be a non-negative number");
+  assert(is_num(border) && border >= 0, "border must be a non-negative number");
+  assert(is_num(patternFs) && patternFs >= 0, "patternFs must be a non-negative number");
+  assert(is_num(patternGridChamfer) && patternGridChamfer >= 0, "patternGridChamfer must be a non-negative number");
+  assert(is_num(patternVoronoiNoise) && patternVoronoiNoise >= 0  && patternVoronoiNoise <= 1, "patternVoronoiNoise must be between 0 and 1");
+  assert(is_num(patternBrickWeight) && patternBrickWeight >= 0, "patternBrick Weight must be a non-negative number");
+  assert(is_list(strength) && len(strength) == 2 && is_num(strength.x) && strength.x > 0 && is_num(strength.y) && strength.y > 0, "strength must be a list of two positive numbers");
+
+  canvasSize = 
+    let(cs = rotateGrid ? [canvasSize.y,canvasSize.x] : canvasSize)
+    border > 0
+    ? [cs.x-border*2, cs.y-border*2]
+    : cs;
+
   
   $fs = patternFs > 0 ? patternFs : $fs;
   
   //translate(border>0 ? [border,border,0] : [0,0,0])
   translate(center ? [0,0,0] : [border,border,0])
   translate(centerz ? [0,0,-holeHeight/2] : [0,0,0])
+  rotate(rotateGrid ? [0,0,90] : [0,0,0])
   union(){
-    if(patternStyle == PatternStyle_grid || patternStyle == PatternStyle_hexgrid || patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated) {
+    if(patternStyle == PatternStyle_grid || patternStyle == PatternStyle_hexgrid) {
       GridItemHolder(
         canvasSize = canvasSize,
-        hexGrid = (patternStyle == PatternStyle_hexgrid || patternStyle == PatternStyle_hexgridrotated),
+        hexGrid = patternStyle == PatternStyle_hexgrid,
         customShape = customShape,
         circleFn = circleFn,
-        holeSize = holeSize,
-        holeSpacing = holeSpacing,
+        holeSize = cellSize,
+        holeSpacing = strength,
         holeHeight = holeHeight,
         center=center,
         fill=fill, //"none", "space", "crop"
-        rotateGrid = !(patternStyle == PatternStyle_gridrotated || patternStyle == PatternStyle_hexgridrotated),
+        rotateGrid = true,
         //border = border,
         holeChamfer=[patternGridChamfer,patternGridChamfer]);
     }
-    else if(patternStyle == PatternStyle_voronoi || patternStyle == PatternStyle_voronoigrid || patternStyle == "voronoihexgrid"){
+    else if(patternStyle == PatternStyle_voronoi || patternStyle == PatternStyle_voronoigrid || patternStyle == PatternStyle_voronoihexgrid){
       if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
       rectangle_voronoi(
         canvasSize = [canvasSize.x,canvasSize.y,holeHeight], 
-        spacing = holeSpacing.x, 
-        cellsize = holeSize.x,
+        spacing = strength.x, 
+        cellsize = cellSize.x,
         grid = (patternStyle == PatternStyle_voronoigrid || patternStyle == PatternStyle_voronoihexgrid),
         gridOffset = (patternStyle == PatternStyle_voronoihexgrid),
         noise=patternVoronoiNoise,
@@ -152,20 +197,22 @@ module cutout_pattern(
         center=center,
         seed=env_random_seed());
     }
-    else if(patternStyle == PatternStyle_brick || patternStyle == PatternStyle_brickrotated ||
-            patternStyle == PatternStyle_brickoffset || patternStyle == PatternStyle_brickoffsetrotated){
+    else if(patternStyle == PatternStyle_brick || patternStyle == PatternStyle_brickoffset){
       if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
       brick_pattern(
         canvis_size=[canvasSize.x,canvasSize.y],
         thickness = holeHeight,
-        spacing=holeSpacing.x,
+        spacing=strength.x,
         center=center,
-        cell_size = holeSize,
+        cell_size = cellSize,
         corner_radius = holeRadius,
         center_weight = patternBrickWeight,
-        rotateGrid = !(patternStyle == PatternStyle_brickrotated || patternStyle == PatternStyle_brickoffsetrotated),
-        offset_layers = (patternStyle == PatternStyle_brickoffset || patternStyle == PatternStyle_brickoffsetrotated)
+        rotateGrid = true,
+        offset_layers = patternStyle == PatternStyle_brickoffset
       );
+    }
+    else {
+      echo("cutout_pattern: Unknown patternStyle", patternStyle=patternStyle);
     }
   }
 }

@@ -166,23 +166,27 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
 // Spacing between pattern
-wallpattern_hole_spacing = 2; //0.1
+wallpattern_strength = 2; //0.1
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1];  //[0:1:1]
+// rotate the grid
+wallpattern_rotate_grid=false;
+//Size of the hole
+wallpattern_cell_size = [10,10]; //0.1
 // Add the pattern to the dividers
 wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
-//Size of the hole
-wallpattern_hole_size = [5,5]; //0.1
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
 wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 // border around the wall pattern, default is wall thickness
 wallpattern_border = 0;
+// depth of imprint in mm, 0 = is wall width.
+wallpattern_depth = 0; // 0.1
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
@@ -196,18 +200,22 @@ wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 // enable Grid floor patter
 floorpattern_enabled=false;
 // Style of the pattern
-floorpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+floorpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
 // Spacing between pattern
-floorpattern_hole_spacing = 2; //0.1
+floorpattern_strength = 2; //0.1
+// rotate the grid
+floorpattern_rotate_grid = false;
+//Size of the hole
+floorpattern_cell_size = [10,10]; //0.1
 //Number of sides of the hole op
 floorpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
-//Size of the hole
-floorpattern_hole_size = [5,5]; //0.1
+//Radius of corners
 floorpattern_hole_radius = 0.5;
 // pattern fill mode
 floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 // border around the wall pattern, default is wall thickness
 floorpattern_border = 0;
+floorpattern_depth = 0; // 0.1
 //grid pattern hole taper
 floorpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
@@ -384,11 +392,13 @@ gridfinity_cup(
   wall_pattern_settings = PatternSettings(
     patternEnabled = wallpattern_enabled, 
     patternStyle = wallpattern_style, 
+    patternRotate = wallpattern_rotate_grid,
     patternFill = wallpattern_fill,
     patternBorder = wallpattern_border, 
-    patternHoleSize = wallpattern_hole_size, 
+    patternDepth = wallpattern_depth,
+    patternCellSize = wallpattern_cell_size, 
     patternHoleSides = wallpattern_hole_sides,
-    patternHoleSpacing = wallpattern_hole_spacing, 
+    patternStrength = wallpattern_strength, 
     patternHoleRadius = wallpattern_hole_radius,
     patternGridChamfer = wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
@@ -397,11 +407,13 @@ gridfinity_cup(
   floor_pattern_settings = PatternSettings(
     patternEnabled = floorpattern_enabled, 
     patternStyle = floorpattern_style, 
+    patternRotate = floorpattern_rotate_grid,
     patternFill = floorpattern_fill,
     patternBorder = floorpattern_border, 
-    patternHoleSize = floorpattern_hole_size, 
+    patternDepth = floorpattern_depth,
+    patternCellSize = floorpattern_cell_size, 
     patternHoleSides = floorpattern_hole_sides,
-    patternHoleSpacing = floorpattern_hole_spacing, 
+    patternStrength = floorpattern_strength, 
     patternHoleRadius = floorpattern_hole_radius,
     patternGridChamfer = floorpattern_pattern_grid_chamfer,
     patternVoronoiNoise = floorpattern_pattern_voronoi_noise,

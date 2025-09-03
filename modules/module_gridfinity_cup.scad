@@ -583,6 +583,7 @@ module gridfinity_cup(
                       holeSize = floor_pattern_settings[iPatternHoleSize],
                       holeSpacing = [floor_pattern_settings[iPatternHoleSpacing], floor_pattern_settings[iPatternHoleSpacing]],
                       holeHeight = sepFloorHeight + fudgeFactor*6,
+                      depth = floor_pattern_settings[iPatternDepth],
                       center = true,
                       fill = floor_pattern_settings[iPatternFill],
                       patternGridChamfer = floor_pattern_settings[iPatternGridChamfer],
@@ -592,6 +593,7 @@ module gridfinity_cup(
                         cupBase_settings[iCupBase_EfficientFloor] == EfficientFloor_smooth? 6.5 : 0),
                       holeRadius = floor_pattern_settings[iPatternHoleRadius],
                       patternFs = floor_pattern_settings[iPatternFs],
+                      rotateGrid = floor_pattern_settings[iPatternRotate],
                       source="floor_pattern");
 
                   //subtract dividers from floor pattern
@@ -613,7 +615,8 @@ module gridfinity_cup(
               }
           
               if(wall_pattern_settings[iPatternEnabled]){
-                wallpattern_thickness = wall_thickness + fudgeFactor*4;
+                wallpattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], wall_thickness) + fudgeFactor*4;
+
                 border = 0; //Believe this to be no longer needed
                
                 wallpatternzpos = wallpatternClearanceHeight(
@@ -640,26 +643,27 @@ module gridfinity_cup(
                 labelSize = calculateLabelSize(label_settings[iLabelSettings_size]);
                 //Subtracting the wallpattern_thickness is a bit of a hack, its needed as the label extends in to the wall.
                 labelSizez = (label_settings[iLabelSettings_style] != LabelStyle_disabled ? labelSize.z-wallpattern_thickness : 0);
-                
+
                 front = [
                   //width,height
                   [num_x*env_pitch().x-env_corner_radius()*2-border,
                     heightz - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)],
                   //Position
-                  [(num_x)*env_pitch().x/2, 
-                    env_clearance().x/2+wall_thickness/2, 
+                  [num_x*env_pitch().x/2, 
+                    env_clearance().x/2+wall_thickness/2-((wall_thickness+fudgeFactor*4)-wallpattern_thickness), 
                     z - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)/2],
                   //rotation
                   [90,0,0],
                   //enabled
-                  wallpattern_walls[0]];
+                  wallpattern_walls[0],
+                  ];
                 back = [
                   //width,height
                   [num_x*env_pitch().x-env_corner_radius()*2-border,
                     heightz - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)],
                   //Position
-                  [(num_x)*env_pitch().x/2, 
-                    (num_y)*env_pitch().y-env_clearance().y/2-wall_thickness/2, 
+                  [num_x*env_pitch().x/2, 
+                    num_y*env_pitch().y-env_clearance().y/2-wall_thickness/2+((wall_thickness+fudgeFactor*4)-wallpattern_thickness), 
                      z - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)/2],
                   //rotation
                   [90,0,0], 
@@ -670,8 +674,8 @@ module gridfinity_cup(
                   [num_y*env_pitch().y-env_corner_radius()*2-border,
                     heightz - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)],
                   //Position
-                  [env_clearance().x/2+wall_thickness/2, 
-                    (num_y)*env_pitch().y/2, 
+                  [env_clearance().x/2+wall_thickness/2-((wall_thickness+fudgeFactor*4)-wallpattern_thickness),
+                    num_y*env_pitch().y/2, 
                     z - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)/2],
                   //rotation
                   [90,0,90],
@@ -682,8 +686,8 @@ module gridfinity_cup(
                   [num_y*env_pitch().y-env_corner_radius()*2-border,
                     heightz - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)],
                   //Position
-                  [(num_x)*env_pitch().x-wall_thickness/2-env_clearance().x/2,   
-                    (num_y)*env_pitch().y/2, 
+                  [num_x*env_pitch().x-env_clearance().x/2-wall_thickness/2+((wall_thickness+fudgeFactor*4)-wallpattern_thickness),
+                    num_y*env_pitch().y/2, 
                     z - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)/2],
                   //rotation
                   [90,0,90],
@@ -709,8 +713,8 @@ module gridfinity_cup(
                             border = wall_pattern_settings[iPatternBorder],
                             customShape = false,
                             circleFn = wall_pattern_settings[iPatternHoleSides],
-                            holeSize = wall_pattern_settings[iPatternHoleSize],
-                            holeSpacing = [wall_pattern_settings[iPatternHoleSpacing],wall_pattern_settings[iPatternHoleSpacing]],
+                            cellSize = wall_pattern_settings[iPatternCellSize],
+                            strength = wall_pattern_settings[iPatternStrength],
                             holeHeight = wallpattern_thickness,
                             center=true,
                             centerz = true,
@@ -720,6 +724,7 @@ module gridfinity_cup(
                             patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
                             source = "wall_pattern",
+                            rotateGrid = wall_pattern_settings[iPatternRotate],
                             patternFs = wall_pattern_settings[iPatternFs]);
                             
                       if(wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
@@ -737,8 +742,8 @@ module gridfinity_cup(
                                 border = wall_pattern_settings[iPatternBorder],
                                 customShape = false,
                                 circleFn = wall_pattern_settings[iPatternHoleSides],
-                                holeSize = wall_pattern_settings[iPatternHoleSize],
-                                holeSpacing = [wall_pattern_settings[iPatternHoleSpacing],wall_pattern_settings[iPatternHoleSpacing]],
+                                cellSize = wall_pattern_settings[iPatternCellSize],
+                                strength = wall_pattern_settings[iPatternStrength],
                                 holeHeight = verSepThickness,
                                 center=true,
                                 fill=wall_pattern_settings[iPatternFill],
@@ -747,6 +752,7 @@ module gridfinity_cup(
                                 patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
                                 holeRadius = wall_pattern_settings[iPatternHoleRadius],
                                 source="vertical separator wall pattern",
+                                rotateGrid = wall_pattern_settings[iPatternRotate],
                                 patternFs = wall_pattern_settings[iPatternFs]);
                   }    
                     
@@ -772,8 +778,8 @@ module gridfinity_cup(
                             border = wall_pattern_settings[iPatternBorder],
                             customShape = false,
                             circleFn = wall_pattern_settings[iPatternHoleSides],
-                            holeSize = wall_pattern_settings[iPatternHoleSize],
-                            holeSpacing = [wall_pattern_settings[iPatternHoleSpacing],wall_pattern_settings[iPatternHoleSpacing]],
+                            cellSize = wall_pattern_settings[iPatternCellSize],
+                            strength = wall_pattern_settings[iPatternStrength],
                             holeHeight = wallpattern_thickness,
                             center=true,
                             centerz = true,
@@ -783,6 +789,7 @@ module gridfinity_cup(
                             patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
                             source = "wall_pattern",
+                            rotateGrid = wall_pattern_settings[iPatternRotate],
                             patternFs = wall_pattern_settings[iPatternFs]);
                             
                         if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
@@ -811,6 +818,7 @@ module gridfinity_cup(
                                   patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
                                   holeRadius = wall_pattern_settings[iPatternHoleRadius],
                                   source = "horizontal separator wall pattern",
+                                  rotateGrid = wall_pattern_settings[iPatternRotate],
                                   patternFs = wall_pattern_settings[iPatternFs]);
                   }
                     
@@ -993,14 +1001,15 @@ module gridfinity_cup(
     }
   }  
   
-  if(divider_wall_removable_settings[iDividerRemovable_Enabled])
-    dividers_removable_for_cup(
+  if(divider_wall_removable_settings[iDividerRemovable_Enabled]) {
+    gridfinity_removable_divider_walls(
       num_x = num_x, 
       num_y = num_y,
       zpoint = zpoint,
       divider_settings = divider_wall_removable_settings,
       wall_thickness = wall_thickness,
       floorHeight = floorHeight);
+  }
   
   if(env_help_enabled("info"))
     //translate(gridfinityRenderPosition(position,num_x,num_y))
@@ -1297,7 +1306,8 @@ module basic_cavity(num_x, num_y, num_z,
     }
   
     if(divider_wall_removable_settings[iDividerRemovable_Enabled])
-      removable_dividers_support(
+      // reinforce the bin walls for the dividers
+      gridfinity_removable_divider_wall_reinforcement(
           num_x = num_x, 
           num_y = num_y,
           zpoint = zpoint,
@@ -1343,7 +1353,8 @@ module basic_cavity(num_x, num_y, num_z,
     }  // difference removals from main body.
 
     if(divider_wall_removable_settings[iDividerRemovable_Enabled])
-      removable_dividers_slots(
+      // slots that will be removed from the walls
+      gridfinity_removable_divider_wall_slots(
         num_x = num_x, 
         num_y = num_y,
         zpoint = zpoint,
