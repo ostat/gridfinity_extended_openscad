@@ -89,7 +89,7 @@ function PatternSettings(
 
 function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_list(settings), "Settings must be a list")
-  assert(len(settings)==15, "Settings must length 10")
+  assert(len(settings)==14, "Settings must length 14")
   assert(is_bool(settings[iPatternEnabled]), "settings[iPatternEnabled] must be a boolean")
   assert(is_string(settings[iPatternStyle]), "settings[iPatternStyle] must be a string")
   assert(is_bool(settings[iPatternRotate]), "settings[iPatternRotate] must be a boolean")
