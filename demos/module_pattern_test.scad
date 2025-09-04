@@ -75,18 +75,11 @@ module show_pattern(
   }
 }
 
-PatternStyle_grid = "grid";
-PatternStyle_gridrotated = "gridrotated";
-PatternStyle_hexgrid = "hexgrid";
-PatternStyle_hexgridrotated = "hexgridrotated";
-PatternStyle_voronoi = "voronoi";
-PatternStyle_voronoigrid = "voronoigrid";
-PatternStyle_voronoihexgrid = "voronoihexgrid";
-PatternStyle_brick = "brick";
-PatternStyle_brickrotated = "brickrotated";
-PatternStyle_brickoffset = "brickoffset";
-PatternStyle_brickoffsetrotated = "brickoffsetrotated";
-
+PatternStyles_to_test = [
+    //PatternStyle_grid, PatternStyle_hexgrid, 
+    //PatternStyle_voronoi, PatternStyle_voronoigrid, PatternStyle_voronoihexgrid, 
+    //PatternStyle_brick, PatternStyle_brickoffset,
+    PatternStyle_tobiAsanoha, PatternStyle_asanoha, PatternStyle_goma, PatternStyle_tsumiishiKikko, PatternStyle_bishamonKikkou, PatternStyle_mikado];
 spacing = 4;
 canvis_length = 75;
 thickness = 5;
@@ -95,8 +88,8 @@ height = canvis_length+20;
 
   //translate([-spacing,-spacing,1])
   //cube([canvis_length+spacing*2,70+spacing*2,1]);
-  for(iPattern=[0:len(PatternStyle_values)-1]){
-    pattern = PatternStyle_values[iPattern];
+  for(iPattern=[0:len(PatternStyles_to_test)-1]){
+    pattern = PatternStyles_to_test[iPattern];
     
     for(iFill=[0:len(PatternFill_values)-1]){
       fill = PatternFill_values[iFill];

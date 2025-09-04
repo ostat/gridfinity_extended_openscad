@@ -166,7 +166,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
+wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset, kumiko_tobi_asanoha, kumiko_asanoha , kumiko_goma, kumiko_tsumiishi_kikko, kumiko_bishamon_kikkou, kumiko_mikado]
 // Spacing between pattern
 wallpattern_strength = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -193,6 +193,8 @@ wallpattern_pattern_grid_chamfer = 0; //0.1
 wallpattern_pattern_voronoi_noise = 0.75; //0.01
 //brick pattern center weight
 wallpattern_pattern_brick_weight = 5;
+//Kumiko ratio of main wall to fill wall 
+wallpattern_pattern_kumiko_fill_ratio = 0.5; //0.01
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -200,7 +202,7 @@ wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 // enable Grid floor patter
 floorpattern_enabled=false;
 // Style of the pattern
-floorpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
+floorpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset, kumiko_tobi_asanoha, kumiko_asanoha , kumiko_goma, kumiko_tsumiishi_kikko, kumiko_bishamon_kikkou, kumiko_mikado]*/
 // Spacing between pattern
 floorpattern_strength = 2; //0.1
 // rotate the grid
@@ -222,6 +224,8 @@ floorpattern_pattern_grid_chamfer = 0; //0.1
 floorpattern_pattern_voronoi_noise = 0.75; //0.01
 //brick pattern center weight
 floorpattern_pattern_brick_weight = 5;
+//Kumiko ratio of main wall to fill wall 
+floorpattern_pattern_kumiko_fill_ratio = 1;
 //$fs for floor pattern, min size face.
 floorpattern_pattern_quality = 0.4;//0.1:0.1:2
 
@@ -403,6 +407,7 @@ gridfinity_cup(
     patternGridChamfer = wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
     patternBrickWeight = wallpattern_pattern_brick_weight,
+    patternKumikoFillRatio = wallpattern_pattern_kumiko_fill_ratio,
     patternFs = wallpattern_pattern_quality), 
   floor_pattern_settings = PatternSettings(
     patternEnabled = floorpattern_enabled, 
@@ -418,6 +423,7 @@ gridfinity_cup(
     patternGridChamfer = floorpattern_pattern_grid_chamfer,
     patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
     patternBrickWeight = floorpattern_pattern_brick_weight,
+    patternKumikoFillRatio = floorpattern_pattern_kumiko_fill_ratio,
     patternFs = floorpattern_pattern_quality), 
   wallcutout_vertical=wallcutout_vertical,
   wallcutout_vertical_position=wallcutout_vertical_position,
