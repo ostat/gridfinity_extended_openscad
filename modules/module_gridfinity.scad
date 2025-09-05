@@ -128,10 +128,13 @@ module pad_oversize(
   assert(is_num(extend_down), "extend_down must be a number >= 0");
   
   if(env_help_enabled("trace")) echo("pad_oversize", num_x=num_x, num_y=num_y, margins= margins);
-  //pad_corner_position = [env_pitch().x/2 - 4,env_pitch().y/2 - 4]; 
+
+  // pad_corner_position = [env_pitch().x/2 - 4,env_pitch().y/2 - 4]; 
+  // must be 17 to be compatible
   pad_corner_position = [
     env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
-    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];// must be 17 to be compatible
+    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
+
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
   bevel2_top = 5;       // z of top of second bevel
