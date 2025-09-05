@@ -1,5 +1,3 @@
-$fn = 20;
-
 module triangleGrid(cellSize, cellHeight, width, height, strength) {
 	// vertical
 	for (i = [0 : cellHeight : width]) {

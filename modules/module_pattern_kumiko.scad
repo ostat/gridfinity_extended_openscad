@@ -6,7 +6,7 @@ function get_kumiko_goma_gap(cell_size, strength, gap_ratio) = strength*gap_rati
 
 function make_even(value) = ceil(value/2)*2;
 
-debug_kumiko = true;
+debug_kumiko = false;
 
 if(debug_kumiko)
 {
