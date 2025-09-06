@@ -1,3 +1,11 @@
+/*
+Kumiko Patterns
+This is an OpenSCAD implementation of various traditional japanese Kumiko patterns. They are all based on the triangle shape and add various infills. Implemented right now are the following patterns:
+
+by froqstar
+https://github.com/froqstar/kumikoPatterns
+
+*/
 module triangleGrid(cellSize, cellHeight, width, height, strength) {
 	// vertical
 	for (i = [0 : cellHeight : width]) {

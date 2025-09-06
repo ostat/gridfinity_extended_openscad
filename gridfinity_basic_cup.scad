@@ -193,7 +193,7 @@ wallpattern_pattern_grid_chamfer = 0; //0.1
 wallpattern_pattern_voronoi_noise = 0.75; //0.01
 //brick pattern center weight
 wallpattern_pattern_brick_weight = 5;
-//Kumiko ratio of main wall to fill wall 
+//Kumiko pattern ratio of main wall to fill wall 
 wallpattern_pattern_kumiko_fill_ratio = 0.5; //0.01
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
