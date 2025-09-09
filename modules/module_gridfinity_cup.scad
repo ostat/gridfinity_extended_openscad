@@ -674,13 +674,13 @@ module gridfinity_cup(
                         render_conditional(env_force_render())
                           cutout_pattern(
                             patternStyle = wall_pattern_settings[iPatternStyle],
-                            canvasSize = ylocations[i][0],
+                            canvasSize = [ylocations[i][0].x, ylocations[i][0].y],
                             border = wall_pattern_settings[iPatternBorder],
                             customShape = false,
                             circleFn = wall_pattern_settings[iPatternHoleSides],
                             cellSize = wall_pattern_settings[iPatternCellSize],
                             strength = wall_pattern_settings[iPatternStrength],
-                            holeHeight = wallpattern_thickness+fudgeFactor,
+                            holeHeight = ylocations[i][0].z + fudgeFactor,
                             center=true,
                             centerz = true,
                             fill = wall_pattern_settings[iPatternFill], //"none", "space", "crop"
@@ -739,13 +739,13 @@ module gridfinity_cup(
                         render_conditional(env_force_render())
                           cutout_pattern(
                             patternStyle = wall_pattern_settings[iPatternStyle],
-                            canvasSize = xlocations[i][0],
+                            canvasSize = [xlocations[i][0].x, xlocations[i][0].y],
                             border = wall_pattern_settings[iPatternBorder],
                             customShape = false,
                             circleFn = wall_pattern_settings[iPatternHoleSides],
                             cellSize = wall_pattern_settings[iPatternCellSize],
                             strength = wall_pattern_settings[iPatternStrength],
-                            holeHeight = wallpattern_thickness+fudgeFactor,
+                            holeHeight = xlocations[i][0].z+fudgeFactor,
                             center=true,
                             centerz = true,
                             fill = wall_pattern_settings[iPatternFill], //"none", "space", "crop"

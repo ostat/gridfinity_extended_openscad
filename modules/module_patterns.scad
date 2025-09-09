@@ -132,16 +132,17 @@ function get_wallpattern_positions(
   label_walls = [0,0,0,0],
   label_sizez=0) = 
   let(
-      fudgeFactor= 0.001,
+      fudgeFactor= 0.01,
       bin_size=[env_numx()*env_pitch().x-env_clearance().x, env_numy()*env_pitch().y-env_clearance().y],
       x_width = bin_size.x-env_corner_radius()*2-border,
       y_width = bin_size.y-env_corner_radius()*2-border, 
+      wallpattern_thickness=wallpattern_thickness+fudgeFactor,
       front = [
       //width,height
-      [x_width, heightz - (label_walls[0] != 0 ? label_sizez : 0)],
+      [x_width, heightz - (label_walls[0] != 0 ? label_sizez : 0), wallpattern_thickness],
       //Position
       [bin_size.x/2+env_clearance().x/2,  
-        env_clearance().x/2+wall_thickness/2-(wall_thickness-wallpattern_thickness)/2, 
+        env_clearance().y/2+wall_thickness/2-(wall_thickness-wallpattern_thickness)/2, 
         positionz - (label_walls[0] != 0 ? label_sizez : 0)/2],
       //rotation
       [90,0,0],
@@ -149,7 +150,7 @@ function get_wallpattern_positions(
       wallpattern_walls[0]],
     back = [
       //width,height
-      [x_width, heightz - (label_walls[1] != 0 ? label_sizez : 0)],
+      [x_width, heightz - (label_walls[1] != 0 ? label_sizez : 0), wallpattern_thickness],
       //Position
       [bin_size.x/2+env_clearance().x/2, 
         bin_size.y+env_clearance().y/2-wall_thickness/2+(wall_thickness-wallpattern_thickness)/2, 
@@ -160,7 +161,7 @@ function get_wallpattern_positions(
       wallpattern_walls[1]],
     left = [
       //width,height
-      [y_width, heightz - (label_walls[2] != 0 ? label_sizez : 0)],
+      [y_width, heightz - (label_walls[2] != 0 ? label_sizez : 0), wallpattern_thickness],
       //Position
       [env_clearance().x/2+wall_thickness/2-(wall_thickness-wallpattern_thickness)/2,
         bin_size.y/2+env_clearance().y/2, 
@@ -171,7 +172,7 @@ function get_wallpattern_positions(
       wallpattern_walls[2]],
     right = [
       //width,height
-      [y_width, heightz - (label_walls[3] != 0 ? label_sizez : 0)],
+      [y_width, heightz - (label_walls[3] != 0 ? label_sizez : 0), wallpattern_thickness],
       //Position
       [bin_size.x+env_clearance().x/2-wall_thickness/2+(wall_thickness-wallpattern_thickness)/2,
         bin_size.y/2+env_clearance().y/2, 
@@ -224,7 +225,7 @@ module coloured_wall_pattern(
           if(locations[i][3] > 0)
             translate(locations[i][1])
             rotate(locations[i][2])
-            cube([locations[i][0].x,locations[i][0].y,wallpattern_thickness+fudgeFactor], center=true);
+            cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
       }
     }
 
@@ -235,7 +236,7 @@ module coloured_wall_pattern(
           if(locations[i][3] > 0)
             translate(locations[i][1])
             rotate(locations[i][2])
-            cube([locations[i][0].x,locations[i][0].y,wallpattern_thickness], center=true);
+            cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
       }
 
       // Child 3 is wall pattern
