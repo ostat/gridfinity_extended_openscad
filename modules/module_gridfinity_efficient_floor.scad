@@ -105,7 +105,10 @@ module EfficientFloor(
   fudgeFactor = 0.01;
   floorRadius=floorRounded ? 1 : 0;
 
-  seventeen = [env_pitch().x/2-4, env_pitch().y/2-4];
+  inner_corner_center = [
+    env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
+    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
+
   minEfficientPadSize = floorSmooth ? 0.3 : 0.15;
 
   cornerRadius = 1.15+margins;
@@ -120,20 +123,20 @@ module EfficientFloor(
     // tapered top portion
     union() {
       tz(5+floor_thickness-fudgeFactor) 
-      cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+      cornercopy(num_x=num_x, num_y=num_y, r=inner_corner_center) 
       cylinder(r=cornerRadius, h=4);
       
       // tapered top portion
       tz(floor_thickness+cornerRadius)
       hull() {
-        cornercopy(num_x=num_x, num_y=num_y, r=[seventeen.x-cornerRadius,seventeen.y-cornerRadius]) 
+        cornercopy(num_x=num_x, num_y=num_y, r=[inner_corner_center.x-cornerRadius,inner_corner_center.y-cornerRadius]) 
         sphere(r=cornerRadius);
           
         tz(2.5)
         union(){
-          cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+          cornercopy(num_x=num_x, num_y=num_y, r=inner_corner_center) 
             cylinder(r=cornerRadius, h=cornerRadius);
-          cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+          cornercopy(num_x=num_x, num_y=num_y, r=inner_corner_center) 
             sphere(r=cornerRadius);
         }
       }
@@ -155,8 +158,8 @@ module EfficientFloor(
       roundedNegativeChampher(
         champherRadius = topChampherRadius, 
         size=[
-          (seventeen.x*2+(topChampherCornerRadius)*2+env_pitch().x*(num_x-1)),
-          (seventeen.y*2+(topChampherCornerRadius)*2+env_pitch().y*(num_y-1))],
+          (inner_corner_center.x*2+(topChampherCornerRadius)*2+env_pitch().x*(num_x-1)),
+          (inner_corner_center.y*2+(topChampherCornerRadius)*2+env_pitch().y*(num_y-1))],
         cornerRadius = topChampherCornerRadius, 
         champher = true,
         height = 4);
@@ -165,12 +168,12 @@ module EfficientFloor(
      hull() {
         //Bottom layer
         tz(floor_thickness+cornerRadius)
-        cornercopy(num_x=num_x, num_y=num_y, r=[seventeen.x-cornerRadius,seventeen.y-cornerRadius]) 
+        cornercopy(num_x=num_x, num_y=num_y, r=[inner_corner_center.x-cornerRadius,inner_corner_center.y-cornerRadius]) 
         sphere(r=cornerRadius);
           
         //Top Layer
         tz(wallStartHeight)
-          cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+          cornercopy(num_x=num_x, num_y=num_y, r=inner_corner_center) 
           roundedCylinder(
             h=cornerRadius,
             r=cornerRadius,
@@ -184,7 +187,7 @@ module EfficientFloor(
       // establishes floor
       tz(floor_thickness) 
       hull(){
-        cornercopy(num_x=num_x, num_y=num_y, r=[seventeen.x-0.5,seventeen.y-0.5]) 
+        cornercopy(num_x=num_x, num_y=num_y, r=[inner_corner_center.x-0.5,inner_corner_center.y-0.5]) 
         roundedCylinder(
           h=3,
           r=1,
@@ -194,16 +197,16 @@ module EfficientFloor(
       // tapered top portion
      hull() {
         /*tz(3) 
-        cornercopy(num_x=num_x, num_y=num_y, r=seventeen-0.5) 
+        cornercopy(num_x=num_x, num_y=num_y, r=inner_corner_center-0.5) 
         cylinder(r=1, h=1);*/
         
         //Not sure why this was changed to a sphere
         tz(3+1/2) 
-          cornercopy(num_x=num_x, num_y=num_y, r=[seventeen.x-0.5,seventeen.y-0.5]) 
+          cornercopy(num_x=num_x, num_y=num_y, r=[inner_corner_center.x-0.5,inner_corner_center.y-0.5]) 
           sphere(r=1); 
 
         tz(taperTopPos) 
-          cornercopy(num_x=num_x, num_y=num_y, r=seventeen) 
+          cornercopy(num_x=num_x, num_y=num_y, r=inner_corner_center) 
           cylinder(r=cornerRadius, h=4);
       }          
 
@@ -219,8 +222,8 @@ module EfficientFloor(
         roundedNegativeChampher(
           champherRadius = champherRadius, 
           size=[
-            (seventeen.x*2+(topChampherCornerRadius)*2+env_pitch().x*(num_x-1)),
-            (seventeen.y*2+(topChampherCornerRadius)*2+env_pitch().y*(num_y-1))],
+            (inner_corner_center.x*2+(topChampherCornerRadius)*2+env_pitch().x*(num_x-1)),
+            (inner_corner_center.y*2+(topChampherCornerRadius)*2+env_pitch().y*(num_y-1))],
           cornerRadius = cornerRadius, 
           height = 4);
       }

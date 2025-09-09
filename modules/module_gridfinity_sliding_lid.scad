@@ -9,6 +9,15 @@ iSlidingLidMinSupport=3;
 iSlidingClearance=4;
 slidingLidLipEnabled=5;
 
+function DisabledSlidingLidSettings() = SlidingLidSettings(
+  slidingLidEnabled = false,
+  slidingLidThickness = 0,
+  slidingMinWallThickness = 0,
+  slidingMinSupport = 0,
+  slidingClearance = 0,
+  wallThickness = 0,
+  slidingLidLipEnabled = false);
+  
 function SlidingLidSettings(
   slidingLidEnabled,
   slidingLidThickness,
@@ -72,7 +81,10 @@ module SlidingLid(
   assert(is_list(cutoutPosition));
   
   innerWallRadius = env_corner_radius()-wall_thickness-clearance;
-  seventeen = [env_pitch().x/2-4,env_pitch().y/2-4];
+
+  inner_corner_center = [
+    env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
+    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
   
   lidSize = [num_x*env_pitch().x-lidMinWallThickness, num_y*env_pitch().y-lidMinWallThickness];
   
@@ -100,7 +112,7 @@ module SlidingLid(
       color(env_colour(color_lid))
       union(){
         hull() 
-          cornercopy(seventeen, num_x, num_y){
+          cornercopy(inner_corner_center, num_x, num_y){
           tz(lidThickness-lidMinSupport) 
             cylinder(
               r1=innerWallRadius+lidMinWallThickness,
@@ -111,7 +123,7 @@ module SlidingLid(
         if(addLiptoLid)
         difference(){
           hull()
-            cornercopy(seventeen, num_x, num_y){
+            cornercopy(inner_corner_center, num_x, num_y){
               cylinder(r=env_corner_radius(), h=lidThickness);
           }         
           translate([-fudgeFactor,lidLowerRadius,-fudgeFactor])
@@ -162,7 +174,9 @@ module SlidingLidSupportMaterial(
   innerWallRadius,
   zpoint){
   
-  seventeen = [env_pitch().x/2-4,env_pitch().y/2-4];
+  inner_corner_center = [
+    env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
+    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
     
   aboveLipHeight = sliding_lid_settings[iSlidingLidThickness];
   belowLedgeHeight = sliding_lid_settings[iSlidingLidThickness]/4;
@@ -175,15 +189,15 @@ module SlidingLidSupportMaterial(
   tz(zpoint-belowLipHeight) 
   difference(){
     hull() 
-      cornercopy(seventeen, num_x, num_y)
+      cornercopy(inner_corner_center, num_x, num_y)
       cylinder(r=innerWallRadius, h=belowLipHeight); 
       
         union(){
-        hull() cornercopy(seventeen, num_x, num_y)
+        hull() cornercopy(inner_corner_center, num_x, num_y)
           tz(belowRampHeight-fudgeFactor)
           cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowLedgeHeight+fudgeFactor*2);
           
-        hull() cornercopy(seventeen, num_x, num_y)
+        hull() cornercopy(inner_corner_center, num_x, num_y)
         tz(-fudgeFactor)
         cylinder(r1=slidingLidEdge, r2=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowRampHeight+fudgeFactor);
      }
@@ -193,12 +207,12 @@ module SlidingLidSupportMaterial(
   tz(zpoint) 
   difference(){
     hull() 
-      cornercopy(seventeen, num_x, num_y)
+      cornercopy(inner_corner_center, num_x, num_y)
       tz(fudgeFactor) 
       cylinder(r=slidingLidEdge, h=aboveLipHeight); 
     union(){
     hull() 
-      cornercopy(seventeen, num_x, num_y)
+      cornercopy(inner_corner_center, num_x, num_y)
       tz(fudgeFactor) 
       cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=aboveLipHeight+fudgeFactor); 
       
