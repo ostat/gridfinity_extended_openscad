@@ -121,7 +121,129 @@ function ValidatePatternSettings(settings, num_x, num_y) =
       settings[iPatternVoronoiNoise],
       settings[iPatternBrickWeight]
       ];
+
+function get_wallpattern_positions(
+  border,
+  heightz,
+  positionz,
+  wall_thickness,
+  wallpattern_thickness,
+  wallpattern_walls= [0,0,0,0],
+  label_walls = [0,0,0,0],
+  label_sizez=0) = 
+  let(
+      fudgeFactor= 0.001,
+      bin_size=[env_numx()*env_pitch().x-env_clearance().x, env_numy()*env_pitch().y-env_clearance().y],
+      x_width = bin_size.x-env_corner_radius()*2-border,
+      y_width = bin_size.y-env_corner_radius()*2-border, 
+      front = [
+      //width,height
+      [x_width, heightz - (label_walls[0] != 0 ? label_sizez : 0)],
+      //Position
+      [bin_size.x/2+env_clearance().x/2,  
+        env_clearance().x/2+wall_thickness/2-(wall_thickness-wallpattern_thickness)/2, 
+        positionz - (label_walls[0] != 0 ? label_sizez : 0)/2],
+      //rotation
+      [90,0,0],
+      //enabled
+      wallpattern_walls[0]],
+    back = [
+      //width,height
+      [x_width, heightz - (label_walls[1] != 0 ? label_sizez : 0)],
+      //Position
+      [bin_size.x/2+env_clearance().x/2, 
+        bin_size.y+env_clearance().y/2-wall_thickness/2+(wall_thickness-wallpattern_thickness)/2, 
+         positionz - (label_walls[1] != 0 ? label_sizez : 0)/2],
+      //rotation
+      [90,0,0], 
+      //enabled
+      wallpattern_walls[1]],
+    left = [
+      //width,height
+      [y_width, heightz - (label_walls[2] != 0 ? label_sizez : 0)],
+      //Position
+      [env_clearance().x/2+wall_thickness/2-(wall_thickness-wallpattern_thickness)/2,
+        bin_size.y/2+env_clearance().y/2, 
+        positionz - (label_walls[2] != 0 ? label_sizez : 0)/2],
+      //rotation
+      [90,0,90],
+      //enabled
+      wallpattern_walls[2]],
+    right = [
+      //width,height
+      [y_width, heightz - (label_walls[3] != 0 ? label_sizez : 0)],
+      //Position
+      [bin_size.x+env_clearance().x/2-wall_thickness/2+(wall_thickness-wallpattern_thickness)/2,
+        bin_size.y/2+env_clearance().y/2, 
+        positionz - (label_walls[3] != 0 ? label_sizez : 0)/2],
+      //rotation
+      [90,0,90],
+      //enabled
+      wallpattern_walls[3]],
+    ylocations = [left, right],
+    xlocations = [front, back])
+    //echo("coloured_wall_pattern", wall_thickness=wall_thickness, wallpattern_thickness=wallpattern_thickness, heightz=heightz, wallpatternzpos=positionz, border=border,   ylocations=ylocations, xlocations=xlocations)
+    [xlocations, ylocations];
+
+
+// cuts the wall pattern section from the bin walls and replaces them with coloured sections
+module coloured_wall_pattern(
+  wall_pattern_settings=[], 
+  wallpattern_walls=[],
+  wall_thickness=1,
+  pattern_floor, 
+  pattern_height,
+  border = 0
+){
+  fudgeFactor = 0.001;
+  wallpattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], wall_thickness);
+  
+  positions = get_wallpattern_positions(
+    border = border,
+    heightz = pattern_height,
+    positionz = pattern_floor,
+    wall_thickness = wall_thickness,
+    wallpattern_thickness = wallpattern_thickness,
+    wallpattern_walls = wall_pattern_settings[iPatternEnabled] ? wallpattern_walls : [0,0,0,0]);
+
+  locations = [positions.x[0], positions.x[1], positions.y[0], positions.y[1]];
+
+  echo("coloured_wall_pattern", wall_thickness=wall_thickness, wallpattern_thickness=wallpattern_thickness, pattern_height=pattern_height, wallpatternzpos=pattern_floor, border=border,   locations=locations);
+
+  union(){
+    difference(){
+      // Child 0 is bin block
+      children(0);
       
+      // Child 0 is bin partitioned cavity
+      if($children >=2) children(1);
+      
+      color(env_colour(color_cup))
+      union(){
+        for(i = [0:1:len(locations)-1])
+          if(locations[i][3] > 0)
+            translate(locations[i][1])
+            rotate(locations[i][2])
+            cube([locations[i][0].x,locations[i][0].y,wallpattern_thickness+fudgeFactor], center=true);
+      }
+    }
+
+    color(env_colour(color_wallcutout, isLip=true))
+    difference(){
+      union(){
+        for(i = [0:1:len(locations)-1])
+          if(locations[i][3] > 0)
+            translate(locations[i][1])
+            rotate(locations[i][2])
+            cube([locations[i][0].x,locations[i][0].y,wallpattern_thickness], center=true);
+      }
+
+      // Child 3 is wall pattern
+      if($children >=3) children(2);
+    }
+  }
+}
+
 module cutout_pattern(
   patternStyle,
   canvasSize,

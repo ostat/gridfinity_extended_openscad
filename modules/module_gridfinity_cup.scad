@@ -447,9 +447,41 @@ module gridfinity_cup(
     ? wallpattern_dividers_enabled ? "vertical" : "disabled"
     : wallpattern_dividers_enabled;
   
+  cavityFloorRadius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
+  
+  
   debug_cut()
   union(){
     difference() {
+        wallpattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], wall_thickness) + fudgeFactor*4;
+
+        border = 0; //Believe this to be no longer needed
+       
+        wallpatternzpos = wallpatternClearanceHeight(
+          magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
+          screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
+          center_magnet=cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
+          floor_thickness = cupBase_settings[iCupBase_FloorThickness],
+          num_z=num_z, 
+          filled_in=FilledIn_disabled, 
+          efficient_floor=efficient_floor, 
+          flat_base=cupBase_settings[iCupBase_FlatBase], 
+          floor_inner_radius = cavityFloorRadius, 
+          outer_cup_radius = 1);
+
+        //I feel this should use wallTop, but it seems to work...
+        heightz = env_pitch().z*(num_z)-wallpatternzpos + (
+          //Position specific to each LIP style
+          lip_settings[iLipStyle] == "reduced" ? 0.6 :
+          lip_settings[iLipStyle] == "reduced_double" ? 0.6 :
+          lip_settings[iLipStyle] == "minimum" ? 3 -border*2
+           : -gf_lip_height-1.8);
+        z=wallpatternzpos+heightz/2;
+           
+    
+      coloured_wall_pattern(
+        wall_pattern_settings=wall_pattern_settings, wall_thickness=wall_thickness, wallpattern_walls=wallpattern_walls,
+        pattern_floor = z, pattern_height = heightz){ 
       grid_block(
         num_x, num_y, num_z,
         cupBase_settings = cupBase_settings,
@@ -458,7 +490,6 @@ module gridfinity_cup(
         filledin = filled_in);
         
       if(filled_in == FilledIn_disabled) 
-      union(){
         //primary cavity
         partitioned_cavity(
           num_x, num_y, num_z,
@@ -478,9 +509,8 @@ module gridfinity_cup(
           sliding_lid_settings= slidingLidSettings,
           divider_wall_removable_settings = divider_wall_removable_settings);
       
-      color(env_colour(color_wallcutout))
+      //color(env_colour(color_wallcutout))
       union(){
-        cavityFloorRadius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
         wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
         cutoutclearance_divider = env_corner_radius()/2;
         cutoutclearance_border = max(wall_thickness, wall_pattern_settings[iPatternBorder]);
@@ -614,90 +644,25 @@ module gridfinity_cup(
                 }
               }
           
-              if(wall_pattern_settings[iPatternEnabled]){
-                wallpattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], wall_thickness) + fudgeFactor*4;
-
-                border = 0; //Believe this to be no longer needed
-               
-                wallpatternzpos = wallpatternClearanceHeight(
-                  magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-                  screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
-                  center_magnet=cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
-                  floor_thickness = cupBase_settings[iCupBase_FloorThickness],
-                  num_z=num_z, 
-                  filled_in=FilledIn_disabled, 
-                  efficient_floor=efficient_floor, 
-                  flat_base=cupBase_settings[iCupBase_FlatBase], 
-                  floor_inner_radius = cavityFloorRadius, 
-                  outer_cup_radius = 1);
-
-                //I feel this should use wallTop, but it seems to work...
-                heightz = env_pitch().z*(num_z)-wallpatternzpos + (
-                  //Position specific to each LIP style
-                  lip_settings[iLipStyle] == "reduced" ? 0.6 :
-                  lip_settings[iLipStyle] == "reduced_double" ? 0.6 :
-                  lip_settings[iLipStyle] == "minimum" ? 3 -border*2
-                   : -gf_lip_height-1.8);
-                z=wallpatternzpos+heightz/2;
-                
+              if(wall_pattern_settings[iPatternEnabled]){               
                 labelSize = calculateLabelSize(label_settings[iLabelSettings_size]);
                 //Subtracting the wallpattern_thickness is a bit of a hack, its needed as the label extends in to the wall.
                 labelSizez = (label_settings[iLabelSettings_style] != LabelStyle_disabled ? labelSize.z-wallpattern_thickness : 0);
+  
+                positions = get_wallpattern_positions(
+                  border = border,
+                  heightz = heightz,
+                  positionz = z,
+                  wall_thickness = wall_thickness,
+                  wallpattern_thickness = wallpattern_thickness,
+                  wallpattern_walls = wallpattern_walls,
+                  label_walls = label_settings[iLabelSettings_walls],
+                  label_sizez = labelSizez);
 
-                front = [
-                  //width,height
-                  [num_x*env_pitch().x-env_corner_radius()*2-border,
-                    heightz - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)],
-                  //Position
-                  [num_x*env_pitch().x/2, 
-                    env_clearance().x/2+wall_thickness/2-((wall_thickness+fudgeFactor*4)-wallpattern_thickness), 
-                    z - (label_settings[iLabelSettings_walls][0] != 0 ? labelSizez : 0)/2],
-                  //rotation
-                  [90,0,0],
-                  //enabled
-                  wallpattern_walls[0],
-                  ];
-                back = [
-                  //width,height
-                  [num_x*env_pitch().x-env_corner_radius()*2-border,
-                    heightz - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)],
-                  //Position
-                  [num_x*env_pitch().x/2, 
-                    num_y*env_pitch().y-env_clearance().y/2-wall_thickness/2+((wall_thickness+fudgeFactor*4)-wallpattern_thickness), 
-                     z - (label_settings[iLabelSettings_walls][1] != 0 ? labelSizez : 0)/2],
-                  //rotation
-                  [90,0,0], 
-                  //enabled
-                  wallpattern_walls[1]];
-                left = [
-                  //width,height
-                  [num_y*env_pitch().y-env_corner_radius()*2-border,
-                    heightz - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)],
-                  //Position
-                  [env_clearance().x/2+wall_thickness/2-((wall_thickness+fudgeFactor*4)-wallpattern_thickness),
-                    num_y*env_pitch().y/2, 
-                    z - (label_settings[iLabelSettings_walls][2] != 0 ? labelSizez : 0)/2],
-                  //rotation
-                  [90,0,90],
-                  //enabled
-                  wallpattern_walls[2]];
-                right = [
-                  //width,height
-                  [num_y*env_pitch().y-env_corner_radius()*2-border,
-                    heightz - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)],
-                  //Position
-                  [num_x*env_pitch().x-env_clearance().x/2-wall_thickness/2+((wall_thickness+fudgeFactor*4)-wallpattern_thickness),
-                    num_y*env_pitch().y/2, 
-                    z - (label_settings[iLabelSettings_walls][3] != 0 ? labelSizez : 0)/2],
-                  //rotation
-                  [90,0,90],
-                  //enabled
-                  wallpattern_walls[3]];
-                  
-                echo("gridfinity_cup_wallpattern", wallpattern_thickness=wallpattern_thickness, heightz=heightz, wallpatternzpos=wallpatternzpos, border=border,   ylocations=ylocations, xlocations=xlocations);
-                
-                ylocations = [left, right];
-                xlocations = [front, back];
+                ylocations = positions.y;
+                xlocations = positions.x;
+
+                echo("gridfinity_cup_wallpattern", wallpattern_thickness=wallpattern_thickness, heightz=heightz, wallpatternzpos=wallpatternzpos, border=border, xlocations=xlocations, ylocations=ylocations);
 
                 //patterns in the outer walls x
                 difference(){
@@ -715,7 +680,7 @@ module gridfinity_cup(
                             circleFn = wall_pattern_settings[iPatternHoleSides],
                             cellSize = wall_pattern_settings[iPatternCellSize],
                             strength = wall_pattern_settings[iPatternStrength],
-                            holeHeight = wallpattern_thickness,
+                            holeHeight = wallpattern_thickness+fudgeFactor,
                             center=true,
                             centerz = true,
                             fill = wall_pattern_settings[iPatternFill], //"none", "space", "crop"
@@ -744,7 +709,7 @@ module gridfinity_cup(
                                 circleFn = wall_pattern_settings[iPatternHoleSides],
                                 cellSize = wall_pattern_settings[iPatternCellSize],
                                 strength = wall_pattern_settings[iPatternStrength],
-                                holeHeight = verSepThickness,
+                                holeHeight = verSepThickness+fudgeFactor,
                                 center=true,
                                 fill=wall_pattern_settings[iPatternFill],
                                 patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
@@ -780,7 +745,7 @@ module gridfinity_cup(
                             circleFn = wall_pattern_settings[iPatternHoleSides],
                             cellSize = wall_pattern_settings[iPatternCellSize],
                             strength = wall_pattern_settings[iPatternStrength],
-                            holeHeight = wallpattern_thickness,
+                            holeHeight = wallpattern_thickness+fudgeFactor,
                             center=true,
                             centerz = true,
                             fill = wall_pattern_settings[iPatternFill], //"none", "space", "crop"
@@ -810,7 +775,7 @@ module gridfinity_cup(
                                   circleFn = wall_pattern_settings[iPatternHoleSides],
                                   cellSize = wall_pattern_settings[iPatternCellSize],
                                   strength = wall_pattern_settings[iPatternStrength],
-                                  holeHeight = hozSepThickness,
+                                  holeHeight = hozSepThickness+fudgeFactor,
                                   center = true,
                                   fill = wall_pattern_settings[iPatternFill], 
                                   patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
@@ -876,7 +841,6 @@ module gridfinity_cup(
           }
         }
       }
-      
       if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
         //generate the label sockets
         gridfinity_label(
