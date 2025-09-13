@@ -61,7 +61,13 @@ module SlidingLid(
   cutoutEnabled = false,
   cutoutSize = [0,0],
   cutoutRadius = 0,
-  cutoutPosition = [0,0]
+  cutoutPosition = [0,0],
+  textEnabled = false,
+  textContent = "Text",
+  textSize = 0,
+  textDepth = 0.3,
+  textFont = "Aldo",
+  textPosition = "center"
 ){
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -79,6 +85,12 @@ module SlidingLid(
   assert(is_list(cutoutSize));
   assert(is_num(cutoutRadius));
   assert(is_list(cutoutPosition));
+  assert(is_bool(textEnabled));
+  assert(is_string(textContent));
+  assert(is_num(textSize));
+  assert(is_num(textDepth));
+  assert(is_string(textFont));
+  assert(is_string(textPosition));
   
   innerWallRadius = env_corner_radius()-wall_thickness-clearance;
 
@@ -158,6 +170,39 @@ module SlidingLid(
           translate([positions[i].x,positions[i].y,0])
           cylinder(r=cRadius, h=lidThickness+fudgeFactor*2);
         }
+      }
+    }
+    
+    // Add text to lid surface
+    if(textEnabled && textContent != "" && textDepth > 0) {
+      lidSize = [num_x*env_pitch().x-lidMinWallThickness, num_y*env_pitch().y-lidMinWallThickness];
+      maxTextWidth = lidSize.x * 0.8; // Use 80% of available width
+      maxTextSize = 12;
+      
+      // Calculate text size - use simple estimation if textmetrics not available
+      estimatedCharWidth = 0.6; // Rough estimation: character width is ~60% of font size
+      estimatedTextWidth = len(textContent) * textSize * estimatedCharWidth;
+      
+      actualTextSize = textSize > 0 ? textSize : 
+        min(maxTextWidth / (len(textContent) * estimatedCharWidth), maxTextSize);
+      
+      // Calculate text position
+      actualEstimatedTextWidth = len(textContent) * actualTextSize * estimatedCharWidth;
+      textX = textPosition == "left" ? lidSize.x * 0.1 :
+              textPosition == "right" ? lidSize.x * 0.9 - actualEstimatedTextWidth :
+              lidSize.x / 2 - actualEstimatedTextWidth / 2;
+      textY = lidSize.y / 2 - actualTextSize / 2;
+      
+      // Render text as negative space (engraved)
+      translate([textX - lidSize.x/2 + env_pitch().x/2, textY - lidSize.y/2 + env_pitch().y/2, lidThickness - textDepth])
+      linear_extrude(height = textDepth + fudgeFactor) {
+        text(
+          text = textContent,
+          size = actualTextSize,
+          font = textFont,
+          halign = "left",
+          valign = "bottom"
+        );
       }
     }
   }

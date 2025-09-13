@@ -9,6 +9,7 @@
 
 include <modules/gridfinity_constants.scad>
 include <modules/module_gridfinity_sliding_lid.scad>
+include <modules/module_gridfinity_dividers_removable.scad>
 use <modules/module_gridfinity_cup.scad>
 use <modules/module_gridfinity_block.scad>
 
@@ -28,6 +29,20 @@ sliding_lid_cutout_enabled = false; //
 sliding_lid_cutout_size = [0,0]; //0.1
 sliding_lid_cutout_radius = 10; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
+
+/* [Sliding Lid Text] */
+// Add text to the sliding lid top
+sliding_lid_text_enabled = false;
+// Text to display on the lid
+sliding_lid_text = "Gridfinity";
+// Font size for the lid text (0 = auto-size)
+sliding_lid_text_size = 0; // 0.1
+// Depth of text engraving in mm
+sliding_lid_text_depth = 0.3; // 0.01
+// Font for the lid text
+sliding_lid_text_font = "Aldo"; // [Aldo, B612, "Open Sans", Ubuntu]
+// Text position on lid (left, center, right)
+sliding_lid_text_position = "center"; // [left, center, right]
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -77,6 +92,25 @@ vertical_separator_config = "10.5|21|42|50|60";
 horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 horizontal_separator_config = "10.5|21|42|50|60";
+
+/* [Removable Divider Walls] */
+divider_walls_enabled = false;
+// Wall to enable on, x direction, y direction
+divider_walls = [1,1]; //[0:1:1]
+// Thickness of the divider walls.
+divider_walls_thickness = 2.5;  //0.1
+// Spacing between the divider walls (0=divider_walls_thickness*2).
+divider_walls_spacing = 0; //0.1
+// Thickness of the support walls (0=walls_thickness*2).
+divider_walls_support_thickness = 2;
+// Size of the slot in the divider walls. width(0=divider_walls_thickness), depth(0=divider_walls_support_thickness)
+divider_wall_slot_size = [0,0];
+// Clearance between the divider walls top
+divider_headroom = 0.1;
+// Clearance subtracted from the removable divider wall. Width, Length
+divider_clearance = [0.3, 0.2];
+// Number of slot spanning divider to generate.
+divider_slot_spanning = 2;
 
 /* [Base] */
 // Enable magnets
@@ -313,6 +347,16 @@ set_environment(
       wall_thickness=wall_thickness,
       chamber_wall_thickness=chamber_wall_thickness,
       chamber_wall_headroom=chamber_wall_headroom,
+      divider_wall_removable_settings = DividerRemovableSettings(
+        enabled=divider_walls_enabled,
+        walls=divider_walls,
+        headroom=divider_headroom,
+        support_thickness=divider_walls_support_thickness,
+        slot_size=divider_wall_slot_size,
+        divider_spacing=divider_walls_spacing,
+        divider_thickness=divider_walls_thickness,
+        divider_clearance=divider_clearance,
+        divider_slot_spanning=divider_slot_spanning),
       vertical_chambers = vertical_chambers,
       vertical_separator_bend_position=vertical_separator_bend_position,
       vertical_separator_bend_angle=vertical_separator_bend_angle,
@@ -428,7 +472,7 @@ set_environment(
       SlidingLid(
         num_x=num_x, 
         num_y=num_y,
-        wall_thickness,
+        wall_thickness=wall_thickness,
         clearance = slidingLidSettings[iSlidingClearance],
         lidThickness=slidingLidSettings[iSlidingLidThickness],
         lidMinSupport=slidingLidSettings[iSlidingLidMinSupport],
@@ -441,7 +485,13 @@ set_environment(
         cutoutEnabled = true,
         cutoutSize = sliding_lid_cutout_size,
         cutoutRadius = sliding_lid_cutout_radius,
-        cutoutPosition = sliding_lid_cutout_position);
+        cutoutPosition = sliding_lid_cutout_position,
+        textEnabled = sliding_lid_text_enabled,
+        textContent = sliding_lid_text,
+        textSize = sliding_lid_text_size,
+        textDepth = sliding_lid_text_depth,
+        textFont = sliding_lid_text_font,
+        textPosition = sliding_lid_text_position);
     }
   }
 }
