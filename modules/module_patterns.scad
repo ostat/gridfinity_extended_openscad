@@ -1,6 +1,7 @@
 include <module_item_holder.scad>
 include <module_pattern_voronoi.scad>
 include <module_pattern_brick.scad>
+include <module_pattern_slat.scad>
 
 iPatternEnabled=0;
 iPatternStyle=1;
@@ -25,10 +26,12 @@ PatternStyle_voronoigrid = "voronoigrid";
 PatternStyle_voronoihexgrid = "voronoihexgrid";
 PatternStyle_brick = "brick";
 PatternStyle_brickoffset = "brickoffset";
+PatternStyle_slat = "slats";
 
 PatternStyle_values = [
     PatternStyle_grid, PatternStyle_hexgrid,
     PatternStyle_voronoi, PatternStyle_voronoigrid, PatternStyle_voronoihexgrid, 
+    PatternStyle_slat,
     PatternStyle_brick, PatternStyle_brickoffset
     ];
 function validatePatternStyle(value, name = "PatternStyle") = 
@@ -342,8 +345,16 @@ module cutout_pattern(
         rotateGrid = true,
         offset_layers = patternStyle == PatternStyle_brickoffset
       );
-    }
-    else {
+    } else if(patternStyle == PatternStyle_slat){
+      slat_pattern(
+        canvis_size=[canvasSize.x,canvasSize.y],
+        thickness = holeHeight,
+        spacing = strength.x,
+        slat_width = cellSize.x,
+        slat_chamfer = chamfer,
+        center = center,
+        rotateGrid = false);
+    } else {
       echo("cutout_pattern: Unknown patternStyle", patternStyle=patternStyle);
     }
   }
