@@ -166,7 +166,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
+wallpattern_style = "hexgrid"; //[hexgrid, grid, slats, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
 // Spacing between pattern
 wallpattern_strength = 2; //0.1
 // wall to enable on, front, back, left, right.
@@ -178,7 +178,7 @@ wallpattern_cell_size = [10,10]; //0.1
 // Add the pattern to the dividers
 wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
-wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
+wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
@@ -208,7 +208,7 @@ floorpattern_rotate_grid = false;
 //Size of the hole
 floorpattern_cell_size = [10,10]; //0.1
 //Number of sides of the hole op
-floorpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
+floorpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
 //Radius of corners
 floorpattern_hole_radius = 0.5;
 // pattern fill mode
