@@ -145,8 +145,6 @@ module roundedCube(
   supReduction_x_offset = [auto_support_reduction(supportReduction_x[0], bottomRadius), auto_support_reduction(supportReduction_x[1], topRadius)];
   supReduction_y_offset = [auto_support_reduction(supportReduction_y[0], bottomRadius), auto_support_reduction(supportReduction_y[1], topRadius)];
 
-  if(env_help_enabled("trace")) echo("roundedCube", size=size, cornerRadius=cornerRadius, topRadius=topRadius, bottomRadius=bottomRadius, sideRadius=sideRadius, supportReduction_x=supportReduction_x, supportReduction_y=supportReduction_y, supportReduction_z=supportReduction_z);
-  
   positions=[
      [[sideRadius                         ,sideRadius],                        [0,0]]
     ,[[max(size.x-sideRadius, sideRadius) ,sideRadius]                        ,[1,0]]

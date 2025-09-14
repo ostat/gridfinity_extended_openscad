@@ -129,9 +129,12 @@ module assert_openscad_version(){
 // if user_value = 0 use the base value
 // user_value > 0 use that value
 // user_value < 0 base_value/abs(user_value) (i.e. -3 is 1/3 the base_value)
-function get_related_value(user_value, base_value) = 
-    user_value == 0 ? base_value :
-    user_value < 0 ? base_value/abs(user_value) : user_value;
+function get_related_value(user_value, base_value, default_value) = 
+  let(
+      default = is_undef(default_value) ? base_value : default_value,
+      calculated = user_value == 0 ? default :
+      user_value < 0 ? base_value/abs(user_value) : user_value)
+      min(calculated, base_value);
 
 module color_conditional(enable=true, c){
   if(enable)

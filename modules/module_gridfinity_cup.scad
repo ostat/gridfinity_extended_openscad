@@ -619,6 +619,7 @@ module gridfinity_cup(
                       patternGridChamfer = floor_pattern_settings[iPatternGridChamfer],
                       patternVoronoiNoise = floor_pattern_settings[iPatternVoronoiNoise],
                       patternBrickWeight = floor_pattern_settings[iPatternBrickWeight],
+                      partialDepth = floor_pattern_settings[iPatternDepth] != 0,
                       border = max(5, floor_pattern_settings[iPatternBorder],
                         cupBase_settings[iCupBase_EfficientFloor] == EfficientFloor_smooth? 6.5 : 0),
                       holeRadius = floor_pattern_settings[iPatternHoleRadius],
@@ -668,8 +669,9 @@ module gridfinity_cup(
                 difference(){
                   union(){
                     for(i = [0:1:len(ylocations)-1])
-                      if(ylocations[i][3] > 0)
+                      if(ylocations[i][4] > 0)
                         translate(ylocations[i][1])
+                        mirror(ylocations[i][3])
                         rotate(ylocations[i][2])
                         render_conditional(env_force_render())
                           cutout_pattern(
@@ -687,6 +689,7 @@ module gridfinity_cup(
                             patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                             patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                             patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+                            partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
                             source = "wall_pattern",
                             rotateGrid = wall_pattern_settings[iPatternRotate],
@@ -715,6 +718,7 @@ module gridfinity_cup(
                                 patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                                 patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                                 patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+                                partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                                 holeRadius = wall_pattern_settings[iPatternHoleRadius],
                                 source="vertical separator wall pattern",
                                 rotateGrid = wall_pattern_settings[iPatternRotate],
@@ -733,8 +737,9 @@ module gridfinity_cup(
                 difference(){
                   union(){
                     for(i = [0:1:len(xlocations)-1])
-                      if(xlocations[i][3] > 0)
+                      if(xlocations[i][4] > 0)
                         translate(xlocations[i][1])
+                        mirror(xlocations[i][3])
                         rotate(xlocations[i][2])
                         render_conditional(env_force_render())
                           cutout_pattern(
@@ -752,6 +757,7 @@ module gridfinity_cup(
                             patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                             patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                             patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+                            partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
                             source = "wall_pattern",
                             rotateGrid = wall_pattern_settings[iPatternRotate],
@@ -781,6 +787,7 @@ module gridfinity_cup(
                                   patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                                   patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                                   patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+                                  partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                                   holeRadius = wall_pattern_settings[iPatternHoleRadius],
                                   source = "horizontal separator wall pattern",
                                   rotateGrid = wall_pattern_settings[iPatternRotate],
@@ -1191,7 +1198,7 @@ module basic_cavity(num_x, num_y, num_z,
   //lipBottomZ = env_pitch().z*num_z+fudgeFactor*3;
   innerLipRadius = env_corner_radius()-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
   innerWallRadius = max(0.1, env_corner_radius()-wall_thickness); //prevent radius going negative
-  echo("basic_cavity", gf_cup_corner_radius=env_corner_radius(),wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
+  if(env_help_enabled("trace")) echo("basic_cavity", gf_cup_corner_radius=env_corner_radius(),wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
   aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
   
   //cavityHeight= max(lipBottomZ-floorht,0);
