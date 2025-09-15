@@ -54,7 +54,7 @@ function validatePatternFill(value, name = "PatternFill") =
 function PatternSettings(
     patternEnabled, 
     patternStyle, 
-    patternRotate,
+    patternRotate = false,
     patternFill,
     patternBorder = -1, 
     patternDepth = 0,

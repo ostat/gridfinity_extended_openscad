@@ -215,6 +215,7 @@ floorpattern_hole_radius = 0.5;
 floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 // border around the wall pattern, default is wall thickness
 floorpattern_border = 0;
+// depth of imprint in mm, 0 = is wall width.
 floorpattern_depth = 0; // 0.1
 //grid pattern hole taper
 floorpattern_pattern_grid_chamfer = 0; //0.1
