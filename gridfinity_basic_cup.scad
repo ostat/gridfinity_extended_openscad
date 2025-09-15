@@ -166,7 +166,7 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[hexgrid, grid, slats, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
+wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
 // Spacing between pattern
 wallpattern_strength = 2; //0.1
 // wall to enable on, front, back, left, right.

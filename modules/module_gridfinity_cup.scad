@@ -173,20 +173,22 @@ default_wallcutout_horizontal_corner_radius=5;
 
 /* [Wall Pattern] */
 default_wallpattern_enabled=false; 
-default_wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+default_wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
+default_wallpattern_rotate_grid = false;
 default_wallpattern_dividers_enabled ="disabled"; //["disabled", "horizontal", "vertical", "both"] 
 default_wallpattern_fill = "none"; //["none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"]
 default_wallpattern_walls=[1,0,0,0];  //[0:1:1]
 default_wallpattern_hole_sides = 6;
-default_wallpattern_hole_size = [10,10]; //0.1
-default_wallpattern_hole_spacing = 2; //0.1
+default_wallpattern_cell_size = [10,10]; //0.1
+default_wallpattern_strength = 2; //0.1
 default_wallpattern_hole_radius = 0.5;
 default_wallpattern_border = 0;
+default_wallpattern_depth = 0;
 default_wallpattern_pattern_grid_chamfer = 0; //0.1
 default_wallpattern_pattern_voronoi_noise = 0.75; //0.01
 default_wallpattern_pattern_brick_weight = 5;
 default_wallpattern_pattern_quality = 0;
-    
+
 /* [Extendable] */
 default_extension_x_enabled = "disabled"; //[disabled, front, back]
 default_extension_x_position = 0.5; 
@@ -315,24 +317,28 @@ module gridfinity_cup(
   wall_pattern_settings  = PatternSettings(
     patternEnabled = default_wallpattern_enabled, 
     patternStyle = default_wallpattern_style, 
+    patternRotate = default_wallpattern_rotate_grid,
     patternFill = default_wallpattern_fill,
-    patternBorder = default_wallpattern_hole_spacing, 
-    patternHoleSize = default_wallpattern_hole_size, 
+    patternBorder = default_wallpattern_border, 
+    patternDepth = default_wallpattern_depth,
+    patternCellSize = default_wallpattern_cell_size, 
     patternHoleSides = default_wallpattern_hole_sides,
-    patternHoleSpacing = default_wallpattern_hole_spacing, 
+    patternStrength = default_wallpattern_strength, 
     patternHoleRadius = default_wallpattern_hole_radius,
     patternGridChamfer = default_wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = default_wallpattern_pattern_voronoi_noise,
     patternBrickWeight = default_wallpattern_pattern_brick_weight,
     patternFs = default_wallpattern_pattern_quality), 
   floor_pattern_settings = PatternSettings(
-    patternEnabled = default_wallpattern_enabled,
+    patternEnabled = default_wallpattern_enabled, 
     patternStyle = default_wallpattern_style, 
+    patternRotate = default_wallpattern_rotate_grid,
     patternFill = default_wallpattern_fill,
-    patternBorder = default_wallpattern_hole_spacing, 
-    patternHoleSize = default_wallpattern_hole_size, 
+    patternBorder = default_wallpattern_border, 
+    patternDepth = default_wallpattern_depth,
+    patternCellSize = default_wallpattern_cell_size, 
     patternHoleSides = default_wallpattern_hole_sides,
-    patternHoleSpacing = default_wallpattern_hole_spacing, 
+    patternStrength = default_wallpattern_strength, 
     patternHoleRadius = default_wallpattern_hole_radius,
     patternGridChamfer = default_wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = default_wallpattern_pattern_voronoi_noise,

@@ -56,7 +56,7 @@ module GridItemHolder(
 
   function calculate_chamfer(chamfer, thickness) = 
     let(
-      _chamfer = is_num(chamfer) ? partialDepth ? [0, chamfer] :[chamfer, chamfer] : chamfer,
+      _chamfer = is_num(chamfer) ? [0, chamfer] : chamfer,
       dual_chamfer = (_chamfer[0] != 0 && _chamfer[1] != 0) ? 2 : 1)
       [get_related_value(_chamfer.x, thickness/dual_chamfer, 0),get_related_value(_chamfer.y, thickness/dual_chamfer, 0)];
 

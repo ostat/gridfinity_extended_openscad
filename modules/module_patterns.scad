@@ -285,13 +285,13 @@ module cutout_pattern(
     ? [cs.x-border*2, cs.y-border*2]
     : cs;
 
-  function calculate_chamfer(chamfer, thickness) = 
+  function calculate_chamfer(chamfer, thickness, partialDepth) = 
     let(
-      _chamfer = is_num(chamfer) ? partialDepth ? [0, chamfer] :[chamfer, chamfer] : chamfer,
+      _chamfer = is_num(chamfer) ? (partialDepth ? [0, chamfer] : [chamfer, chamfer]) : chamfer,
       dual_chamfer = (_chamfer[0] != 0 && _chamfer[1] != 0) ? 2 : 1)
       [get_related_value(_chamfer.x, thickness/dual_chamfer, 0),get_related_value(_chamfer.y, thickness/dual_chamfer, 0)];
   
-  chamfer = calculate_chamfer(chamfer = patternGridChamfer, thickness=holeHeight);
+  chamfer = calculate_chamfer(chamfer = patternGridChamfer, thickness=holeHeight, partialDepth=partialDepth);
   echo("cutout_pattern", partialDepth=partialDepth, holeHeight=holeHeight, chamfer=chamfer, patternGridChamfer=patternGridChamfer);
   //override the FS for the pattern, if required
   $fs = patternFs > 0 ? patternFs : $fs;
