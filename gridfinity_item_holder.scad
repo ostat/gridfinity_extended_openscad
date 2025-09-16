@@ -40,7 +40,7 @@ itemholder_hole_sides = 4;
 itemholder_hole_diameter = 5; //0.1
 // The size the hole
 itemholder_hole_size = [20, 25]; //0.1
-
+itemholder_hole_rotation = 0;
 /* [Item Holder - Item Layout] */
 // Should the grid be square or hex
 itemholder_grid_style = "auto"; //["square","hex","auto"]
@@ -407,6 +407,7 @@ module itemholder(
   holeClearance = 0.2,
   holeSpacing = 0,
   holeGrid  = [0,0],
+  holeRotation = [0,0,0],
   floorThickness,
   wallThickness,
   compartments = [1,1],
@@ -477,6 +478,7 @@ module itemholder(
                 chamfer = holeChamfer,
                 alternate = _multiCardCompact > 0 && (($idx.y % 2) != $idx.x % 2));
             } else if(item[ishape] == "square") {
+              rotate_around([0,0,holeRotation], [_holeSize.x/2, _holeSize.y/2])
               chamfered_cube(
                 size = [_holeSize.x, _holeSize.y, _depth+fudgeFactor], 
                 chamfer=holeChamfer, 
@@ -521,6 +523,13 @@ module itemholder(
     ,"_holeSize",_holeSize
     ,"_depth",_depth]
     ,help);
+}
+
+module rotate_around(roation, center){
+   translate([center.x,center.y])
+   rotate(roation)
+   translate([-center.x,-center.y])
+   children();
 }
 
 module samplesholder(
@@ -632,6 +641,7 @@ module gridfinity_itemholder(
   itemholder_hole_clearance = itemholder_hole_clearance,
   itemholder_hole_depth = itemholder_hole_depth,
   itemholder_hole_chamfer = itemholder_hole_chamfer,
+  itemholder_hole_rotation = itemholder_hole_rotation,
   itemholder_compartments = itemholder_compartments,
   itemholder_compartment_spacing = itemholder_compartment_spacing,
   itemholder_compartment_centered = itemholder_compartment_centered,
@@ -890,6 +900,7 @@ module gridfinity_itemholder(
         holeChamfer = itemholder_hole_chamfer,
         holeGrid  = itemholder_hole_grid,
         holeClearance = itemholder_hole_clearance,
+        holeRotation = itemholder_hole_rotation,
         floorThickness = calculatedUsableFloorThickness,
         wallThickness = wall_thickness,
         compartments = itemholder_compartments,
