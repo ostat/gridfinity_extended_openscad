@@ -36,11 +36,14 @@ itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard","custom":custom shape - beta feature]
 // The number of sides for a round hole
 itemholder_hole_sides = 4; 
-// Diameter of the round hole
+// Diameter of the round hole/corners
 itemholder_hole_diameter = 5; //0.1
+// Radius of the bottom of the custom shape
+itemholder_hole_bottom_radius = 0;
 // The size the hole
 itemholder_hole_size = [20, 25]; //0.1
 itemholder_hole_rotation = 0;
+
 /* [Item Holder - Item Layout] */
 // Should the grid be square or hex
 itemholder_grid_style = "auto"; //["square","hex","auto"]
@@ -308,13 +311,13 @@ module mycustomshape(){
   //item spacing 4
   translate([4,0,0])
   union(){
-    chamfered_cube(size=[9.9,25.3,30], chamfer = 1, cornerRadius = 1);
+    chamfered_cube(size=[9.9,25.3,30], topChamfer = 1, cornerRadius = 1, bottomRadius=0);
     translate([-2.1,7.55,0])
-    chamfered_cube(size=[3,10,30], chamfer = 1, cornerRadius = 1);
+    chamfered_cube(size=[3,10,30], topChamfer = 1, cornerRadius = 1, bottomRadius=0);
   }
   
   //You can use any shapes but these are some example shapes
-  //chamfered_cube(size=[10,10,10], chamfer = 1, cornerRadius = 1);
+  //chamfered_cube(size=[10,10,10], chamfer = 1, cornerRadius = 1,  bottomRadius=0);
   //chamferedRectangleTop(size=[10,10,10], chamfer = 1, cornerRadius = 1);
   //chamferedHalfCylinder(h=10, r=5, circleFn=64, chamfer=0.5);
   //chamferedCylinder(h=10, r=5, circleFn=64, chamfer=0.5);
@@ -408,6 +411,7 @@ module itemholder(
   holeSpacing = 0,
   holeGrid  = [0,0],
   holeRotation = [0,0,0],
+  holeBottomRadius = 0,
   floorThickness,
   wallThickness,
   compartments = [1,1],
@@ -481,8 +485,8 @@ module itemholder(
               rotate_around([0,0,holeRotation], [_holeSize.x/2, _holeSize.y/2])
               chamfered_cube(
                 size = [_holeSize.x, _holeSize.y, _depth+fudgeFactor], 
-                chamfer=holeChamfer, 
-                cornerRadius=item[iitemDiameter]/2);
+                topChamfer=holeChamfer, 
+                cornerRadius=item[iitemDiameter]/2, bottomRadius=holeBottomRadius);
             } else if(item[ishape] == "halfround") {
               translate([_holeSize.x/2,_holeSize.y/2,0])
                 chamferedHalfCylinder(
@@ -542,6 +546,7 @@ module samplesholder(
   holeSize = [10,10],
   holeDepth = 5, 
   holeChamfer = 1,
+  holeBottomRadius=0,
   holeClearance = 0.2,
   wallThickness,
   help = false)
@@ -591,7 +596,7 @@ module samplesholder(
       translate([-_holeSize.x/2-wallThickness,-_holeSize.y/2-wallThickness,-wallThickness-fudgeFactor])
         cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
       translate([-_holeSize.x/2,-_holeSize.y/2,0])
-        chamfered_cube([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer, cornerRadius=item[iitemDiameter]/2);
+        chamfered_cube([_holeSize.x, _holeSize.y, _depth+fudgeFactor], topChamfer=holeChamfer, cornerRadius=item[iitemDiameter]/2, bottomRadius=holeBottomRadius);
     }
   } else if(item[ishape] == "halfround") {
     difference(){
@@ -642,6 +647,7 @@ module gridfinity_itemholder(
   itemholder_hole_depth = itemholder_hole_depth,
   itemholder_hole_chamfer = itemholder_hole_chamfer,
   itemholder_hole_rotation = itemholder_hole_rotation,
+  itemholder_hole_bottom_radius = itemholder_hole_bottom_radius,
   itemholder_compartments = itemholder_compartments,
   itemholder_compartment_spacing = itemholder_compartment_spacing,
   itemholder_compartment_centered = itemholder_compartment_centered,
@@ -901,6 +907,7 @@ module gridfinity_itemholder(
         holeGrid  = itemholder_hole_grid,
         holeClearance = itemholder_hole_clearance,
         holeRotation = itemholder_hole_rotation,
+        holeBottomRadius = itemholder_hole_bottom_radius,
         floorThickness = calculatedUsableFloorThickness,
         wallThickness = wall_thickness,
         compartments = itemholder_compartments,
@@ -923,6 +930,7 @@ module gridfinity_itemholder(
       holeDepth = itemholder_hole_depth, 
       holeChamfer = itemholder_hole_chamfer,
       holeClearance = itemholder_hole_clearance,
+      holeBottomRadius = itemholder_hole_bottom_radius,
       wallThickness = itemholder_sample_wall_thickness,
       help=help);
   }
