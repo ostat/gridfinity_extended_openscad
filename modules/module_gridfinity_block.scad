@@ -1,5 +1,6 @@
-include <module_gridfinity.scad>     
-include <module_lip.scad>      
+include <module_gridfinity.scad>
+include <module_lip.scad>
+include <module_magnet.scad>
 
 show_gridfinity_demo = false;
 if(show_gridfinity_demo){
