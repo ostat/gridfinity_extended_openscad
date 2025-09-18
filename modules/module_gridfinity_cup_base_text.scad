@@ -8,6 +8,8 @@ iCupBaseTextLine2Value = 3;
 iCupBaseTextFontSize = 4;
 iCupBaseTextFont = 5;
 iCupBaseTextDepth = 6;
+iCupBaseTextXOffset = 7;
+iCupBaseTextYOffset = 8;
 
 function CupBaseTextSettings(
   baseTextLine1Enabled,
@@ -16,18 +18,22 @@ function CupBaseTextSettings(
   baseTextLine2Value,
   baseTextFontSize,
   baseTextFont,
-  baseTextDepth) = 
+  baseTextDepth,
+  baseTextXOffset,
+  baseTextYOffset) = 
   [baseTextLine1Enabled, 
   baseTextLine2Enabled,
   baseTextLine1Value,
   baseTextLine2Value,
   baseTextFontSize,
   baseTextFont,
-  baseTextDepth];
+  baseTextDepth,
+  baseTextXOffset,
+  baseTextYOffset];
 
 module AssertCupBaseTextSettings(settings){
   assert(is_list(settings), "BaseText Settings must be a list")
-  assert(len(settings)==7, "BaseText Settings must length 7");
+  assert(len(settings)==9, "BaseText Settings must length 9");
 } 
 
 // add text to the bottom
@@ -49,6 +55,9 @@ module cup_base_text(
   text_font = cupBaseTextSettings[iCupBaseTextFont];
   text_depth = cupBaseTextSettings[iCupBaseTextDepth];
   
+  text_x_offset = cupBaseTextSettings[iCupBaseTextXOffset];
+  text_y_offset = cupBaseTextSettings[iCupBaseTextYOffset];
+
   _text_x = wall_thickness + max(base_clearance, magnet_position * 1/3);
   _text_1_y = max(base_clearance, magnet_position * 1/3);
  
@@ -69,8 +78,8 @@ module cup_base_text(
   if (text_line1_enabled) {
     color(env_colour(color_wallcutout))
     translate([
-      _text_x,
-      _text_1_y,
+      _text_x + text_x_offset,
+      _text_1_y + text_y_offset,
       -1 * text_depth
     ])
     linear_extrude(height = text_depth * 2) {
@@ -94,8 +103,8 @@ module cup_base_text(
 
     color(env_colour(color_wallcutout))
     translate([
-      _text_x,
-      _text_2_y,
+      _text_x + text_x_offset,
+      _text_2_y + text_y_offset,
       -1 * text_depth
     ])
     linear_extrude(height = text_depth * 2) {

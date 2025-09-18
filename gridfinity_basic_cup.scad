@@ -262,6 +262,10 @@ text_1 = false;
 text_size = 0; // 0.1
 // Depth of text, in mm
 text_depth = 0.3; // 0.01
+// X offset of text 1, in mm
+text_1_x_offset = 0; // 0.1
+// Y offset of text 1, in mm
+text_1_y_offset = 0; // 0.1
 // Font to use
 text_font = "Aldo";  // [Aldo, B612, "Open Sans", Ubuntu]
 // Add free-form text line to bin bottom (printing date, serial, etc)
@@ -451,4 +455,6 @@ gridfinity_cup(
     baseTextLine2Value = text_2_text,
     baseTextFontSize = text_size,
     baseTextFont = text_font,
-    baseTextDepth = text_depth));
+    baseTextDepth = text_depth,
+    baseTextXOffset = text_1_x_offset,
+    baseTextYOffset = text_1_y_offset));
