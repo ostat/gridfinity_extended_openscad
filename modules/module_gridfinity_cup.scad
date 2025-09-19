@@ -375,8 +375,7 @@ module gridfinity_cup(
     baseTextFontSize = default_text_size,
     baseTextFont = default_text_font,
     baseTextDepth = default_text_depth,
-    baseTextXOffset = text_1_x_offset,
-    baseTextYOffset = text_1_y_offset)) {
+    baseTextOffset = text_offset)) {
   
   //num_x = is_undef($num_x) ? calcDimensionWidth(width, true) : $num_x;
   //num_y = is_undef($num_y) ? calcDimensionDepth(depth, true) : $num_y;

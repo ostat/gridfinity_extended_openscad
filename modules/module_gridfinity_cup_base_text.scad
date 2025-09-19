@@ -8,8 +8,7 @@ iCupBaseTextLine2Value = 3;
 iCupBaseTextFontSize = 4;
 iCupBaseTextFont = 5;
 iCupBaseTextDepth = 6;
-iCupBaseTextXOffset = 7;
-iCupBaseTextYOffset = 8;
+iCupBaseTextOffset = 7;
 
 function CupBaseTextSettings(
   baseTextLine1Enabled,
@@ -19,8 +18,7 @@ function CupBaseTextSettings(
   baseTextFontSize,
   baseTextFont,
   baseTextDepth,
-  baseTextXOffset,
-  baseTextYOffset) = 
+  baseTextOffset) = 
   [baseTextLine1Enabled, 
   baseTextLine2Enabled,
   baseTextLine1Value,
@@ -28,12 +26,11 @@ function CupBaseTextSettings(
   baseTextFontSize,
   baseTextFont,
   baseTextDepth,
-  baseTextXOffset,
-  baseTextYOffset];
+  baseTextOffset];
 
 module AssertCupBaseTextSettings(settings){
   assert(is_list(settings), "BaseText Settings must be a list")
-  assert(len(settings)==9, "BaseText Settings must length 9");
+  assert(len(settings)==8, "BaseText Settings must length 8");
 } 
 
 // add text to the bottom
@@ -55,8 +52,8 @@ module cup_base_text(
   text_font = cupBaseTextSettings[iCupBaseTextFont];
   text_depth = cupBaseTextSettings[iCupBaseTextDepth];
   
-  text_x_offset = cupBaseTextSettings[iCupBaseTextXOffset];
-  text_y_offset = cupBaseTextSettings[iCupBaseTextYOffset];
+  text_x_offset = cupBaseTextSettings[iCupBaseTextOffset][0];
+  text_y_offset = cupBaseTextSettings[iCupBaseTextOffset][1];
 
   _text_x = wall_thickness + max(base_clearance, magnet_position * 1/3);
   _text_1_y = max(base_clearance, magnet_position * 1/3);
