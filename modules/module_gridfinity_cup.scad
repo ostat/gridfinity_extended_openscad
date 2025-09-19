@@ -488,37 +488,19 @@ module gridfinity_cup(
       coloured_wall_pattern(
         wall_pattern_settings=wall_pattern_settings, wall_thickness=wall_thickness, wallpattern_walls=wallpattern_walls,
         pattern_floor = z, pattern_height = heightz){ 
-      grid_block(
-        num_x, num_y, num_z,
-        cupBase_settings = cupBase_settings,
-        wall_thickness = wall_thickness,
-        lip_settings = lip_settings,
-        filledin = filled_in);
-        
-      if(filled_in == FilledIn_disabled) 
-        //primary cavity
-        partitioned_cavity(
+
+        //coloured_wall_pattern child 0 (Outer block)
+        grid_block(
           num_x, num_y, num_z,
-          label_settings=label_settings,
           cupBase_settings = cupBase_settings,
-          fingerslide=fingerslide,
-          fingerslide_radius=fingerslide_radius,
-          fingerslide_walls=fingerslide_walls,
-          fingerslide_lip_aligned=fingerslide_lip_aligned,
-          wall_thickness=wall_thickness,
-          chamber_wall_thickness=chamber_wall_thickness,
-          chamber_wall_headroom=chamber_wall_headroom,
-          calculated_vertical_separator_positions = calculated_vertical_separator_positions,
-          calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
-          lip_settings=lip_settings,
-          headroom=headroom,
-          sliding_lid_settings= slidingLidSettings,
-          divider_wall_removable_settings = divider_wall_removable_settings);
+          wall_thickness = wall_thickness,
+          lip_settings = lip_settings,
+          filledin = filled_in);
       
-      //color(env_colour(color_wallcutout))
-      union(){
-        wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
         cutoutclearance_divider = env_corner_radius()/2;
+
+        wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
+
         cutoutclearance_border = max(wall_thickness, wall_pattern_settings[iPatternBorder]);
 
         tapered_setback = tapered_setback < 0 ? env_corner_radius() : tapered_setback;
@@ -527,7 +509,7 @@ module gridfinity_cup(
             : tapered_corner_size < 0 ? wallTop - floorHeight //meant for -1, but also catch others
             : tapered_corner_size == 0 ? wallTop - floorHeight - cavityFloorRadius
             : tapered_corner_size;
-            
+          
         wallcutouts_vertical = calculateWallCutout(
           wall_length = num_x,
           opposite_wall_distance = num_y,
@@ -564,27 +546,32 @@ module gridfinity_cup(
           pitch_opposite = env_pitch().x);
           
         wallcutout_locations = [wallcutouts_vertical[0], wallcutouts_vertical[1], wallcutouts_horizontal[0], wallcutouts_horizontal[1]];
-        if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
-          //tapered_corner_size = tapered_corner_size == 0 ? env_pitch().z*num_z/2 : tapered_corner_size;
-          //env_clearance().z here might be a bug.
-          translate([0,tapered_setback+env_clearance().y,env_pitch().z*num_z+gf_Lip_Height-env_clearance().z])
-          rotate([270,0,0])
-          union(){
-            if(tapered_corner == "rounded"){
-              roundedCorner(
-                radius = tapered_corner_size,
-                length=(num_x+1)*env_pitch().x,
-                height = tapered_corner_size);
-            }
-            else if(tapered_corner == "chamfered"){
-              chamferedCorner(
-                chamferLength = tapered_corner_size,
-                length=(num_x+1)*env_pitch().x,
-                height = tapered_corner_size);
-            }
-          }
-        }
-       
+          
+        //coloured_wall_pattern child 1 bin cavities and negative volumes
+        if(filled_in == FilledIn_disabled) 
+        union(){
+          //primary cavity
+          partitioned_cavity(
+            num_x, num_y, num_z,
+            label_settings=label_settings,
+            cupBase_settings = cupBase_settings,
+            fingerslide=fingerslide,
+            fingerslide_radius=fingerslide_radius,
+            fingerslide_walls=fingerslide_walls,
+            fingerslide_lip_aligned=fingerslide_lip_aligned,
+            wall_thickness=wall_thickness,
+            chamber_wall_thickness=chamber_wall_thickness,
+            chamber_wall_headroom=chamber_wall_headroom,
+            calculated_vertical_separator_positions = calculated_vertical_separator_positions,
+            calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
+            lip_settings=lip_settings,
+            headroom=headroom,
+            sliding_lid_settings= slidingLidSettings,
+            divider_wall_removable_settings = divider_wall_removable_settings);
+
+
+
+
         if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
           for(wallcutout_location = wallcutout_locations)
             if(wallcutout_location[iwalcutout_enabled] == true)
@@ -597,7 +584,45 @@ module gridfinity_cup(
                 height=wallcutout_location[iwalcutout_size].z,
                 thickness=wallcutout_location[iwalcutout_size].y,
                 cornerRadius=wallcutout_location[iwalcutout_config][iwalcutoutconfig_cornerradius]);
-         
+
+          if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
+            for(wallcutout_location = wallcutout_locations)
+              if(wallcutout_location[iwalcutout_enabled] == true)
+                translate(wallcutout_location[iwalcutout_reposition])
+                rotate(wallcutout_location[iwalcutout_rotation])
+                translate(wallcutout_location[iwalcutout_position])
+                WallCutout(
+                  lowerWidth=wallcutout_location[iwalcutout_size].x,
+                  wallAngle=wallcutout_location[iwalcutout_config][iwalcutoutconfig_angle],
+                  height=wallcutout_location[iwalcutout_size].z,
+                  thickness=wallcutout_location[iwalcutout_size].y,
+                  cornerRadius=wallcutout_location[iwalcutout_config][iwalcutoutconfig_cornerradius]);
+
+          if(tapered_corner == "rounded" || tapered_corner == "chamfered"){
+            //tapered_corner_size = tapered_corner_size == 0 ? env_pitch().z*num_z/2 : tapered_corner_size;
+            //env_clearance().z here might be a bug.
+            translate([0,tapered_setback+env_clearance().y,env_pitch().z*num_z+gf_Lip_Height-env_clearance().z])
+            rotate([270,0,0])
+            union(){
+              if(tapered_corner == "rounded"){
+                roundedCorner(
+                  radius = tapered_corner_size,
+                  length=(num_x+1)*env_pitch().x,
+                  height = tapered_corner_size);
+              }
+              else if(tapered_corner == "chamfered"){
+                chamferedCorner(
+                  chamferLength = tapered_corner_size,
+                  length=(num_x+1)*env_pitch().x,
+                  height = tapered_corner_size);
+              }
+            }
+          }
+        }
+
+        //coloured_wall_pattern child 2 wall pattern cavities
+        //color(env_colour(color_wallcutout))
+        union(){
           //Wall and floor pattern
           //Wall pattern in outerwalls
           if(wall_pattern_settings[iPatternEnabled] || floor_pattern_settings[iPatternEnabled]){
@@ -854,6 +879,7 @@ module gridfinity_cup(
           }
         }
       }
+
       if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
         //generate the label sockets
         gridfinity_label(

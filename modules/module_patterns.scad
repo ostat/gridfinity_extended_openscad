@@ -211,38 +211,39 @@ module coloured_wall_pattern(
 
   echo("coloured_wall_pattern", wall_thickness=wall_thickness, wallpattern_thickness=wallpattern_thickness, pattern_height=pattern_height, wallpatternzpos=pattern_floor, border=border,   locations=locations);
 
-  union(){
-    difference(){
-      // Child 0 is bin block
-      children(0);
-      
-      // Child 0 is bin partitioned cavity
-      if($children >=2) children(1);
-      
-      color(env_colour(color_cup))
-      union(){
-        for(i = [0:1:len(locations)-1])
-          if(locations[i][4] > 0)
-            translate(locations[i][1])
-            rotate(locations[i][2])
-            cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
+  difference(){
+    union(){
+      difference(){
+        // Child 0 is bin block
+        children(0);
+
+        color(env_colour(color_cup))
+        union(){
+          for(i = [0:1:len(locations)-1])
+            if(locations[i][4] > 0)
+              translate(locations[i][1])
+              rotate(locations[i][2])
+              cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
+        }
+      }
+
+      color(env_colour(color_wallcutout, isLip=true))
+      render()
+      difference(){
+        union(){
+          for(i = [0:1:len(locations)-1])
+            if(locations[i][4] > 0)
+              translate(locations[i][1])
+              rotate(locations[i][2])
+              cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
+        }
+        // Child 3 is wall pattern
+        if($children >=3) children(2);
       }
     }
 
-    color(env_colour(color_wallcutout, isLip=true))
-    render()
-    difference(){
-      union(){
-        for(i = [0:1:len(locations)-1])
-          if(locations[i][4] > 0)
-            translate(locations[i][1])
-            rotate(locations[i][2])
-            cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
-      }
-
-      // Child 3 is wall pattern
-      if($children >=3) children(2);
-    }
+    // Child 1 is bin cavities and negatives
+    if($children >=2) children(1);
   }
 }
 
