@@ -8,6 +8,7 @@ include <module_gridfinity_cup_base_text.scad>
 include <module_gridfinity_cup_base.scad>
 include <module_gridfinity_dividers_removable.scad>
 include <module_divider_walls.scad>
+include <module_bin_chambers.scad>
 
 use <module_gridfinity_block.scad>
 use <module_gridfinity_efficient_floor.scad>
@@ -205,6 +206,8 @@ default_text_1 = false;
 default_text_size = 0; // 0.1
 // Depth of text, in mm
 default_text_depth = 0.3; // 0.01
+// Offset of text , in mm
+default_text_offset = [0, 0]; // 0.1
 // Font to use
 default_text_font = "Aldo";  // [Aldo, B612, "Open Sans", Ubuntu]
 // Add free-form text line to bin bottom (printing date, serial, etc)
@@ -289,20 +292,22 @@ module gridfinity_cup(
     divider_thickness=divider_walls_thickness,
     divider_clearance=divider_clearance,
     divider_slot_spanning=divider_slot_spanning),
-  vertical_chambers = default_vertical_chambers,
-  vertical_separator_bend_position = default_vertical_separator_bend_position,
-  vertical_separator_bend_angle = default_vertical_separator_bend_angle,
-  vertical_separator_bend_separation = default_vertical_separator_bend_separation,
-  vertical_separator_cut_depth = default_vertical_separator_cut_depth,
-  vertical_irregular_subdivisions  = default_vertical_irregular_subdivisions,
-  vertical_separator_config = default_vertical_separator_config,
-  horizontal_chambers = default_horizontal_chambers,
-  horizontal_separator_bend_position = default_horizontal_separator_bend_position,
-  horizontal_separator_bend_angle = default_horizontal_separator_bend_angle,
-  horizontal_separator_bend_separation = default_horizontal_separator_bend_separation,
-  horizontal_separator_cut_depth = default_horizontal_separator_cut_depth,
-  horizontal_irregular_subdivisions = default_horizontal_irregular_subdivisions,
-  horizontal_separator_config = default_horizontal_separator_config,
+  vertical_chambers = ChamberSettings(
+    chambers_count = default_vertical_chambers,
+    separator_bend_position = default_vertical_separator_bend_position,
+    separator_bend_angle = default_vertical_separator_bend_angle,
+    separator_bend_separation = default_vertical_separator_bend_separation,
+    separator_cut_depth = default_vertical_separator_cut_depth,
+    irregular_subdivisions = default_vertical_irregular_subdivisions,
+    separator_config = default_vertical_separator_config),
+  horizontal_chambers = ChamberSettings(
+    chambers_count = default_horizontal_chambers,
+    separator_bend_position = default_horizontal_separator_bend_position,
+    separator_bend_angle = default_horizontal_separator_bend_angle,
+    separator_bend_separation = default_horizontal_separator_bend_separation,
+    separator_cut_depth = default_horizontal_separator_cut_depth,
+    irregular_subdivisions = default_horizontal_irregular_subdivisions,
+    separator_config = default_horizontal_separator_config),
   lip_settings = LipSettings(
     lipStyle=default_lip_style, 
     lipSideReliefTrigger=default_lip_side_relief_trigger, 
@@ -375,7 +380,7 @@ module gridfinity_cup(
     baseTextFontSize = default_text_size,
     baseTextFont = default_text_font,
     baseTextDepth = default_text_depth,
-    baseTextOffset = text_offset)) {
+    baseTextOffset = default_text_offset)) {
   
   //num_x = is_undef($num_x) ? calcDimensionWidth(width, true) : $num_x;
   //num_y = is_undef($num_y) ? calcDimensionDepth(depth, true) : $num_y;
@@ -424,27 +429,27 @@ module gridfinity_cup(
   sepFloorHeight = (efficient_floor != "off" ? floor_thickness : floorHeight);
        
   calculated_vertical_separator_positions = calculateSeparators(
-    separator_config = vertical_irregular_subdivisions 
-      ? vertical_separator_config 
-      : splitChamber(vertical_chambers-1, divider_width=chamber_wall_thickness, container_width=num_x*env_pitch().x - env_clearance().x - wall_thickness*2), 
+    separator_config = vertical_chambers[iChamber_irregular_subdivisions] 
+      ? vertical_chambers[iChamber_separator_config]  
+      : splitChamber(vertical_chambers[iChamber_count]-1, divider_width=vertical_chambers[iChamber_wall_thickness], container_width=num_x*env_pitch().x - env_clearance().x - wall_thickness*2), 
     length = env_pitch().y*num_y,
     height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, chamber_wall_headroom),
-    wall_thickness = chamber_wall_thickness,
-    bend_position = vertical_separator_bend_position,
-    bend_angle = vertical_separator_bend_angle,
-    bend_separation = vertical_separator_bend_separation,
-    cut_depth = vertical_separator_cut_depth);
+    wall_thickness = vertical_chambers[iChamber_wall_thickness],
+    bend_position = vertical_chambers[iChamber_separator_bend_position],
+    bend_angle = vertical_chambers[iChamber_separator_bend_angle],
+    bend_separation = vertical_chambers[iChamber_separator_bend_separation],
+    cut_depth = vertical_chambers[iChamber_separator_cut_depth]);
   calculated_horizontal_separator_positions = calculateSeparators(
-    separator_config = horizontal_irregular_subdivisions 
-      ? horizontal_separator_config 
-      : splitChamber(horizontal_chambers-1, divider_width=chamber_wall_thickness, container_width=num_y*env_pitch().y - env_clearance().y - wall_thickness*2), 
+    separator_config = horizontal_chambers[iChamber_irregular_subdivisions] 
+      ? horizontal_chambers[iChamber_separator_config] 
+      : splitChamber(horizontal_chambers[iChamber_count]-1, divider_width=horizontal_chambers[iChamber_wall_thickness], container_width=num_y*env_pitch().y - env_clearance().y - wall_thickness*2), 
     length = env_pitch().x*num_x,
     height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, chamber_wall_headroom),
-    wall_thickness = chamber_wall_thickness,
-    bend_position = horizontal_separator_bend_position,
-    bend_angle = horizontal_separator_bend_angle,
-    bend_separation = horizontal_separator_bend_separation,
-    cut_depth = horizontal_separator_cut_depth);
+    wall_thickness = horizontal_chambers[iChamber_wall_thickness],
+    bend_position = horizontal_chambers[iChamber_separator_bend_position],
+    bend_angle = horizontal_chambers[iChamber_separator_bend_angle],
+    bend_separation = horizontal_chambers[iChamber_separator_bend_separation],
+    cut_depth = horizontal_chambers[iChamber_separator_cut_depth]);
 
   //wallpattern_hole_size = is_list(wallpattern_hole_size) ? wallpattern_hole_size : [wallpattern_hole_size,wallpattern_hole_size];
   $gfc=[["num_x",num_x],["num_y",num_y],["num_z",num_z],["calculated_vertical_separator_positions",calculated_vertical_separator_positions],["calculated_horizontal_separator_positions",calculated_horizontal_separator_positions]];
@@ -1043,17 +1048,8 @@ module gridfinity_cup(
     ,"fingerslide_lip_aligned",fingerslide_lip_aligned
     ,"cupBase_settings",cupBase_settings
     ,"wall_thickness",wall_thickness
-    ,"chamber_wall_thickness",chamber_wall_thickness
-    ,"vertical_separator_bend_position",vertical_separator_bend_position
-    ,"vertical_separator_bend_angle",vertical_separator_bend_angle
-    ,"vertical_separator_bend_separation",vertical_separator_bend_separation
-    ,"vertical_separator_positions",calculated_vertical_separator_positions
-    ,"vertical_separator_cut_depth",vertical_separator_cut_depth
-    ,"horizontal_separator_bend_position",horizontal_separator_bend_position
-    ,"horizontal_separator_bend_angle",horizontal_separator_bend_angle
-    ,"horizontal_separator_bend_separation",horizontal_separator_bend_separation
-    ,"horizontal_separator_positions",calculated_horizontal_separator_positions
-    ,"horizontal_separator_cut_depth",horizontal_separator_cut_depth
+    ,"vertical_chambers",vertical_chambers
+    ,"horizontal_chambers",horizontal_chambers
     ,"lip_settings",lip_settings
     ,"headroom",headroom
     ,"tapered_corner",tapered_corner
