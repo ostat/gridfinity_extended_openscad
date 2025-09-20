@@ -49,7 +49,22 @@ itemholder_hole_rotation = 0;
 itemholder_grid_style = "auto"; //["square","hex","auto"]
 //Spacing around the holes
 itemholder_hole_spacing = 2; //0.1
-// Number of holes in the x and y dimension, 0 is dynamic
+
+//enlarge the holes by this amount for clearance
+itemholder_hole_clearance = 0.65;
+
+// Depth of hole, Overrides the know item depth. Limited by floor height
+itemholder_hole_depth = 0; //0.1
+
+// 45 deg chamfer added to the top of the hole (mm)
+itemholder_hole_chamfer = 1; //0.5
+
+// The number of sides for the hole, when custom is selected
+itemholder_hole_sides = 4; 
+// The size the hole, when custom is selected
+itemholder_hole_size = [10, 10]; //0.1
+
+// Number of holes in the x and ydimension, 0 is dynamic
 itemholder_hole_gridx = 0; //1
 // Number of holes in the y dimension, 0 is dynamic, y.5, is only valid for hex.
 itemholder_hole_gridy = 0; //0.5
