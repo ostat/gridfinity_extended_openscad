@@ -150,7 +150,7 @@ sliding_lid_lip_enabled = false;
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
 // Radius of the corner fillet, 0:none, >1: radius in mm, <0 dimention/abs(n) (i.e. -3 is 1/3 the width)
-fingerslide_radius = 8;
+fingerslide_radius = -3;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled using radius; >1: override radius.
 fingerslide_walls=[1,0,0,0];
 //Align the fingerslide with the lip

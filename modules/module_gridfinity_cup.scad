@@ -72,7 +72,7 @@ default_sliding_lid_lip_enabled = false;
 // Include larger corner fillet
 default_fingerslide = "none"; //[none, rounded, chamfered]
 // radius of the corner fillet
-default_fingerslide_radius = 8;
+default_fingerslide_radius = -3;
 // wall to enable on, front, back, left, right.  0: disabled; 1: enabled;
 default_fingerslide_walls=[1,0,0,0]; //[0:1:1]
 default_fingerslide_lip_aligned = true;
@@ -1349,7 +1349,7 @@ module basic_cavity(num_x, num_y, num_z,
         num_z = num_z,
         fingerslide_walls=finger_slide_settings[iFingerSlideWalls],
         lipAligned=finger_slide_settings[iFingerSlideLipAligned],
-        fingerslide=finger_slide_settings[iFingerSlide],
+        fingerslide=finger_slide_settings[iFingerSlideType],
         fingerslide_radius=finger_slide_settings[iFingerSlideRadius],
         reducedlipstyle=reducedlipstyle,
         wall_thickness=wall_thickness,

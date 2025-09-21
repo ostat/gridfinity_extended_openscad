@@ -355,10 +355,11 @@ gridfinity_cup(
     labelSize=label_size,
     labelRelief=label_relief,
     labelWalls=label_walls),
-  fingerslide=fingerslide,
-  fingerslide_radius=fingerslide_radius,
-  fingerslide_walls=fingerslide_walls,
-  fingerslide_lip_aligned=fingerslide_lip_aligned,
+  finger_slide_settings = FingerSlideSettings(
+    type = fingerslide,
+    radius = fingerslide_radius,
+    walls = fingerslide_walls,
+    lip_aligned = fingerslide_lip_aligned),
   cupBase_settings = CupBaseSettings(
     magnetSize = [0,0],
     magnetEasyRelease = false, 

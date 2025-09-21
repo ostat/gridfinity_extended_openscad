@@ -180,10 +180,12 @@ sliding_lid_lip_enabled = false;
 /* [Finger Slide] */
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
-// Radius of the corner fillet
-fingerslide_radius = 8;
-// wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
-fingerslide_walls=[1,0,0,0];  //[0:1:1]
+// Radius of the corner fillet, 0:none, >1: radius in mm, <0 dimention/abs(n) (i.e. -3 is 1/3 the width)
+fingerslide_radius = -3;
+// wall to enable on, front, back, left, right. 0: disabled; 1: enabled using radius; >1: override radius.
+fingerslide_walls=[1,0,0,0];
+//Align the fingerslide with the lip
+fingerslide_lip_aligned=true;
 
 /* [Tapered Corner] */
 tapered_corner = "none"; //[none, rounded, chamfered]
@@ -672,8 +674,11 @@ module gridfinity_itemholder(
     labelSize=label_size,
     labelRelief=label_relief,
     labelWalls=label_walls),
-  fingerslide=fingerslide,
-  fingerslide_radius=fingerslide_radius,
+  finger_slide_settings = FingerSlideSettings(
+    type = fingerslide,
+    radius = fingerslide_radius,
+    walls = fingerslide_walls,
+    lip_aligned = fingerslide_lip_aligned),
   magnet_size=enable_magnets?magnet_size:[0,0],
   magnet_easy_release=magnet_easy_release,
   screw_size=enable_screws?screw_size:[0,0],
@@ -813,9 +818,7 @@ module gridfinity_itemholder(
           labelSize=label_size,
           labelRelief=label_relief,
           labelWalls=label_walls),
-        fingerslide=fingerslide,
-        fingerslide_radius=fingerslide_radius,
-        fingerslide_walls=fingerslide_walls,
+        finger_slide_settings = finger_slide_settings,
         cupBase_settings = CupBaseSettings(
           magnetSize = magnet_size,
           magnetEasyRelease = magnet_easy_release, 

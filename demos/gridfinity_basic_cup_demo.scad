@@ -750,8 +750,13 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
         minimumPrintablePadSize=0,
         flatBaseRoundedRadius = 0,
         flatBaseRoundedEasyPrint = 0),
-      fingerslide=DictGet(currentStepSettings, ifingerslide),
-      fingerslide_radius=DictGet(currentStepSettings, ifingerslide_radius),
+
+      finger_slide_settings = FingerSlideSettings(
+        type = DictGet(currentStepSettings, ifingerslide),
+        radius = DictGet(currentStepSettings, ifingerslide_radius),
+        walls = [1,1,1,1],
+        lip_aligned = false),
+
       tapered_corner=DictGet(currentStepSettings, itapered_corner),
       tapered_corner_size=DictGet(currentStepSettings, itapered_corner_size),
       tapered_setback=DictGet(currentStepSettings, itapered_setback),

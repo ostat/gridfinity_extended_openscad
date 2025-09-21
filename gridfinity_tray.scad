@@ -119,8 +119,12 @@ label_walls=[0,1,0,0];  //[0:1:1]
 /* [Finger Slide] */
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
-// Radius of the corner fillet
-fingerslide_radius = 8;
+// Radius of the corner fillet, 0:none, >1: radius in mm, <0 dimention/abs(n) (i.e. -3 is 1/3 the width)
+fingerslide_radius = -3;
+// wall to enable on, front, back, left, right. 0: disabled; 1: enabled using radius; >1: override radius.
+fingerslide_walls=[1,0,0,0];
+//Align the fingerslide with the lip
+fingerslide_lip_aligned=true;
 
 /* [Tapered Corner] */
 tapered_corner = "none"; //[none, rounded, chamfered]
@@ -331,8 +335,11 @@ module gridfinity_tray(
     labelSize=label_size,
     labelRelief=label_relief,
     labelWalls=label_walls),
-  fingerslide=fingerslide,
-  fingerslide_radius=fingerslide_radius,
+  finger_slide_settings = FingerSlideSettings(
+    type = fingerslide,
+    radius = fingerslide_radius,
+    walls = fingerslide_walls,
+    lip_aligned = fingerslide_lip_aligned),
   cupBase_settings = CupBaseSettings(
     magnetSize = magnet_size, 
     magnetEasyRelease = magnet_easy_release, 
@@ -432,7 +439,7 @@ module gridfinity_tray(
       filled_in=filled_in,
       label_settings=label_settings,
       cupBase_settings = cupBase_settings,
-      fingerslide_radius=fingerslide_radius,
+      finger_slide_settings=finger_slide_settings,
       wall_thickness=wall_thickness,
       vertical_chambers = vertical_chambers,
       horizontal_chambers=horizontal_chambers,

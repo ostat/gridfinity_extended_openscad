@@ -129,7 +129,7 @@ label_walls=[0,1,0,0];  //[0:1:1]
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
 // Radius of the corner fillet
-fingerslide_radius = 8;
+fingerslide_radius = -3;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 fingerslide_walls=[1,0,0,0];  //[0:1:1]
 //Align the fingerslide with the lip
@@ -303,10 +303,11 @@ set_environment(
         labelSize=label_size,
         labelRelief=label_relief,
         labelWalls=label_walls),
-      fingerslide=fingerslide,
-      fingerslide_radius=fingerslide_radius,
-      fingerslide_walls=fingerslide_walls,
-      fingerslide_lip_aligned=fingerslide_lip_aligned,
+      finger_slide_settings = FingerSlideSettings(
+        type = fingerslide,
+        radius = fingerslide_radius,
+        walls = fingerslide_walls,
+        lip_aligned = fingerslide_lip_aligned),
       cupBase_settings = CupBaseSettings(
         magnetSize = enable_magnets ? magnet_size : [0,0], 
         magnetEasyRelease = magnet_easy_release, 
