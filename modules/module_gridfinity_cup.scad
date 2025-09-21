@@ -1237,9 +1237,17 @@ module basic_cavity(num_x, num_y, num_z,
   
   AssertSlidingLidSettings(sliding_lid_settings);
   
-  inner_corner_center = [
+  innerWallRadius = max(0.1, env_corner_radius()-wall_thickness); //prevent radius going negative
+    
+  lip_inner_corner_center = [
     env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
     env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
+
+  wall_inner_corner_center = let(
+    corner_post_adjust = min(0, env_corner_radius()-wall_thickness-innerWallRadius)*-1
+    ) [
+    lip_inner_corner_center.x-corner_post_adjust, 
+    lip_inner_corner_center.y-corner_post_adjust];
 
   reducedlipstyle = 
     // replace "reduced" with "none" if z-height is less than 1.2
@@ -1278,7 +1286,8 @@ module basic_cavity(num_x, num_y, num_z,
     : env_pitch().z*num_z-gf_lip_height-lipSupportThickness);
   //lipBottomZ = env_pitch().z*num_z+fudgeFactor*3;
   innerLipRadius = env_corner_radius()-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
-  innerWallRadius = max(0.1, env_corner_radius()-wall_thickness); //prevent radius going negative
+
+  
   if(env_help_enabled("trace")) echo("basic_cavity", gf_cup_corner_radius=env_corner_radius(),wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
   aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
   
@@ -1306,15 +1315,15 @@ module basic_cavity(num_x, num_y, num_z,
       else { // normal
         lowerTaperZ = filledInZ-gf_lip_height-lipSupportThickness;
         if(lowerTaperZ <= floorht){
-          hull() cornercopy(inner_corner_center, num_x, num_y)
+          hull() cornercopy(lip_inner_corner_center, num_x, num_y)
             tz(floorht) 
             cylinder(r=innerLipRadius, h=filledInZ-floorht+fudgeFactor*4); // lip
         } else {
-          hull() cornercopy(inner_corner_center, num_x, num_y)
+          hull() cornercopy(lip_inner_corner_center, num_x, num_y)
             tz(filledInZ-gf_lip_height-fudgeFactor) 
             cylinder(r=innerLipRadius, h=gf_lip_height+fudgeFactor*4); // lip
     
-          hull() cornercopy(inner_corner_center, num_x, num_y)
+          hull() cornercopy(lip_inner_corner_center, num_x, num_y)
             tz(filledInZ-gf_lip_height-lipSupportThickness-fudgeFactor) 
             cylinder(
               r1=innerWallRadius,
@@ -1324,7 +1333,7 @@ module basic_cavity(num_x, num_y, num_z,
     
       //Cavity below lip
       if(cavityHeight > 0)
-       hull() cornercopy(inner_corner_center, num_x, num_y)
+       hull() cornercopy(wall_inner_corner_center, num_x, num_y)
         tz(floorht)
           roundedCylinder(
             h=cavityHeight,
@@ -1354,7 +1363,7 @@ module basic_cavity(num_x, num_y, num_z,
         reducedlipstyle=reducedlipstyle,
         wall_thickness=wall_thickness,
         floorht=floorht,
-        inner_corner_center=inner_corner_center);
+        inner_corner_center=wall_inner_corner_center);
     }
   
     if(divider_wall_removable_settings[iDividerRemovable_Enabled])
@@ -1433,7 +1442,7 @@ module basic_cavity(num_x, num_y, num_z,
     
     hull()
     for (x=[1.5+0.25+wall_thickness, num_x*env_pitch().x-1.5-0.25-wall_thickness]){
-      for (y=[11, (num_y)*env_pitch().y-inner_corner_center.y])
+      for (y=[11, (num_y)*env_pitch().y-wall_inner_corner_center.y])
       translate([x, y, top-height])
       cylinder(d=3, h=height);
     }
@@ -1445,7 +1454,7 @@ module basic_cavity(num_x, num_y, num_z,
     
     hull()
     for (y=[1.5+0.25+wall_thickness, num_y*env_pitch().y-1.5-0.25-wall_thickness]){
-      for (x=[11, (num_x)*env_pitch().x-inner_corner_center.x])
+      for (x=[11, (num_x)*env_pitch().x-wall_inner_corner_center.x])
       translate([x, y, top-height])
       cylinder(d=3, h=height);
     }
@@ -1454,7 +1463,7 @@ module basic_cavity(num_x, num_y, num_z,
   if (nofloor) {
     tz(-fudgeFactor)
       hull()
-      cornercopy(num_x=num_x, num_y=num_y, r=inner_corner_center)
+      cornercopy(num_x=num_x, num_y=num_y, r=wall_inner_corner_center)
       cylinder(r=2, h=gf_cupbase_lower_taper_height+fudgeFactor);
     gridcopy(1, 1)
       EfficientFloor(num_x, num_y,-fudgeFactor, q);
