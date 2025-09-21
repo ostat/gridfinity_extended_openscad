@@ -349,18 +349,20 @@ module gridfinity_cup(
     patternVoronoiNoise = default_wallpattern_pattern_voronoi_noise,
     patternBrickWeight = default_wallpattern_pattern_brick_weight,
     patternFs = default_wallpattern_pattern_quality), 
-  wallcutout_vertical=default_wallcutout_vertical,
-  wallcutout_vertical_position=default_wallcutout_vertical_position,
-  wallcutout_vertical_width=default_wallcutout_vertical_width,
-  wallcutout_vertical_angle=default_wallcutout_vertical_angle,
-  wallcutout_vertical_height=default_wallcutout_vertical_height,
-  wallcutout_vertical_corner_radius=default_wallcutout_vertical_corner_radius,
-  wallcutout_horizontal=default_wallcutout_horizontal,
-  wallcutout_horizontal_position=default_wallcutout_horizontal_position,
-  wallcutout_horizontal_width=default_wallcutout_horizontal_width,
-  wallcutout_horizontal_angle=default_wallcutout_horizontal_angle,
-  wallcutout_horizontal_height=default_wallcutout_horizontal_height,
-  wallcutout_horizontal_corner_radius=default_wallcutout_horizontal_corner_radius,
+  wallcutout_vertical_settings=WallCutoutSettings(
+    type = default_wallcutout_vertical, 
+    position = default_wallcutout_vertical_position, 
+    width = default_wallcutout_vertical_width,
+    angle = default_wallcutout_vertical_angle,
+    height = default_wallcutout_vertical_height, 
+    corner_radius = default_wallcutout_vertical_corner_radius),
+  wallcutout_horizontal_settings=WallCutoutSettings(
+    type = default_wallcutout_horizontal, 
+    position = default_wallcutout_horizontal_position, 
+    width = default_wallcutout_horizontal_width,
+    angle = default_wallcutout_horizontal_angle,
+    height = default_wallcutout_horizontal_height, 
+    corner_radius = default_wallcutout_horizontal_corner_radius),
   extendable_Settings = ExtendableSettings(
     extendablexEnabled = default_extension_x_enabled, 
     extendablexPosition = default_extension_x_position, 
@@ -494,51 +496,12 @@ module gridfinity_cup(
 
         wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
 
-        cutoutclearance_border = max(wall_thickness, wall_pattern_settings[iPatternBorder]);
-
         tapered_setback = tapered_setback < 0 ? env_corner_radius() : tapered_setback;
         tapered_corner_size =
               tapered_corner_size == -2 ? (wallTop - floorHeight)/2
             : tapered_corner_size < 0 ? wallTop - floorHeight //meant for -1, but also catch others
             : tapered_corner_size == 0 ? wallTop - floorHeight - cavityFloorRadius
             : tapered_corner_size;
-          
-        wallcutouts_vertical = calculateWallCutout(
-          wall_length = num_x,
-          opposite_wall_distance = num_y,
-          wallcutout_type = wallcutout_vertical,
-          wallcutout_position = wallcutout_vertical_position,
-          wallcutout_width = wallcutout_vertical_width,
-          wallcutout_angle = wallcutout_vertical_angle,
-          wallcutout_height = wallcutout_vertical_height,
-          wallcutout_corner_radius = wallcutout_vertical_corner_radius,
-          wallcutout_rotation = [0,0,0],
-          wallcutout_reposition = [0,0,0],
-          wall_thickness = wall_thickness,
-          cavityFloorRadius = cavityFloorRadius,
-          wallTop = wallTop,
-          floorHeight = floorHeight,
-          pitch = env_pitch().x,
-          pitch_opposite = env_pitch().y);
-        wallcutouts_horizontal = calculateWallCutout(
-          wall_length = num_y,
-          opposite_wall_distance = num_x,
-          wallcutout_type = wallcutout_horizontal,
-          wallcutout_position = wallcutout_horizontal_position,
-          wallcutout_width = wallcutout_horizontal_width,
-          wallcutout_angle = wallcutout_horizontal_angle,
-          wallcutout_height = wallcutout_horizontal_height,
-          wallcutout_corner_radius = wallcutout_horizontal_corner_radius,
-          wallcutout_rotation = [0,0,90],
-          wallcutout_reposition = [num_x*env_pitch().x,0,0],
-          wall_thickness = wall_thickness,
-          cavityFloorRadius = cavityFloorRadius,
-          wallTop = wallTop,
-          floorHeight = floorHeight,
-          pitch = env_pitch().y,
-          pitch_opposite = env_pitch().x);
-          
-        wallcutout_locations = [wallcutouts_vertical[0], wallcutouts_vertical[1], wallcutouts_horizontal[0], wallcutouts_horizontal[1]];
 
       coloured_wall_pattern(
         wall_pattern_settings=wall_pattern_settings, wall_thickness=wall_thickness, wallpattern_walls=wallpattern_walls,
@@ -575,10 +538,13 @@ module gridfinity_cup(
             divider_wall_removable_settings = divider_wall_removable_settings);
 
           bin_cutouts(
-            num_x = num_x, num_z = num_z,
-            wallcutout_vertical = wallcutout_vertical, 
-            wallcutout_horizontal = wallcutout_horizontal, 
-            wallcutout_locations = wallcutout_locations,
+            num_x = num_x, num_y = num_y, num_z = num_z,
+            wall_thickness = wall_thickness,
+            cavityFloorRadius = cavityFloorRadius,
+            wallTop = wallTop,
+            floorHeight = floorHeight,
+            wallcutout_vertical_settings = wallcutout_vertical_settings, 
+            wallcutout_horizontal_settings = wallcutout_horizontal_settings, 
             tapered_corner = tapered_corner,
             tapered_corner_size = tapered_corner_size,
             tapered_setback = tapered_setback);
@@ -602,7 +568,11 @@ module gridfinity_cup(
         bin_wall_pattern(
             num_x = num_x,
             num_y = num_y,
+            num_z = num_z,
             wall_thickness = wall_thickness,
+            cavityFloorRadius = cavityFloorRadius,
+            wallTop = wallTop,
+            floorHeight = floorHeight,
             label_settings = label_settings,
             chamber_wall_thickness = chamber_wall_thickness,
             calculated_vertical_separator_positions = calculated_vertical_separator_positions,
@@ -620,11 +590,8 @@ module gridfinity_cup(
             tapered_corner = tapered_corner,
             tapered_corner_size = tapered_corner_size,
             tapered_setback = tapered_setback,
-            wallcutout_vertical = wallcutout_vertical,
-            wallcutout_horizontal = wallcutout_horizontal,
-            wallcutout_locations = wallcutout_locations,
-            num_z = num_z,
-            cutoutclearance_border = cutoutclearance_border);
+            wallcutout_vertical_settings = wallcutout_vertical_settings,
+            wallcutout_horizontal_settings = wallcutout_horizontal_settings);
       } //coloured_wall_pattern
 
       if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
@@ -799,20 +766,8 @@ module gridfinity_cup(
     ,"wallpattern_walls",wallpattern_walls
     ,"wall_pattern_settings",wall_pattern_settings
     ,"floor_pattern_settings",floor_pattern_settings
-    ,"wallcutout_vertical",[
-        wallcutout_vertical, 
-        wallcutout_vertical_position,
-        wallcutout_vertical_width,
-        wallcutout_vertical_angle,
-        wallcutout_vertical_height,
-        wallcutout_vertical_corner_radius]
-    ,"wallcutout_horizontal",[
-        wallcutout_horizontal, 
-        wallcutout_horizontal_position,
-        wallcutout_horizontal_width,
-        wallcutout_horizontal_angle,
-        wallcutout_horizontal_height,
-        wallcutout_horizontal_corner_radius]
+    ,"wallcutout_vertical_settings",wallcutout_vertical_settings
+    ,"wallcutout_horizontal_settings",wallcutout_horizontal_settings
     ,"extendable_Settings",extendable_Settings
     ]
     ,env_help_enabled("info"));  
@@ -821,7 +776,11 @@ module gridfinity_cup(
 module bin_wall_pattern(
   num_x,
   num_y,
+  num_z,
   wall_thickness,
+  cavityFloorRadius,
+  wallTop,
+  floorHeight,
   label_settings,
   chamber_wall_thickness,
   calculated_vertical_separator_positions,
@@ -839,13 +798,13 @@ module bin_wall_pattern(
   tapered_corner,
   tapered_corner_size,
   tapered_setback,
-  wallcutout_vertical,
-  wallcutout_horizontal,
-  wallcutout_locations,
-  num_z,
-  cutoutclearance_border
+  wallcutout_vertical_settings,
+  wallcutout_horizontal_settings
 ) {
   fudgeFactor = 0.01;
+
+  cutout_clearance_border = max(wall_thickness, wall_pattern_settings[iPatternBorder]);
+
   //Wall patterns
   //Wall pattern in outerwalls
   if(wall_pattern_settings[iPatternEnabled]){
@@ -1009,15 +968,19 @@ module bin_wall_pattern(
       }
 
       bin_cutouts(
-        wallcutout_vertical = wallcutout_vertical, 
-        wallcutout_horizontal = wallcutout_horizontal, 
-        wallcutout_locations = wallcutout_locations,
+        num_x = num_x,
+        num_y = num_y,
+        num_z = num_z,
+        wall_thickness = wall_thickness,
+        cavityFloorRadius = cavityFloorRadius,
+        wallTop = wallTop,
+        floorHeight = floorHeight,
+        wallcutout_vertical_settings = wallcutout_vertical_settings,
+        wallcutout_horizontal_settings = wallcutout_horizontal_settings,
         tapered_corner = tapered_corner,
         tapered_corner_size = tapered_corner_size,
         tapered_setback = tapered_setback,
-        num_x = num_x,
-        num_z = num_z,
-        cutout_clearance_border = cutoutclearance_border);
+        cutout_clearance_border = cutout_clearance_border);
     }
   }
 }
@@ -1034,7 +997,6 @@ module bin_floor_pattern(
   sepFloorHeight,
   fudgeFactor,
   cutoutclearance_divider,
-
 ) {
   if(floor_pattern_settings[iPatternEnabled]){
     difference(){
@@ -1096,20 +1058,50 @@ module bin_floor_pattern(
   }
 }
 
-
 module bin_cutouts(
-  wallcutout_vertical,
-  wallcutout_horizontal,
-  wallcutout_locations,
+  num_x = 0,
+  num_y = 0,
+  num_z = 0,
+  wall_thickness,
+  cavityFloorRadius,
+  wallTop,
+  floorHeight,
+  wallcutout_vertical_settings,
+  wallcutout_horizontal_settings,
   tapered_corner = "none",
   tapered_corner_size = 0,
   tapered_setback = 0,
-  num_x = 0,
-  num_z = 0,
   cutout_clearance_border = 0
 ) {
 
-  if(wallcutout_vertical != "disabled" || wallcutout_horizontal !="disabled" )
+  wallcutouts_vertical = calculateWallCutout(
+    wall_length = num_x,
+    opposite_wall_distance = num_y,
+    wallcutout_settings = wallcutout_vertical_settings,
+    wallcutout_rotation = [0,0,0],
+    wallcutout_reposition = [0,0,0],
+    wall_thickness = wall_thickness,
+    cavityFloorRadius = cavityFloorRadius,
+    wallTop = wallTop,
+    floorHeight = floorHeight,
+    pitch = env_pitch().x,
+    pitch_opposite = env_pitch().y);
+  wallcutouts_horizontal = calculateWallCutout(
+    wall_length = num_y,
+    opposite_wall_distance = num_x,
+    wallcutout_settings = wallcutout_horizontal_settings,
+    wallcutout_rotation = [0,0,90],
+    wallcutout_reposition = [num_x*env_pitch().x,0,0],
+    wall_thickness = wall_thickness,
+    cavityFloorRadius = cavityFloorRadius,
+    wallTop = wallTop,
+    floorHeight = floorHeight,
+    pitch = env_pitch().y,
+    pitch_opposite = env_pitch().x);
+    
+  wallcutout_locations = [wallcutouts_vertical[0], wallcutouts_vertical[1], wallcutouts_horizontal[0], wallcutouts_horizontal[1]];
+
+  if(wallcutout_vertical_settings[iwalcutoutconfig_type] != "disabled" || wallcutout_horizontal_settings[iwalcutoutconfig_type] !="disabled" )
     for(wallcutout_location = wallcutout_locations)
       if(wallcutout_location[iwalcutout_enabled] == true)
         translate(wallcutout_location[iwalcutout_reposition])

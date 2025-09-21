@@ -756,19 +756,21 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1,stepO
       tapered_corner_size=DictGet(currentStepSettings, itapered_corner_size),
       tapered_setback=DictGet(currentStepSettings, itapered_setback),
   
-      wallcutout_vertical=DictGet(currentStepSettings, iwallcutout_vertical),
-      wallcutout_vertical_position=DictGet(currentStepSettings, iwallcutout_vertical_position),
-      wallcutout_vertical_width=DictGet(currentStepSettings, iwallcutout_vertical_width),
-      wallcutout_vertical_angle=DictGet(currentStepSettings, iwallcutout_vertical_angle),
-      wallcutout_vertical_height=DictGet(currentStepSettings, iwallcutout_vertical_height),
-      wallcutout_vertical_corner_radius=DictGet(currentStepSettings, iwallcutout_vertical_corner_radius),
+      wallcutout_vertical_settings = WallCutoutSettings(
+        type = DictGet(currentStepSettings, iwallcutout_vertical), 
+        position = DictGet(currentStepSettings, iwallcutout_vertical_position), 
+        width = DictGet(currentStepSettings, iwallcutout_vertical_width),
+        angle = DictGet(currentStepSettings, iwallcutout_vertical_angle),
+        height = DictGet(currentStepSettings, iwallcutout_vertical_height), 
+        corner_radius = DictGet(currentStepSettings, iwallcutout_vertical_corner_radius)),
 
-      wallcutout_horizontal=DictGet(currentStepSettings, iwallcutout_horizontal),
-      wallcutout_horizontal_position=DictGet(currentStepSettings, iwallcutout_horizontal_position),
-      wallcutout_horizontal_width=DictGet(currentStepSettings, iwallcutout_horizontal_width),
-      wallcutout_horizontal_angle=DictGet(currentStepSettings, iwallcutout_horizontal_angle),
-      wallcutout_horizontal_height=DictGet(currentStepSettings, iwallcutout_horizontal_height),
-      wallcutout_horizontal_corner_radius=DictGet(currentStepSettings, iwallcutout_horizontal_corner_radius),
+      wallcutout_horizontal_settings = WallCutoutSettings(
+        type = DictGet(currentStepSettings, iwallcutout_horizontal), 
+        position = DictGet(currentStepSettings, iwallcutout_horizontal_position), 
+        width = DictGet(currentStepSettings, iwallcutout_horizontal_width),
+        angle = DictGet(currentStepSettings, iwallcutout_horizontal_angle),
+        height = DictGet(currentStepSettings, iwallcutout_horizontal_height), 
+        corner_radius = DictGet(currentStepSettings, iwallcutout_horizontal_corner_radius)),
 
       wallpattern_walls=DictGet(currentStepSettings, iwallpattern_walls),
       wallpattern_dividers_enabled=DictGet(currentStepSettings, iwallpattern_dividers_enabled),
