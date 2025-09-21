@@ -16,7 +16,7 @@ iPatternFs=10;
 iPatternGridChamfer=11;
 iPatternVoronoiNoise=12;
 iPatternBrickWeight=13;
-
+iPatternColored=14;
 
 PatternStyle_grid = "grid";
 PatternStyle_hexgrid = "hexgrid";
@@ -65,7 +65,8 @@ function PatternSettings(
     patternFs = 0,
     patternGridChamfer=0,
     patternVoronoiNoise=0,
-    patternBrickWeight=0
+    patternBrickWeight=0,
+    patternColored=false
     ) = 
   let(
     result = [
@@ -82,14 +83,15 @@ function PatternSettings(
       patternFs,
       patternGridChamfer,
       patternVoronoiNoise,
-      patternBrickWeight
+      patternBrickWeight,
+      patternColored
       ],
     validatedResult = ValidatePatternSettings(result)
   ) validatedResult;
 
 function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_list(settings), "Settings must be a list")
-  assert(len(settings)==14, "Settings must length 14")
+  assert(len(settings)==15, "Settings must length 15")
   assert(is_bool(settings[iPatternEnabled]), "settings[iPatternEnabled] must be a boolean")
   assert(is_string(settings[iPatternStyle]), "settings[iPatternStyle] must be a string")
   assert(is_bool(settings[iPatternRotate]), "settings[iPatternRotate] must be a boolean")
@@ -119,7 +121,8 @@ function ValidatePatternSettings(settings, num_x, num_y) =
       settings[iPatternFs],
       settings[iPatternGridChamfer],
       settings[iPatternVoronoiNoise],
-      settings[iPatternBrickWeight]
+      settings[iPatternBrickWeight],
+      settings[iPatternColored]
       ];
 
 function get_wallpattern_positions(
@@ -194,7 +197,8 @@ module coloured_wall_pattern(
   wall_thickness=1,
   pattern_floor, 
   pattern_height,
-  border = 0
+  border = 0,
+  colored_pattern = false,
 ){
   fudgeFactor = 0.001;
   wallpattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], wall_thickness);
@@ -209,14 +213,31 @@ module coloured_wall_pattern(
 
   locations = [positions.x[0], positions.x[1], positions.y[0], positions.y[1]];
 
-  echo("coloured_wall_pattern", wall_thickness=wall_thickness, wallpattern_thickness=wallpattern_thickness, pattern_height=pattern_height, wallpatternzpos=pattern_floor, border=border,   locations=locations);
+  assert($children == 3, "coloured_wall_pattern expects three children");
+  echo("coloured_wall_pattern", children=$children, wall_thickness=wall_thickness, wallpattern_thickness=wallpattern_thickness, pattern_height=pattern_height, wallpatternzpos=pattern_floor, border=border,   locations=locations);
 
   difference(){
+
+    colored_block(colored_pattern){
+      children(0);
+
+      union(){
+        for(i = [0:1:len(locations)-1])
+          if(locations[i][4] > 0)
+            translate(locations[i][1])
+            rotate(locations[i][2])
+            cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
+      }
+
+      if($children >=3) children(2);
+    }
+    /*
     union(){
       difference(){
         // Child 0 is bin block
         children(0);
 
+        //Subtract the wall pattern block so it can be coloured.
         color(env_colour(color_cup))
         union(){
           for(i = [0:1:len(locations)-1])
@@ -228,22 +249,58 @@ module coloured_wall_pattern(
       }
 
       color(env_colour(color_wallcutout, isLip=true))
-      render()
+      render_conditional(true)
       difference(){
-        union(){
+        union()
           for(i = [0:1:len(locations)-1])
             if(locations[i][4] > 0)
               translate(locations[i][1])
               rotate(locations[i][2])
               cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
-        }
+
         // Child 3 is wall pattern
+        color(env_colour(color_wallcutout, isLip=true))
         if($children >=3) children(2);
       }
-    }
+    }*/
 
     // Child 1 is bin cavities and negatives
     if($children >=2) children(1);
+  }
+}
+
+
+module colored_block(coloured_pattern = true){
+  union(){
+    if(coloured_pattern){
+      difference(){
+        // Child 0 is bin block
+        children(0);
+
+        //Subtract the wall pattern block so it can be coloured.
+        color(env_colour(color_cup))
+        children(1);
+      }
+
+      color(env_colour(color_wallcutout, isLip=true))
+      render_conditional(true)
+      difference(){
+        children(1);
+
+        // Child 3 is wall pattern
+        color(env_colour(color_wallcutout, isLip=true))
+        children(2);
+      }
+    } else {
+      difference(){
+        // Child 0 is bin block
+        children(0);
+
+        // Child 3 is wall pattern
+        color(env_colour(color_wallcutout, isLip=true))
+        children(2);
+      }
+    }
   }
 }
 

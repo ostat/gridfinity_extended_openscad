@@ -195,6 +195,8 @@ wallpattern_pattern_voronoi_noise = 0.75; //0.01
 wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
+wallpattern_coloured = true;
+
 
 /* [Floor Pattern] */
 // enable Grid floor patter
@@ -410,7 +412,8 @@ gridfinity_cup(
     patternGridChamfer = wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
     patternBrickWeight = wallpattern_pattern_brick_weight,
-    patternFs = wallpattern_pattern_quality), 
+    patternFs = wallpattern_pattern_quality,
+    patternColored = wallpattern_coloured), 
   floor_pattern_settings = PatternSettings(
     patternEnabled = floorpattern_enabled, 
     patternStyle = floorpattern_style, 
