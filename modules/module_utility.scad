@@ -1,4 +1,4 @@
-include <thridparty/ub_sbogen.scad>
+include <thirdparty/ub_sbogen.scad>
 include <module_utility_wallcutout.scad>
 
 utility_demo = false;
