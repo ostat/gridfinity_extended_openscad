@@ -9,6 +9,7 @@ include <module_gridfinity_cup_base.scad>
 include <module_gridfinity_dividers_removable.scad>
 include <module_divider_walls.scad>
 include <module_bin_chambers.scad>
+include <module_fingerslide.scad>
 
 use <module_gridfinity_block.scad>
 use <module_gridfinity_efficient_floor.scad>
@@ -243,19 +244,18 @@ module gridfinity_cup(
   depth,
   height,
   filled_in=default_filled_in,
+  wall_thickness=default_wall_thickness,
   label_settings=LabelSettings(
     labelStyle=default_label_style, 
     labelPosition=default_label_position, 
     labelSize=default_label_size,
     labelRelief=default_label_relief,
     labelWalls=default_label_walls),
-  sliding_lid_enabled = default_sliding_lid_enabled,
-  sliding_lid_thickness = default_sliding_lid_thickness,
-  sliding_lid_lip_enabled=default_sliding_lid_lip_enabled,
-  fingerslide=default_fingerslide,
-  fingerslide_radius=default_fingerslide_radius,
-  fingerslide_walls=default_fingerslide_walls,
-  fingerslide_lip_aligned=default_fingerslide_lip_aligned,
+  finger_slide_settings = FingerSlideSettings(
+    type=default_fingerslide,
+    radius=default_fingerslide_radius,
+    walls=default_fingerslide_walls,
+    lip_aligned=default_fingerslide_lip_aligned),
   cupBase_settings = CupBaseSettings(
     magnetSize = default_magnet_size, 
     magnetEasyRelease = default_magnet_easy_release, 
@@ -270,7 +270,6 @@ module gridfinity_cup(
     halfPitch=default_half_pitch,
     flatBase=default_flat_base,
     spacer=default_spacer),
-  wall_thickness=default_wall_thickness,
   chamber_wall_thickness=default_chamber_wall_thickness,
   chamber_wall_headroom=default_chamber_wall_headroom,
   divider_wall_removable_settings = DividerRemovableSettings(
@@ -370,8 +369,9 @@ module gridfinity_cup(
     extendableyPosition = default_extension_y_position, 
     extendableTabsEnabled = default_extension_tabs_enabled, 
     extendableTabSize = default_extension_tab_size),
-  sliding_lid_enabled = default_sliding_lid_enabled, 
-  sliding_lid_thickness = default_sliding_lid_thickness, 
+  sliding_lid_enabled = default_sliding_lid_enabled,
+  sliding_lid_thickness = default_sliding_lid_thickness,
+  sliding_lid_lip_enabled=default_sliding_lid_lip_enabled,
   sliding_min_wall_thickness = default_sliding_min_wallThickness, 
   sliding_min_support = default_sliding_min_support, 
   sliding_clearance = default_sliding_clearance,
@@ -467,7 +467,7 @@ module gridfinity_cup(
   debug_cut()
   union(){
     difference() {
-        wallpattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], wall_thickness) + fudgeFactor*4;
+
 
         border = 0; //Believe this to be no longer needed
        
@@ -523,10 +523,7 @@ module gridfinity_cup(
             num_x, num_y, num_z,
             label_settings=label_settings,
             cupBase_settings = cupBase_settings,
-            fingerslide=fingerslide,
-            fingerslide_radius=fingerslide_radius,
-            fingerslide_walls=fingerslide_walls,
-            fingerslide_lip_aligned=fingerslide_lip_aligned,
+            finger_slide_settings = finger_slide_settings,
             wall_thickness=wall_thickness,
             chamber_wall_thickness=chamber_wall_thickness,
             chamber_wall_headroom=chamber_wall_headroom,
@@ -585,7 +582,6 @@ module gridfinity_cup(
             border = border,
             heightz = heightz,
             z = z,
-            wallpattern_thickness = wallpattern_thickness,
             wallpatternzpos = wallpatternzpos,
             tapered_corner = tapered_corner,
             tapered_corner_size = tapered_corner_size,
@@ -750,10 +746,7 @@ module gridfinity_cup(
     ,"num_z",num_z
     ,"filled_in",filled_in
     ,"label_settings",label_settings
-    ,"fingerslide",fingerslide
-    ,"fingerslide_radius",fingerslide_radius
-    ,"fingerslide_walls",fingerslide_walls
-    ,"fingerslide_lip_aligned",fingerslide_lip_aligned
+    ,"finger_slide_settings",finger_slide_settings
     ,"cupBase_settings",cupBase_settings
     ,"wall_thickness",wall_thickness
     ,"vertical_chambers",vertical_chambers
@@ -793,7 +786,6 @@ module bin_wall_pattern(
   border,
   heightz,
   z,
-  wallpattern_thickness,
   wallpatternzpos,
   tapered_corner,
   tapered_corner_size,
@@ -802,6 +794,8 @@ module bin_wall_pattern(
   wallcutout_horizontal_settings
 ) {
   fudgeFactor = 0.01;
+
+  wallpattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], wall_thickness) + fudgeFactor*4;
 
   cutout_clearance_border = max(wall_thickness, wall_pattern_settings[iPatternBorder]);
 
@@ -1140,9 +1134,7 @@ module bin_cutouts(
 module partitioned_cavity(num_x, num_y, num_z, 
     label_settings=[],
     cupBase_settings=[],
-    fingerslide=default_fingerslide,  fingerslide_radius=default_fingerslide_radius,
-    fingerslide_walls=default_fingerslide_walls,
-    fingerslide_lip_aligned=default_fingerslide_lip_aligned,
+    finger_slide_settings=[],
     wall_thickness=default_wall_thickness,
     chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_headroom=default_chamber_wall_headroom,
     calculated_vertical_separator_positions=calculated_vertical_separator_positions,
@@ -1179,8 +1171,8 @@ module partitioned_cavity(num_x, num_y, num_z,
     color(env_colour(color_cupcavity))
     union(){
     basic_cavity(num_x, num_y, num_z,
-      fingerslide=fingerslide, fingerslide_walls=fingerslide_walls, fingerslide_lip_aligned=fingerslide_lip_aligned, fingerslide_radius=fingerslide_radius, 
       cupBase_settings=cupBase_settings,
+      finger_slide_settings = finger_slide_settings,
       wall_thickness=wall_thickness,
       lip_settings=lip_settings, 
       sliding_lid_settings=sliding_lid_settings, 
@@ -1223,7 +1215,7 @@ module partitioned_cavity(num_x, num_y, num_z,
 
 
 module basic_cavity(num_x, num_y, num_z, 
-    fingerslide=default_fingerslide, fingerslide_radius=default_fingerslide_radius,fingerslide_walls,fingerslide_lip_aligned=default_fingerslide_lip_aligned,
+    finger_slide_settings = [],
     wall_thickness=default_wall_thickness,
     lip_settings = [],
     cupBase_settings = [],
@@ -1271,7 +1263,7 @@ module basic_cavity(num_x, num_y, num_z,
       captive_magnet_height=cupBase_settings[iCupBase_MagnetCaptiveHeight]));
     
   //Remove floor to create a vertical spacer.
-  nofloor = spacer && fingerslide == "none";
+  nofloor = spacer && finger_slide_settings[iFingerSlideType] == "none";
   
   //Difference between the wall and support thickness
   lipSupportThickness = (reducedlipstyle == "minimum" || reducedlipstyle == "none") ? 0
@@ -1350,15 +1342,15 @@ module basic_cavity(num_x, num_y, num_z,
         zpoint=zpoint);
     
     // fingerslide inside bottom of cutout
-    if(fingerslide != "none"){
+    if(finger_slide_settings[iFingerSlideType] != "none"){
       FingerSlide(
         num_x = num_x, 
         num_y = num_y,
         num_z = num_z,
-        fingerslide_walls=fingerslide_walls,
-        lipAligned=fingerslide_lip_aligned,
-        fingerslide=fingerslide,
-        fingerslide_radius=fingerslide_radius,
+        fingerslide_walls=finger_slide_settings[iFingerSlideWalls],
+        lipAligned=finger_slide_settings[iFingerSlideLipAligned],
+        fingerslide=finger_slide_settings[iFingerSlide],
+        fingerslide_radius=finger_slide_settings[iFingerSlideRadius],
         reducedlipstyle=reducedlipstyle,
         wall_thickness=wall_thickness,
         floorht=floorht,
@@ -1467,111 +1459,4 @@ module basic_cavity(num_x, num_y, num_z,
     gridcopy(1, 1)
       EfficientFloor(num_x, num_y,-fudgeFactor, q);
   }
-}
-
-///Creates the finger slide that will be subtracted from the cavity  
-module FingerSlide(
-        num_x = num_x, 
-        num_y = num_y,
-        num_z = num_z,
-        fingerslide_walls=fingerslide_walls,
-        fingerslide=fingerslide,
-        fingerslide_radius=fingerslide_radius,
-        reducedlipstyle=reducedlipstyle,
-        wall_thickness=wall_thickness,
-        floorht=floorht,
-        lipAligned = true,
-        inner_corner_center=inner_corner_center) {
-  assert(is_num(num_x), "num_x must be a number");
-  assert(is_num(num_y), "num_y must be a number");
-  assert(is_num(num_z), "num_z must be a number");
-  assert(is_list(fingerslide_walls), "fingerslide_walls must be a list");
-  assert(is_string(fingerslide), "fingerslide must be a string");
-  assert(is_num(fingerslide_radius), "fingerslide_radius must be a number");
-  assert(is_string(reducedlipstyle), "reducedlipstyle must be a string");
-  assert(is_num(wall_thickness), "wall_thickness must be a number");
-  assert(is_num(floorht), "floorht must be a number");
-  assert(is_bool(lipAligned), "lipAligned must be a bool");
-  assert(is_list(inner_corner_center), "inner_corner_center must be a number");
-  
-  echo("fingerslide", fingerslide_walls=fingerslide_walls, fingerslide=fingerslide);
-  front = [
-    //width
-    num_x*env_pitch().x,
-    //Position
-    [0, 0, 0],
-    //rotation
-    [0,0,0],
-    //cup width for finger slide (opposide dimention)
-    num_y*env_pitch().y,
-    //cup height
-    num_z*env_pitch().z];
-  back = [
-    //width
-    num_x*env_pitch().x,
-    //Position
-    [num_x*env_pitch().x, num_y*env_pitch().y, 0],
-    //rotation
-    [0,0,180],
-    //cup width for finger slide (opposide dimention)
-    num_y*env_pitch().y,
-    //cup height
-    num_z*env_pitch().z];
-  left = [
-    //width
-    num_y*env_pitch().y,
-    //Position
-    [0, num_y*env_pitch().y, 0],
-    //rotation
-    [0,0,270],
-    //cup width for finger slide (opposide dimention)
-    num_x*env_pitch().x,
-    //cup height
-    num_z*env_pitch().z];
-  right = [
-    //width
-    num_y*env_pitch().y,
-    //Position
-    [num_x*env_pitch().x, 0, 0],
-    //rotation
-    [0,0,90],
-    //cup width for finger slide (opposide dimention)
-    num_x*env_pitch().x,
-    //cup height
-    num_z*env_pitch().z];
-    
-  locations = [front, back, left, right];
-  function get_fingerslide_radius(wall, cup_size, cup_height, fingerslide_radius) = 
-  let(radius_start = wall == 1 ? fingerslide_radius : wall,
-      calculated_radius = radius_start < 0 ? min(cup_height, cup_size)/abs(radius_start) : radius_start,
-      limited_radius = min(calculated_radius,cup_height,cup_size/2))
-    echo("get_fingerslide_radius", is_ratio=(wall < 0),result=limited_radius, wall=wall, cup_size=cup_size, cup_height=cup_height, fingerslide_radius=fingerslide_radius)
-    limited_radius;
-      
-  for(i = [0:1:len(locations)-1])
-    union()
-      if(fingerslide_walls[i] != 0)
-        //patterns in the outer walls
-        translate(locations[i][1])
-        rotate(locations[i][2])                  
-      translate([0, 
-        lipAligned && reducedlipstyle =="normal" ? -inner_corner_center.x-1.15+env_pitch().x/2
-        : lipAligned && reducedlipstyle == "reduced" ? -inner_corner_center.x-1.15+env_pitch().x/2-gf_lip_lower_taper_height
-        : lipAligned && reducedlipstyle == "reduced_double" ? -inner_corner_center.x-1.15+env_pitch().x/2-gf_lip_lower_taper_height
-        : 0.25+wall_thickness, floorht]) //todo:pitch issue here?
-    //translate([0,-inner_corner_center-1.15+env_pitch().x/2, floorht])
-      union(){
-        if(fingerslide == "rounded"){
-          roundedCorner(
-            radius = get_fingerslide_radius(fingerslide_walls[i], locations[i][3], locations[i][4], fingerslide_radius), 
-            length=locations[i][0], 
-            height = env_pitch().z*num_z-floorht+fudgeFactor);
-        }
-        else if(fingerslide == "chamfered"){
-          chamferedCorner(
-            chamferLength = get_fingerslide_radius(fingerslide_walls[i], locations[i][3], locations[i][4], fingerslide_radius), 
-            length=locations[i][0],
-            height = env_pitch().z*num_z-floorht+fudgeFactor);
-      }
-    }
 }
