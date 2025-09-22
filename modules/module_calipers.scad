@@ -1,4 +1,4 @@
-include <thridparty/ub_caliper.scad>
+include <thirdparty/ub_caliper.scad>
 include <gridfinity_constants.scad>
 include <functions_general.scad>
 include <functions_gridfinity.scad>
