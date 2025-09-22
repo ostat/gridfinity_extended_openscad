@@ -121,13 +121,13 @@ function calculateSeparators(
 module separators(
   calculatedSeparators,
   separator_orientation = "vertical",
-  override_wall_thickness)
+  pad_wall_thickness = 0,
+  source = "")
 {
 
   position_separators(
     calculatedSeparators = calculatedSeparators,
     separator_orientation = separator_orientation){
-      thickness = is_num(override_wall_thickness) ? override_wall_thickness : $sepCfg[iSeparatorWallThickness];
       bentWall(
         length=$sepCfg[iSeparatorLength],
         bendPosition=$sepCfg[iSeparatorBendPosition],
@@ -138,7 +138,7 @@ module separators(
         height = $sepCfg[iSeparatorHeight],
         wall_cutout_depth = $sepCfg[iSeparatorWallCutDepth],
         wall_cutout_width = $sepCfg[iSeparatorWallCutoutWidth],
-        thickness = thickness);
+        thickness = $sepCfg[iSeparatorWallThickness] + pad_wall_thickness);
       }
 }
 

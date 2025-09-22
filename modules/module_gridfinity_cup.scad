@@ -270,8 +270,6 @@ module gridfinity_cup(
     halfPitch=default_half_pitch,
     flatBase=default_flat_base,
     spacer=default_spacer),
-  chamber_wall_thickness=default_chamber_wall_thickness,
-  chamber_wall_headroom=default_chamber_wall_headroom,
   divider_wall_removable_settings = DividerRemovableSettings(
     enabled=default_divider_walls_enabled,
     walls=default_divider_walls,
@@ -435,7 +433,7 @@ module gridfinity_cup(
       ? vertical_chambers[iChamber_separator_config]  
       : splitChamber(vertical_chambers[iChamber_count]-1, divider_width=vertical_chambers[iChamber_wall_thickness], container_width=num_x*env_pitch().x - env_clearance().x - wall_thickness*2), 
     length = env_pitch().y*num_y,
-    height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, chamber_wall_headroom),
+    height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, vertical_chambers[iChamber_wall_headroom]),
     wall_thickness = vertical_chambers[iChamber_wall_thickness],
     bend_position = vertical_chambers[iChamber_separator_bend_position],
     bend_angle = vertical_chambers[iChamber_separator_bend_angle],
@@ -446,7 +444,7 @@ module gridfinity_cup(
       ? horizontal_chambers[iChamber_separator_config] 
       : splitChamber(horizontal_chambers[iChamber_count]-1, divider_width=horizontal_chambers[iChamber_wall_thickness], container_width=num_y*env_pitch().y - env_clearance().y - wall_thickness*2), 
     length = env_pitch().x*num_x,
-    height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, chamber_wall_headroom),
+    height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, horizontal_chambers[iChamber_wall_headroom]),
     wall_thickness = horizontal_chambers[iChamber_wall_thickness],
     bend_position = horizontal_chambers[iChamber_separator_bend_position],
     bend_angle = horizontal_chambers[iChamber_separator_bend_angle],
@@ -525,8 +523,6 @@ module gridfinity_cup(
             cupBase_settings = cupBase_settings,
             finger_slide_settings = finger_slide_settings,
             wall_thickness=wall_thickness,
-            chamber_wall_thickness=chamber_wall_thickness,
-            chamber_wall_headroom=chamber_wall_headroom,
             calculated_vertical_separator_positions = calculated_vertical_separator_positions,
             calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
             lip_settings=lip_settings,
@@ -551,7 +547,6 @@ module gridfinity_cup(
             num_y = num_y,
             wall_thickness = wall_thickness,
             cupBase_settings = cupBase_settings,
-            chamber_wall_thickness = chamber_wall_thickness,
             calculated_vertical_separator_positions = calculated_vertical_separator_positions,
             calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
             floor_pattern_settings = floor_pattern_settings,
@@ -571,7 +566,6 @@ module gridfinity_cup(
             wallTop = wallTop,
             floorHeight = floorHeight,
             label_settings = label_settings,
-            chamber_wall_thickness = chamber_wall_thickness,
             calculated_vertical_separator_positions = calculated_vertical_separator_positions,
             calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
             wall_pattern_settings = wall_pattern_settings,
@@ -775,7 +769,6 @@ module bin_wall_pattern(
   wallTop,
   floorHeight,
   label_settings,
-  chamber_wall_thickness,
   calculated_vertical_separator_positions,
   calculated_horizontal_separator_positions,
   wall_pattern_settings,
@@ -799,6 +792,9 @@ module bin_wall_pattern(
 
   cutout_clearance_border = max(wall_thickness, wall_pattern_settings[iPatternBorder]);
 
+  //TODO: wall pattern needs to take in to account head room.
+  //TODO: wall pattern should partial depth walls.
+  
   //Wall patterns
   //Wall pattern in outerwalls
   if(wall_pattern_settings[iPatternEnabled]){
@@ -821,6 +817,8 @@ module bin_wall_pattern(
 
           ylocations = positions.y;
           xlocations = positions.x;
+          front = xlocations[0];
+          left = ylocations[0];
 
           //patterns in the outer walls x
           difference(){
@@ -857,7 +855,10 @@ module bin_wall_pattern(
                     calculatedSeparators = calculated_vertical_separator_positions, 
                     separator_orientation = "vertical")
                       let(verSepThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
-                      //translate([0, left[1].y, left[1].z]) 
+                      //translate([verSepThickness/2+wall_thickness/2-fudgeFactor, 0, 0])
+                      translate([wall_thickness/2-fudgeFactor*2, 0, 0])
+                      translate(left[1])
+                      mirror(left[3])
                       rotate(left[2])
                       render_conditional(env_force_render())
                         //separator wall pattern
@@ -871,6 +872,7 @@ module bin_wall_pattern(
                           strength = wall_pattern_settings[iPatternStrength],
                           holeHeight = verSepThickness+fudgeFactor,
                           center=true,
+                          centerz = true,
                           fill=wall_pattern_settings[iPatternFill],
                           patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                           patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
@@ -887,7 +889,8 @@ module bin_wall_pattern(
             separators(
               calculatedSeparators = calculated_horizontal_separator_positions,
               separator_orientation = "horizontal",
-              override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
+              pad_wall_thickness = cutoutclearance_divider*2,
+              source = "bin_wall_pattern");
           }
             
           //patterns in the outer walls y
@@ -901,14 +904,14 @@ module bin_wall_pattern(
                   render_conditional(env_force_render())
                     cutout_pattern(
                       patternStyle = wall_pattern_settings[iPatternStyle],
-                      canvasSize = [xlocations[i][0].x, xlocations[i][0].y],
+                      canvasSize = xlocations[i][0], 
                       border = wall_pattern_settings[iPatternBorder],
                       customShape = false,
                       circleFn = wall_pattern_settings[iPatternHoleSides],
                       cellSize = wall_pattern_settings[iPatternCellSize],
                       strength = wall_pattern_settings[iPatternStrength],
                       holeHeight = xlocations[i][0].z+fudgeFactor,
-                      center=true,
+                      center = true,
                       centerz = true,
                       fill = wall_pattern_settings[iPatternFill], //"none", "space", "crop"
                       patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
@@ -926,7 +929,10 @@ module bin_wall_pattern(
                       separator_orientation = "horizontal")
                         let(hozSepThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
                         rotate([0,0,-90])
-                        //translate([front[1].x, 0, front[1].z])
+                        //translate([0, hozSepThickness/2+wall_thickness/2-fudgeFactor, 0])
+                        translate([0, wall_thickness/2-fudgeFactor*2, 0])
+                        translate(front[1])
+                        mirror(front[3])
                         rotate(front[2])
                         render_conditional(env_force_render())
                           //separator wall pattern
@@ -940,6 +946,7 @@ module bin_wall_pattern(
                             strength = wall_pattern_settings[iPatternStrength],
                             holeHeight = hozSepThickness+fudgeFactor,
                             center = true,
+                            centerz = true,
                             fill = wall_pattern_settings[iPatternFill], 
                             patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                             patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
@@ -956,7 +963,8 @@ module bin_wall_pattern(
             separators(
               calculatedSeparators = calculated_vertical_separator_positions,
               separator_orientation = "vertical",
-              override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
+              pad_wall_thickness = cutoutclearance_divider*2,
+              source = "bin_wall_pattern");
           }
         }
       }
@@ -984,7 +992,6 @@ module bin_floor_pattern(
   num_y,
   wall_thickness,
   cupBase_settings,
-  chamber_wall_thickness,
   calculated_vertical_separator_positions,
   calculated_horizontal_separator_positions,
   floor_pattern_settings,
@@ -1027,7 +1034,8 @@ module bin_floor_pattern(
       separators(
         calculatedSeparators = calculated_vertical_separator_positions,
         separator_orientation = "vertical",
-        override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
+        pad_wall_thickness = cutoutclearance_divider*2,
+        source = "bin_floor_pattern");
         
       //subtract dividers from floor pattern
       //Potential bug if the wall height is less than the floor height
@@ -1035,7 +1043,8 @@ module bin_floor_pattern(
       separators(
         calculatedSeparators = calculated_horizontal_separator_positions,
         separator_orientation = "horizontal",
-        override_wall_thickness = chamber_wall_thickness+cutoutclearance_divider*2);
+        pad_wall_thickness = cutoutclearance_divider*2,
+        source = "bin_floor_pattern");
 
       // Subtract magnet/screw pads if enabled
       magnet_diameter = cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
@@ -1135,8 +1144,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     label_settings=[],
     cupBase_settings=[],
     finger_slide_settings=[],
-    wall_thickness=default_wall_thickness,
-    chamber_wall_thickness=default_chamber_wall_thickness, chamber_wall_headroom=default_chamber_wall_headroom,
+    wall_thickness=0,
     calculated_vertical_separator_positions=calculated_vertical_separator_positions,
     calculated_horizontal_separator_positions=calculated_horizontal_separator_positions,
     lip_settings=[], 
@@ -1189,7 +1197,8 @@ module partitioned_cavity(num_x, num_y, num_z,
     translate([wall_thickness+env_clearance().x/2, 0, 0])
     separators(
       calculatedSeparators = calculated_vertical_separator_positions,
-      separator_orientation = "vertical");
+      separator_orientation = "vertical",
+      source = "partitioned_cavity");
 
     if(env_help_enabled("trace")) echo("partitioned_cavity", horizontal_separator_positions=calculated_horizontal_separator_positions);
     
@@ -1197,7 +1206,8 @@ module partitioned_cavity(num_x, num_y, num_z,
     translate([env_pitch().x*num_x, wall_thickness+env_clearance().y/2, sepFloorHeight-fudgeFactor])
     separators(
       calculatedSeparators = calculated_horizontal_separator_positions, 
-      separator_orientation = "horizontal");
+      separator_orientation = "horizontal",
+      source = "partitioned_cavity");
       
     if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
       gridfinity_label(
