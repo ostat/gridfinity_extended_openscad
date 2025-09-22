@@ -1238,16 +1238,20 @@ module basic_cavity(num_x, num_y, num_z,
   AssertSlidingLidSettings(sliding_lid_settings);
   
   innerWallRadius = max(0.1, env_corner_radius()-wall_thickness); //prevent radius going negative
-    
-  lip_inner_corner_center = [
+  corner_post_adjust = min(0, env_corner_radius()-wall_thickness-innerWallRadius)*-1;
+
+  inner_corner_center = [
     env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
     env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
 
   wall_inner_corner_center = let(
     corner_post_adjust = min(0, env_corner_radius()-wall_thickness-innerWallRadius)*-1
     ) [
-    lip_inner_corner_center.x-corner_post_adjust, 
-    lip_inner_corner_center.y-corner_post_adjust];
+    inner_corner_center.x-corner_post_adjust, 
+    inner_corner_center.y-corner_post_adjust];
+
+  lip_inner_corner_center = corner_post_adjust > 0 ? wall_inner_corner_center : inner_corner_center;
+  innerLipRadius = env_corner_radius()-gf_lip_lower_taper_height-gf_lip_upper_taper_height; 
 
   reducedlipstyle = 
     // replace "reduced" with "none" if z-height is less than 1.2
@@ -1285,7 +1289,7 @@ module basic_cavity(num_x, num_y, num_z,
     : reducedlipstyle == "reduced_double" ? env_pitch().z*num_z+fudgeFactor*3
     : env_pitch().z*num_z-gf_lip_height-lipSupportThickness);
   //lipBottomZ = env_pitch().z*num_z+fudgeFactor*3;
-  innerLipRadius = env_corner_radius()-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
+
 
   
   if(env_help_enabled("trace")) echo("basic_cavity", gf_cup_corner_radius=env_corner_radius(),wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
@@ -1319,10 +1323,17 @@ module basic_cavity(num_x, num_y, num_z,
             tz(floorht) 
             cylinder(r=innerLipRadius, h=filledInZ-floorht+fudgeFactor*4); // lip
         } else {
+    
+          if(headroom > 0)
+          hull() cornercopy(inner_corner_center, num_x, num_y)
+            tz(filledInZ-headroom-fudgeFactor) 
+            cylinder(r=innerLipRadius, h=headroom+fudgeFactor*4); // lip
+
           hull() cornercopy(lip_inner_corner_center, num_x, num_y)
             tz(filledInZ-gf_lip_height-fudgeFactor) 
-            cylinder(r=innerLipRadius, h=gf_lip_height+fudgeFactor*4); // lip
-    
+            cylinder(r=(innerLipRadius > innerWallRadius ? innerWallRadius : innerLipRadius), h=gf_lip_height+fudgeFactor*4); // lip
+
+
           hull() cornercopy(lip_inner_corner_center, num_x, num_y)
             tz(filledInZ-gf_lip_height-lipSupportThickness-fudgeFactor) 
             cylinder(
