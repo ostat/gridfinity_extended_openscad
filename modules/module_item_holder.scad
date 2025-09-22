@@ -1,4 +1,4 @@
-include <thridparty/ub_hexgrid.scad>
+include <thirdparty/ub_hexgrid.scad>
 include <functions_general.scad>
 include <functions_environment.scad>
 include <module_chamfered_shapes.scad>
@@ -56,7 +56,7 @@ module GridItemHolder(
 
   function calculate_chamfer(chamfer, thickness) = 
     let(
-      _chamfer = is_num(chamfer) ? partialDepth ? [0, chamfer] :[chamfer, chamfer] : chamfer,
+      _chamfer = is_num(chamfer) ? [0, chamfer] : chamfer,
       dual_chamfer = (_chamfer[0] != 0 && _chamfer[1] != 0) ? 2 : 1)
       [get_related_value(_chamfer.x, thickness/dual_chamfer, 0),get_related_value(_chamfer.y, thickness/dual_chamfer, 0)];
 
@@ -64,8 +64,6 @@ module GridItemHolder(
 
   assert(is_list(holeChamfer), "holeChamfer must be list");  
   
-  echo("GridItemHolder", holeHeight=holeHeight, holeChamfer=holeChamfer);
-
   fudgeFactor = 0.01;
   
   //Sides, 

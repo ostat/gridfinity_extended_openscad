@@ -31,9 +31,10 @@ Running locally is how I recommend running the scripts. The scripts run faster a
 3. Enable OpenSCAD Features.
    - Open OpenSCAD application
    - Go to `Menu > Edit > Preferences`. 
-   - In the **Preferences** dialog go to the Features Tab and Enable:
-     - **manifold**: makes OpenSCAD faster.
-     - **textmetrics**: Enables text related features for the base text.
+   - In the **Preferences** dialog go to the **Advanced** Tab:
+     - Backend: select **manifold** option. Makes OpenSCAD faster.
+   - An then go to the **Features** Tab:
+     - Check **textmetrics**: Enables text related features for the base text.
 
 4. Open the project files in OpenSCAD. **Note:** You must use the developer version of OpenSCAD for this project. Download it here: [OpenSCAD Developer Version](https://openscad.org/downloads.html#snapshots).
 

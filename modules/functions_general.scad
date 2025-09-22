@@ -146,11 +146,11 @@ module color_conditional(enable=true, c){
 
 module render_conditional(enable=true){
   if(enable)
-  render()
-    children();
+    render()
+      children();
   else
-  union()
-    children();
+    union()
+      children();
 }
 
 module hull_conditional(enabled = true)

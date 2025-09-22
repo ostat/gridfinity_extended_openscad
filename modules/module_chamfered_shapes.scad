@@ -1,11 +1,14 @@
-
+include <module_utility.scad>
 // Creates a slot with a small chamfer for easy insertertion
 //#slotCutout(100,20,40);
 //width = width of slot
 //depth = depth of slot
 //height = height of slot
 //chamfer = chamfer size
-module chamfered_cube(size = [10,10,10],  chamfer=0, topChamfer = 0, bottomChamfer = 0, cornerRadius = 0)
+module chamfered_cube(
+  size = [10,10,10], 
+  chamfer=0, topChamfer = 0, bottomChamfer = 0, 
+  cornerRadius = 0, topRadius=0, bottomRadius=0)
 {
   assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
   assert(is_num(chamfer), "chamfer should be a number");
@@ -15,26 +18,18 @@ module chamfered_cube(size = [10,10,10],  chamfer=0, topChamfer = 0, bottomChamf
   topChamfer = min(size.z, chamfer > 0 ? chamfer : topChamfer);
   bottomChamfer = min(size.z, chamfer > 0 ? chamfer : bottomChamfer);
 
+  bottomRadius = min(bottomRadius, cornerRadius);
+  topRadius = min(topRadius, cornerRadius);
   // echo("chamfered_cube", size=size, topChamfer=topChamfer, bottomChamfer=bottomChamfer);
 
   fudgeFactor = 0.01;
   chamfer = min(size.z, chamfer);
   union(){
-    if(cornerRadius > 0){
-        hull(){
-          translate([cornerRadius,cornerRadius,0])
-          cylinder(h = size.z, r=cornerRadius);
-          translate([size.x-cornerRadius,cornerRadius,0])
-          cylinder(h = size.z, r=cornerRadius);
-          translate([cornerRadius,size.y-cornerRadius,0])
-          cylinder(h = size.z, r=cornerRadius);
-          translate([size.x-cornerRadius,size.y-cornerRadius,0])
-          cylinder(h = size.z, r=cornerRadius);
-        }
-    } else {
-      translate([0,0,0])
-        cube([size.x, size.y, size.z]);
-    }
+    roundedCube(
+      size=size,
+      topRadius = topRadius,
+      bottomRadius = bottomRadius,
+      sideRadius = cornerRadius);
     
     if(topChamfer > 0)
        translate([0,0,size.z+fudgeFactor-topChamfer-cornerRadius])
