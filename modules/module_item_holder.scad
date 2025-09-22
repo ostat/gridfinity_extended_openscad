@@ -1,4 +1,4 @@
-include <thridparty/ub_hexgrid.scad>
+include <thirdparty/ub_hexgrid.scad>
 include <functions_general.scad>
 include <functions_environment.scad>
 include <module_chamfered_shapes.scad>
