@@ -1053,7 +1053,6 @@ module bin_floor_pattern(
         magnet_positions = calculateAttachmentPositions(magnet_diameter, screw_diameter);
         pad_radius = max(magnet_diameter, screw_diameter) / 2 + cutoutclearance_divider*2;
         pad_height = sepFloorHeight + fudgeFactor * 6;
-        echo(magnet_positions=magnet_positions);
         gridcopycorners(num_x, num_y, magnet_positions, cupBase_settings[iCupBase_CornerAttachmentsOnly])
             cylinder(r = pad_radius, h = pad_height, $fn = 32);
       }

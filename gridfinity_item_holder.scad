@@ -798,7 +798,7 @@ module gridfinity_itemholder(
       : filled_in != "disabled"
         ? (baseClearanceHeight + floor_thickness + itemheightneeded)/env_pitch().z
         : ceil((baseClearanceHeight + floor_thickness + itemheightneeded)/env_pitch().z);
-   echo("gridfinity_itemholder", height=height, itemholder_auto_bin_height=itemholder_auto_bin_height  );
+   
   // calculate floor thickness
   calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=calculatedItemDepth + floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
 
@@ -873,8 +873,6 @@ module gridfinity_itemholder(
           baseClearanceHeight, 
           baseClearanceHeight + floor_thickness - calculatedItemDepth);
       
-      echo("gridfinity_itemholder", baseClearanceHeight=baseClearanceHeight, floor_thickness=floor_thickness, calculatedUsableFloorThickness=calculatedUsableFloorThickness, calculatedItemDepth=calculatedItemDepth, itemholder_z_bottom=itemholder_z_bottom)
-
       color(color_extension)
       translate([0, 0, itemholder_z_bottom])
       itemholder(

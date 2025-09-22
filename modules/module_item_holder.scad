@@ -64,8 +64,6 @@ module GridItemHolder(
 
   assert(is_list(holeChamfer), "holeChamfer must be list");  
   
-  echo("GridItemHolder", holeHeight=holeHeight, holeChamfer=holeChamfer);
-
   fudgeFactor = 0.01;
   
   //Sides, 

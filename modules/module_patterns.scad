@@ -186,7 +186,6 @@ function get_wallpattern_positions(
       wallpattern_walls[3]],
     ylocations = [left, right],
     xlocations = [front, back])
-    //echo("coloured_wall_pattern", wall_thickness=wall_thickness, wallpattern_thickness=wallpattern_thickness, heightz=heightz, wallpatternzpos=positionz, border=border,   ylocations=ylocations, xlocations=xlocations)
     [xlocations, ylocations];
 
 
@@ -214,7 +213,6 @@ module coloured_wall_pattern(
   locations = [positions.x[0], positions.x[1], positions.y[0], positions.y[1]];
 
   assert($children == 3, "coloured_wall_pattern expects three children");
-  echo("coloured_wall_pattern", children=$children, wall_thickness=wall_thickness, wallpattern_thickness=wallpattern_thickness, pattern_height=pattern_height, wallpatternzpos=pattern_floor, border=border,   locations=locations);
 
   difference(){
 
@@ -350,7 +348,6 @@ module cutout_pattern(
       [get_related_value(_chamfer.x, thickness/dual_chamfer, 0),get_related_value(_chamfer.y, thickness/dual_chamfer, 0)];
   
   chamfer = calculate_chamfer(chamfer = patternGridChamfer, thickness=holeHeight, partialDepth=partialDepth);
-  echo("cutout_pattern", partialDepth=partialDepth, holeHeight=holeHeight, chamfer=chamfer, patternGridChamfer=patternGridChamfer);
   //override the FS for the pattern, if required
   $fs = patternFs > 0 ? patternFs : $fs;
   

@@ -1,4 +1,4 @@
-include <thridparty/ub_helptxt.scad>
+include <thirdparty/ub_helptxt.scad>
 include <module_utility.scad>
 include <functions_environment.scad>
 include <functions_general.scad>

@@ -108,7 +108,6 @@ module FingerSlide(
   let(radius_start = wall == 1 ? fingerslide_radius : wall,
       calculated_radius = radius_start < 0 ? min(cup_height, cup_size)/abs(radius_start) : radius_start,
       limited_radius = min(calculated_radius,cup_height,cup_size/2))
-    echo("get_fingerslide_radius", is_ratio=(wall < 0),result=limited_radius, wall=wall, cup_size=cup_size, cup_height=cup_height, fingerslide_radius=fingerslide_radius)
     limited_radius;
       
   for(i = [0:1:len(locations)-1])

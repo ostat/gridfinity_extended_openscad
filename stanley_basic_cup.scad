@@ -330,8 +330,6 @@ stanley_model_settings =
   : stanley_model == "compartment25front" ? [compartment25front_size, compartment25front_wall_thickenss, compartment25front_corner_radius, compartment25front_bottom_radius]
   : [pitch, wall_thickness, corner_radius, flat_base_rounded_radius];
 
-  echo("stanley_model_settings", stanley_model_settings=stanley_model_settings);
-
 set_environment(
   width = width,
   depth = depth,
