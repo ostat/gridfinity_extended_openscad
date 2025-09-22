@@ -864,7 +864,7 @@ module bin_wall_pattern(
                         //separator wall pattern
                         cutout_pattern(
                           patternStyle = wall_pattern_settings[iPatternStyle],
-                          canvasSize = left[0], 
+                          canvasSize = [left[0].x, left[0].y], 
                           border = wall_pattern_settings[iPatternBorder],
                           customShape = false,
                           circleFn = wall_pattern_settings[iPatternHoleSides],
@@ -904,7 +904,7 @@ module bin_wall_pattern(
                   render_conditional(env_force_render())
                     cutout_pattern(
                       patternStyle = wall_pattern_settings[iPatternStyle],
-                      canvasSize = xlocations[i][0], 
+                      canvasSize = [xlocations[i][0].x, xlocations[i][0].y],
                       border = wall_pattern_settings[iPatternBorder],
                       customShape = false,
                       circleFn = wall_pattern_settings[iPatternHoleSides],
@@ -938,7 +938,7 @@ module bin_wall_pattern(
                           //separator wall pattern
                           cutout_pattern(
                             patternStyle = wall_pattern_settings[iPatternStyle],
-                            canvasSize = front[0], 
+                            canvasSize = [front[0].x, front[0].y], 
                             border = wall_pattern_settings[iPatternBorder],
                             customShape = false,
                             circleFn = wall_pattern_settings[iPatternHoleSides],

@@ -324,6 +324,7 @@ module cutout_pattern(
   source = ""){
 
   // validate inputs
+  assert(is_list(canvasSize) && len(canvasSize) == 2, "canvasSize must be a list of two numbers");
   assert(is_num(canvasSize.x) && canvasSize.x > 0, "canvasSize.x must be a positive number");
   assert(is_num(canvasSize.y) && canvasSize.y > 0, "canvasSize.y must be a positive number");
   assert(is_num(holeHeight) && holeHeight > 0, "holeHeight must be a positive number");
