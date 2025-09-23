@@ -18,8 +18,8 @@ iPatternFs=10;
 iPatternGridChamfer=11;
 iPatternVoronoiNoise=12;
 iPatternBrickWeight=13;
-iPatternKumikoFillRatio=14;
-
+iPatternColored=14;
+iPatternKumikoFillRatio=15;
 
 PatternStyle_grid = "grid";
 PatternStyle_hexgrid = "hexgrid";
@@ -64,7 +64,7 @@ function validatePatternFill(value, name = "PatternFill") =
 function PatternSettings(
     patternEnabled, 
     patternStyle, 
-    patternRotate,
+    patternRotate = false,
     patternFill,
     patternBorder = -1, 
     patternDepth = 0,
@@ -75,7 +75,8 @@ function PatternSettings(
     patternFs = 0,
     patternGridChamfer=0,
     patternVoronoiNoise=0,
-    patternBrickWeight=0
+    patternBrickWeight=0,
+    patternColored="disabled"
     ,patternKumikoFillRatio=[0,0]
     ) = 
   let(
@@ -93,7 +94,8 @@ function PatternSettings(
       patternFs,
       patternGridChamfer,
       patternVoronoiNoise,
-      patternBrickWeight
+      patternBrickWeight,
+      patternColored
       , is_num(patternKumikoFillRatio) ? [patternKumikoFillRatio, patternKumikoFillRatio] : patternKumikoFillRatio,
       ],
     validatedResult = ValidatePatternSettings(result)
@@ -101,7 +103,7 @@ function PatternSettings(
 
 function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_list(settings), "Settings must be a list")
-  assert(len(settings)==15, "Settings must length 15")
+  assert(len(settings)==16, "Settings must length 16")
   assert(is_bool(settings[iPatternEnabled]), "settings[iPatternEnabled] must be a boolean")
   assert(is_string(settings[iPatternStyle]), "settings[iPatternStyle] must be a string")
   assert(is_bool(settings[iPatternRotate]), "settings[iPatternRotate] must be a boolean")
@@ -115,8 +117,9 @@ function ValidatePatternSettings(settings, num_x, num_y) =
   is_num(settings[iPatternStrength].y) && settings[iPatternStrength].y > 0, "settings[iPatternStrength] must be a list of two positive numbers")
   assert(is_num(settings[iPatternHoleRadius]) && settings[iPatternHoleRadius] >= 0, "settings[iPatternHoleRadius] must be a non-negative number")
   assert(is_num(settings[iPatternFs]) && settings[iPatternFs] >= 0, "settings[iPatternFs] must be a non-negative number")
-  assert(is_num(settings[iPatternGridChamfer]) && settings[iPatternGridChamfer] >= 0, "settings[iPatternGridChamfer] must be a non-negative number")
+  assert(is_num(settings[iPatternGridChamfer]), "settings[iPatternGridChamfer] must be a number")
   assert(is_num(settings[iPatternVoronoiNoise]) && settings[iPatternVoronoiNoise] >= 0 && settings[iPatternVoronoiNoise] <= 1, "settings[iPatternVoronoiNoise] must be between 0 and 1")
+  assert(is_list(settings[iPatternKumikoFillRatio]), "settings[iPatternKumikoFillRatio] must be a list")
   assert(is_list(settings[iPatternKumikoFillRatio]), "settings[iPatternKumikoFillRatio] must be a list")
   assert(is_num(settings[iPatternBrickWeight]) && settings[iPatternBrickWeight] >= 0, "settings[iPatternBrickWeight] must be a non-negative number")
     [settings[iPatternEnabled],
@@ -132,7 +135,8 @@ function ValidatePatternSettings(settings, num_x, num_y) =
       settings[iPatternFs],
       settings[iPatternGridChamfer],
       settings[iPatternVoronoiNoise],
-      settings[iPatternBrickWeight]
+      settings[iPatternBrickWeight],
+      settings[iPatternColored]
       ,settings[iPatternKumikoFillRatio]
       ];
 
@@ -152,52 +156,51 @@ function get_wallpattern_positions(
       y_width = bin_size.y-env_corner_radius()*2-border, 
       wallpattern_thickness=wallpattern_thickness+fudgeFactor,
       front = [
-      //width,height
+      //width, height, depth
       [x_width, heightz - (label_walls[0] != 0 ? label_sizez : 0), wallpattern_thickness],
       //Position
       [bin_size.x/2+env_clearance().x/2,  
         env_clearance().y/2+wall_thickness/2-(wall_thickness-wallpattern_thickness)/2, 
         positionz - (label_walls[0] != 0 ? label_sizez : 0)/2],
-      //rotation
-      [90,0,0],
+      //rotation, mirror
+      [90,0,0], [0,0,0],
       //enabled
       wallpattern_walls[0]],
     back = [
-      //width,height
+      //width, height, depth
       [x_width, heightz - (label_walls[1] != 0 ? label_sizez : 0), wallpattern_thickness],
       //Position
       [bin_size.x/2+env_clearance().x/2, 
         bin_size.y+env_clearance().y/2-wall_thickness/2+(wall_thickness-wallpattern_thickness)/2, 
          positionz - (label_walls[1] != 0 ? label_sizez : 0)/2],
-      //rotation
-      [90,0,0], 
+      //rotation, mirror
+      [90,0,0], [0,1,0],
       //enabled
       wallpattern_walls[1]],
     left = [
-      //width,height
+      //width, height, depth
       [y_width, heightz - (label_walls[2] != 0 ? label_sizez : 0), wallpattern_thickness],
       //Position
       [env_clearance().x/2+wall_thickness/2-(wall_thickness-wallpattern_thickness)/2,
         bin_size.y/2+env_clearance().y/2, 
         positionz - (label_walls[2] != 0 ? label_sizez : 0)/2],
-      //rotation
-      [90,0,90],
+      //rotation, mirror (for chamfer)
+      [90,0,90], [1,0,0],
       //enabled
       wallpattern_walls[2]],
     right = [
-      //width,height
+      //width, height, depth
       [y_width, heightz - (label_walls[3] != 0 ? label_sizez : 0), wallpattern_thickness],
       //Position
       [bin_size.x+env_clearance().x/2-wall_thickness/2+(wall_thickness-wallpattern_thickness)/2,
         bin_size.y/2+env_clearance().y/2, 
         positionz - (label_walls[3] != 0 ? label_sizez : 0)/2],
-      //rotation
-      [90,0,90],
+      //rotation, mirror (for chamfer)
+      [90,0,90], [0,1,0],
       //enabled
       wallpattern_walls[3]],
     ylocations = [left, right],
     xlocations = [front, back])
-    //echo("coloured_wall_pattern", wall_thickness=wall_thickness, wallpattern_thickness=wallpattern_thickness, heightz=heightz, wallpatternzpos=positionz, border=border,   ylocations=ylocations, xlocations=xlocations)
     [xlocations, ylocations];
 
 
@@ -208,8 +211,10 @@ module coloured_wall_pattern(
   wall_thickness=1,
   pattern_floor, 
   pattern_height,
-  border = 0
+  border = 0,
+  colored_pattern = false,
 ){
+  colored_pattern = is_string(colored_pattern) ? colored_pattern : (colored_pattern ? "enabled" : "disabled");
   fudgeFactor = 0.001;
   wallpattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], wall_thickness);
   
@@ -223,38 +228,116 @@ module coloured_wall_pattern(
 
   locations = [positions.x[0], positions.x[1], positions.y[0], positions.y[1]];
 
-  echo("coloured_wall_pattern", wall_thickness=wall_thickness, wallpattern_thickness=wallpattern_thickness, pattern_height=pattern_height, wallpatternzpos=pattern_floor, border=border,   locations=locations);
+  assert($children == 3, "coloured_wall_pattern expects three children");
 
-  union(){
-    difference(){
-      // Child 0 is bin block
+  difference(){
+
+    colored_block(colored_pattern){
       children(0);
-      
-      // Child 0 is bin partitioned cavity
-      if($children >=2) children(1);
-      
-      color(env_colour(color_cup))
-      union(){
-        for(i = [0:1:len(locations)-1])
-          if(locations[i][3] > 0)
-            translate(locations[i][1])
-            rotate(locations[i][2])
-            cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
-      }
+
+      //subtracted block
+      wall_pattern_canvas_negative(locations, colored_pattern);
+
+      //added blockblock
+      wall_pattern_canvas_positive(locations, colored_pattern);
+
+      if($children >=3) children(2);
     }
 
-    color(env_colour(color_wallcutout, isLip=true))
-    difference(){
-      union(){
-        for(i = [0:1:len(locations)-1])
-          if(locations[i][3] > 0)
-            translate(locations[i][1])
-            rotate(locations[i][2])
-            cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
+    // Child 1 is bin cavities and negatives
+    if($children >=2) children(1);
+  }
+}
+
+module wall_pattern_canvas_negative(locations, colored_pattern){
+  if(colored_pattern == "split"){
+    //subtracted block
+    for(i = [0:1:len(locations)-1])
+      if(locations[i][4] > 0)
+        translate(locations[i][1])
+        mirror(locations[i][3])
+        rotate(locations[i][2])
+          difference(){
+            thickness = locations[i][0].z+fudgeFactor;
+            hull(){
+              translate([0,thickness/2,0])
+              cube([locations[i][0].x,locations[i][0].y+thickness,thickness], center=true);
+              
+              translate([0,0,-thickness/4])
+              cube([locations[i][0].x+thickness,locations[i][0].y,thickness/2], center=true);
+            }
+
+            translate([-locations[i][0].x/2-thickness*2,locations[i][0].y/2+thickness,thickness/2])
+            rotate([180+45,0,0])
+            cube([locations[i][0].x+thickness*2,thickness*2,thickness*2], center=false);
+        }
+  }else {
+    for(i = [0:1:len(locations)-1])
+      if(locations[i][4] > 0)
+        translate(locations[i][1])
+        rotate(locations[i][2])
+        cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
+  }
+}
+
+module wall_pattern_canvas_positive(locations, colored_pattern){
+  //add block
+  if(colored_pattern == "split"){
+    for(i = [0:1:len(locations)-1])
+      if(locations[i][4] > 0)
+        translate(locations[i][1])
+        mirror(locations[i][3])
+        rotate(locations[i][2])
+          hull(){
+            thickness = locations[i][0].z;
+            clearance = 0.25;
+            cube([locations[i][0].x-thickness-clearance,locations[i][0].y,thickness], center=true);
+
+            translate([0,0,-thickness/4])
+            cube([locations[i][0].x-clearance,locations[i][0].y,thickness/2], center=true);
+          }
+  } else {
+    for(i = [0:1:len(locations)-1])
+      if(locations[i][4] > 0)
+        translate(locations[i][1])
+        rotate(locations[i][2]) {
+          thickness = locations[i][0].z;
+          cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
+        }
+  }
+}
+
+module colored_block(coloured_pattern = "enabled"){
+  union(){
+    if(coloured_pattern == "enabled" || coloured_pattern == "split"){
+      difference(){
+        // Child 0 is bin block
+        children(0);
+
+        //Subtract the wall pattern block so it can be coloured.
+        color(env_colour(color_cup))
+        children(1);
       }
 
-      // Child 3 is wall pattern
-      if($children >=3) children(2);
+      translate(coloured_pattern == "split" ? [env_numx()*env_pitch().x+10, 0, 0] : [0,0,0])
+      color(env_colour(color_wallcutout, isLip=true))
+      //render_conditional(true)
+      difference(){
+        children(2);
+
+        // Child 3 is wall pattern
+        color(env_colour(color_wallcutout, isLip=true))
+        children(3);
+      }
+    } else {
+      difference(){
+        // Child 0 is bin block
+        children(0);
+
+        // Child 3 is wall pattern
+        color(env_colour(color_wallcutout, isLip=true))
+        children(3);
+      }
     }
   }
 }
@@ -275,20 +358,21 @@ module cutout_pattern(
   patternVoronoiNoise=0,
   patternKumikoFillRatio=[0,0],
   patternBrickWeight=0,
+  partialDepth = false,
   border = 0,
   patternFs = 0,
   rotateGrid = false,
-  cut_depth =1,
   source = ""){
 
   // validate inputs
+  assert(is_list(canvasSize) && len(canvasSize) == 2, "canvasSize must be a list of two numbers");
   assert(is_num(canvasSize.x) && canvasSize.x > 0, "canvasSize.x must be a positive number");
   assert(is_num(canvasSize.y) && canvasSize.y > 0, "canvasSize.y must be a positive number");
   assert(is_num(holeHeight) && holeHeight > 0, "holeHeight must be a positive number");
   assert(is_num(holeRadius) && holeRadius >= 0, "holeRadius must be a non-negative number");
   assert(is_num(border) && border >= 0, "border must be a non-negative number");
   assert(is_num(patternFs) && patternFs >= 0, "patternFs must be a non-negative number");
-  assert(is_num(patternGridChamfer) && patternGridChamfer >= 0, "patternGridChamfer must be a non-negative number");
+  assert(is_num(patternGridChamfer), "patternGridChamfer must be a number");
   assert(is_num(patternVoronoiNoise) && patternVoronoiNoise >= 0  && patternVoronoiNoise <= 1, "patternVoronoiNoise must be between 0 and 1");
   assert(is_num(patternBrickWeight) && patternBrickWeight >= 0, "patternBrick Weight must be a non-negative number");
   assert(is_list(patternKumikoFillRatio), "patternKumikoFillRatio must be a list");
@@ -300,9 +384,16 @@ module cutout_pattern(
     ? [cs.x-border*2, cs.y-border*2]
     : cs;
 
-  //if(env_help_enabled("trace")) 
-  echo("cutout_pattern", patternStyle=patternStyle, source=source, canvasSize=canvasSize, patternFs=patternFs, border=border);
+  if(env_help_enabled("trace")) echo("cutout_pattern", patternStyle=patternStyle, source=source, canvasSize=canvasSize, patternFs=patternFs, border=border);
+
+  function calculate_chamfer(chamfer, thickness, partialDepth) = 
+    let(
+      _chamfer = is_num(chamfer) ? (partialDepth ? [0, chamfer] : [chamfer, chamfer]) : chamfer,
+      dual_chamfer = (_chamfer[0] != 0 && _chamfer[1] != 0) ? 2 : 1)
+      [get_related_value(_chamfer.x, thickness/dual_chamfer, 0),get_related_value(_chamfer.y, thickness/dual_chamfer, 0)];
   
+  chamfer = calculate_chamfer(chamfer = patternGridChamfer, thickness=holeHeight, partialDepth=partialDepth);
+  //override the FS for the pattern, if required
   $fs = patternFs > 0 ? patternFs : $fs;
   
   //translate(border>0 ? [border,border,0] : [0,0,0])
@@ -323,7 +414,7 @@ module cutout_pattern(
         fill=fill, //"none", "space", "crop"
         rotateGrid = true,
         //border = border,
-        holeChamfer=[patternGridChamfer,patternGridChamfer]);
+        holeChamfer = chamfer);
     }
     else if(patternStyle == PatternStyle_voronoi || patternStyle == PatternStyle_voronoigrid || patternStyle == PatternStyle_voronoihexgrid){
       if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);

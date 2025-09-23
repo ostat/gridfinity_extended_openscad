@@ -23,12 +23,7 @@ use <../modules/module_pattern_brick.scad>
     [for (i=[0:count]) 
     ((canvis_length+spacing)/count + cos((i)*360/count)*-1*center_weight)/(half_offset && (i==0 || i==count) ? 2 : 1) - spacing];
     
-function sum(list, c = 0, end) = 
-  let(end = is_undef(end) ? len(list) : end)
-  c < 0 || end < 0 ? 0 : 
-  c < len(list) - 1 && c < end
-    ? list[c] + sum(list, c + 1, end=end) 
-    : list[c];
+
     
 module show_brickcourse( 
   name,  

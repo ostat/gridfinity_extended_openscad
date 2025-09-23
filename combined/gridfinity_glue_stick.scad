@@ -1,5 +1,25 @@
-﻿///////////////////////////////////////
-//Combined version of 'gridfinity_glue_stick.scad'. Generated 2025-03-03 21:13
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////
+//Combined version of 'gridfinity_glue_stick.scad'. Generated 2025-09-17 08:38
 ///////////////////////////////////////
 
 cup_height = 5;

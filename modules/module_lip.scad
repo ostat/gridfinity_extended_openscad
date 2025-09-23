@@ -114,7 +114,6 @@ module cupLip(
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
  
   coloredLipHeight=min(2,lipHeight);
-  echo(inner_corner_center=inner_corner_center, innerLipRadius=innerLipRadius, innerWallRadius=innerWallRadius);
   
   if(lipStyle != "none")
     color(env_colour(color_topcavity, isLip = true))
@@ -191,7 +190,6 @@ module cupLip_cavity(
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
  
   coloredLipHeight=min(2,lipHeight);
-  echo(inner_corner_center=inner_corner_center, innerLipRadius=innerLipRadius, innerWallRadius=innerWallRadius);
       
   pitch=env_pitch();
   // remove top so XxY can fit on top
