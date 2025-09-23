@@ -235,11 +235,12 @@ module coloured_wall_pattern(
     colored_block(colored_pattern){
       children(0);
 
+      split_clearance = 0.5;
       //subtracted block
-      wall_pattern_canvas_negative(locations, colored_pattern);
+      wall_pattern_canvas_negative(locations, colored_pattern, split_clearance);
 
       //added blockblock
-      wall_pattern_canvas_positive(locations, colored_pattern);
+      wall_pattern_canvas_positive(locations, colored_pattern, split_clearance);
 
       if($children >=3) children(2);
     }
@@ -249,7 +250,7 @@ module coloured_wall_pattern(
   }
 }
 
-module wall_pattern_canvas_negative(locations, colored_pattern){
+module wall_pattern_canvas_negative(locations, colored_pattern, split_clearance = 0.5){
   if(colored_pattern == "split"){
     //subtracted block
     for(i = [0:1:len(locations)-1])
@@ -259,17 +260,15 @@ module wall_pattern_canvas_negative(locations, colored_pattern){
         rotate(locations[i][2])
           difference(){
             thickness = locations[i][0].z+fudgeFactor;
-            hull(){
-              translate([0,thickness/2,0])
-              cube([locations[i][0].x,locations[i][0].y+thickness,thickness], center=true);
-              
-              translate([0,0,-thickness/4])
-              cube([locations[i][0].x+thickness,locations[i][0].y,thickness/2], center=true);
-            }
 
+            //block cavity, with side clips and clearance added
+            translate([0,thickness/2,0])
+            split_block([locations[i][0].x,locations[i][0].y+thickness],thickness, clearance=split_clearance/2);
+
+            //Top taper, for easy printability
             translate([-locations[i][0].x/2-thickness*2,locations[i][0].y/2+thickness,thickness/2])
             rotate([180+45,0,0])
-            cube([locations[i][0].x+thickness*2,thickness*2,thickness*2], center=false);
+            cube([locations[i][0].x+thickness*4,thickness*2,thickness*2], center=false);
         }
   }else {
     for(i = [0:1:len(locations)-1])
@@ -280,7 +279,7 @@ module wall_pattern_canvas_negative(locations, colored_pattern){
   }
 }
 
-module wall_pattern_canvas_positive(locations, colored_pattern){
+module wall_pattern_canvas_positive(locations, colored_pattern, split_clearance = 0.5){
   //add block
   if(colored_pattern == "split"){
     for(i = [0:1:len(locations)-1])
@@ -290,11 +289,9 @@ module wall_pattern_canvas_positive(locations, colored_pattern){
         rotate(locations[i][2])
           hull(){
             thickness = locations[i][0].z;
-            clearance = 0.25;
-            cube([locations[i][0].x-thickness-clearance,locations[i][0].y,thickness], center=true);
-
-            translate([0,0,-thickness/4])
-            cube([locations[i][0].x-clearance,locations[i][0].y,thickness/2], center=true);
+            
+            //block cavity, with side clips and clearance subtracted
+            split_block([locations[i][0].x,locations[i][0].y],thickness, clearance=split_clearance/2*-1);
           }
   } else {
     for(i = [0:1:len(locations)-1])
@@ -304,6 +301,19 @@ module wall_pattern_canvas_positive(locations, colored_pattern){
           thickness = locations[i][0].z;
           cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
         }
+  }
+}
+
+module split_block(size, thickness, clearance){
+  union(){
+    cube([size.x-thickness/2+clearance,size.y,thickness], center=true);
+
+    hull(){
+      cube([size.x-thickness/2+clearance,size.y,thickness/3], center=true);
+
+      translate([0,0,-thickness/3])
+      cube([size.x+thickness/2+clearance,size.y,thickness/3], center=true);
+    }
   }
 }
 
