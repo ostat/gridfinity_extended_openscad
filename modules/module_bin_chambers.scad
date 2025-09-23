@@ -122,6 +122,7 @@ module separators(
   calculatedSeparators,
   separator_orientation = "vertical",
   pad_wall_thickness = 0,
+  pad_wall_height = 0,
   source = "")
 {
 
@@ -135,7 +136,7 @@ module separators(
         separation=$sepCfg[iSeparatorBendSeparation],
         lowerBendRadius=$sepCfg[iSeparatorBendSeparation]/2,
         upperBendRadius=$sepCfg[iSeparatorBendSeparation]/2,
-        height = $sepCfg[iSeparatorHeight],
+        height = $sepCfg[iSeparatorHeight] + pad_wall_height,
         wall_cutout_depth = $sepCfg[iSeparatorWallCutDepth],
         wall_cutout_width = $sepCfg[iSeparatorWallCutoutWidth],
         thickness = $sepCfg[iSeparatorWallThickness] + pad_wall_thickness);

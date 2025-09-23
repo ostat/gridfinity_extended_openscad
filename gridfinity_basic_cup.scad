@@ -88,9 +88,9 @@ divider_slot_spanning = 2;
 
 /* [Base] */
 // Enable magnets
-enable_magnets = true;
+enable_magnets = false;
 // Enable screws
-enable_screws = true;
+enable_screws = false;
 //size of magnet, diameter and height. Zack's original used 6.5 and 2.4
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
@@ -195,7 +195,7 @@ wallpattern_pattern_voronoi_noise = 0.75; //0.01
 wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
-wallpattern_coloured = true;
+wallpattern_colored = "disabled"; //[disabled, enabled, split:enabled and split from model]
 
 
 /* [Floor Pattern] */
@@ -414,7 +414,7 @@ gridfinity_cup(
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
     patternBrickWeight = wallpattern_pattern_brick_weight,
     patternFs = wallpattern_pattern_quality,
-    patternColored = wallpattern_coloured), 
+    patternColored = wallpattern_colored), 
   floor_pattern_settings = PatternSettings(
     patternEnabled = floorpattern_enabled, 
     patternStyle = floorpattern_style, 
