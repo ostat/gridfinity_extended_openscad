@@ -76,7 +76,7 @@ function PatternSettings(
     patternGridChamfer=0,
     patternVoronoiNoise=0,
     patternBrickWeight=0
-    ,patternKumikoFillRatio=0
+    ,patternKumikoFillRatio=[0,0]
     ) = 
   let(
     result = [
@@ -94,7 +94,7 @@ function PatternSettings(
       patternGridChamfer,
       patternVoronoiNoise,
       patternBrickWeight
-      ,patternKumikoFillRatio
+      , is_num(patternKumikoFillRatio) ? [patternKumikoFillRatio, patternKumikoFillRatio] : patternKumikoFillRatio,
       ],
     validatedResult = ValidatePatternSettings(result)
   ) validatedResult;
@@ -117,7 +117,7 @@ function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_num(settings[iPatternFs]) && settings[iPatternFs] >= 0, "settings[iPatternFs] must be a non-negative number")
   assert(is_num(settings[iPatternGridChamfer]) && settings[iPatternGridChamfer] >= 0, "settings[iPatternGridChamfer] must be a non-negative number")
   assert(is_num(settings[iPatternVoronoiNoise]) && settings[iPatternVoronoiNoise] >= 0 && settings[iPatternVoronoiNoise] <= 1, "settings[iPatternVoronoiNoise] must be between 0 and 1")
-  assert(is_num(settings[iPatternKumikoFillRatio]), "settings[iPatternKumikoFillRatio] must be between 0 and 1")
+  assert(is_list(settings[iPatternKumikoFillRatio]), "settings[iPatternKumikoFillRatio] must be a list")
   assert(is_num(settings[iPatternBrickWeight]) && settings[iPatternBrickWeight] >= 0, "settings[iPatternBrickWeight] must be a non-negative number")
     [settings[iPatternEnabled],
       validatePatternStyle(settings[iPatternStyle]),
@@ -273,7 +273,7 @@ module cutout_pattern(
   fill,
   patternGridChamfer=0,
   patternVoronoiNoise=0,
-  patternKumikoFillRatio=0,
+  patternKumikoFillRatio=[0,0],
   patternBrickWeight=0,
   border = 0,
   patternFs = 0,
@@ -291,7 +291,7 @@ module cutout_pattern(
   assert(is_num(patternGridChamfer) && patternGridChamfer >= 0, "patternGridChamfer must be a non-negative number");
   assert(is_num(patternVoronoiNoise) && patternVoronoiNoise >= 0  && patternVoronoiNoise <= 1, "patternVoronoiNoise must be between 0 and 1");
   assert(is_num(patternBrickWeight) && patternBrickWeight >= 0, "patternBrick Weight must be a non-negative number");
-  assert(is_num(patternKumikoFillRatio), "patternKumikoFillRatio must be between 0 and 1");
+  assert(is_list(patternKumikoFillRatio), "patternKumikoFillRatio must be a list");
   assert(is_list(strength) && len(strength) == 2 && is_num(strength.x) && strength.x > 0 && is_num(strength.y) && strength.y > 0, "strength must be a list of two positive numbers");
 
   canvasSize = 
@@ -355,44 +355,56 @@ module cutout_pattern(
     else if(patternStyle == PatternStyle_tobiAsanoha){
       rectangle_tobiAsanoha(
         canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
         cell_size = cellSize.x,
         strength = strength.x,
-        fillRatio = patternKumikoFillRatio,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
         center=center);
     } else if(patternStyle == PatternStyle_asanoha){
       rectangle_asanoha(
         canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
         cell_size = cellSize.x,
         strength = strength.x,
-        fillRatio = patternKumikoFillRatio,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
         center=center);
     } else if(patternStyle == PatternStyle_goma){
       rectangle_goma(
         canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
         cell_size = cellSize.x,
         strength = strength.x,
-        fillRatio = patternKumikoFillRatio,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
         center=center);
     } else if(patternStyle == PatternStyle_tsumiishiKikko){
       rectangle_tsumiishiKikko(
         canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
         cell_size = cellSize.x,
         strength = strength.x,
-        fillRatio = patternKumikoFillRatio,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
         center=center);
     } else if(patternStyle == PatternStyle_bishamonKikkou){
       rectangle_bishamonKikkou(
         canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
         cell_size = cellSize.x,
         strength = strength.x,
-        fillRatio = patternKumikoFillRatio,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
         center=center);
     } else if(patternStyle == PatternStyle_mikado){
       rectangle_mikado(
         canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
         cell_size = cellSize.x,
         strength = strength.x,
-        fillRatio = patternKumikoFillRatio,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
         center=center);
     }
     else {
