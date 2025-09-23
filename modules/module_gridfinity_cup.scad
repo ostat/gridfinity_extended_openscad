@@ -553,6 +553,34 @@ module gridfinity_cup(
             sepFloorHeight = sepFloorHeight,
             fudgeFactor = fudgeFactor,
             cutoutclearance_divider = cutoutclearance_divider);
+    
+        bin_wall_pattern(
+            num_x = num_x,
+            num_y = num_y,
+            num_z = num_z,
+            wall_thickness = wall_thickness,
+            cavityFloorRadius = cavityFloorRadius,
+            wallTop = wallTop,
+            floorHeight = floorHeight,
+            label_settings = label_settings,
+            calculated_vertical_separator_positions = calculated_vertical_separator_positions,
+            calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
+            wall_pattern_settings = wall_pattern_settings,
+            wallpattern_walls = wallpattern_walls,
+            wallpattern_dividers_enabled = wallpattern_dividers_enabled,
+            sepFloorHeight = sepFloorHeight,
+            cutoutclearance_divider = cutoutclearance_divider,
+            border = border,
+            heightz = heightz,
+            z = z,
+            wallpatternzpos = wallpatternzpos,
+            tapered_corner = tapered_corner,
+            tapered_corner_size = tapered_corner_size,
+            tapered_setback = tapered_setback,
+            wallcutout_vertical_settings = wallcutout_vertical_settings,
+            wallcutout_horizontal_settings = wallcutout_horizontal_settings,
+            enable_outer_walls = false,
+            enable_inner_walls = true);
         }
 
         //coloured_wall_pattern child 2 wall pattern cavities
@@ -581,7 +609,9 @@ module gridfinity_cup(
             tapered_corner_size = tapered_corner_size,
             tapered_setback = tapered_setback,
             wallcutout_vertical_settings = wallcutout_vertical_settings,
-            wallcutout_horizontal_settings = wallcutout_horizontal_settings);
+            wallcutout_horizontal_settings = wallcutout_horizontal_settings,
+            enable_outer_walls = true,
+            enable_inner_walls = false);
       } //coloured_wall_pattern
 
       if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
@@ -784,7 +814,9 @@ module bin_wall_pattern(
   tapered_corner_size,
   tapered_setback,
   wallcutout_vertical_settings,
-  wallcutout_horizontal_settings
+  wallcutout_horizontal_settings,
+  enable_outer_walls = true,
+  enable_inner_walls = true,
 ) {
   fudgeFactor = 0.01;
 
@@ -824,7 +856,7 @@ module bin_wall_pattern(
           difference(){
             union(){
               for(i = [0:1:len(ylocations)-1])
-                if(ylocations[i][4] > 0)
+                if(enable_outer_walls && ylocations[i][4] > 0)
                   translate(ylocations[i][1])
                   mirror(ylocations[i][3])
                   rotate(ylocations[i][2])
@@ -850,7 +882,7 @@ module bin_wall_pattern(
                       rotateGrid = wall_pattern_settings[iPatternRotate],
                       patternFs = wall_pattern_settings[iPatternFs]);
                       
-                if(wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
+                if(enable_inner_walls && wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
                   position_separators(
                     calculatedSeparators = calculated_vertical_separator_positions, 
                     separator_orientation = "vertical")
@@ -890,6 +922,7 @@ module bin_wall_pattern(
               calculatedSeparators = calculated_horizontal_separator_positions,
               separator_orientation = "horizontal",
               pad_wall_thickness = cutoutclearance_divider*2,
+              pad_wall_height = fudgeFactor,
               source = "bin_wall_pattern");
           }
             
@@ -897,7 +930,7 @@ module bin_wall_pattern(
           difference(){
             union(){
               for(i = [0:1:len(xlocations)-1])
-                if(xlocations[i][4] > 0)
+                if(enable_outer_walls && xlocations[i][4] > 0)
                   translate(xlocations[i][1])
                   mirror(xlocations[i][3])
                   rotate(xlocations[i][2])
@@ -923,7 +956,7 @@ module bin_wall_pattern(
                       rotateGrid = wall_pattern_settings[iPatternRotate],
                       patternFs = wall_pattern_settings[iPatternFs]);
                       
-                  if(wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
+                  if(enable_inner_walls && wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
                     position_separators(
                       calculatedSeparators = calculated_horizontal_separator_positions, 
                       separator_orientation = "horizontal")
@@ -964,6 +997,7 @@ module bin_wall_pattern(
               calculatedSeparators = calculated_vertical_separator_positions,
               separator_orientation = "vertical",
               pad_wall_thickness = cutoutclearance_divider*2,
+              pad_wall_height = fudgeFactor,
               source = "bin_wall_pattern");
           }
         }
