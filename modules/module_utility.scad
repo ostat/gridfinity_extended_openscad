@@ -560,3 +560,8 @@ module rounded_taper(
     }
   }
 }
+
+module PartialCylinder(h, r, part) {
+    rotate_extrude(angle = part)
+        square([r, h]);
+}
