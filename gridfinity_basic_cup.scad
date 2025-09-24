@@ -195,7 +195,7 @@ wallpattern_pattern_voronoi_noise = 0.75; //0.01
 wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
-wallpattern_colored = "disabled"; //[disabled, enabled, split:enabled and split from model]
+wallpattern_colored = "disabled"; //[disabled, enabled]
 
 
 /* [Floor Pattern] */

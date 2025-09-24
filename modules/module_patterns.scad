@@ -235,66 +235,26 @@ module coloured_wall_pattern(
 }
 
 module wall_pattern_canvas_negative(locations, colored_pattern){
-  if(colored_pattern == "split"){
-    //subtracted block
-    for(i = [0:1:len(locations)-1])
-      if(locations[i][4] > 0)
-        translate(locations[i][1])
-        mirror(locations[i][3])
-        rotate(locations[i][2])
-          difference(){
-            thickness = locations[i][0].z+fudgeFactor;
-            hull(){
-              translate([0,thickness/2,0])
-              cube([locations[i][0].x,locations[i][0].y+thickness,thickness], center=true);
-              
-              translate([0,0,-thickness/4])
-              cube([locations[i][0].x+thickness,locations[i][0].y,thickness/2], center=true);
-            }
-
-            translate([-locations[i][0].x/2-thickness*2,locations[i][0].y/2+thickness,thickness/2])
-            rotate([180+45,0,0])
-            cube([locations[i][0].x+thickness*2,thickness*2,thickness*2], center=false);
-        }
-  }else {
-    for(i = [0:1:len(locations)-1])
-      if(locations[i][4] > 0)
-        translate(locations[i][1])
-        rotate(locations[i][2])
-        cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
-  }
+  for(i = [0:1:len(locations)-1])
+    if(locations[i][4] > 0)
+      translate(locations[i][1])
+      rotate(locations[i][2])
+      cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
 }
 
 module wall_pattern_canvas_positive(locations, colored_pattern){
-  //add block
-  if(colored_pattern == "split"){
-    for(i = [0:1:len(locations)-1])
-      if(locations[i][4] > 0)
-        translate(locations[i][1])
-        mirror(locations[i][3])
-        rotate(locations[i][2])
-          hull(){
-            thickness = locations[i][0].z;
-            clearance = 0.25;
-            cube([locations[i][0].x-thickness-clearance,locations[i][0].y,thickness], center=true);
-
-            translate([0,0,-thickness/4])
-            cube([locations[i][0].x-clearance,locations[i][0].y,thickness/2], center=true);
-          }
-  } else {
-    for(i = [0:1:len(locations)-1])
-      if(locations[i][4] > 0)
-        translate(locations[i][1])
-        rotate(locations[i][2]) {
-          thickness = locations[i][0].z;
-          cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
-        }
-  }
+  for(i = [0:1:len(locations)-1])
+    if(locations[i][4] > 0)
+      translate(locations[i][1])
+      rotate(locations[i][2]) {
+        thickness = locations[i][0].z;
+        cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
+      }
 }
 
 module colored_block(coloured_pattern = "enabled"){
   union(){
-    if(coloured_pattern == "enabled" || coloured_pattern == "split"){
+    if(coloured_pattern == "enabled"){
       difference(){
         // Child 0 is bin block
         children(0);
@@ -304,7 +264,6 @@ module colored_block(coloured_pattern = "enabled"){
         children(1);
       }
 
-      translate(coloured_pattern == "split" ? [env_numx()*env_pitch().x+10, 0, 0] : [0,0,0])
       color(env_colour(color_wallcutout, isLip=true))
       //render_conditional(true)
       difference(){
