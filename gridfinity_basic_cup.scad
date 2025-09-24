@@ -274,10 +274,9 @@ text_2 = false;
 text_2_text = "Gridfinity Extended";
 
 /* [debug] */
-// Slice along the x axis
-cutx = 0; //0.1
-// Slice along the y axis
-cuty = 0; //0.1
+// Debug slice
+cut = [0,0,0]; //0.1
+
 // Enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -320,7 +319,7 @@ set_environment(
   help = enable_help,
   pitch = pitch,
   clearance = clearance,
-  cut = [cutx, cuty, height],
+  cut = cut,
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)

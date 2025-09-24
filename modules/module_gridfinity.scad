@@ -371,15 +371,29 @@ module debug_cut(cutx, cuty, cutz) {
     children();
     
     //Render the cut, used for debugging
-    if(cutx > 0 && cutz > 0 && $preview){
+    if(cutx > 0 && $preview){
       color(color_cut)
       translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([env_pitch().x*cutx,num_y*env_pitch().y+fudgeFactor*2,(cutz+1)*env_pitch().z]);
+        cube([
+            cutx*env_pitch().x, 
+            num_y*env_pitch().y+fudgeFactor*2,
+            (num_z+1)*env_pitch().z+fudgeFactor*2]);
     }
-    if(cuty > 0 && cutz > 0 && $preview){
+    if(cuty > 0 && $preview){
       color(color_cut)
       translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([num_x*env_pitch().x+fudgeFactor*2,env_pitch().y*cuty,(cutz+1)*env_pitch().z]);
+        cube([
+          num_x*env_pitch().x+fudgeFactor*2,
+          cuty*env_pitch().y,
+          (num_z+1)*env_pitch().z+fudgeFactor*2]);
+    }
+    if(cutz > 0 && $preview){
+      color(color_cut)
+      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+        cube([
+          num_x*env_pitch().x+fudgeFactor*2,
+          num_y*env_pitch().y+fudgeFactor*2,
+          cutz*env_pitch().z]);
     }
   }
 }
