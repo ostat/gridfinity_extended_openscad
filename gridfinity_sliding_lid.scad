@@ -241,6 +241,8 @@ text_1 = false;
 text_size = 0; // 0.1
 // Depth of text, in mm
 text_depth = 0.3; // 0.01
+// Offset of text , in mm
+text_offset = [0, 0]; // 0.1
 // Font to use
 text_font = "Aldo";  // [Aldo, B612, "Open Sans", Ubuntu]
 // Add free-form text line to bin bottom (printing date, serial, etc)
@@ -419,7 +421,8 @@ set_environment(
         baseTextLine2Value = text_2_text,
         baseTextFontSize = text_size,
         baseTextFont = text_font,
-        baseTextDepth = text_depth));
+        baseTextDepth = text_depth,
+        baseTextOffset = text_offset));
   }
 
   if(render_choice == "both" || render_choice == "lid")

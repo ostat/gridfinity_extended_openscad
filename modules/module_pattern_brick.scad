@@ -58,7 +58,7 @@ module brick_pattern(
           roundedCube(
             size = size, 
             sideRadius = corner_radius,
-            supportReduction_x = [0,1]
+            //supportReduction_x = [0,1]
             //supportReduction_y = [0,0],
             //supportReduction_z = [0,0]
             );
