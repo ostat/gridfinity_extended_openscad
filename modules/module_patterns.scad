@@ -1,6 +1,8 @@
 include <module_item_holder.scad>
 include <module_pattern_voronoi.scad>
 include <module_pattern_brick.scad>
+include <thridparty/kumikoPatterns/kumiko.scad>
+include <module_pattern_kumiko.scad>
 include <module_pattern_slat.scad>
 
 iPatternEnabled=0;
@@ -18,6 +20,7 @@ iPatternGridChamfer=11;
 iPatternVoronoiNoise=12;
 iPatternBrickWeight=13;
 iPatternColored=14;
+iPatternKumikoFillRatio=15;
 
 PatternStyle_grid = "grid";
 PatternStyle_hexgrid = "hexgrid";
@@ -27,11 +30,18 @@ PatternStyle_voronoihexgrid = "voronoihexgrid";
 PatternStyle_brick = "brick";
 PatternStyle_brickoffset = "brickoffset";
 PatternStyle_slat = "slats";
+PatternStyle_tobiAsanoha = "kumiko_tobi_asanoha";
+PatternStyle_asanoha = "kumiko_asanoha";
+PatternStyle_goma = "kumiko_goma";
+PatternStyle_tsumiishiKikko = "kumiko_tsumiishi_kikko";
+PatternStyle_bishamonKikkou = "kumiko_bishamon_kikkou";
+PatternStyle_mikado = "kumiko_mikado";
 
 PatternStyle_values = [
     PatternStyle_grid, PatternStyle_hexgrid,
     PatternStyle_voronoi, PatternStyle_voronoigrid, PatternStyle_voronoihexgrid, 
     PatternStyle_slat,
+    PatternStyle_tobiAsanoha, PatternStyle_asanoha, PatternStyle_goma, PatternStyle_tsumiishiKikko, PatternStyle_bishamonKikkou, PatternStyle_mikado,
     PatternStyle_brick, PatternStyle_brickoffset
     ];
 function validatePatternStyle(value, name = "PatternStyle") = 
@@ -70,6 +80,7 @@ function PatternSettings(
     patternVoronoiNoise=0,
     patternBrickWeight=0,
     patternColored="disabled"
+    ,patternKumikoFillRatio=[0,0]
     ) = 
   let(
     result = [
@@ -88,13 +99,14 @@ function PatternSettings(
       patternVoronoiNoise,
       patternBrickWeight,
       patternColored
+      , is_num(patternKumikoFillRatio) ? [patternKumikoFillRatio, patternKumikoFillRatio] : patternKumikoFillRatio,
       ],
     validatedResult = ValidatePatternSettings(result)
   ) validatedResult;
 
 function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_list(settings), "Settings must be a list")
-  assert(len(settings)==15, "Settings must length 15")
+  assert(len(settings)==16, "Settings must length 16")
   assert(is_bool(settings[iPatternEnabled]), "settings[iPatternEnabled] must be a boolean")
   assert(is_string(settings[iPatternStyle]), "settings[iPatternStyle] must be a string")
   assert(is_bool(settings[iPatternRotate]), "settings[iPatternRotate] must be a boolean")
@@ -110,6 +122,8 @@ function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_num(settings[iPatternFs]) && settings[iPatternFs] >= 0, "settings[iPatternFs] must be a non-negative number")
   assert(is_num(settings[iPatternGridChamfer]), "settings[iPatternGridChamfer] must be a number")
   assert(is_num(settings[iPatternVoronoiNoise]) && settings[iPatternVoronoiNoise] >= 0 && settings[iPatternVoronoiNoise] <= 1, "settings[iPatternVoronoiNoise] must be between 0 and 1")
+  assert(is_list(settings[iPatternKumikoFillRatio]), "settings[iPatternKumikoFillRatio] must be a list")
+  assert(is_list(settings[iPatternKumikoFillRatio]), "settings[iPatternKumikoFillRatio] must be a list")
   assert(is_num(settings[iPatternBrickWeight]) && settings[iPatternBrickWeight] >= 0, "settings[iPatternBrickWeight] must be a non-negative number")
     [settings[iPatternEnabled],
       validatePatternStyle(settings[iPatternStyle]),
@@ -126,6 +140,7 @@ function ValidatePatternSettings(settings, num_x, num_y) =
       settings[iPatternVoronoiNoise],
       settings[iPatternBrickWeight],
       settings[iPatternColored]
+      ,settings[iPatternKumikoFillRatio]
       ];
 
 function get_wallpattern_positions(
@@ -409,6 +424,7 @@ module cutout_pattern(
   fill,
   patternGridChamfer=0,
   patternVoronoiNoise=0,
+  patternKumikoFillRatio=[0,0],
   patternBrickWeight=0,
   partialDepth = false,
   border = 0,
@@ -427,6 +443,7 @@ module cutout_pattern(
   assert(is_num(patternGridChamfer), "patternGridChamfer must be a number");
   assert(is_num(patternVoronoiNoise) && patternVoronoiNoise >= 0  && patternVoronoiNoise <= 1, "patternVoronoiNoise must be between 0 and 1");
   assert(is_num(patternBrickWeight) && patternBrickWeight >= 0, "patternBrick Weight must be a non-negative number");
+  assert(is_list(patternKumikoFillRatio), "patternKumikoFillRatio must be a list");
   assert(is_list(strength) && len(strength) == 2 && is_num(strength.x) && strength.x > 0 && is_num(strength.y) && strength.y > 0, "strength must be a list of two positive numbers");
 
   canvasSize = 
@@ -434,6 +451,8 @@ module cutout_pattern(
     border > 0
     ? [cs.x-border*2, cs.y-border*2]
     : cs;
+
+  if(env_help_enabled("trace")) echo("cutout_pattern", patternStyle=patternStyle, source=source, canvasSize=canvasSize, patternFs=patternFs, border=border);
 
   function calculate_chamfer(chamfer, thickness, partialDepth) = 
     let(
@@ -500,7 +519,63 @@ module cutout_pattern(
         slat_chamfer = chamfer,
         center = center,
         rotateGrid = false);
-    } else {
+    }
+    else if(patternStyle == PatternStyle_tobiAsanoha){
+      rectangle_tobiAsanoha(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_asanoha){
+      rectangle_asanoha(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_goma){
+      rectangle_goma(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_tsumiishiKikko){
+      rectangle_tsumiishiKikko(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_bishamonKikkou){
+      rectangle_bishamonKikkou(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_mikado){
+      rectangle_mikado(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    }
+    else {
       echo("cutout_pattern: Unknown patternStyle", patternStyle=patternStyle);
     }
   }

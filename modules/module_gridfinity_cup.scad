@@ -611,6 +611,7 @@ module gridfinity_cup(
             wallcutout_vertical_settings = wallcutout_vertical_settings,
             wallcutout_horizontal_settings = wallcutout_horizontal_settings,
             enable_outer_walls = true,
+
             enable_inner_walls = false);
       } //coloured_wall_pattern
 
@@ -876,6 +877,7 @@ module bin_wall_pattern(
                       patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                       patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                       patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+        	      patternKumikoFillRatio = wall_pattern_settings[iPatternKumikoFillRatio],
                       partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                       holeRadius = wall_pattern_settings[iPatternHoleRadius],
                       source = "wall_pattern",
@@ -909,6 +911,7 @@ module bin_wall_pattern(
                           patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                           patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                           patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+			  patternKumikoFillRatio = wall_pattern_settings[iPatternKumikoFillRatio],
                           partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                           holeRadius = wall_pattern_settings[iPatternHoleRadius],
                           source="vertical separator wall pattern",
@@ -950,6 +953,7 @@ module bin_wall_pattern(
                       patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                       patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                       patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+		      patternKumikoFillRatio = wall_pattern_settings[iPatternKumikoFillRatio],
                       partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                       holeRadius = wall_pattern_settings[iPatternHoleRadius],
                       source = "wall_pattern",
@@ -984,6 +988,7 @@ module bin_wall_pattern(
                             patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                             patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                             patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+			    patternKumikoFillRatio = wall_pattern_settings[iPatternKumikoFillRatio],
                             partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
                             source = "horizontal separator wall pattern",
