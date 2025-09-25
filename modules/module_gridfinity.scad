@@ -371,29 +371,37 @@ module debug_cut(cutx, cuty, cutz) {
     children();
     
     //Render the cut, used for debugging
-    if(cutx > 0 && $preview){
+    if(cutx != 0 && $preview){
       color(color_cut)
+      translate(cutx > 0 
+        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+        : [(num_x-abs(cutx))*env_pitch().x-fudgeFactor,-fudgeFactor,-fudgeFactor])
       translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
         cube([
-            cutx*env_pitch().x, 
+            abs(cutx)*env_pitch().x, 
             num_y*env_pitch().y+fudgeFactor*2,
             (num_z+1)*env_pitch().z+fudgeFactor*2]);
     }
-    if(cuty > 0 && $preview){
+    if(cuty != 0 && $preview){
       color(color_cut)
-      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+      translate(cuty > 0 
+        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+        : [-fudgeFactor,(num_y-abs(cuty))*env_pitch().y-fudgeFactor,-fudgeFactor])
         cube([
           num_x*env_pitch().x+fudgeFactor*2,
-          cuty*env_pitch().y,
+          abs(cuty)*env_pitch().y,
           (num_z+1)*env_pitch().z+fudgeFactor*2]);
     }
-    if(cutz > 0 && $preview){
+    if(cutz != 0 && $preview){
       color(color_cut)
-      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+      translate(cutz > 0 
+        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+        : [-fudgeFactor,-fudgeFactor,(num_z+1-abs(cutz))*env_pitch().z-fudgeFactor]
+        )
         cube([
           num_x*env_pitch().x+fudgeFactor*2,
           num_y*env_pitch().y+fudgeFactor*2,
-          cutz*env_pitch().z]);
+          abs(cutz)*env_pitch().z]);
     }
   }
 }
