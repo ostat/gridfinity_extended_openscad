@@ -221,20 +221,23 @@ module coloured_wall_pattern(
       children(0);
 
       split_clearance = 0.25;
-      split_lip = 1;
+      split_lip = 2;
+      back_lip = 1;
       //subtracted block
       wall_pattern_canvas_negative(
         locations, 
         colored_pattern, 
         clearance = 0, 
-        lip_size = split_lip*2);
+        back_lip = back_lip,
+        lip_size = split_lip);
 
       //added blockblock
       wall_pattern_canvas_positive(
         locations, 
         colored_pattern, 
         clearance = split_clearance, 
-        lip_size = split_lip*2);
+        back_lip = back_lip,
+        lip_size = split_lip/2);
 
       if($children >=3) children(2);
     }
@@ -244,7 +247,7 @@ module coloured_wall_pattern(
   }
 }
 
-module wall_pattern_canvas_negative(locations, colored_pattern, clearance = 0, lip_size = 1){
+module wall_pattern_canvas_negative(locations, colored_pattern, clearance = 0, back_lip, lip_size = 1){
     //subtracted block
     for(i = [0:1:len(locations)-1])
       if(locations[i][4] > 0)
@@ -260,6 +263,7 @@ module wall_pattern_canvas_negative(locations, colored_pattern, clearance = 0, l
                   [locations[i][0].x,locations[i][0].y+thickness],
                   thickness, 
                   clearance = clearance, 
+                  back_lip = back_lip,
                   lip_size = lip_size, 
                   hook_thickness_ratio=0.2);
 
@@ -273,7 +277,7 @@ module wall_pattern_canvas_negative(locations, colored_pattern, clearance = 0, l
           }
 }
 
-module wall_pattern_canvas_positive(locations, colored_pattern, clearance = 0, lip_size = 1){
+module wall_pattern_canvas_positive(locations, colored_pattern, clearance = 0, back_lip, lip_size = 1){
   //add block
   for(i = [0:1:len(locations)-1])
     if(locations[i][4] > 0)
@@ -287,6 +291,7 @@ module wall_pattern_canvas_positive(locations, colored_pattern, clearance = 0, l
             locations[i][0],
             thickness, 
             clearance = clearance*-1, 
+            back_lip = back_lip,
             lip_size = lip_size);
         } else {
           cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
@@ -297,7 +302,8 @@ module wall_pattern_canvas_positive(locations, colored_pattern, clearance = 0, l
 module split_block(
     size, 
     thickness, 
-    clearance, 
+    clearance,
+    back_lip,
     lip_size,
     bottom_thickness_ratio = 0.25,
     top_thickness_ratio = 0.5,
@@ -310,14 +316,14 @@ module split_block(
   fudge_factor = 0.01;
 
   block_clearance = clearance;
-  lip_clearance = clearance;
+  lip_clearance = 0;
   lip_ramp_clearance = 0;//clearance/5;
   
-  echo("split_block: ", thickness=thickness, lip_size=lip_size);
+  echo("split_block: ", thickness=thickness, lip_size=lip_size, back_lip=back_lip, bottom_thickness=bottom_thickness, top_thickness=top_thickness, middle_thickness=middle_thickness, hook_thickness=hook_thickness);
 
-  inner_block = [size.x-lip_size/2+block_clearance, size.y, thickness];
+  inner_block = [size.x-back_lip+block_clearance, size.y, thickness];
   middle_block = [inner_block.x, inner_block.y, middle_thickness+lip_ramp_clearance];
-  outer_block = [size.x+lip_size/2+lip_clearance, size.y, bottom_thickness+hook_thickness];
+  outer_block = [size.x+lip_size+lip_clearance, size.y, bottom_thickness+hook_thickness];
 
   echo("split_block: ", inner_block=inner_block, middle_block=middle_block, outer_block=outer_block);
 
@@ -335,7 +341,7 @@ module split_block(
     }
 
     if(hook_thickness_ratio > 0 && hook_thickness > 0){
-      hook_width = lip_size/2;
+      hook_width = lip_size;
       hook_middle_block = [middle_block.x+fudge_factor*2-hook_width*2, middle_block.y+fudge_factor*2, outer_block.z];
       hook_outer_block = [outer_block.x+fudge_factor*2-hook_width*2, outer_block.y+fudge_factor*2, bottom_thickness];
 
