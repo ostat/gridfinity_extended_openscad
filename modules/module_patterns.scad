@@ -224,10 +224,10 @@ module coloured_wall_pattern(
       split_lip = 1;
       //subtracted block
       wall_pattern_canvas_negative(
-          locations, 
-          colored_pattern, 
-          clearance = 0, 
-          lip_size = split_lip*2);
+        locations, 
+        colored_pattern, 
+        clearance = 0, 
+        lip_size = split_lip*2);
 
       //added blockblock
       wall_pattern_canvas_positive(
@@ -261,7 +261,7 @@ module wall_pattern_canvas_negative(locations, colored_pattern, clearance = 0, l
                   thickness, 
                   clearance = clearance, 
                   lip_size = lip_size, 
-                  hook_thickness_ratio=0.1);
+                  hook_thickness_ratio=0.2);
 
               //Top taper, for easy printability
               translate([-locations[i][0].x/2-thickness*2,locations[i][0].y/2+thickness,thickness/2])
@@ -275,22 +275,22 @@ module wall_pattern_canvas_negative(locations, colored_pattern, clearance = 0, l
 
 module wall_pattern_canvas_positive(locations, colored_pattern, clearance = 0, lip_size = 1){
   //add block
-    for(i = [0:1:len(locations)-1])
-      if(locations[i][4] > 0)
-        translate(locations[i][1])
-        mirror(locations[i][3])
-        rotate(locations[i][2]) {
-          thickness = locations[i][0].z;
-          if(colored_pattern == "split"){
-            //block cavity, with side clips and clearance subtracted
-            split_block(
-              locations[i][0],
-              thickness, 
-              clearance = clearance*-1, 
-              lip_size = lip_size);
-          } else {
-            cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
-          }
+  for(i = [0:1:len(locations)-1])
+    if(locations[i][4] > 0)
+      translate(locations[i][1])
+      mirror(locations[i][3])
+      rotate(locations[i][2]) {
+        thickness = locations[i][0].z;
+        if(colored_pattern == "split"){
+          //block cavity, with side clips and clearance subtracted
+          split_block(
+            locations[i][0],
+            thickness, 
+            clearance = clearance*-1, 
+            lip_size = lip_size);
+        } else {
+          cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
+        }
   }
 }
 
@@ -299,7 +299,7 @@ module split_block(
     thickness, 
     clearance, 
     lip_size,
-    bottom_thickness_ratio = 0.3,
+    bottom_thickness_ratio = 0.25,
     top_thickness_ratio = 0.5,
     hook_thickness_ratio = 0){
   bottom_thickness = thickness*bottom_thickness_ratio;
@@ -321,26 +321,31 @@ module split_block(
 
   echo("split_block: ", inner_block=inner_block, middle_block=middle_block, outer_block=outer_block);
 
-  translate(-[size.x,size.y,thickness]/2)
   difference(){
     union(){
-      cube(inner_block);
+      cube(inner_block, center=true);
 
       hull(){
+        translate(-[middle_block.x, middle_block.y, thickness]/2)
         cube(middle_block);
 
-        translate([-lip_size/2+block_clearance/2, 0, -hook_thickness])
+        translate(-[outer_block.x, outer_block.y, thickness+hook_thickness*2]/2)
         cube(outer_block);
       }
     }
 
     if(hook_thickness_ratio > 0 && hook_thickness > 0){
-      translate([0, -fudge_factor, -outer_block.z])
-      hull(){
-        cube([middle_block.x+fudge_factor*2, middle_block.y+fudge_factor*2, outer_block.z]);
+      hook_width = lip_size/2;
+      hook_middle_block = [middle_block.x+fudge_factor*2-hook_width*2, middle_block.y+fudge_factor*2, outer_block.z];
+      hook_outer_block = [outer_block.x+fudge_factor*2-hook_width*2, outer_block.y+fudge_factor*2, bottom_thickness];
 
-        translate([-lip_size/2-lip_clearance/2-fudge_factor,0,0])
-        cube([outer_block.x+fudge_factor*2, outer_block.y+fudge_factor*2, bottom_thickness]);
+      translate([0, -fudge_factor, -hook_outer_block.z-hook_thickness])
+      hull(){
+        translate(-[hook_middle_block.x, hook_middle_block.y, thickness]/2)
+        cube(hook_middle_block);
+
+        translate(-[hook_outer_block.x, hook_outer_block.y, thickness]/2)
+        cube(hook_outer_block);
       }
     }
   }
