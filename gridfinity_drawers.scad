@@ -35,7 +35,7 @@ drawer_clearance = [0.25,0.25,0.25];
 //Add clearance inside the chest for the drawer. width, depth and height. Default is 0.25
 chest_clearance = [0.25,0.25,0.25];
 //Wall thickness of the chest.
-chest_wall_thickness = 2;
+chest_wall_thickness = 2; // 0.1
 //Thickness of drawer slides in mm. 0 is uses wall thickness.
 chest_drawer_slide_thickness = 0;
 //Width of drawer slies in mm. 0 is full chest width.
@@ -46,7 +46,7 @@ chest_drawer_slide_width = 10;
 handle_size = [4, 10, -1, -1];
 handle_vertical_center = false;
 handle_rotate = false;
-drawer_wall_thickness = 2;
+drawer_wall_thickness = 2; // 0.1
 drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and floor]
 drawer_enable_magnet = true;
 drawer_magnet_size = [6.5, 2.4];  // .1
