@@ -431,10 +431,11 @@ module gridfinity_cup(
   calculated_vertical_separator_positions = calculateSeparators(
     separator_config = vertical_chambers[iChamber_irregular_subdivisions] 
       ? vertical_chambers[iChamber_separator_config]  
-      : splitChamber(vertical_chambers[iChamber_count]-1, divider_width=vertical_chambers[iChamber_wall_thickness], container_width=num_x*env_pitch().x - env_clearance().x - wall_thickness*2), 
+      : splitChamber(vertical_chambers[iChamber_count]-1, divider_width=vertical_chambers[iChamber_wall_thickness].x, container_width=num_x*env_pitch().x - env_clearance().x - wall_thickness*2), 
     length = env_pitch().y*num_y,
     height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, vertical_chambers[iChamber_wall_headroom]),
     wall_thickness = vertical_chambers[iChamber_wall_thickness],
+    wall_top_radius = vertical_chambers[iChamber_wall_top_radius],
     bend_position = vertical_chambers[iChamber_separator_bend_position],
     bend_angle = vertical_chambers[iChamber_separator_bend_angle],
     bend_separation = vertical_chambers[iChamber_separator_bend_separation],
@@ -442,10 +443,11 @@ module gridfinity_cup(
   calculated_horizontal_separator_positions = calculateSeparators(
     separator_config = horizontal_chambers[iChamber_irregular_subdivisions] 
       ? horizontal_chambers[iChamber_separator_config] 
-      : splitChamber(horizontal_chambers[iChamber_count]-1, divider_width=horizontal_chambers[iChamber_wall_thickness], container_width=num_y*env_pitch().y - env_clearance().y - wall_thickness*2), 
+      : splitChamber(horizontal_chambers[iChamber_count]-1, divider_width=horizontal_chambers[iChamber_wall_thickness].x, container_width=num_y*env_pitch().y - env_clearance().y - wall_thickness*2), 
     length = env_pitch().x*num_x,
     height = env_pitch().z*(num_z)-sepFloorHeight+fudgeFactor*2-max(headroom, horizontal_chambers[iChamber_wall_headroom]),
     wall_thickness = horizontal_chambers[iChamber_wall_thickness],
+    wall_top_radius = horizontal_chambers[iChamber_wall_top_radius],
     bend_position = horizontal_chambers[iChamber_separator_bend_position],
     bend_angle = horizontal_chambers[iChamber_separator_bend_angle],
     bend_separation = horizontal_chambers[iChamber_separator_bend_separation],

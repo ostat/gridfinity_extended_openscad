@@ -44,10 +44,13 @@ lip_non_blocking = false;
 height_includes_lip = false;
 
 /* [Subdivisions] */
-chamber_wall_thickness = 1.2;
+// Wall thickness [bottom, top]
+chamber_wall_thickness = [1.2, 1.2]; //0.1
 //Reduce the wall height by this amount
 chamber_wall_headroom = 0;//0.1
-// X dimension subdivisions
+// Radius of the top of the chamber wall, -ve is ratio of top wall thickenss. (disabled for bent walls)
+chamber_wall_top_radius = 0; //0.1
+//Reduce the wall height by this amount
 vertical_chambers = 1;
 vertical_separator_bend_separation = 0;
 vertical_separator_bend_angle = 45;
@@ -368,6 +371,7 @@ gridfinity_cup(
     chambers_count = vertical_chambers,
     chamber_wall_thickness = chamber_wall_thickness,
     chamber_wall_headroom = chamber_wall_headroom,
+    chamber_wall_top_radius = chamber_wall_top_radius,
     separator_bend_position = vertical_separator_bend_position,
     separator_bend_angle = vertical_separator_bend_angle,
     separator_bend_separation = vertical_separator_bend_separation,
@@ -378,6 +382,7 @@ gridfinity_cup(
     chambers_count = horizontal_chambers,
     chamber_wall_thickness = chamber_wall_thickness,
     chamber_wall_headroom = chamber_wall_headroom,
+    chamber_wall_top_radius = chamber_wall_top_radius,
     separator_bend_position = horizontal_separator_bend_position,
     separator_bend_angle = horizontal_separator_bend_angle,
     separator_bend_separation = horizontal_separator_bend_separation,

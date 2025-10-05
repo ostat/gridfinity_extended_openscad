@@ -2,17 +2,19 @@
 iChamber_count = 0;
 iChamber_wall_thickness = 1;
 iChamber_wall_headroom = 2;
-iChamber_separator_bend_position = 3;
-iChamber_separator_bend_angle = 4;
-iChamber_separator_bend_separation = 5;
-iChamber_separator_cut_depth = 6;
-iChamber_irregular_subdivisions = 7;
-iChamber_separator_config = 8;
+iChamber_wall_top_radius = 3;
+iChamber_separator_bend_position = 4;
+iChamber_separator_bend_angle = 5;
+iChamber_separator_bend_separation = 6;
+iChamber_separator_cut_depth = 7;
+iChamber_irregular_subdivisions = 8;
+iChamber_separator_config = 9;
 
 function ChamberSettings(
     chambers_count = 0,
-    chamber_wall_thickness=0,
-    chamber_wall_headroom=0,
+    chamber_wall_thickness = 0,
+    chamber_wall_headroom = 0,
+    chamber_wall_top_radius = 0,
     separator_bend_position = 0,
     separator_bend_angle = 0,
     separator_bend_separation = 0,
@@ -24,6 +26,7 @@ function ChamberSettings(
       chambers_count,
       chamber_wall_thickness,
       chamber_wall_headroom,
+      chamber_wall_top_radius,
       separator_bend_position,
       separator_bend_angle,
       separator_bend_separation,
@@ -36,10 +39,11 @@ function ChamberSettings(
 function ValidateChamberSettings(settings, wall_thickness = 0) =
 
   assert(is_list(settings), "Chamber Settings must be a list")
-  assert(len(settings)==9, "Chamber Settings must length 9")
+  assert(len(settings)==10, "Chamber Settings must length 10")
   assert(is_num(settings[iChamber_count]), "Chamber Count must be a number")
-  assert(is_num(settings[iChamber_wall_thickness]), "Wall Thickness must be a number")
+  assert(is_num(settings[iChamber_wall_thickness]) || (is_list(settings[iChamber_wall_thickness]) && len(settings[iChamber_wall_thickness]) ==2), "Wall Thickness must be a list")
   assert(is_num(settings[iChamber_wall_headroom]), "Wall Headroom must be a number")
+  assert(is_num(settings[iChamber_wall_top_radius]), "Wall Top Radius must be a number")
   assert(is_num(settings[iChamber_separator_bend_position]), "Separator Bend Position must be a number")
   assert(is_num(settings[iChamber_separator_bend_angle]), "Separator Bend Angle must be a number")
   assert(is_num(settings[iChamber_separator_bend_separation]), "Separator Bend Separation must be a number")
@@ -48,8 +52,9 @@ function ValidateChamberSettings(settings, wall_thickness = 0) =
   assert(is_string(settings[iChamber_separator_config]), "Separator Config must be a number")
   [
     settings[iChamber_count],
-    settings[iChamber_wall_thickness],
+    is_num(settings[iChamber_wall_thickness])? [settings[iChamber_wall_thickness], settings[iChamber_wall_thickness]] : settings[iChamber_wall_thickness],
     settings[iChamber_wall_headroom],
+    settings[iChamber_wall_top_radius],
     settings[iChamber_separator_bend_position],
     settings[iChamber_separator_bend_angle],
     settings[iChamber_separator_bend_separation],
@@ -63,11 +68,12 @@ iSeparatorPosition = 0;
 iSeparatorLength = 1;
 iSeparatorHeight = 2;
 iSeparatorWallThickness = 3;
-iSeparatorBendPosition = 4;
-iSeparatorBendSeparation = 5;
-iSeparatorBendAngle = 6;
-iSeparatorWallCutDepth = 7;
-iSeparatorWallCutoutWidth = 8;  
+iSeparatorWallTopRadius = 4;
+iSeparatorBendPosition = 5;
+iSeparatorBendSeparation = 6;
+iSeparatorBendAngle = 7;
+iSeparatorWallCutDepth = 8;
+iSeparatorWallCutoutWidth = 9;  
 
 // calculate the position of separators from the size
 function splitChamber(num_separators, container_width, divider_width) = num_separators < 1 
@@ -83,6 +89,7 @@ function calculateSeparators(
                   length,
                   height,
                   wall_thickness = 0,
+                  wall_top_radius = 0,
                   bend_position = 0,
                   bend_angle = 0,
                   bend_separation = 0,
@@ -90,15 +97,16 @@ function calculateSeparators(
   is_string(separator_config) 
     ? let(seps = [for (s = split(separator_config, "|")) csv_parse(s)]) // takes part of an array
       [for (i = [0:len(seps)-1]) [
-          is_list(seps[i]) && len(seps[i]) >= 1 ? seps[i][0] : 0,               //0 iSeparatorPosition
-          length,                                                   //1 iSeparatorLength
-          height,                                                   //2 iSeparatorHeight
-          is_list(seps[i]) && len(seps[i]) >= 6 ? seps[i][5] : wall_thickness,             //3 iSeparatorWallThickness
-          bend_position,                                                      //4 iSeparatorBendPosition
-          is_list(seps[i]) && len(seps[i]) >= 2 ? seps[i][1] : bend_separation,           //5 iSeparatorBendSeparation
-          is_list(seps[i]) && len(seps[i]) >= 3 ? seps[i][2] : bend_angle*(i%2==1?1:-1),  //6 iSeparatorBendAngle
-          is_list(seps[i]) && len(seps[i]) >= 4 ? seps[i][3] : cut_depth,                 //7 iSeparatorWallCutDepth
-          is_list(seps[i]) && len(seps[i]) >= 5 ? seps[i][4] : 0                          //8 iSeparatorWallCutoutWidth
+          is_list(seps[i]) && len(seps[i]) >= 1 ? seps[i][0] : 0,                         //0 iSeparatorPosition
+          length,                                                                         //1 iSeparatorLength
+          height,                                                                         //2 iSeparatorHeight
+          is_list(seps[i]) && len(seps[i]) >= 6 ? seps[i][5] : wall_thickness,            //3 iSeparatorWallThickness
+          wall_top_radius,                                                                //4 iSeparatorWallTopRadius
+          bend_position,                                                                  //5 iSeparatorBendPosition
+          is_list(seps[i]) && len(seps[i]) >= 2 ? seps[i][1] : bend_separation,           //6 iSeparatorBendSeparation
+          is_list(seps[i]) && len(seps[i]) >= 3 ? seps[i][2] : bend_angle*(i%2==1?1:-1),  //7 iSeparatorBendAngle
+          is_list(seps[i]) && len(seps[i]) >= 4 ? seps[i][3] : cut_depth,                 //8 iSeparatorWallCutDepth
+          is_list(seps[i]) && len(seps[i]) >= 5 ? seps[i][4] : 0                          //9 iSeparatorWallCutoutWidth
         ]]
     : (is_list(separator_config) && len(separator_config) > 0) 
       ? [for (i = [0:len(separator_config)-1])[
@@ -106,11 +114,12 @@ function calculateSeparators(
           length,                    //1 iSeparatorLength      
           height,                    //2 iSeparatorHeight
           wall_thickness,            //3 iSeparatorWallThickness
-          bend_position,             //4 iSeparatorBendPosition
-          bend_separation,           //5 iSeparatorBendSeparation
-          bend_angle*(i%2==1?1:-1),  //6 iSeparatorBendAngle
-          cut_depth,                 //7 iSeparatorWallCutDepth
-          0                          //8 iSeparatorWallCutoutWidth
+          wall_top_radius,           //4 iSeparatorWallTopRadius
+          bend_position,             //5 iSeparatorBendPosition
+          bend_separation,           //6 iSeparatorBendSeparation
+          bend_angle*(i%2==1?1:-1),  //7 iSeparatorBendAngle
+          cut_depth,                 //8 iSeparatorWallCutDepth
+          0                          //9 iSeparatorWallCutoutWidth
           ]]
       : [];
 
@@ -139,7 +148,11 @@ module separators(
         height = $sepCfg[iSeparatorHeight] + pad_wall_height,
         wall_cutout_depth = $sepCfg[iSeparatorWallCutDepth],
         wall_cutout_width = $sepCfg[iSeparatorWallCutoutWidth],
-        thickness = $sepCfg[iSeparatorWallThickness] + pad_wall_thickness);
+        thickness = let(wallThickness = $sepCfg[iSeparatorWallThickness])
+          is_list(wallThickness) 
+          ? [wallThickness[0] + pad_wall_thickness, wallThickness[1] + pad_wall_thickness]
+          : wallThickness + pad_wall_thickness,
+        top_radius = $sepCfg[iSeparatorWallTopRadius]);
       }
 }
 
