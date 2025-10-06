@@ -1121,6 +1121,7 @@ module bin_cutouts(
     wall_thickness = wall_thickness,
     cavityFloorRadius = cavityFloorRadius,
     wallTop = wallTop,
+    z_point = num_z*env_pitch().z,
     floorHeight = floorHeight,
     pitch = env_pitch().x,
     pitch_opposite = env_pitch().y);
@@ -1133,6 +1134,7 @@ module bin_cutouts(
     wall_thickness = wall_thickness,
     cavityFloorRadius = cavityFloorRadius,
     wallTop = wallTop,
+    z_point = num_z*env_pitch().z,
     floorHeight = floorHeight,
     pitch = env_pitch().y,
     pitch_opposite = env_pitch().x);
