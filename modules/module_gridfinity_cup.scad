@@ -1163,13 +1163,15 @@ module bin_cutouts(
         roundedCorner(
           radius = tapered_corner_size+cutout_clearance_border*2,
           length = (num_x + 1) * env_pitch().x,
-          height = tapered_corner_size);
+          height = tapered_corner_size,
+          width = tapered_corner_size + tapered_setback);
       }
       else if(tapered_corner == "chamfered"){
         chamferedCorner(
           chamferLength = tapered_corner_size,
           length = (num_x + 1) * env_pitch().x,
-          height = tapered_corner_size);
+          height = tapered_corner_size,
+          width = tapered_corner_size + tapered_setback);
       }
     }
   }

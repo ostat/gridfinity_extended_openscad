@@ -927,6 +927,6 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, height],
+  cut = [cutx, cuty, 0],
   setColour = set_colour)
 gridfinity_itemholder();

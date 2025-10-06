@@ -136,9 +136,22 @@ function get_related_value(user_value, base_value, default_value) =
       user_value < 0 ? base_value/abs(user_value) : user_value)
       min(calculated, base_value);
 
-module color_conditional(enable=true, c){
+module highlight_conditional(enable=false){
   if(enable)
-  color(c)
+    #children();
+  else
+    children();
+}
+
+function color_from_list(index) = 
+let(
+  colours = ["white","red","blue","Green","pink","orange","purple","black", "Coral", "Gray", "Teal"],
+  mod_index = index%len(colours)
+) colours[mod_index];
+
+module color_conditional(enable=true, c, alpha = 1){
+  if(enable)
+  color(c, alpha)
     children();
   else
     children();

@@ -15,7 +15,6 @@ tray_magnet_thickness = 5;
 tray_spacing = 2; //0.1
 tray_vertical_compartments = 1;
 tray_horizontal_compartments = 1;
-
 /*
 xpos,ypos,xsize,ysize,radius,depth. 
 dimensions of the tray cutout, a string with comma separated values, and pipe (|) separated trays.
@@ -27,6 +26,12 @@ dimensions of the tray cutout, a string with comma separated values, and pipe (|
 */
 //[[xpos,ypos,xsize,ysize,radius,depth]]. xpos, ypos, the x/y position in gridfinity units.xsize, ysize. the x/y size in gridfinity units. radius, [optional] corner radius in mm.depth, [optional] depth in mm\nexample "0,0,2,1|2,0,2,1,2,5"
 tray_custom_compartments = "0, 0, 0.5, 3, 2, 6|0.5, 0, 0.5, 3,2, 6|1, 0, 3, 1.5|1, 1.5, 3, 1.5";
+
+// Debug, Color Compartments
+tray_color_compartments = false;
+// Debug, Highlight Compartments
+tray_highlight_compartments = false;
+
 /*<!!end gridfinity_tray!!>*/
 
 /*<!!start gridfinity_basic_cup!!>*/
@@ -249,11 +254,13 @@ module tray(
   wallThickness,
   verticalCompartments = 1,
   horizontalCompartments = 1,
-  customCompartments = "") 
+  customCompartments = "",
+  tray_color_compartments = false
+  ) 
 {
 
   cellSpacing = spacing/2;
-  
+
   verticalCompartments = verticalCompartments > 0 ? verticalCompartments : num_x ;
   horizontalCompartments = horizontalCompartments > 0 ? horizontalCompartments : num_y;
   //todo, this could be simplified, by to produce a single array for ether scenario.
@@ -295,13 +302,21 @@ module tray(
       for (x =[0:1:len(compartments)-1])
       {
           comp =csv_parse(compartments[x]);
-          xpos = comp[ixPos];
-          ypos = comp[iyPos];
-          xsize = comp[ixSize];
-          ysize = comp[iySize];
-          radius = len(comp) >= 5 ? comp[iCornerRadius] : cornerRadius;
-          depth = baseHeight+(len(comp) >= 6 ? comp[iDepth] : max(trayZpos,floorThickness));
-        
+          xpos = get_related_value(comp[ixPos],num_x,0);
+          ypos = get_related_value(comp[iyPos],num_y,0);
+          xsize = get_related_value(comp[ixSize],num_x,0);
+          ysize = get_related_value(comp[iySize],num_y,0);
+          radius = len(comp) >= 5 
+            ? get_related_value(comp[iCornerRadius], cornerRadius, 0) 
+            : cornerRadius;
+          depth = let(
+            bin_top = num_z*env_pitch().z,
+            min_depth = max(trayZpos,floorThickness),
+            user_selected = (len(comp) >= 6 ? comp[iDepth] : min_depth))
+            baseHeight+get_related_value(user_selected, bin_top, bin_top);
+
+          echo("tray", xpos=xpos, ypos=ypos, xsize=xsize, ysize=ysize, radius=radius, depth=depth);
+          color_conditional(tray_color_compartments && $preview, color_from_list(x), 1)
           translate([cellSpacing+xpos*env_pitch().x,cellSpacing+ypos*env_pitch().y,depth])
           roundedCube(
               xsize*env_pitch().x-cellSpacing*2,
@@ -324,7 +339,8 @@ module gridfinity_tray(
   tray_vertical_compartments = tray_vertical_compartments,
   tray_horizontal_compartments = tray_horizontal_compartments,
   tray_custom_compartments = tray_custom_compartments,
-    
+  tray_highlight_compartments=tray_highlight_compartments,
+  tray_color_compartments=tray_color_compartments,
   //gridfinity settings
   width=width, depth=depth, height=height,
   position=position,
@@ -462,6 +478,7 @@ module gridfinity_tray(
         extendableTabSize = extension_tab_size));
     /*<!!end gridfinity_basic_cup!!>*/
 
+    highlight_conditional(tray_highlight_compartments && $preview)
     tray(
       num_x = num_x,
       num_y = num_y,
@@ -477,7 +494,8 @@ module gridfinity_tray(
                     center_magnet_size[iCylinderDimension_Height]),
       verticalCompartments = tray_vertical_compartments,
       horizontalCompartments = tray_horizontal_compartments,
-      customCompartments = tray_custom_compartments);
+      customCompartments = tray_custom_compartments,
+      tray_color_compartments=tray_color_compartments);
       
       //This seems like a complicated way to do this, but it guarantees order will be correct.
       configArray = [
@@ -498,6 +516,6 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, height],
+  cut = [cutx, cuty, 0],
   randomSeed = random_seed)
 gridfinity_tray();
