@@ -5,6 +5,42 @@ iwalcutoutconfig_angle = 3;
 iwalcutoutconfig_height = 4;
 iwalcutoutconfig_cornerradius = 5;
 
+function WallCutoutSettings(
+    type, 
+    position, 
+    width,
+    angle,
+    height, 
+    corner_radius) = 
+  let(
+    result = [
+      type,
+      position,
+      width,
+      angle,
+      height,
+      corner_radius],
+    validatedResult = ValidateWallCutoutSettings(result)
+  ) validatedResult;
+
+function ValidateWallCutoutSettings(settings) =
+  assert(is_list(settings), "Settings must be a list")
+  assert(len(settings)==6, "Settings must length 6")
+  assert(is_string(settings[iwalcutoutconfig_type]), "type must be a string")
+  assert(is_num(settings[iwalcutoutconfig_position]), "position must be a number")
+  assert(is_num(settings[iwalcutoutconfig_width]), "width must be a number")
+  assert(is_num(settings[iwalcutoutconfig_angle]), "angle must be a number")
+  assert(is_num(settings[iwalcutoutconfig_height]), "height must be a number")
+  assert(is_num(settings[iwalcutoutconfig_cornerradius]), "corner radius must be a number")
+  [
+    settings[iwalcutoutconfig_type],
+    settings[iwalcutoutconfig_position],
+    settings[iwalcutoutconfig_width],
+    settings[iwalcutoutconfig_angle],
+    settings[iwalcutoutconfig_height],
+    settings[iwalcutoutconfig_cornerradius]
+  ];
+
 iwalcutout_config = 0;
 iwalcutout_enabled = 1;
 iwalcutout_position = 2;
@@ -15,12 +51,7 @@ iwalcutout_reposition = 5;
 function calculateWallCutout(
   wall_length,
   opposite_wall_distance,
-  wallcutout_type,
-  wallcutout_position,
-  wallcutout_width,
-  wallcutout_angle,
-  wallcutout_height,
-  wallcutout_corner_radius,
+  wallcutout_settings,
   wallcutout_rotation = [0,0,0],
   wallcutout_reposition = [0,0,0],
   wall_thickness,
@@ -30,6 +61,12 @@ function calculateWallCutout(
   pitch,
   pitch_opposite) =
      let(
+        wallcutout_type = wallcutout_settings[iwalcutoutconfig_type],
+        wallcutout_position = wallcutout_settings[iwalcutoutconfig_position],
+        wallcutout_width = wallcutout_settings[iwalcutoutconfig_width],
+        wallcutout_angle = wallcutout_settings[iwalcutoutconfig_angle],
+        wallcutout_height = wallcutout_settings[iwalcutoutconfig_height],
+        wallcutout_corner_radius = wallcutout_settings[iwalcutoutconfig_cornerradius],
         fullEnabled = wallcutout_type == "enabled",
         closeEnabled = wallcutout_type == "wallsonly" || wallcutout_type == "leftonly" || wallcutout_type == "frontonly",
         farEnabled = wallcutout_type == "wallsonly" || wallcutout_type == "rightonly" || wallcutout_type == "backonly",
@@ -40,19 +77,19 @@ function calculateWallCutout(
             : wallcutout_height,
         wallcutoutLowerWidth=wallcutout_width <= 0 ? max(wallcutout_corner_radius*2, wall_length*pitch/3) : wallcutout_width,
         closeThickness = fullEnabled ? opposite_wall_distance*pitch_opposite : wallcutoutThickness,
-              
+        clearance = env_clearance().x, //This should take in to account if its x or y, but for now we assume they are the same.
       //This could be more specific based on the base height, and the lip style.
       wallcutout_close = [
           [wallcutout_type, wallcutout_position, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius],
           closeEnabled || fullEnabled,
-          [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), closeThickness/2+gf_tolerance/2-fudgeFactor, wallTop],
+          [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), closeThickness/2+clearance/2-fudgeFactor, wallTop],
           [wallcutoutLowerWidth, closeThickness, wallcutoutHeight],
           wallcutout_rotation,
           wallcutout_reposition],
       wallcutout_far = [
           [wallcutout_type, wallcutout_position, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius],
           farEnabled,
-          [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), opposite_wall_distance*pitch_opposite-wallcutoutThickness/2-gf_tolerance/2+fudgeFactor, wallTop],
+          [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), opposite_wall_distance*pitch_opposite-wallcutoutThickness/2-clearance/2+fudgeFactor, wallTop],
           [wallcutoutLowerWidth, wallcutoutThickness, wallcutoutHeight],
           wallcutout_rotation,
           wallcutout_reposition]) [wallcutout_close, wallcutout_far];

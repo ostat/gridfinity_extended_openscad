@@ -1,155 +1,10 @@
-include <thridparty/ub_helptxt.scad>
+include <thirdparty/ub_helptxt.scad>
 include <module_utility.scad>
 include <functions_environment.scad>
 include <functions_general.scad>
 include <gridfinity_constants.scad>
 include <functions_gridfinity.scad>
 include <module_gridfinity_cup_base.scad>     
-include <module_lip.scad>      
-
-// basic block with cutout in top to be stackable, optional holes in bottom
-// start with this and begin 'carving'
-//grid_block();
-module grid_block(
-  num_x=1, 
-  num_y=2, 
-  num_z=2, 
-  position = "zero",
-  filledin = "disabled", //[disabled, enabled, enabledfilllip]
-  wall_thickness = 1.2,
-  cupBase_settings = CupBaseSettings(),
-  lip_settings = LipSettings(),
-  help)
-{
-  lipHeight = 3.75;
-
-  assert_openscad_version();
-  cupBase_settings = ValidateCupBaseSettings(cupBase_settings);
-
-  //Legacy variables.
-  magnet_size=cupBase_settings[iCupBase_MagnetSize];
-  screw_size=cupBase_settings[iCupBase_ScrewSize];
-  hole_overhang_remedy=cupBase_settings[iCupBase_HoleOverhangRemedy];
-  box_corner_attachments_only = cupBase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];
-  flat_base=cupBase_settings[iCupBase_FlatBase];
-  center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
-  magnet_easy_release = cupBase_settings[iCupBase_MagnetEasyRelease];
-  
-  outer_size = [env_pitch().x - gf_tolerance, env_pitch().y - gf_tolerance];  // typically 41.5
-  block_corner_position = [outer_size.x/2 - gf_cup_corner_radius, outer_size.y/2 - gf_cup_corner_radius];  // need not match center of pad corners
-
-  magnet_position = calculateAttachmentPositions(magnet_size[iCylinderDimension_Diameter], screw_size[iCylinderDimension_Diameter]);
-   
-  overhang_fix = hole_overhang_remedy > 0 && magnet_size[iCylinderDimension_Diameter] > 0 && screw_size[iCylinderDimension_Diameter] > 0 ? hole_overhang_remedy : 0;
-  overhang_fix_depth = 0.3;  // assume this is enough
-  
-  tz(env_pitch().z*num_z-fudgeFactor*2)
-  if(filledin == "enabledfilllip"){
-    color(env_colour(color_topcavity))
-      tz(-fudgeFactor)
-      hull() 
-      cornercopy(block_corner_position, num_x, num_y) 
-      cylinder(r=gf_cup_corner_radius, h=lipHeight);
-  } else {
-    cupLip(
-      num_x = num_x, 
-      num_y = num_y, 
-      lipStyle = lip_settings[iLipStyle],
-      wall_thickness = wall_thickness,
-      lip_notches = lip_settings[iLipNotch],
-      lip_top_relief_height = lip_settings[iLipTopReliefHeight]);
-  }
-        
-  translate(gridfinityRenderPosition(position,num_x,num_y))
-  difference() {
-    baseHeight = 5;
-    intersection() {
-      //Main cup outer shape
-      color(env_colour(color_cup))
-        tz(-fudgeFactor)
-        hull() 
-        cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=gf_cup_corner_radius, h=env_pitch().z*num_z);
-
-      union(){
-        if(flat_base == FlatBase_rounded){
-          basebottomRadius = let(fbr = cupBase_settings[iCupBase_FlatBaseRoundedRadius])
-            fbr == -1 ? gf_cup_corner_radius/2 : fbr;
-
-          color(env_colour(color_cup))
-          translate([0.25,0.25,0])
-          roundedCube(
-            x = num_x*env_pitch().x-0.5,
-            y = num_y*env_pitch().y-0.5,
-            z = env_pitch().z,
-            size=[],
-            topRadius = 0,
-            bottomRadius = basebottomRadius,
-            sideRadius = gf_cup_corner_radius,
-            centerxy = false,
-            supportReduction_z = [cupBase_settings[iCupBase_FlatBaseRoundedEasyPrint],0]
-            );
-        } else {
-          // logic for constructing odd-size grids of possibly half-pitch pads
-          color(env_colour(color_base))
-            pad_grid(num_x, num_y, half_pitch, flat_base = flat_base, cupBase_settings[iCupBase_MinimumPrintablePadSize]);
-        }
-        
-        color(env_colour(color_cup))
-        tz(baseHeight) 
-          cube([env_pitch().x*num_x, env_pitch().y*num_y, env_pitch().z*num_z]);
-      }
-    }
-    
-    if(center_magnet_size[iCylinderDimension_Diameter]){
-      //Center Magnet
-      for(x =[0:1:num_x-1])
-      {
-        for(y =[0:1:num_y-1])
-        {
-          color(env_colour(color_basehole))
-          translate([x*env_pitch().x,y*env_pitch().y,-fudgeFactor])
-            cylinder(h=center_magnet_size[iCylinderDimension_Height]-fudgeFactor, d=center_magnet_size[iCylinderDimension_Diameter]);
-        }
-      }
-    }
-    
-    color(env_colour(color_basehole))
-    tz(-fudgeFactor)
-    gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only){
-        rdeg =
-          $gcci[2] == [ 1, 1] ? 90 :
-          $gcci[2] == [-1, 1] ? 180 :
-          $gcci[2] == [-1,-1] ? -90 :
-          $gcci[2] == [ 1,-1] ? 0 : 0;
-        rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
-        MagnetAndScrewRecess(
-          magnetDiameter = magnet_size[iCylinderDimension_Diameter],
-          magnetThickness = magnet_size[iCylinderDimension_Height]+0.1,
-          screwDiameter = screw_size[iCylinderDimension_Diameter],
-          screwDepth = screw_size[iCylinderDimension_Height],
-          overhangFixLayers = overhang_fix,
-          overhangFixDepth = overhang_fix_depth,
-          easyMagnetRelease = magnet_easy_release != MagnetEasyRelease_off);
-    }
-  }
- 
-  HelpTxt("grid_block",[
-    "num_x",num_x
-    ,"num_y",num_y
-    ,"num_z",num_z
-    ,"magnet_size",magnet_size
-    ,"screw_size",screw_size
-    ,"position",position
-    ,"hole_overhang_remedy",hole_overhang_remedy
-    ,"half_pitch",half_pitch
-    ,"box_corner_attachments_only",box_corner_attachments_only
-    ,"flat_base",flat_base
-    ,"lipSettings",lip_settings
-    ,"filledin",filledin]
-    ,help);
-}
 
 module pad_grid(num_x, num_y, half_pitch=false, flat_base="off", minimium_size = 0.2) {
   assert(is_num(num_x));
@@ -178,19 +33,22 @@ module cylsq2(d1, d2, h) {
   linear_extrude(height=h, scale=d2/d1)
   square([d1, d1], center=true);
 }
-  
+
 module frame_cavity(
-  num_x, 
-  num_y, 
+  num_x = 2, 
+  num_y = 1, 
   position_fill_grid_x = "near",
   position_fill_grid_y = "near",
   render_top = true,
   render_bottom = true,
+  remove_bottom_taper = false,
   extra_down=0, 
   frameLipHeight = 4,
   cornerRadius = gf_cup_corner_radius,
-  reducedWallHeight = 0,
-  reducedWallOuterEdgesOnly=false) {
+  reducedWallHeight = -1,
+  reducedWallWidth = -1,
+  reducedWallOuterEdgesOnly=false,
+  enable_grippers = false) {
 
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -198,13 +56,17 @@ module frame_cavity(
   assert(is_string(position_fill_grid_y));
   assert(is_bool(render_top));
   assert(is_bool(render_bottom));
+  assert(is_bool(remove_bottom_taper));
   assert(is_num(extra_down));
   assert(is_num(frameLipHeight));
   assert(is_num(cornerRadius));
   assert(is_num(reducedWallHeight));
+  assert(is_num(reducedWallWidth));
   assert(is_bool(reducedWallOuterEdgesOnly));
+  assert(is_bool(enable_grippers));
 
   frameWallReduction = reducedWallHeight >= 0 ? max(0, frameLipHeight-reducedWallHeight) : -1;
+
     translate([0, 0, -fudgeFactor]) 
       gridcopy(
         num_x, 
@@ -219,7 +81,7 @@ module frame_cavity(
             translate([$gc_size.x/2*env_pitch().x,$gc_size.y/2*env_pitch().y,frameLipHeight])
             rotate([0,0,side[0]])
               WallCutout(
-                lowerWidth=side[1].x-20,
+                lowerWidth=side[1].x-(reducedWallWidth > 0 ? reducedWallWidth*2 : 20),
                 wallAngle=80,
                 height=frameWallReduction,
                 thickness=side[1].y+fudgeFactor*2,
@@ -236,7 +98,8 @@ module frame_cavity(
             margins=1,
             extend_down=extra_down,
             render_top=render_top,
-            render_bottom=render_bottom)
+            render_bottom=render_bottom,
+            remove_bottom_taper=remove_bottom_taper)
               //cell cavity
               if($children >=1) children(0);
     }
@@ -252,6 +115,7 @@ module pad_oversize(
   margins=0,
   render_top = true,
   render_bottom = true,
+  remove_bottom_taper = false,
   extend_down = 0) {
   
   assert(!is_undef(num_x), "num_x is undefined");
@@ -264,7 +128,13 @@ module pad_oversize(
   assert(is_num(extend_down), "extend_down must be a number >= 0");
   
   if(env_help_enabled("trace")) echo("pad_oversize", num_x=num_x, num_y=num_y, margins= margins);
-  pad_corner_position = [env_pitch().x/2 - 4,env_pitch().y/2 - 4]; // must be 17 to be compatible
+
+  // pad_corner_position = [env_pitch().x/2 - 4,env_pitch().y/2 - 4]; 
+  // must be 17 to be compatible
+  pad_corner_position = [
+    env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
+    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
+
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
   bevel2_top = 5;       // z of top of second bevel
@@ -285,11 +155,11 @@ module pad_oversize(
         hull() cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
             translate(bevel2_bottom) 
-            cylsq2(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+            cylsq2(d1=(env_corner_radius()-2.15+radialgap)*2, d2=(env_corner_radius()+0.25+radialgap+bonus_ht)*2, h=bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
             tz(bevel2_bottom) 
-            cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+            cylinder(d1=(env_corner_radius()-2.15+radialgap)*2, d2=(env_corner_radius()+0.25+radialgap+bonus_ht)*2, h=bevel2_top-bevel2_bottom+bonus_ht);
           }
         }
       }
@@ -299,12 +169,13 @@ module pad_oversize(
         cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
             cylsq(d=1.6+2*radialgap, h=0.1);
-            translate([0, 0, bevel1_top]) cylsq(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
+            translate([0, 0, bevel1_top]) 
+            cylsq(d=(env_corner_radius()-2.15+radialgap)*2, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
-            cylinder(d=1.6+2*radialgap, h=0.1);
+            cylinder(d=remove_bottom_taper ? (env_corner_radius()-2.15+radialgap)*2 : 1.6+2*radialgap, h=0.1);
             translate([0, 0, bevel1_top]) 
-              cylinder(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
+              cylinder(d=(env_corner_radius()-2.15+radialgap)*2, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
         }
       }
@@ -500,15 +371,37 @@ module debug_cut(cutx, cuty, cutz) {
     children();
     
     //Render the cut, used for debugging
-    if(cutx > 0 && cutz > 0 && $preview){
+    if(cutx != 0 && $preview){
       color(color_cut)
+      translate(cutx > 0 
+        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+        : [(num_x-abs(cutx))*env_pitch().x-fudgeFactor,-fudgeFactor,-fudgeFactor])
       translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([env_pitch().x*cutx,num_y*env_pitch().y+fudgeFactor*2,(cutz+1)*env_pitch().z]);
+        cube([
+            abs(cutx)*env_pitch().x, 
+            num_y*env_pitch().y+fudgeFactor*2,
+            (num_z+1)*env_pitch().z+fudgeFactor*2]);
     }
-    if(cuty > 0 && cutz > 0 && $preview){
+    if(cuty != 0 && $preview){
       color(color_cut)
-      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([num_x*env_pitch().x+fudgeFactor*2,env_pitch().y*cuty,(cutz+1)*env_pitch().z]);
+      translate(cuty > 0 
+        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+        : [-fudgeFactor,(num_y-abs(cuty))*env_pitch().y-fudgeFactor,-fudgeFactor])
+        cube([
+          num_x*env_pitch().x+fudgeFactor*2,
+          abs(cuty)*env_pitch().y,
+          (num_z+1)*env_pitch().z+fudgeFactor*2]);
+    }
+    if(cutz != 0 && $preview){
+      color(color_cut)
+      translate(cutz > 0 
+        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+        : [-fudgeFactor,-fudgeFactor,(num_z+1-abs(cutz))*env_pitch().z-fudgeFactor]
+        )
+        cube([
+          num_x*env_pitch().x+fudgeFactor*2,
+          num_y*env_pitch().y+fudgeFactor*2,
+          abs(cutz)*env_pitch().z]);
     }
   }
 }

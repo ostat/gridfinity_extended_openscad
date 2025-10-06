@@ -1,8 +1,8 @@
 // include instead of use, so we get the pitch
 include <modules/gridfinity_constants.scad>
-use <modules/module_gridfinity.scad>
+use <modules/module_gridfinity_block.scad>
 use <modules/module_gridfinity_baseplate.scad>
-use <modules/module_gridfinity_baseplate_connectors.scad>
+use <modules/module_gridfinity_frame_connectors.scad>
 
 // Plate Style
 Base_Plate_Options = "default";//[default:Efficient base, cnclaser:CNC or Laser cut]

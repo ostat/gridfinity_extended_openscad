@@ -1,4 +1,4 @@
-include <modules/module_gridfinity.scad>
+include <modules/module_gridfinity_block.scad>
 
 /* [model] */
 // Select model

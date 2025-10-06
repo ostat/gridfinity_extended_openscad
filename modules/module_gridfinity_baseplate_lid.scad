@@ -1,7 +1,8 @@
 // include instead of use, so we get the pitch
 include <gridfinity_constants.scad>
-use <module_gridfinity.scad>
+use <module_gridfinity_block.scad>
 use <module_gridfinity_baseplate_common.scad>
+include <module_gridfinity_cup_base.scad>
 
 module baseplate_lid(
   num_x, 
@@ -41,12 +42,12 @@ module baseplate_lid(
       grid_block(
         num_x, 
         num_y, 
-        efficient_base ? lidEfficientBaseHeight+0.6 : height, 
-        lipStyle = "normal",    //"minimum" "none" "reduced" "normal"
+        efficient_base ? lidEfficientBaseHeight+0.6 : height,
         filledin = tray ? "enabled" : "enabledfilllip" , //[disabled, enabled, enabledfilllip]
         cupBase_settings = CupBaseSettings(
           flatBase=flat_base,
-          halfPitch=half_pitch));
+          halfPitch=half_pitch),
+        lip_settings = LipSettings());
     }
   
   if(!tray)

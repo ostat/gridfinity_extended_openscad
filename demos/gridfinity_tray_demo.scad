@@ -1,4 +1,4 @@
-// include <module_gridfinity.scad>
+// include <module_gridfinity_block.scad>
 use <../gridfinity_tray.scad>
 //use <modules/module_gridfinity_cup.scad>
 include <../modules/functions_general.scad>
@@ -253,8 +253,12 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1){
       efficient_floor=currentStepSettings[iefficient_floor],
       half_pitch=currentStepSettings[ihalf_pitch],
       flat_base=currentStepSettings[iflat_base],
-      fingerslide=currentStepSettings[ifingerslide],
-      fingerslide_radius=currentStepSettings[ifingerslide_radius],
+
+      finger_slide_settings = FingerSlideSettings(
+        type = currentStepSettings[ifingerslide],
+        radius = currentStepSettings[ifingerslide_radius],
+        walls = [1,1,1,1],
+        lip_aligned = false),
       tapered_corner=currentStepSettings[itapered_corner],
       tapered_corner_size=currentStepSettings[itapered_corner_size],
       tapered_setback=currentStepSettings[itapered_setback],

@@ -1,4 +1,4 @@
-include <thridparty/ub_caliper.scad>
+include <thirdparty/ub_caliper.scad>
 include <gridfinity_constants.scad>
 include <functions_general.scad>
 include <functions_gridfinity.scad>
@@ -81,19 +81,19 @@ module showCalipersForSide(description, gf_num, num_z, lip_style, magnet_depth, 
   wallTop = calculateWallTop(num_z, lip_style);
       
   isCutX = description == "depth";
-  translate([gf_tolerance/2,wallTop,0])
+  translate([env_clearance().x/2,wallTop,0])
      Caliper(messpunkt = false, center=false,
         h = 0.1, s = fontSize,
         end=0, in=1,
         translate=[0,5,0],
-        l=gf_num*pitch-gf_tolerance, 
+        l=gf_num*pitch-env_clearance().x, 
         txt2 = str("total ", description, " ", gf_num));
     
-    translate([gf_tolerance/2+wall_thickness,(1+(num_z-1)/2)*env_pitch().z,0])
+    translate([env_clearance().x/2+wall_thickness,(1+(num_z-1)/2)*env_pitch().z,0])
      Caliper(messpunkt = false, center=false,
         h = 0.1, s = fontSize,
         end=0, in=1,
-        l=gf_num*pitch-gf_tolerance-wall_thickness*2, 
+        l=gf_num*pitch-env_clearance().x-wall_thickness*2, 
         txt2 = str("inner ", description)); 
         
     translate(isCutX

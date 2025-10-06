@@ -28,7 +28,8 @@ function unitPositionTo_mm(userPosition, wallLength, pitch) =
   
 //0.6 is needed to align the top of the cutout, need to fix this
 function calculateWallTop(num_z, lip_style) =
-  env_pitch().z * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
+  //env_pitch().z * num_z + (lip_style != "none" ? gf_Lip_Height-0.6 : 0);
+  env_pitch().z * num_z + (lip_style != "none" ? gf_Lip_Height : 0);
 
   //calculates the magent position in from the center of the pitch in a single dimention
 function calculateAttachmentPosition(magnet_diameter=0, screw_diameter=0, pitch = env_pitch().x) = 
@@ -86,7 +87,7 @@ function cupBaseClearanceHeight(magnet_depth, screw_depth, center_magnet, flat_b
     : max(magnet_depth, screw_depth, gfBaseHeight());
 
 //Height of base including the floor.
-function calculateFloorHeight(magnet_depth, screw_depth, center_magnet=0, floor_thickness, num_z=1, filled_in="disabled", efficient_floor, flat_base) = 
+function calculateFloorHeight(magnet_depth, screw_depth, center_magnet=0, floor_thickness, num_z=1, filled_in="disabled", efficient_floor, flat_base, captive_magnet_height=0) = 
   assert(is_num(magnet_depth))
   assert(is_num(screw_depth))
   assert(is_num(center_magnet))
@@ -95,10 +96,11 @@ function calculateFloorHeight(magnet_depth, screw_depth, center_magnet=0, floor_
   assert(is_string(filled_in))
   assert(is_string(efficient_floor))
   assert(is_string(flat_base))
+  assert(is_num(captive_magnet_height))
   let(
     filled_in = validateFilledIn(filled_in),
     floorThickness = max(floor_thickness, gf_cup_floor_thickness),
-    clearanceHeight = cupBaseClearanceHeight(magnet_depth=magnet_depth, screw_depth=screw_depth, center_magnet=center_magnet, flat_base=flat_base), 
+    clearanceHeight = cupBaseClearanceHeight(magnet_depth=magnet_depth + captive_magnet_height, screw_depth=screw_depth, center_magnet=center_magnet, flat_base=flat_base), 
     result = 
       filled_in != FilledIn_disabled ? num_z * env_pitch().z 
         : efficient_floor != "off" 
@@ -123,11 +125,6 @@ function calculateUsableFloorThickness(magnet_depth, screw_depth, center_magnet=
   env_help_enabled("trace") ? 
   echo("calculateFloorThickness", usableFloorThickness=usableFloorThickness, cfh=cfh, cbch=cbch, num_z=num_z, magnet_depth=magnet_depth,screw_depth=screw_depth, floor_thickness=floor_thickness, filledin=filledin) usableFloorThickness :
   usableFloorThickness;
-    
-// calculate the position of separators from the size
-function splitChamber(num_separators, width) = num_separators < 1 
-      ? [] 
-      : [ for (i=[1:num_separators]) i*(width/(num_separators+1))];
   
 function gridfinityRenderPosition(position, num_x, num_y) = 
     position == "center" ? [-(num_x)*env_pitch().x/2, -(num_y)*env_pitch().y/2, 0] 
