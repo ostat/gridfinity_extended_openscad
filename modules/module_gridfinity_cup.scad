@@ -1112,7 +1112,7 @@ module bin_cutouts(
   cutout_clearance_border = 0
 ) {
 
-  wallcutouts_vertical = calculateWallCutout(
+  wallcutouts_vertical = calculateWallCutouts(
     wall_length = num_x,
     opposite_wall_distance = num_y,
     wallcutout_settings = wallcutout_vertical_settings,
@@ -1124,7 +1124,7 @@ module bin_cutouts(
     floorHeight = floorHeight,
     pitch = env_pitch().x,
     pitch_opposite = env_pitch().y);
-  wallcutouts_horizontal = calculateWallCutout(
+  wallcutouts_horizontal = calculateWallCutouts(
     wall_length = num_y,
     opposite_wall_distance = num_x,
     wallcutout_settings = wallcutout_horizontal_settings,
@@ -1137,10 +1137,11 @@ module bin_cutouts(
     pitch = env_pitch().y,
     pitch_opposite = env_pitch().x);
     
-  wallcutout_locations = [wallcutouts_vertical[0], wallcutouts_vertical[1], wallcutouts_horizontal[0], wallcutouts_horizontal[1]];
+  wallcutout_locations = concat(wallcutouts_vertical, wallcutouts_horizontal);
 
   if(wallcutout_vertical_settings[iwalcutoutconfig_type] != "disabled" || wallcutout_horizontal_settings[iwalcutoutconfig_type] !="disabled" )
-    for(wallcutout_location = wallcutout_locations)
+    for(wallcutout_location_near_far = wallcutout_locations)
+    for(wallcutout_location = wallcutout_location_near_far)
       if(wallcutout_location[iwalcutout_enabled] == true)
         translate(wallcutout_location[iwalcutout_reposition])
         rotate(wallcutout_location[iwalcutout_rotation])

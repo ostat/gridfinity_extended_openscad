@@ -27,14 +27,14 @@ function ValidateWallCutoutSettings(settings) =
   assert(is_list(settings), "Settings must be a list")
   assert(len(settings)==6, "Settings must length 6")
   assert(is_string(settings[iwalcutoutconfig_type]), "type must be a string")
-  assert(is_num(settings[iwalcutoutconfig_position]), "position must be a number")
+  assert(is_num(settings[iwalcutoutconfig_position]) || is_list(settings[iwalcutoutconfig_position]), "position must be a list or number")
   assert(is_num(settings[iwalcutoutconfig_width]), "width must be a number")
   assert(is_num(settings[iwalcutoutconfig_angle]), "angle must be a number")
   assert(is_num(settings[iwalcutoutconfig_height]), "height must be a number")
   assert(is_num(settings[iwalcutoutconfig_cornerradius]), "corner radius must be a number")
   [
     settings[iwalcutoutconfig_type],
-    settings[iwalcutoutconfig_position],
+    is_num(settings[iwalcutoutconfig_position]) ? [settings[iwalcutoutconfig_position]] : settings[iwalcutoutconfig_position],
     settings[iwalcutoutconfig_width],
     settings[iwalcutoutconfig_angle],
     settings[iwalcutoutconfig_height],
@@ -48,7 +48,7 @@ iwalcutout_size = 3;
 iwalcutout_rotation = 4;
 iwalcutout_reposition = 5;
 
-function calculateWallCutout(
+function calculateWallCutouts(
   wall_length,
   opposite_wall_distance,
   wallcutout_settings,
@@ -60,9 +60,38 @@ function calculateWallCutout(
   floorHeight,
   pitch,
   pitch_opposite) =
+    let(wallcutout_positions = wallcutout_settings[iwalcutoutconfig_position])
+    [for (i = [0:len(wallcutout_positions)-1])
+      calculateWallCutout(
+        wall_length = wall_length,
+        opposite_wall_distance = opposite_wall_distance,
+        wallcutout_settings = wallcutout_settings,
+        wallcutout_position = wallcutout_positions[i],
+        wallcutout_rotation = wallcutout_rotation,
+        wallcutout_reposition = wallcutout_reposition,
+        wall_thickness = wall_thickness,
+        cavityFloorRadius = cavityFloorRadius,
+        wallTop = wallTop,
+        floorHeight = floorHeight,
+        pitch = pitch,
+        pitch_opposite = pitch_opposite)];
+
+function calculateWallCutout(
+  wall_length,
+  opposite_wall_distance,
+  wallcutout_settings,
+  wallcutout_position,
+  wallcutout_rotation = [0,0,0],
+  wallcutout_reposition = [0,0,0],
+  wall_thickness,
+  cavityFloorRadius,
+  wallTop,
+  floorHeight,
+  pitch,
+  pitch_opposite) =
      let(
+        is_enabled = wallcutout_position <= -1 || wallcutout_position >= 0,
         wallcutout_type = wallcutout_settings[iwalcutoutconfig_type],
-        wallcutout_position = wallcutout_settings[iwalcutoutconfig_position],
         wallcutout_width = wallcutout_settings[iwalcutoutconfig_width],
         wallcutout_angle = wallcutout_settings[iwalcutoutconfig_angle],
         wallcutout_height = wallcutout_settings[iwalcutoutconfig_height],
@@ -81,14 +110,14 @@ function calculateWallCutout(
       //This could be more specific based on the base height, and the lip style.
       wallcutout_close = [
           [wallcutout_type, wallcutout_position, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius],
-          closeEnabled || fullEnabled,
+          is_enabled && (closeEnabled || fullEnabled),
           [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), closeThickness/2+clearance/2-fudgeFactor, wallTop],
           [wallcutoutLowerWidth, closeThickness, wallcutoutHeight],
           wallcutout_rotation,
           wallcutout_reposition],
       wallcutout_far = [
           [wallcutout_type, wallcutout_position, wallcutout_width, wallcutout_angle, wallcutout_height, wallcutout_corner_radius],
-          farEnabled,
+          is_enabled && farEnabled,
           [wallCutoutPosition_mm(wallcutout_position,wall_length,pitch), opposite_wall_distance*pitch_opposite-wallcutoutThickness/2-clearance/2+fudgeFactor, wallTop],
           [wallcutoutLowerWidth, wallcutoutThickness, wallcutoutHeight],
           wallcutout_rotation,

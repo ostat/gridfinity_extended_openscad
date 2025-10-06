@@ -24,6 +24,9 @@ constTopHeight = let(fudgeFactor = 0.01) 5.7+fudgeFactor*5; //Need to confirm th
 //negative values are ration total/abs(value)
 function wallCutoutPosition_mm(userPosition, wallLength, pitch) = unitPositionTo_mm(userPosition, wallLength, pitch);
 function unitPositionTo_mm(userPosition, wallLength, pitch) = 
+  assert(is_num(userPosition), "userPosition must be a number")
+  assert(is_num(wallLength), "wallLength must be a number")
+  assert(is_num(pitch), "pitch must be a number")
   (userPosition < 0 ? wallLength*pitch/abs(userPosition) : pitch*userPosition);
   
 //0.6 is needed to align the top of the cutout, need to fix this
