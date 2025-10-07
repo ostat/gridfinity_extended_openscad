@@ -516,9 +516,9 @@ module gridfinity_cup(
           filledin = filled_in);
 
         //coloured_wall_pattern child 1 bin cavities and negative volumes
-        if(filled_in == FilledIn_disabled) 
         union(){
           //primary cavity
+          if(filled_in == FilledIn_disabled) 
           partitioned_cavity(
             num_x, num_y, num_z,
             label_settings=label_settings,
