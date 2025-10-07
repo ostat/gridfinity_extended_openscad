@@ -172,19 +172,19 @@ wallpattern_pattern_brick_weight = 5;
 wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [Wall Cutout] */
-wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
-// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-wallcutout_vertical_position=-2;  //0.1
-//default will be bin width/2
+wallcutout_vertical ="disabled"; //[disabled, enabled, inneronly, wallsonly, frontonly, backonly]
+// wallcoutout position -0.5: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_vertical_position=[-2,-0.5,-0.5,-0.5];  //0.01
+//default will be binwidth/2
 wallcutout_vertical_width=0;
 wallcutout_vertical_angle=70;
-//default will be binHeight
+//default will be binHeight. 0: radius, -1 floor, Positive: depth from top; Negative: ratio height/abs(value)
 wallcutout_vertical_height=0;
 wallcutout_vertical_corner_radius=5;
-wallcutout_horizontal ="disabled"; //[disabled, enabled, wallsonly, leftonly, rightonly]
-// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-wallcutout_horizontal_position=-2;  //0.1
-//default will be bin width/2
+wallcutout_horizontal ="disabled"; //[disabled, enabled, inneronly, wallsonly, leftonly, rightonly]
+// wallcoutout position -0.5: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_horizontal_position=[-2,-0.5,-0.5,-0.5];  //0.01
+//default will be binwidth/2
 wallcutout_horizontal_width=0;
 wallcutout_horizontal_angle=70;
 //default will be binHeight
