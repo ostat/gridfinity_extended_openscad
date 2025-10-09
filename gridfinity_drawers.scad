@@ -45,6 +45,7 @@ chest_drawer_slide_width = 10;
 // Handle size width, depth, height, and radius. Height, less than 0 drawerHeight/abs(height). radius, -1 = depth/2. 
 handle_size = [4, 10, -1, -1];
 handle_vertical_center = false;
+handle_cut_factor=0.5;
 handle_rotate = false;
 drawer_wall_thickness = 2; // 0.1
 drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and floor]
@@ -268,26 +269,37 @@ module drawer(
   }
 }
 
-module drawerPull(width, depth, height, radius){
-  radius = min(radius == -1 ? depth/2 : radius, height/2,depth);
-  depth = depth - radius;
-  translate([-width/2,-depth,-height/2])
-  hull(){
-    cube([width, depth, height]);
-    
-    if(radius>0){
-      for(i=[0:1]){
-      translate(i == 0 ? [0,0,radius] : [0,0,height-radius])
-      rotate([0,90,0])
-        difference(){
-          cylinder(h=width, r=radius);
-          //Remove inner half so we don't get error when r<roundedr*2
-          translate([-radius,0,-fudgeFactor])
-          cube([radius*2,radius*2,width+fudgeFactor*2]);
-        }
-      }
-    }
+module drawerPull(width, depth, height, radius) {
+  difference() {
+      basicDrawerPull(width, depth, height, radius);
+      basicDrawerPull(width*1.5,
+        depth-(1-handle_cut_factor)*height/2,
+        height*handle_cut_factor,
+        // radius*handle_cut_factor);
+        radius-(1-handle_cut_factor)*height/2);
   }
+}
+module basicDrawerPull(width, depth, height, radius){
+  radius = min(radius < 0 ? depth/2 : radius, height/2,depth);
+    translate([-width/2,-depth, -height/2])
+    if (radius == 0){ cube([width, depth, height]); }
+    else {
+        hull(){
+            translate([0,radius,0])
+            cube([width, depth-radius, height]);
+
+            // i = 0 is for the top one and 1 for the bottom
+            for (i = [0:1])
+            {
+              translate(i == 0 ? [0, radius, height-radius] : 
+                [0, radius, radius])
+              rotate(i == 0 ? [180, 0, 0] : [-90,0,0])
+              rotate([0,90,0])
+              color(i == 0 ? "yellow" : "blue")
+              PartialCylinder(width,radius,90);
+            }
+        }
+    }
 }
 
 //Chest modules
