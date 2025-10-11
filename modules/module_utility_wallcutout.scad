@@ -6,12 +6,12 @@ iwalcutoutconfig_height = 4;
 iwalcutoutconfig_cornerradius = 5;
 
 function WallCutoutSettings(
-    type, 
-    position, 
-    width,
-    angle,
-    height, 
-    corner_radius) = 
+    type = "disabled", 
+    position = 0, 
+    width = 0,
+    angle = 0,
+    height = 0, 
+    corner_radius = 0) = 
   let(
     result = [
       type,
