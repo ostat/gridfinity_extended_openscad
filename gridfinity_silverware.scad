@@ -3,7 +3,7 @@ use <modules/module_gridfinity_cup.scad>
 
 /* [Utensil count and measurements] */
 // Utensil definitions above this number are ignored
-number_of_utensils = 7;
+number_of_utensils = 5;
 
 //utensil, narrow, wide, length
 utensil_1 = [30, 0, 202];
@@ -25,7 +25,7 @@ utensil_14 = [16, 24, 180];
 utensil_margin = 5;  // .1
 
 // Height upper surface excluding perimeter lip. . grid units (multiples of 7mm) or mm.
-height = [0, 35];
+height = [0, 42];
 
 /* [Other parameters] */
 // Wall thickness [bottom, top], top -ve is ratio of bottom wall thickness
@@ -197,7 +197,7 @@ floorpattern_pattern_brick_weight = 5;
 floorpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [Wall Cutout] */
-wallcutout_horizontal ="disabled"; //[disabled, enabled, inneronly, wallsonly, leftonly, rightonly]
+wallcutout_horizontal ="inneronly"; //[disabled, enabled, inneronly, wallsonly, leftonly, rightonly]
 // wallcoutout position -0.5: disabled; Positive: GF units; Negative: ratio length/abs(value)
 wallcutout_horizontal_position=[-2,-0.5,-0.5,-0.5];  //0.01
 //default will be binwidth/2
