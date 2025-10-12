@@ -5,21 +5,21 @@ use <modules/module_gridfinity_cup.scad>
 // Utensil definitions above this number are ignored
 number_of_utensils = 5;
 
-//utensil, narrow, wide, length
-utensil_1 = [30, 0, 202];
-utensil_2 = [35, 0, 181];
-utensil_3 = [14, 37, 181];
-utensil_4 = [12, 33, 155];
-utensil_5 = [15, 32, 191];
-utensil_6 = [15, 32, 150];
-utensil_7 = [16, 24, 180];
-utensil_8 = [15, 28, 202];
-utensil_9 = [14, 24, 181];
-utensil_10 = [14, 37, 181];
-utensil_11 = [12, 33, 155];
-utensil_12 = [15, 32, 191];
-utensil_13 = [15, 32, 150];
-utensil_14 = [16, 24, 180];
+//utensil, narrow, wide, length, position
+utensil_1 = [30, 0, 202, 1];
+utensil_2 = [35, 0, 181, 2];
+utensil_3 = [14, 37, 181, 3];
+utensil_4 = [12, 33, 155, 4];
+utensil_5 = [15, 32, 191, 5];
+utensil_6 = [15, 32, 150, 6];
+utensil_7 = [16, 24, 180, 7];
+utensil_8 = [15, 28, 202, 8];
+utensil_9 = [14, 24, 181, 9];
+utensil_10 = [14, 37, 181, 10];
+utensil_11 = [12, 33, 155, 11];
+utensil_12 = [15, 32, 191, 12];
+utensil_13 = [15, 32, 150, 13];
+utensil_14 = [16, 24, 180, 14];
 
 // Clearance on sides and ends of utensils
 utensil_margin = 5;  // .1
@@ -259,22 +259,30 @@ module end_of_customizer() {}
 silverware_wall_clearance = 5.7; 
 // Maximum utensil definitions
 silver_defs_all = [
-  [utensil_1.x, max(utensil_1.x, utensil_1.y), utensil_1.z],
-  [utensil_2.x, max(utensil_2.x, utensil_2.y), utensil_2.z],
-  [utensil_3.x, max(utensil_3.x, utensil_3.y), utensil_3.z],
-  [utensil_4.x, max(utensil_4.x, utensil_4.y), utensil_4.z],
-  [utensil_5.x, max(utensil_5.x, utensil_5.y), utensil_5.z],
-  [utensil_6.x, max(utensil_6.x, utensil_6.y), utensil_6.z],
-  [utensil_7.x, max(utensil_7.x, utensil_7.y), utensil_7.z],
-  [utensil_8.x, max(utensil_8.x, utensil_8.y), utensil_8.z],
-  [utensil_9.x, max(utensil_9.x, utensil_9.y), utensil_9.z],
-  [utensil_10.x, max(utensil_10.x, utensil_10.y), utensil_10.z],
-  [utensil_11.x, max(utensil_11.x, utensil_11.y), utensil_11.z],
-  [utensil_12.x, max(utensil_12.x, utensil_12.y), utensil_12.z],
-  [utensil_13.x, max(utensil_13.x, utensil_13.y), utensil_13.z],
-  [utensil_14.x, max(utensil_14.x, utensil_14.y), utensil_14.z]
+  utensil_1,
+  utensil_2,
+  utensil_3,
+  utensil_4,
+  utensil_5,
+  utensil_6,
+  utensil_7,
+  utensil_8,
+  utensil_9,
+  utensil_10,
+  utensil_11,
+  utensil_12,
+  utensil_13,
+  utensil_14
 ];
-
+ 
+function get_utensil_def(index, defs_list) = 
+  let(
+    matchResults = search(index, defs_list, num_returns_per_match=1, index_col_num=3),
+    matchIndex = is_list(matchResults) && len(matchResults)==1 && is_num(matchResults[0]) ? matchResults[0]: undef,
+    matchValue = is_num(matchIndex) ? silver_defs_all[matchIndex] : undef,
+    utensil = is_undef(matchValue) ? [0,0,0] : [matchValue.x, max(matchValue.x, matchValue.y), matchValue.z]
+    ) utensil;
+    
 // ##### Utility functions
 // tail of a list with at least 2 elements
 function cdr(list) = [ for (i=[1:len(list)-1]) list[i] ];
@@ -291,7 +299,7 @@ function pitches(defs, thickness = chamber_wall_thickness[0], margin = utensil_m
 
 // ##### Derived variables and values
 // subset of all utensil definitions up to the requested number of utensils
-silver_defs = [ for (i=[0:number_of_utensils-1]) silver_defs_all[i] ];
+silver_defs = [ for (i=[1:number_of_utensils]) get_utensil_def(i, silver_defs_all) ];
 
 // X, width of combination of all silverware, in gridfinity units
 width = ceil((totwidth(silver_defs) + silverware_wall_clearance)/42);
