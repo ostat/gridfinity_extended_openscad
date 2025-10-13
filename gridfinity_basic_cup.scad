@@ -126,6 +126,10 @@ minimum_printable_pad_size = 0.2;
 flat_base_rounded_radius = -1;
 // Add chamfer to the rounded bottom corner to make easier to print. -1 add auto 45deg.
 flat_base_rounded_easyPrint = -1;
+// grid position x
+align_grid_x = "near";//[near, far]
+// grid position y
+align_grid_y = "near";//[near, far]
 
 /* [Label] */
 label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
@@ -239,7 +243,7 @@ wallcutout_vertical_position=[-2,-0.5,-0.5,-0.5];  //0.01
 wallcutout_vertical_width=0;
 wallcutout_vertical_angle=70;
 //default will be binHeight. 0: radius, -1 floor, Positive: depth from top; Negative: ratio height/abs(value)
-wallcutout_vertical_height=0;
+wallcutout_vertical_height=0; //0.1
 wallcutout_vertical_corner_radius=5;
 wallcutout_horizontal ="disabled"; //[disabled, enabled, inneronly, wallsonly, leftonly, rightonly]
 // wallcoutout position -0.5: disabled; Positive: GF units; Negative: ratio length/abs(value)
@@ -248,7 +252,7 @@ wallcutout_horizontal_position=[-2,-0.5,-0.5,-0.5];  //0.01
 wallcutout_horizontal_width=0;
 wallcutout_horizontal_angle=70;
 //default will be binHeight
-wallcutout_horizontal_height=0;
+wallcutout_horizontal_height=0; //0.1
 wallcutout_horizontal_corner_radius=5;
 
 /* [Extendable] */
@@ -355,7 +359,9 @@ gridfinity_cup(
     spacer=spacer,
     minimumPrintablePadSize=minimum_printable_pad_size,
     flatBaseRoundedRadius = flat_base_rounded_radius,
-    flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
+    flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint,
+    alignGrid = [align_grid_x, align_grid_y]
+    ),
   wall_thickness=wall_thickness,
   divider_wall_removable_settings = DividerRemovableSettings(
     enabled=divider_walls_enabled,

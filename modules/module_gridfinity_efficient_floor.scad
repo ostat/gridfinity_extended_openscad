@@ -12,6 +12,7 @@ module efficient_floor_grid(
   flat_base="off", 
   floor_thickness, 
   efficientFloorGridHeight=0,
+  align_grid = [ "near", "near"],
   margins=0) {
   if (flat_base != FlatBase_off) {
     EfficientFloor(num_x, num_y, 
@@ -22,10 +23,16 @@ module efficient_floor_grid(
         efficientFloorGridHeight=efficientFloorGridHeight);
   }
   else if (half_pitch) {
-    gridcopy(ceil(num_x*2), ceil(num_y*2), env_pitch()/2) {
+    gridcopy(
+      num_x = num_x*2, 
+      num_y = num_y*2, 
+      pitch = [env_pitch().y/2, env_pitch().x/2, env_pitch().z], 
+      positionGridx = align_grid.x, 
+      positionGridy = align_grid.y
+      ) {
       EfficientFloor(
-        ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
-        ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5), 
+        $gc_size.x/2,
+        $gc_size.y/2, 
         floor_thickness, 
         margins, 
         floorRounded=(floorStyle == "rounded"),
@@ -34,11 +41,15 @@ module efficient_floor_grid(
     }
   }
   else {
-    gridcopy(ceil(num_x), ceil(num_y)) {
+    gridcopy(
+      num_x = num_x, 
+      num_y = num_y,
+      pitch = env_pitch(),
+      positionGridx = align_grid.x,
+      positionGridy = align_grid.y) {
       EfficientFloor(
-        //Calculate pad size, last cells might not be 100%
-        ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
-        ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1), 
+        $gc_size.x,
+        $gc_size.y, 
         floor_thickness, 
         margins, 
         floorRounded=(floorStyle == "rounded"),

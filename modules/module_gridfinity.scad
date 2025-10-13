@@ -6,19 +6,31 @@ include <gridfinity_constants.scad>
 include <functions_gridfinity.scad>
 include <module_gridfinity_cup_base.scad>     
 
-module pad_grid(num_x, num_y, half_pitch=false, flat_base="off", minimium_size = 0.2) {
+module pad_grid(
+  num_x, 
+  num_y, 
+  half_pitch=false, 
+  flat_base="off", 
+  minimium_size = 0.2,
+  pitch=env_pitch(), 
+  positionGridx = "near", 
+  positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
   assert(is_bool(half_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
+  //echo("pad_grid", flat_base=flat_base, half_pitch=half_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
   pad_copy(
     num_x = num_x, 
     num_y = num_y, 
     half_pitch = half_pitch, 
     flat_base = flat_base, 
-    minimium_size = minimium_size)
+    minimium_size = minimium_size,
+    pitch=pitch, 
+    positionGridx = positionGridx, 
+    positionGridy = positionGridy)
       pad_oversize($pad_copy_size.x, $pad_copy_size.y);
 }
 
@@ -204,7 +216,14 @@ module pad_oversize(
   }
 }
  
-module pad_copy(num_x, num_y, half_pitch=false, flat_base="off", minimium_size = 0.2) {
+module pad_copy(
+  num_x, num_y, 
+  half_pitch=false, 
+  flat_base="off", 
+  minimium_size = 0.2,
+  pitch=env_pitch(), 
+  positionGridx = "near", 
+  positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
   assert(is_bool(half_pitch));
@@ -221,23 +240,27 @@ module pad_copy(num_x, num_y, half_pitch=false, flat_base="off", minimium_size =
     }
   }
   else if (half_pitch) {
-    gridcopy(ceil(num_x*2), ceil(num_y*2), env_pitch()/2) {
-      //Calculate pad size, last cells might not be 100%
-      $pad_copy_size = [          
-          ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
-          ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5)];
-      if(env_help_enabled("debug")) echo("pad_grid_half_pitch", gci=$gci, pad_copy_size=$pad_copy_size);
+    gridcopy(
+      num_x=num_x*2, 
+      num_y=num_y*2, 
+      pitch=[pitch.y/2,pitch.x/2,pitch.z],
+      positionGridx = positionGridx, 
+      positionGridy = positionGridy) {
+      $pad_copy_size = $gc_size/2;
+      if(env_help_enabled("debug")) echo("pad_grid_half_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
          children();      }
     }
   }
   else {
-    gridcopy(ceil(num_x), ceil(num_y)) {
-      //Calculate pad size, last cells might not be 100%
-      $pad_copy_size = [
-          ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
-          ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1)];
-      if(env_help_enabled("debug")) echo("pad_grid", gci=$gci, pad_copy_size=$pad_copy_size);
+    gridcopy(
+      num_x=num_x, 
+      num_y=num_y, 
+      pitch=pitch,
+      positionGridx = positionGridx, 
+      positionGridy = positionGridy) {
+      $pad_copy_size = $gc_size;
+      if(env_help_enabled("debug")) echo("pad_grid", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
         children();
       }
@@ -261,8 +284,8 @@ module gridcopy(
       centerGrid = positionGrid == "center",
       padding = ceil(num) != num ? (num - floor(num))/(centerGrid?2:1) : 0,
       count = ceil(num) + ((padding > 0 && centerGrid) ? 1 :0),
-      hasPrePad = padding != 0 && (positionGrid == "center" || positionGrid == "near"),
-      hasPostPad = padding != 0 && (positionGrid == "center" || positionGrid == "far"))
+      hasPrePad = padding != 0 && (positionGrid == "center" || positionGrid == "far"),
+      hasPostPad = padding != 0 && (positionGrid == "center" || positionGrid == "near"))
       [for (i = [ 0 : count - 1 ]) 
         i == 0 && hasPrePad ? [padding,false]
           : i == count-1 && hasPostPad ? [padding,false]
@@ -301,7 +324,14 @@ module gridcopy(
 // pitch, size of one unit.
 // center, center the grid
 // reverseAlignment, reverse the alignment of the corners
-module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=env_pitch(), center = false, reverseAlignment=[false,false]) {
+module gridcopycorners(
+  num_x, 
+  num_y, 
+  r, 
+  onlyBoxCorners = false, 
+  pitch=env_pitch(), 
+  center = false, 
+  reverseAlignment=[false,false]) {
   assert(is_list(pitch), "pitch must be a list");
   assert(is_list(r), "pitch must be a list");
   assert(is_num(num_x), "num_x must be a number");

@@ -888,7 +888,7 @@ module bin_wall_pattern(
                   position_separators(
                     calculatedSeparators = calculated_vertical_separator_positions, 
                     separator_orientation = "vertical")
-                      let(verSepThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
+                      let(verSepThickness = $sepCfg[iSeparatorWallThickness][0]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
                       //translate([verSepThickness/2+wall_thickness/2-fudgeFactor, 0, 0])
                       translate([wall_thickness/2-fudgeFactor*2, 0, 0])
                       translate(left[1])
@@ -962,7 +962,7 @@ module bin_wall_pattern(
                     position_separators(
                       calculatedSeparators = calculated_horizontal_separator_positions, 
                       separator_orientation = "horizontal")
-                        let(hozSepThickness = $sepCfg[iSeparatorWallThickness]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
+                        let(hozSepThickness = $sepCfg[iSeparatorWallThickness][0]+$sepCfg[iSeparatorBendSeparation]+fudgeFactor*2)
                         rotate([0,0,-90])
                         //translate([0, hozSepThickness/2+wall_thickness/2-fudgeFactor, 0])
                         translate([0, wall_thickness/2-fudgeFactor*2, 0])
@@ -1373,7 +1373,6 @@ module basic_cavity(num_x, num_y, num_z,
             tz(floorht) 
             cylinder(r=innerLipRadius, h=filledInZ-floorht+fudgeFactor*4); // lip
         } else {
-    
           if(headroom > 0)
           hull() cornercopy(inner_corner_center, num_x, num_y)
             tz(filledInZ-headroom-fudgeFactor) 
@@ -1382,7 +1381,6 @@ module basic_cavity(num_x, num_y, num_z,
           hull() cornercopy(lip_inner_corner_center, num_x, num_y)
             tz(filledInZ-gf_lip_height-fudgeFactor) 
             cylinder(r=(innerLipRadius > innerWallRadius ? innerWallRadius : innerLipRadius), h=gf_lip_height+fudgeFactor*4); // lip
-
 
           hull() cornercopy(lip_inner_corner_center, num_x, num_y)
             tz(filledInZ-gf_lip_height-lipSupportThickness-fudgeFactor) 
@@ -1457,6 +1455,7 @@ module basic_cavity(num_x, num_y, num_z,
             flat_base=flat_base,
             floor_thickness=floor_thickness,
             efficientFloorGridHeight=efficientFloorGridHeight,
+            align_grid = cupBase_settings[iCupBase_AlignGrid],
             margins=q);
            
            //Screw and magnet covers required for efficient floor
