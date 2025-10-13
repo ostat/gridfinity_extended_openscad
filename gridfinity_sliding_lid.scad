@@ -25,8 +25,8 @@ sliding_min_support = 0;//0.1
 sliding_lid_lip_enabled = true;
 sliding_clearance = 0.1;//0.1
 sliding_lid_cutout_enabled = false; //
-sliding_lid_cutout_size = [0,0]; //0.1
-sliding_lid_cutout_radius = 10; //0.1
+sliding_lid_cutout_size = [-2,-2]; //0.1
+sliding_lid_cutout_radius = -4; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
 
 /*<!!start gridfinity_basic_cup!!>*/
@@ -251,10 +251,8 @@ text_2 = false;
 text_2_text = "Gridfinity Extended";
 
 /* [debug] */
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+// Debug slice
+cut = [0,0,0]; //0.1
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -289,7 +287,7 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, height],
+  cut = cut,
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)
@@ -465,7 +463,7 @@ set_environment(
         lip_top_relief_height = lip_top_relief_height, 
         addLiptoLid = sliding_lid_lip_enabled,
         limitHeight=true,
-        cutoutEnabled = true,
+        cutoutEnabled = sliding_lid_cutout_enabled,
         cutoutSize = sliding_lid_cutout_size,
         cutoutRadius = sliding_lid_cutout_radius,
         cutoutPosition = sliding_lid_cutout_position);
