@@ -63,7 +63,7 @@ module bentWall(
       translate([0,bendPosition,0])
       linear_extrude(height, scale = [top_scale,1], )
       SBogen(
-        2D=thickness.x,
+        TwoD=thickness.x,
         dist=separation,
         //x0=true,
         grad=bendAngle,
