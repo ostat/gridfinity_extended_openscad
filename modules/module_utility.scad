@@ -39,6 +39,7 @@ module bentWall(
   thickness=[10,10],
   wall_cutout_depth = 0,
   wall_cutout_width = 0,
+  wall_cutout_radius = 0,
   top_radius = 0,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");
@@ -49,9 +50,13 @@ module bentWall(
   
   top_scale = thickness.y/thickness.x;
 
-  top_radius = get_related_value(user_value = top_radius, base_value = thickness_top, default_value = 0);
+  top_radius = get_related_value(
+    user_value = top_radius, 
+    base_value = thickness_top, 
+    max_value = thickness_top/2,
+    default_value = 0);
 
-  bendPosition = bendPosition > 0 ?bendPosition: length/2;
+  bendPosition = get_related_value(bendPosition, length, length/2);
   
   fudgeFactor = 0.01;
   
@@ -83,13 +88,10 @@ module bentWall(
       }
     }
    
-    cutoutHeight = 
-      wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
-        : wall_cutout_depth;
-    cutoutLength = 
-      wall_cutout_width <= -1 ? length/abs(wall_cutout_depth)
-        : wall_cutout_width == 0 ? length/2
-        : wall_cutout_width;
+    cutoutHeight = get_related_value(wall_cutout_depth, height, 0);
+    cutoutRadius = get_related_value(wall_cutout_radius, cutoutHeight, cutoutHeight);
+    cutoutLength = get_related_value(wall_cutout_width, length, length/2); 
+
     if(wall_cutout_depth != 0){
       translate(centred_x ? [0,0,0] : [(separation+thickness)/2+fudgeFactor,0,0])
       translate([0,length/2,height])
@@ -97,8 +99,8 @@ module bentWall(
       WallCutout(
         height = cutoutHeight,
         lowerWidth = cutoutLength,
-        cornerRadius = cutoutHeight,
-        thickness = (separation+thickness+fudgeFactor*2),
+        cornerRadius = cutoutRadius,
+        thickness = (separation+thickness[0]+fudgeFactor*2),
         topHeight = 1);
     }
    }
