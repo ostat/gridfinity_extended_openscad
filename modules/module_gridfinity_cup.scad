@@ -463,7 +463,7 @@ module gridfinity_cup(
   
   cavityFloorRadius = calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness, cupBase_settings[iCupBase_EfficientFloor]);
   
-  
+  if(env_generate_filter_enabled("cup"))
   debug_cut()
   union(){
     difference() {
