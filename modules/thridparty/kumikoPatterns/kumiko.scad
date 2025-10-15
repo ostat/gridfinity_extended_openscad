@@ -248,8 +248,8 @@ module asanoha(cellSize, widthInCells, heightInCells, strength, fillingStrength,
 	width = widthInCells*cellHeight;
 
 	difference() {
-		translate([strength/2, strength/2]) 
-			square([width-strength, height-strength]);
+		translate([0,0,-0.01])
+      cube([width, height, max(extrusionHeight, fillextrusionHeight)+0.02]);
 		asanohaPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight);
 	}
 }
