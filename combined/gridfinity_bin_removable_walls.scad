@@ -102,7 +102,7 @@
 
 
 ///////////////////////////////////////
-//Combined version of 'gridfinity_bin_removable_walls.scad'. Generated 2025-10-14 19:25
+//Combined version of 'gridfinity_bin_removable_walls.scad'. Generated 2025-10-15 20:31
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -8506,6 +8506,8 @@ module gridfinity_removable_divider_wall_slots(
     : [support_thickness, support_thickness];
   
   echo("removable_divider_wall_slots", divider_useable_dimensions=divider_useable_dimensions, calculated_wall_thickness=calculated_wall_thickness, support_thickness=support_thickness, slot_size=slot_size, support_walls=support_walls, divider_spacing=divider_spacing);
+  
+  //Add the slots the to the reinforced wall
   leadin = divider_useable_dimensions[1];
   translate([
       leadin.x + (calculated_wall_thickness.x-support_thickness), 
@@ -8556,7 +8558,7 @@ module removable_divider_wall_slots(
     //cup width for calculating count
     divider_useable_dimensions.y];
 
-  locations = [left, front];
+  locations = [front, left];
   //echo("removable_dividers_slots", divider_useable_dimensions=divider_useable_dimensions, support_thickness=support_thickness, slot_size=slot_size, support_walls=support_walls, divider_spacing=divider_spacing);
   //echo("removable_dividers_slots", left=left, front=front);
 
