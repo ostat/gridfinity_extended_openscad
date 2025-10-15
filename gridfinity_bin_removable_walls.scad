@@ -43,35 +43,8 @@ lip_clip_position = "disabled"; //[disabled, intersection, center_wall, both]
 lip_non_blocking = false;
 height_includes_lip = false;
 
-/* [Subdivisions] */
-// Wall thickness [bottom, top]
-chamber_wall_thickness = [1.2, 1.2]; //0.1
-//Reduce the wall height by this amount
-chamber_wall_headroom = 0;//0.1
-// Radius of the top of the chamber wall, -ve is ratio of top wall thickenss. (disabled for bent walls)
-chamber_wall_top_radius = 0; //0.1
-//Reduce the wall height by this amount
-vertical_chambers = 1;
-vertical_separator_bend_separation = 0;
-vertical_separator_bend_angle = 45;
-vertical_separator_bend_position = 0;
-vertical_separator_cut_depth=0;
-horizontal_chambers = 1;
-horizontal_separator_bend_separation = 0;
-horizontal_separator_bend_angle = 45;
-horizontal_separator_bend_position = 0;
-horizontal_separator_cut_depth=0;
-// Enable irregular subdivisions
-vertical_irregular_subdivisions = false;
-// Separator positions are defined in terms of grid units from the left end
-vertical_separator_config = "10.5|21|42|50|60";
-// Enable irregular subdivisions
-horizontal_irregular_subdivisions = false;
-// Separator positions are defined in terms of grid units from the left end
-horizontal_separator_config = "10.5|21|42|50|60";
-
 /* [Removable Divider Walls] */
-divider_walls_enabled = false;
+divider_walls_enabled = true;
 // Wall to enable on, x direction, y direction
 divider_walls = [1,1]; //[0:1:1]
 // Thickness of the divider walls.
@@ -87,7 +60,16 @@ divider_headroom = 0.1;
 // Clearance subtracted from the removable divider wall. Width, Length
 divider_clearance = [0.3, 0.2];
 // Number of slot spanning divider to generate.
-divider_slot_spanning = 2;
+divider_slot_spanning = 2; //1
+// depth of wall cut, -ve relative to height
+divider_wall_cutout_depth = 0; //0.1
+// width of wall cut, -ve relative to length
+divider_wall_cutout_width = 0; //0.1
+// radius of wall cut, -ve relative to cut depth
+divider_wall_cutout_radius = 0; //0.1
+//radius of wall top, -ve relative to thickness
+divider_top_radius = 0; //0.1
+    
 
 /* [Base] */
 // Enable magnets
@@ -111,8 +93,6 @@ box_corner_attachments_only = true;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
-// Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 half_pitch = false;
 // Removes the internal grid from base the shape
@@ -306,6 +286,7 @@ fn = 0;
 random_seed = 0; //0.0001
 // force render on costly components
 force_render = true;
+generate_filter = "none"; // [everything, cup, divider_walls_double_sided, divider_walls_single_sided, divider_walls_straight_sided, divider_walls_bent_x, divider_walls_bent_y]
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
@@ -316,6 +297,36 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
 
+generate(generate_filter);
+module mw_plate_1() {
+  generate("cup");
+}
+
+module mw_plate_2() {
+ generate("divider_walls_double_sided");
+}
+
+module mw_plate_3() {
+ generate("divider_walls_single_sided");
+}
+
+module mw_plate_4() {
+ generate("divider_walls_straight_sided");
+}
+
+module mw_plate_5() {
+ generate("divider_walls_bent_x");
+}
+
+module mw_plate_6() {
+ generate("divider_walls_bent_y");
+}
+
+module mw_assembly_view() {
+  generate("");
+}
+
+module generate(filter = generate_filter) {
 set_environment(
   width = width,
   depth = depth,
@@ -329,7 +340,8 @@ set_environment(
   cut = cut,
   setColour = set_colour,
   randomSeed = random_seed,
-  force_render = force_render)
+  force_render = force_render,
+  generate_filter = filter)
 gridfinity_cup(
   filled_in=filled_in,
   label_settings=LabelSettings(
@@ -353,15 +365,14 @@ gridfinity_cup(
     cornerAttachmentsOnly = box_corner_attachments_only,
     floorThickness = floor_thickness,
     cavityFloorRadius = cavity_floor_radius,
-    efficientFloor=efficient_floor,
+    efficientFloor="off",
     halfPitch=half_pitch,
     flatBase=flat_base,
     spacer=spacer,
     minimumPrintablePadSize=minimum_printable_pad_size,
     flatBaseRoundedRadius = flat_base_rounded_radius,
     flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint,
-    alignGrid = [align_grid_x, align_grid_y]
-    ),
+    alignGrid = [align_grid_x, align_grid_y]),
   wall_thickness=wall_thickness,
   divider_wall_removable_settings = DividerRemovableSettings(
     enabled=divider_walls_enabled,
@@ -372,29 +383,13 @@ gridfinity_cup(
     divider_spacing=divider_walls_spacing,
     divider_thickness=divider_walls_thickness,
     divider_clearance=divider_clearance,
-    divider_slot_spanning=divider_slot_spanning),
-  vertical_chambers = ChamberSettings(
-    chambers_count = vertical_chambers,
-    chamber_wall_thickness = chamber_wall_thickness,
-    chamber_wall_headroom = chamber_wall_headroom,
-    chamber_wall_top_radius = chamber_wall_top_radius,
-    separator_bend_position = vertical_separator_bend_position,
-    separator_bend_angle = vertical_separator_bend_angle,
-    separator_bend_separation = vertical_separator_bend_separation,
-    separator_cut_depth = vertical_separator_cut_depth,
-    irregular_subdivisions = vertical_irregular_subdivisions,
-    separator_config = vertical_separator_config),
-  horizontal_chambers = ChamberSettings(
-    chambers_count = horizontal_chambers,
-    chamber_wall_thickness = chamber_wall_thickness,
-    chamber_wall_headroom = chamber_wall_headroom,
-    chamber_wall_top_radius = chamber_wall_top_radius,
-    separator_bend_position = horizontal_separator_bend_position,
-    separator_bend_angle = horizontal_separator_bend_angle,
-    separator_bend_separation = horizontal_separator_bend_separation,
-    separator_cut_depth = horizontal_separator_cut_depth,
-    irregular_subdivisions = horizontal_irregular_subdivisions,
-    separator_config = horizontal_separator_config),
+    divider_slot_spanning=divider_slot_spanning,
+    divider_wall_cutout_depth = divider_wall_cutout_depth,
+    divider_wall_cutout_width = divider_wall_cutout_width,
+    divider_wall_cutout_radius = divider_wall_cutout_radius,
+    divider_top_radius = divider_top_radius),
+  vertical_chambers = ChamberSettings(),
+  horizontal_chambers = ChamberSettings(),
   lip_settings = LipSettings(
     lipStyle=lip_style, 
     lipSideReliefTrigger=lip_side_relief_trigger, 
@@ -475,3 +470,4 @@ gridfinity_cup(
     baseTextFont = text_font,
     baseTextDepth = text_depth,
     baseTextOffset = text_offset));
+}
