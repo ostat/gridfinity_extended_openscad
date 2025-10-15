@@ -44,10 +44,13 @@ lip_non_blocking = false;
 height_includes_lip = false;
 
 /* [Subdivisions] */
-chamber_wall_thickness = 1.2;
+// Wall thickness [bottom, top]
+chamber_wall_thickness = [1.2, 1.2]; //0.1
 //Reduce the wall height by this amount
 chamber_wall_headroom = 0;//0.1
-// X dimension subdivisions
+// Radius of the top of the chamber wall, -ve is ratio of top wall thickenss. (disabled for bent walls)
+chamber_wall_top_radius = 0; //0.1
+//Reduce the wall height by this amount
 vertical_chambers = 1;
 vertical_separator_bend_separation = 0;
 vertical_separator_bend_angle = 45;
@@ -66,25 +69,6 @@ vertical_separator_config = "10.5|21|42|50|60";
 horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 horizontal_separator_config = "10.5|21|42|50|60";
-
-/* [Removable Divider Walls] */
-divider_walls_enabled = false;
-// Wall to enable on, x direction, y direction
-divider_walls = [1,1]; //[0:1:1]
-// Thickness of the divider walls.
-divider_walls_thickness = 2.5;  //0.1
-// Spacing between the divider walls (0=divider_walls_thickness*2).
-divider_walls_spacing = 0; //0.1
-// Thickness of the support walls (0=walls_thickness*2).
-divider_walls_support_thickness = 2;
-// Size of the slot in the divider walls. width(0=divider_walls_thickness), depth(0=divider_walls_support_thickness)
-divider_wall_slot_size = [0,0];
-// Clearance between the divider walls top
-divider_headroom = 0.1;
-// Clearance subtracted from the removable divider wall. Width, Length
-divider_clearance = [0.3, 0.2];
-// Number of slot spanning divider to generate.
-divider_slot_spanning = 2;
 
 /* [Base] */
 // Enable magnets
@@ -123,6 +107,10 @@ minimum_printable_pad_size = 0.2;
 flat_base_rounded_radius = -1;
 // Add chamfer to the rounded bottom corner to make easier to print. -1 add auto 45deg.
 flat_base_rounded_easyPrint = -1;
+// grid position x
+align_grid_x = "near";//[near, far]
+// grid position y
+align_grid_y = "near";//[near, far]
 
 /* [Label] */
 label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
@@ -233,23 +221,23 @@ floorpattern_pattern_kumiko_fill_ratio = 1;
 floorpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [Wall Cutout] */
-wallcutout_vertical ="disabled"; //[disabled, enabled, wallsonly, frontonly, backonly]
-// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-wallcutout_vertical_position=-2;  //0.1
+wallcutout_vertical ="disabled"; //[disabled, enabled, inneronly, wallsonly, frontonly, backonly]
+// wallcoutout position -0.5: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_vertical_position=[-2,-0.5,-0.5,-0.5];  //0.01
 //default will be binwidth/2
 wallcutout_vertical_width=0;
 wallcutout_vertical_angle=70;
-//default will be binHeight
-wallcutout_vertical_height=0;
+//default will be binHeight. 0: radius, -1 floor, Positive: depth from top; Negative: ratio height/abs(value)
+wallcutout_vertical_height=0; //0.1
 wallcutout_vertical_corner_radius=5;
-wallcutout_horizontal ="disabled"; //[disabled, enabled, wallsonly, leftonly, rightonly]
-// wall to enable on, front, back, left, right. 0: disabled; Positive: GF units; Negative: ratio length/abs(value)
-wallcutout_horizontal_position=-2;  //0.1
+wallcutout_horizontal ="disabled"; //[disabled, enabled, inneronly, wallsonly, leftonly, rightonly]
+// wallcoutout position -0.5: disabled; Positive: GF units; Negative: ratio length/abs(value)
+wallcutout_horizontal_position=[-2,-0.5,-0.5,-0.5];  //0.01
 //default will be binwidth/2
 wallcutout_horizontal_width=0;
 wallcutout_horizontal_angle=70;
 //default will be binHeight
-wallcutout_horizontal_height=0;
+wallcutout_horizontal_height=0; //0.1
 wallcutout_horizontal_corner_radius=5;
 
 /* [Extendable] */
@@ -356,22 +344,15 @@ gridfinity_cup(
     spacer=spacer,
     minimumPrintablePadSize=minimum_printable_pad_size,
     flatBaseRoundedRadius = flat_base_rounded_radius,
-    flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
+    flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint,
+    alignGrid = [align_grid_x, align_grid_y]
+    ),
   wall_thickness=wall_thickness,
-  divider_wall_removable_settings = DividerRemovableSettings(
-    enabled=divider_walls_enabled,
-    walls=divider_walls,
-    headroom=divider_headroom,
-    support_thickness=divider_walls_support_thickness,
-    slot_size=divider_wall_slot_size,
-    divider_spacing=divider_walls_spacing,
-    divider_thickness=divider_walls_thickness,
-    divider_clearance=divider_clearance,
-    divider_slot_spanning=divider_slot_spanning),
   vertical_chambers = ChamberSettings(
     chambers_count = vertical_chambers,
     chamber_wall_thickness = chamber_wall_thickness,
     chamber_wall_headroom = chamber_wall_headroom,
+    chamber_wall_top_radius = chamber_wall_top_radius,
     separator_bend_position = vertical_separator_bend_position,
     separator_bend_angle = vertical_separator_bend_angle,
     separator_bend_separation = vertical_separator_bend_separation,
@@ -382,6 +363,7 @@ gridfinity_cup(
     chambers_count = horizontal_chambers,
     chamber_wall_thickness = chamber_wall_thickness,
     chamber_wall_headroom = chamber_wall_headroom,
+    chamber_wall_top_radius = chamber_wall_top_radius,
     separator_bend_position = horizontal_separator_bend_position,
     separator_bend_angle = horizontal_separator_bend_angle,
     separator_bend_separation = horizontal_separator_bend_separation,

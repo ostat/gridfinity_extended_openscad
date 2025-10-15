@@ -94,7 +94,8 @@ module grid_block(
       lip_top_relief_height = lip_settings[iLipTopReliefHeight],
       lip_top_relief_width = lip_settings[iLipTopReliefWidth],
       lip_clip_position = lip_settings[iLipClipPosition],
-      lip_non_blocking = lip_settings[iLipNonBlocking]);
+      lip_non_blocking = lip_settings[iLipNonBlocking],
+      align_grid = cupBase_settings[iCupBase_AlignGrid]);
   }
   
   translate(gridfinityRenderPosition(position,num_x,num_y))
@@ -129,15 +130,33 @@ module grid_block(
         } else {
           // logic for constructing odd-size grids of possibly half-pitch pads
           color(env_colour(color_base))
-            pad_grid(num_x, num_y, half_pitch, flat_base = flat_base, cupBase_settings[iCupBase_MinimumPrintablePadSize]);
+            pad_grid(
+              num_x = num_x, 
+              num_y = num_y, 
+              half_pitch = half_pitch, 
+              flat_base = flat_base, 
+              cupBase_settings[iCupBase_MinimumPrintablePadSize],
+              pitch=env_pitch(), 
+              positionGridx = cupBase_settings[iCupBase_AlignGrid].x,
+              positionGridy = cupBase_settings[iCupBase_AlignGrid].y);
         }
-        
+
         color(env_colour(color_cup))
         tz(baseHeight) 
           cube([env_pitch().x*num_x, env_pitch().y*num_y, env_pitch().z*num_z]);
       }
     }
     
+    color(env_colour(color_cup))
+    bin_overhang_chamfer(
+      num_x = num_x,
+      num_y = num_y,
+      baseHeight = baseHeight,
+      wall_thickness = wall_thickness,
+      corner_radius = env_corner_radius(),
+      block_corner_position=block_corner_position,
+      cupBase_settings = cupBase_settings);
+   
     if(center_magnet_size[iCylinderDimension_Diameter]){
       //Center Magnet
       for(x =[0:1:num_x-1])
@@ -190,4 +209,93 @@ module grid_block(
     ,"lipSettings",lip_settings
     ,"filledin",filledin]
     ,help);
+}
+
+//TODO: be better if we could round the corners of the chamfer around the bin.
+module bin_overhang_chamfer(
+  num_x,
+  num_y,
+  baseHeight,
+  wall_thickness,
+  corner_radius,
+  block_corner_position,
+  cupBase_settings = []){
+  fudgeFactor = 0.01;
+
+  alignGrid = cupBase_settings[iCupBase_AlignGrid];
+  cavityFloorRadius = cupBase_settings[iCupBase_CavityFloorRadius];
+  efficientFloor = cupBase_settings[iCupBase_EfficientFloor];
+  half_pitch = cupBase_settings[iCupBase_HalfPitch];
+  minimumPrintablePadSize = cupBase_settings[iCupBase_MinimumPrintablePadSize];
+
+  calculate_bin_chamfer = function (
+    width,
+    pitch,
+    clearance,
+    wallThickness,
+    cavityFloorRadius,
+    efficientFloor,
+    halfPitch,
+    minimumPrintablePadSize) 
+    let(
+      over_hanging_lip = halfPitch ? (width*2-floor(width*2))/2 : (width-floor(width)),
+      over_hanging_lip_mm = (over_hanging_lip)*pitch-clearance/4,
+      calculatedCavityFloorRadius = calculateCavityFloorRadius(cavityFloorRadius, wallThickness, efficientFloor),
+      outer_wall_radius = calculatedCavityFloorRadius + wallThickness*2,
+      large_h = sqrt(2 * outer_wall_radius ^ 2),
+      small_h = (large_h - outer_wall_radius) * 2,
+      max_chamfer = sqrt((small_h^2) / 2),
+      correctable_lip = max(0, min(over_hanging_lip_mm, max_chamfer)))
+    over_hanging_lip > 0 && over_hanging_lip < minimumPrintablePadSize ? correctable_lip : 0;
+
+    chamfer_lip_x = calculate_bin_chamfer(
+      width = num_x,
+      pitch = env_pitch().x,
+      clearance = env_clearance().x,
+      wallThickness = wall_thickness,
+      cavityFloorRadius = cavityFloorRadius,
+      efficientFloor = efficientFloor,
+      halfPitch = half_pitch,
+      minimumPrintablePadSize = minimumPrintablePadSize
+    );
+
+    chamfer_lip_y = calculate_bin_chamfer(
+      width = num_y,
+      pitch = env_pitch().y,
+      clearance = env_clearance().x,
+      wallThickness = wall_thickness,
+      cavityFloorRadius = cavityFloorRadius,
+      efficientFloor = efficientFloor,
+      halfPitch = half_pitch,
+      minimumPrintablePadSize = minimumPrintablePadSize
+    );
+
+  chamfer_max= max(chamfer_lip_x, chamfer_lip_y);
+  lower_radius = env_corner_radius() - chamfer_max;
+  echo("bin_overhang_chamfer", num_x=num_x, num_y=num_y, chamfer_lip_x=chamfer_lip_x, chamfer_lip_y=chamfer_lip_y, chamfer_max=chamfer_max, lower_radius=lower_radius);
+  if(chamfer_lip_x > 0 || chamfer_lip_y > 0)
+  translate([0,0,baseHeight-fudgeFactor])
+  difference() {
+    cube([env_pitch().x*num_x, env_pitch().y*num_y, chamfer_max]);
+
+    hull() 
+      cornercopy(block_corner_position, num_x, num_y)
+        union(){
+          _translate = [
+                cupBase_settings[iCupBase_AlignGrid].x == "far"
+                  ? ($idx[0] == 0 ? -((-chamfer_lip_x)+env_clearance().x/4) : -env_clearance().x/4)
+                  : ($idx[0] == 0 ? -env_clearance().x/4 : (-chamfer_lip_x)+env_clearance().x/4),
+                cupBase_settings[iCupBase_AlignGrid].y == "far"
+                  ? ($idx[1] == 0 ? -((-chamfer_lip_y)+env_clearance().y/4) : -env_clearance().y/4)
+                  : ($idx[1] == 0 ? -env_clearance().y/4 : (-chamfer_lip_y)+env_clearance().y/4),
+                -fudgeFactor];
+        hull(){
+            translate([0,0,chamfer_max+fudgeFactor*2])
+            cylinder(r=env_corner_radius()+fudgeFactor, h=fudgeFactor);
+            translate(_translate)
+            cylinder(r=env_corner_radius()+fudgeFactor, h=fudgeFactor);
+          }
+        }
+    
+  }
 }

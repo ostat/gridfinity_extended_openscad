@@ -17,7 +17,8 @@ module set_environment(
   pitch = [gf_pitch, gf_pitch, gf_zpitch],
   corner_radius = gf_cup_corner_radius,
   randomSeed = 0,
-  force_render = true){
+  force_render = true,
+  generate_filter = ""){
   
   //Set special variables, that child modules can use
   $pitch = pitch;
@@ -31,6 +32,7 @@ module set_environment(
   $user_width = width;
   $user_depth = depth;
   $user_height = height;
+  $generate_filter = generate_filter;
   
   num_x = calcDimensionWidth(width, true); 
   num_y = calcDimensionDepth(depth, true); 
@@ -80,6 +82,7 @@ function env_numx() = is_undef($num_x) || !is_num($num_x) ? 0 : $num_x;
 function env_numy() = is_undef($num_y) || !is_num($num_y) ? 0 : $num_y;
 function env_numz() = is_undef($num_z) || !is_num($num_z) ? 0 : $num_z;
 function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0,0,0] : $clearance;
+function env_generate_filter() = (is_undef($generate_filter) || !is_string($generate_filter)) ? "" : $generate_filter;
 
 function env_pitch() =  is_undef($pitch) || !is_list($pitch) ? [gf_pitch, gf_pitch, gf_zpitch] : $pitch; 
 function env_corner_radius() =  is_undef($corner_radius) || !is_num($corner_radius) ? gf_cup_corner_radius : $corner_radius; 
@@ -100,7 +103,13 @@ function env_colour(colour, isLip = false, fallBack = color_cup) =
           : $setColour == "lip" && isLip ? colour
             : fallBack
           : fallBack;
-          
+function env_generate_filter_enabled(filter) = 
+  echo("env_generate_filter_enabled", filter=filter, env_generate_filter=env_generate_filter())
+  env_generate_filter() == filter || 
+  env_generate_filter() == "" || 
+  env_generate_filter() == "everything" || 
+  is_undef(env_generate_filter());
+       
 function env_help_enabled(level) = 
   is_string(level) && level == "force" ? true
     : is_undef($showHelp) ? false

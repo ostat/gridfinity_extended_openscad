@@ -72,7 +72,8 @@ module cupLip(
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
-  lip_non_blocking = false){
+  lip_non_blocking = false,
+  align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
@@ -135,7 +136,8 @@ module cupLip(
         lip_top_relief_height = lip_top_relief_height,
         lip_top_relief_width = lip_top_relief_width,
         lip_clip_position = lip_clip_position,
-        lip_non_blocking = lip_non_blocking);
+        lip_non_blocking = lip_non_blocking,
+        align_grid = align_grid);
     }
 }
 
@@ -148,7 +150,8 @@ module cupLip_cavity(
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
-  lip_non_blocking = false){
+  lip_non_blocking = false,
+  align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
@@ -199,8 +202,8 @@ module cupLip_cavity(
     frame_cavity(
       num_x = lip_non_blocking ? ceil(num_x) : num_x, 
       num_y = lip_non_blocking ? ceil(num_y) : num_y, 
-      position_fill_grid_x = "far",
-      position_fill_grid_y = "far",
+      position_fill_grid_x = align_grid.x,
+      position_fill_grid_y = align_grid.y,
       render_top = lip_notches,
       render_bottom = false,
       frameLipHeight = 4,

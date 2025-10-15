@@ -1,26 +1,62 @@
 include <thirdparty/ub_sbogen.scad>
 include <module_utility_wallcutout.scad>
+include <functions_general.scad>
 
 utility_demo = false;
 
 if(utility_demo && $preview){
-  bentWall(separation=0);
+  translate([400,0,0])
+  union(){
+    bentWall(separation=0);
+    
+    translate([0,100,0])
+    bentWall(separation=0, thickness = [10,5]);
+
+    translate([0,200,0])
+    bentWall(separation=0, thickness = [10,5], top_radius = -2);
+
+    
+    translate([20,0,0])
+    bentWall(separation=10);
+    
+    translate([20,100,0])
+    bentWall(separation=10, thickness = [10,5]);
+
+    translate([20,200,0])
+    bentWall(separation=10, thickness = [10,5], top_radius = -2);
+  }
 }
 
 //Wall is centred on the middle of the start. Bend is not taken in to account
 module bentWall(
-  length=100,
+  length=80,
   bendPosition=0,
   bendAngle=45,
   separation=20,
   lowerBendRadius=0,
   upperBendRadius=0,
   height=30,
-  thickness=10,
+  thickness=[10,10],
   wall_cutout_depth = 0,
   wall_cutout_width = 0,
+  wall_cutout_radius = 0,
+  top_radius = 0,
   centred_x=true) {
-  bendPosition = bendPosition > 0 ?bendPosition: length/2;
+  assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");
+  
+  thickness = is_num(thickness) ? [thickness,thickness] : thickness;
+  thickness_bottom  = thickness.x;
+  thickness_top = thickness.y;
+  
+  top_scale = thickness.y/thickness.x;
+
+  top_radius = get_related_value(
+    user_value = top_radius, 
+    base_value = thickness_top, 
+    max_value = thickness_top/2,
+    default_value = 0);
+
+  bendPosition = get_related_value(bendPosition, length, length/2);
   
   fudgeFactor = 0.01;
   
@@ -28,11 +64,11 @@ module bentWall(
   difference()
   {
     if(separation != 0) { 
-      translate(centred_x ? [0,0,0] : [(thickness+separation)/2,0,0])
+      translate(centred_x ? [0,0,0] : [(thickness.x+separation)/2,0,0])
       translate([0,bendPosition,0])
-      linear_extrude(height)
+      linear_extrude(height, scale = [top_scale,1], )
       SBogen(
-        2D=thickness,
+        TwoD=thickness.x,
         dist=separation,
         //x0=true,
         grad=bendAngle,
@@ -41,17 +77,21 @@ module bentWall(
         l1=bendPosition,
         l2=length-bendPosition);   
     } else {
-      translate(centred_x ? [-thickness/2,0,0] : [0,0,0])
-      cube([thickness, length, height]);
+      translate(centred_x ? [-thickness.x/2,0,0] : [0,0,0])
+      hull(){
+        rotate([90,0,0])
+        translate([(thickness_bottom-thickness_top)/2,0,-length])
+        roundedCube(
+          size =[thickness_top, height, length],
+          sideRadius = top_radius);
+        cube([thickness_bottom, length, thickness_bottom/2]);
+      }
     }
    
-    cutoutHeight = 
-      wall_cutout_depth <= -1 ? height/abs(wall_cutout_depth)
-        : wall_cutout_depth;
-    cutoutLength = 
-      wall_cutout_width <= -1 ? length/abs(wall_cutout_depth)
-        : wall_cutout_width == 0 ? length/2
-        : wall_cutout_width;
+    cutoutHeight = get_related_value(wall_cutout_depth, height, 0);
+    cutoutRadius = get_related_value(wall_cutout_radius, cutoutHeight, cutoutHeight);
+    cutoutLength = get_related_value(wall_cutout_width, length, length/2); 
+
     if(wall_cutout_depth != 0){
       translate(centred_x ? [0,0,0] : [(separation+thickness)/2+fudgeFactor,0,0])
       translate([0,length/2,height])
@@ -59,8 +99,8 @@ module bentWall(
       WallCutout(
         height = cutoutHeight,
         lowerWidth = cutoutLength,
-        cornerRadius = cutoutHeight,
-        thickness = (separation+thickness+fudgeFactor*2),
+        cornerRadius = cutoutRadius,
+        thickness = (separation+thickness[0]+fudgeFactor*2),
         topHeight = 1);
     }
    }
@@ -559,4 +599,9 @@ module rounded_taper(
       square([bottomWidth,lowerLength+(roundedLower?0:cornerRadius)]);
     }
   }
+}
+
+module PartialCylinder(h, r, part) {
+    rotate_extrude(angle = part)
+        square([r, h]);
 }

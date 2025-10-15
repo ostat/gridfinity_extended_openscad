@@ -36,7 +36,7 @@ itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard","custom":custom shape - beta feature]
 // The number of sides for a round hole
 itemholder_hole_sides = 4; 
-// Diameter of the round hole/corners
+// Diameter of, round hole, or corners for square hole
 itemholder_hole_diameter = 5; //0.1
 // Radius of the bottom of the custom shape
 itemholder_hole_bottom_radius = 0;
@@ -927,6 +927,6 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, height],
+  cut = [cutx, cuty, 0],
   setColour = set_colour)
 gridfinity_itemholder();
