@@ -6,7 +6,6 @@ include <module_gridfinity_sliding_lid.scad>
 include <module_gridfinity_Extendable.scad>
 include <module_gridfinity_cup_base_text.scad>
 include <module_gridfinity_cup_base.scad>
-include <module_gridfinity_dividers_removable.scad>
 include <module_divider_walls.scad>
 include <module_bin_chambers.scad>
 include <module_fingerslide.scad>
@@ -100,25 +99,6 @@ default_vertical_separator_config = "10.5|21|42|50|60";
 default_horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 default_horizontal_separator_config = "10.5|21|42|50|60";
-
-/* [Removable Divider Walls] */
-default_divider_walls_enabled = false;
-// Wall to enable on, x direction, y direction
-default_divider_walls = [1,1];  //[0:1:1]
-// Thickness of the divider walls.
-default_divider_walls_thickness = 2.5;  //0.1
-// Spacing between the divider walls (0=divider_walls_thickness*2).
-default_divider_walls_spacing = 0; //0.1
-// Thickness of the support walls.
-default_divider_walls_support_thickness = 2;
-// Size of the slot in the divider walls. width(0=divider_walls_thickness), depth(0=divider_walls_support_thickness)
-default_divider_wall_slot_size = [0,0];
-// Clearance between the divider walls top
-default_divider_headroom = 0.1;
-// Clearance subtracted from the removable divider wall. Width, Length
-default_divider_clearance = [0.3, 0.2];
-// Number of slot spanning divider to generate.
-default_divider_slot_spanning = 0;
 
 /* [Base] */
 //size of magnet, diameter and height. Zack's original used 6.5 and 2.4 
@@ -270,25 +250,6 @@ module gridfinity_cup(
     halfPitch=default_half_pitch,
     flatBase=default_flat_base,
     spacer=default_spacer),
-  divider_wall_removable_settings = DividerRemovableSettings(
-    enabled=default_divider_walls_enabled,
-    walls=default_divider_walls,
-    headroom=default_divider_headroom,
-    slot_size=default_divider_wall_slot_size,
-    divider_spacing=default_divider_walls_spacing,
-    divider_thickness=default_divider_walls_thickness,
-    divider_clearance=default_divider_clearance,
-    divider_slot_spanning=default_divider_slot_spanning),
-  divider_wall_removable_settings = DividerRemovableSettings(
-    enabled=divider_walls_enabled,
-    walls=divider_walls,
-    headroom=divider_headroom,
-    support_thickness=divider_walls_support_thickness,
-    slot_size=divider_wall_slot_size,
-    divider_spacing=divider_walls_spacing,
-    divider_thickness=divider_walls_thickness,
-    divider_clearance=divider_clearance,
-    divider_slot_spanning=divider_slot_spanning),
   vertical_chambers = ChamberSettings(
     chambers_count = default_vertical_chambers,
     separator_bend_position = default_vertical_separator_bend_position,
@@ -401,7 +362,6 @@ module gridfinity_cup(
   floor_pattern_settings = ValidatePatternSettings(floor_pattern_settings);
   wall_pattern_settings = ValidatePatternSettings(wall_pattern_settings);
   
-  divider_wall_removable_settings = ValidateDividerRemovableSettings(divider_wall_removable_settings, wall_thickness);
   slidingLidSettings= SlidingLidSettings(
           sliding_lid_enabled, 
           sliding_lid_thickness, 
@@ -529,8 +489,7 @@ module gridfinity_cup(
             calculated_horizontal_separator_positions = calculated_horizontal_separator_positions,
             lip_settings=lip_settings,
             headroom=headroom,
-            sliding_lid_settings= slidingLidSettings,
-            divider_wall_removable_settings = divider_wall_removable_settings);
+            sliding_lid_settings= slidingLidSettings);
 
           bin_cutouts(
             num_x = num_x, num_y = num_y, num_z = num_z,
@@ -739,16 +698,6 @@ module gridfinity_cup(
 
     }
   }  
-  
-  if(divider_wall_removable_settings[iDividerRemovable_Enabled]) {
-    gridfinity_removable_divider_walls(
-      num_x = num_x, 
-      num_y = num_y,
-      zpoint = zpoint,
-      divider_settings = divider_wall_removable_settings,
-      wall_thickness = wall_thickness,
-      floorHeight = floorHeight);
-  }
   
   if(env_help_enabled("info"))
     //translate(gridfinityRenderPosition(position,num_x,num_y))
@@ -1189,8 +1138,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     calculated_horizontal_separator_positions=calculated_horizontal_separator_positions,
     lip_settings=[], 
     headroom=default_headroom, 
-    sliding_lid_settings=[],
-    divider_wall_removable_settings=[]) {
+    sliding_lid_settings=[]) {
   
   //Legacy variables
   flat_base=cupBase_settings[iCupBase_FlatBase];
@@ -1224,7 +1172,6 @@ module partitioned_cavity(num_x, num_y, num_z,
       wall_thickness=wall_thickness,
       lip_settings=lip_settings, 
       sliding_lid_settings=sliding_lid_settings, 
-      divider_wall_removable_settings=divider_wall_removable_settings,
       headroom=headroom);
     }
     
@@ -1424,16 +1371,6 @@ module basic_cavity(num_x, num_y, num_z,
         floorht=floorht,
         inner_corner_center=wall_inner_corner_center);
     }
-  
-    if(divider_wall_removable_settings[iDividerRemovable_Enabled])
-      // reinforce the bin walls for the dividers
-      gridfinity_removable_divider_wall_reinforcement(
-          num_x = num_x, 
-          num_y = num_y,
-          zpoint = zpoint,
-          divider_settings = divider_wall_removable_settings,
-          wall_thickness=wall_thickness,
-          floorHeight=floorht);
 
     if (cupBase_settings[iCupBase_EfficientFloor] != "off") {
       magnetPosition = calculateAttachmentPositions(magnet_diameter, cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter]);
@@ -1472,16 +1409,6 @@ module basic_cavity(num_x, num_y, num_z,
         }
       }
     }  // difference removals from main body.
-
-    if(divider_wall_removable_settings[iDividerRemovable_Enabled])
-      // slots that will be removed from the walls
-      gridfinity_removable_divider_wall_slots(
-        num_x = num_x, 
-        num_y = num_y,
-        zpoint = zpoint,
-        divider_settings = divider_wall_removable_settings,
-        wall_thickness=wall_thickness,
-        floorHeight=floorht);
     
     //Sliding lid rebate.
     if(sliding_lid_settings[iSlidingLidEnabled])
