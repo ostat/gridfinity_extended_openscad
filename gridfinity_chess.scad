@@ -178,7 +178,7 @@ module board() {  // 64 tiles in alternating colors
 
 
 module tile(height = 0.5) {
-  grid_block(1, 1, 0.5, lipStyle = "none", position = "centered");
+  grid_block(1, 1, 0.5, lip_settings=LipSettings(lipStyle="none"), position = "centered");
 }
 
 
