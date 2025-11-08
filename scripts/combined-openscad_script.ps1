@@ -159,14 +159,17 @@ function Save-CombinedOpenScadFile([string]$ScadFilePath, [string]$OutputFolder)
     $inputFilePath = $ScadFilePath
     $file = Get-Item -LiteralPath $inputFilePath 
     Write-host "Creating combined file for $($file.Name)" -ForegroundColor Green
-    $resulLines = Get-CombinedOpenScadFile -ScadFilePath $inputFilePath
+    $resulLines = (Get-CombinedOpenScadFile -ScadFilePath $inputFilePath)
+    $resulLines = $resulLines | where {$_ -ne $null} | ForEach-Object { $_.ToString() }
+    Write-host "found lines $($resulLines.count )"
     $output_path = (Join-Path $OutputFolder $file.Name)
     #$resulLines | Out-File $output_path -Encoding utf8 
 
     #$MyRawString = Get-Content -Raw $MyPath
-    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
     [System.IO.File]::WriteAllLines($output_path, $resulLines, $Utf8NoBomEncoding)
 }
+
 cls
 
 Get-ChildItem $script:SourceFolder -Filter '*.scad' | ForEach-Object {
