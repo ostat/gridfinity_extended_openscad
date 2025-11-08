@@ -139,7 +139,7 @@ module extension_tabs(
         center_magnet=cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
         flat_base=cupBase_settings[iCupBase_FlatBase]);
 
-      floorHeight = calculatedcupBaseClearanceHeight + floor_thickness + calculatedCavityFloorRadius - tabThickness;
+      floorHeight = calculatedcupBaseClearanceHeight + floor_thickness + calculatedCavityFloorRadius;
 
       echo("extension tabs", calculatedFloorHeight=calculatedFloorHeight, calculatedCavityFloorRadius=calculatedCavityFloorRadius, floorHeight=floorHeight, tabThickness=tabThickness);
 
