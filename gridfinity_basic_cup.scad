@@ -117,12 +117,16 @@ label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel 
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+// Enable labels on internal divider walls
+label_dividers = "disabled"; //[disabled, horizontal, vertical, both]
+
 label_size = [0,14,0,0.6]; // 0.01
 // Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 label_walls=[0,1,0,0];  //[0:1:1]
-    
+
+
 /* [Sliding Lid] */
 sliding_lid_enabled = false;
 // 0 = wall thickness *2
@@ -314,11 +318,12 @@ set_environment(
 gridfinity_cup(
   filled_in=filled_in,
   label_settings=LabelSettings(
-    labelStyle=label_style, 
-    labelPosition=label_position, 
+    labelStyle=label_style,
+    labelPosition=label_position,
     labelSize=label_size,
     labelRelief=label_relief,
-    labelWalls=label_walls),
+    labelWalls=label_walls,
+    labelDividers=label_dividers),
   finger_slide_settings = FingerSlideSettings(
     type = fingerslide,
     radius = fingerslide_radius,
