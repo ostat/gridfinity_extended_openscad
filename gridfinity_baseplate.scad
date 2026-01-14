@@ -48,6 +48,8 @@ Corner_Screw_Enabled = false;
 Center_Screw_Enabled = false;
 //Enable cavity to place frame weights
 Enable_Weight = false;
+//Removes the bottom taper
+Remove_Bottom_Taper = false;
 
 /* [Base Plate Clips]*/
 Connector_Only = false;
@@ -67,6 +69,10 @@ Connector_Butterfly_Tolerance = 0.1;
 Connector_Filament_Enabled = false;
 Connector_Filament_Diameter = 2;
 Connector_Filament_Length = 8;
+
+//This feature is not yet finalized, or working properly. 
+Connector_Snaps_Enabled = "disabled"; //["disabled","larger","smaller"]
+Connector_Snaps_Clearance = 0.5;
 
 /* [Custom Grid]*/
 //Enable custom grid, you will configure this in the (Lid not supported)
@@ -322,16 +328,22 @@ else
       plateOptions = Base_Plate_Options,
       customGridEnabled = Custom_Grid_Enabled,
       gridPositions=[xpos1,xpos2,xpos3,xpos4,xpos5,xpos6,xpos7],
-      connectorPosition = Connector_Position,
-      connectorClipEnabled  = Connector_Clip_Enabled,
-      connectorClipSize = Connector_Clip_Size,
-      connectorClipTolerance = Connector_Clip_Tolerance,
-      connectorButterflyEnabled  = Connector_Butterfly_Enabled,
-      connectorButterflySize = Connector_Butterfly_Size,
-      connectorButterflyRadius = Connector_Butterfly_Radius,
-      connectorButterflyTolerance = Connector_Butterfly_Tolerance,
-      connectorFilamentEnabled=Connector_Filament_Enabled,
-      connectorFilamentDiameter=Connector_Filament_Diameter,
-      connectorFilamentLength=Connector_Filament_Length);
+      remove_bottom_taper=Remove_Bottom_Taper,
+      frameConnectorSettings = FrameConnectorSettings(
+        connectorOnly = Connector_Only, 
+        connectorPosition = Connector_Position, 
+        connectorClipEnabled = Connector_Clip_Enabled,
+        connectorClipSize = Connector_Clip_Size,
+        connectorClipTolerance = Connector_Clip_Tolerance, 
+        connectorButterflyEnabled = Connector_Butterfly_Enabled,
+        connectorButterflySize = Connector_Butterfly_Size,
+        connectorButterflyRadius = Connector_Butterfly_Radius,
+        connectorButterflyTolerance = Connector_Butterfly_Tolerance,
+        connectorFilamentEnabled = Connector_Filament_Enabled,
+        connectorFilamentDiameter = Connector_Filament_Diameter,
+        connectorFilamentLength = Connector_Filament_Length,
+        connectorSnapsStyle = Connector_Snaps_Enabled,
+        connectorSnapsClearance = Connector_Snaps_Clearance)
+    );
   }
 }

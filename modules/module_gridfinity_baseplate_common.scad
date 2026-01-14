@@ -56,6 +56,7 @@ module frame_plain(
     cornerRadius = gf_cup_corner_radius,
     reducedWallHeight = -1,
     roundedCorners = 15,
+    remove_bottom_taper = false,
     reduceWallTaper = false) {
   frameLipHeight = extra_down > 0 ? height -0.6 : height;
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
@@ -116,6 +117,20 @@ module frame_plain(
         height=extra_down+frameLipHeight,
         cornerRadius = cornerRadius,
         roundedCorners = roundedCorners);
+        
+      translate(centerGridPosition)
+      frame_additives(
+        num_x=grid_num_x, 
+        num_y=grid_num_y, 
+        position_fill_grid_x = position_fill_grid_x,
+        position_fill_grid_y = position_fill_grid_y,
+        extra_down = extra_down, 
+        frameLipHeight = frameLipHeight,
+        cornerRadius = gf_cup_corner_radius,
+        reducedWallHeight = reducedWallHeight){
+          //wall addatives
+          if($children >=3) children(2);
+        }
     }
     
     //Wall reduction
@@ -128,8 +143,11 @@ module frame_plain(
       extra_down = extra_down, 
       frameLipHeight = frameLipHeight,
       cornerRadius = gf_cup_corner_radius,
+      remove_bottom_taper = remove_bottom_taper,
       reducedWallHeight = reducedWallHeight){
+        //cell cavities
         if($children >=1) children(0); 
+        //wall cavities
         if($children >=2) children(1);
       }
   }

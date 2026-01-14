@@ -22,8 +22,10 @@ module baseplate_regular(
   cornerScrewEnabled = false,
   weightHolder = false,
   cornerRadius = gf_cup_corner_radius,
-  roundedCorners = 15) {
+  roundedCorners = 15,
+  remove_bottom_taper = false) {
 
+  echo("baseplate_regular", children=$children);
   //These should be base constants
   minFloorThickness = 1;
   counterSinkDepth = 2.5;
@@ -35,8 +37,8 @@ module baseplate_regular(
     centerScrewEnabled ? counterSinkDepth + weightDepth + minFloorThickness : 0, 
     cornerScrewEnabled ? screwDepth : 0,
     cornerScrewEnabled ? magnetSize[1] + counterSinkDepth + minFloorThickness : 0,
-    weightHolder ? weightDepth+minFloorThickness : 0,
-    magnetSize.y+magnetZOffset+magnetTopCover);
+    weightHolder ? weightDepth + minFloorThickness : 0,
+    magnetSize.y + magnetZOffset + magnetTopCover);
   $frameBaseHeight = frameBaseHeight;
 
     translate([0,0,frameBaseHeight])
@@ -51,6 +53,7 @@ module baseplate_regular(
       position_grid_in_outer_x = position_grid_in_outer_x,
       position_grid_in_outer_y = position_grid_in_outer_y,
       extra_down=frameBaseHeight,
+      remove_bottom_taper = remove_bottom_taper,
       cornerRadius = cornerRadius,
       reducedWallHeight=reducedWallHeight,
       reduceWallTaper=reduceWallTaper,
@@ -74,7 +77,9 @@ module baseplate_regular(
             roundedCorners = roundedCorners,
             reverseAlignment = [$gci.x == 0, $gci.y==0]);
         }
-
-        children();
+        //wall cavities
+        if($children >=1) children(0); 
+        //wall adatives
+        if($children >=2) children(1);
       }
 }

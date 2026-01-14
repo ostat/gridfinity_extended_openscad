@@ -34,6 +34,55 @@ module cylsq2(d1, d2, h) {
   square([d1, d1], center=true);
 }
 
+module frame_additives(
+  num_x = 2, 
+  num_y = 1, 
+  position_fill_grid_x = "near",
+  position_fill_grid_y = "near",
+  render_top = true,
+  render_bottom = true,
+  remove_bottom_taper = false,
+  extra_down=0, 
+  frameLipHeight = 4,
+  cornerRadius = gf_cup_corner_radius,
+  reducedWallHeight = -1,
+  reducedWallWidth = -1,
+  reducedWallOuterEdgesOnly=false,
+  enable_grippers = false) {
+
+  assert(is_num(num_x));
+  assert(is_num(num_y));
+  assert(is_string(position_fill_grid_x));
+  assert(is_string(position_fill_grid_y));
+  assert(is_bool(render_top));
+  assert(is_bool(render_bottom));
+  assert(is_bool(remove_bottom_taper));
+  assert(is_num(extra_down));
+  assert(is_num(frameLipHeight));
+  assert(is_num(cornerRadius));
+  assert(is_num(reducedWallHeight));
+  assert(is_num(reducedWallWidth));
+  assert(is_bool(reducedWallOuterEdgesOnly));
+  assert(is_bool(enable_grippers));
+
+  frameWallReduction = reducedWallHeight >= 0 ? max(0, frameLipHeight-reducedWallHeight) : -1;
+  echo("frame_addatives", childres = $children);
+      
+    translate([0, 0, -fudgeFactor]) 
+      gridcopy(
+        num_x, 
+        num_y,
+        positionGridx = position_fill_grid_x,
+        positionGridy = position_fill_grid_y) {
+      if($gc_size.x > 0.2 && $gc_size.y >= 0.2){
+        
+        //wall reducers, cutouts and clips
+        children();
+    }
+  }
+}
+
+
 module frame_cavity(
   num_x = 2, 
   num_y = 1, 
@@ -89,19 +138,19 @@ module frame_cavity(
                 topHeight=1);
               }
 
-          //wall reducers, cutouts and clips
-          if($children >=2) children(1);
+      //wall reducers, cutouts and clips
+      if($children >=2) children(1);
 
-          pad_oversize(
-            num_x=$gc_size.x,
-            num_y=$gc_size.y,
-            margins=1,
-            extend_down=extra_down,
-            render_top=render_top,
-            render_bottom=render_bottom,
-            remove_bottom_taper=remove_bottom_taper)
-              //cell cavity
-              if($children >=1) children(0);
+      pad_oversize(
+        num_x=$gc_size.x,
+        num_y=$gc_size.y,
+        margins=1,
+        extend_down=extra_down,
+        render_top=render_top,
+        render_bottom=render_bottom,
+        remove_bottom_taper=remove_bottom_taper)
+          //cell cavity
+          if($children >=1) children(0);
     }
   }
 }
