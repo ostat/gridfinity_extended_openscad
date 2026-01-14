@@ -41,24 +41,12 @@ iCupBase_Spacer=11;
 iCupBase_MinimumPrintablePadSize=12;
 iCupBase_FlatBaseRoundedRadius=13;
 iCupBase_FlatBaseRoundedEasyPrint=14;
+iCupBase_MagnetCaptiveHeight=15;
+iCupBase_AlignGrid=16;
 
 iCylinderDimension_Diameter=0;
 iCylinderDimension_Height=1;
 
-MagnetEasyRelease_off = "off";
-MagnetEasyRelease_auto = "auto";
-MagnetEasyRelease_inner = "inner"; 
-MagnetEasyRelease_outer = "outer"; 
-MagnetEasyRelease_values = [MagnetEasyRelease_off, MagnetEasyRelease_auto, MagnetEasyRelease_inner, MagnetEasyRelease_outer];
-  function validateMagnetEasyRelease(value, efficientFloorValue) = 
-  //Convert boolean to list value
-  let(value = is_bool(value) ? value ? MagnetEasyRelease_auto : MagnetEasyRelease_off : value,
-      autoValue = value == MagnetEasyRelease_auto 
-        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer 
-        : value) 
-  assert(list_contains(MagnetEasyRelease_values, autoValue), typeerror("MagnetEasyRelease", autoValue))
-  autoValue;
-  
 EfficientFloor_off = "off";
 EfficientFloor_on = "on";
 EfficientFloor_rounded = "rounded";
@@ -97,7 +85,9 @@ function CupBaseSettings(
     spacer = false,
     minimumPrintablePadSize = 0,
     flatBaseRoundedRadius=-1,
-    flatBaseRoundedEasyPrint=-1
+    flatBaseRoundedEasyPrint=-1,
+    magnetCaptiveHeight = 0,
+    alignGrid = ["near", "near"]
     ) = 
   let(
     magnetSize = 
@@ -128,13 +118,15 @@ function CupBaseSettings(
       spacer,
       minimumPrintablePadSize,
       flatBaseRoundedRadius,
-      flatBaseRoundedEasyPrint
+      flatBaseRoundedEasyPrint,
+      magnetCaptiveHeight,
+      alignGrid
       ],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
   
 function ValidateCupBaseSettings(settings, num_x, num_y) =
-  assert(is_list(settings) && len(settings) == 15, typeerror_list("CupBase Settings", settings, 15))
+  assert(is_list(settings) && len(settings) == 17, typeerror_list("CupBase Settings", settings, 17))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_CenterMagnetSize]) && len(settings[iCupBase_CenterMagnetSize])==2, "CenterMagnet Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_ScrewSize]) && len(settings[iCupBase_ScrewSize])==2, "ScrewSize Magnet Setting must be a list of length 2")
@@ -146,6 +138,8 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_string(settings[iCupBase_FlatBase]), "CupBase FlatBase Settings must be a string")
   assert(is_bool(settings[iCupBase_Spacer]), "CupBase Spacer Settings must be a boolean")
   assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
+  assert(is_num(settings[iCupBase_MagnetCaptiveHeight]), "CupBase Magnet Captive height setting must a number")
+  assert(is_list(settings[iCupBase_AlignGrid]) && len(settings[iCupBase_AlignGrid])==2, "CupBase AlignGrid Setting must be a list of length 2")
   
   let(
     efficientFloor = validateEfficientFloor(settings[iCupBase_EfficientFloor]),
@@ -166,5 +160,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       settings[iCupBase_Spacer],
       settings[iCupBase_MinimumPrintablePadSize],
       settings[iCupBase_FlatBaseRoundedRadius],
-      settings[iCupBase_FlatBaseRoundedEasyPrint]
+      settings[iCupBase_FlatBaseRoundedEasyPrint],
+      settings[iCupBase_MagnetCaptiveHeight],
+      settings[iCupBase_AlignGrid]
       ];

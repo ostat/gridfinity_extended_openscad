@@ -2,7 +2,7 @@ include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity_cup.scad>
 use <modules/module_gridfinity_block.scad>
 
-use <modules/thridparty/dotscad/ring_extrude.scad>;
+use <modules/thirdparty/dotscad/ring_extrude.scad>;
 
 /*<!!start gridfinity_marble!!>*/
 /* [marbleRun] */

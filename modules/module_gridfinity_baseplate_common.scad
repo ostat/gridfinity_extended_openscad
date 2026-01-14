@@ -1,6 +1,8 @@
 // include instead of use, so we get the pitch
 include <gridfinity_constants.scad>
+include <module_utility.scad>
 use <module_gridfinity_block.scad>
+include <module_magnet.scad>
 
 iBaseplateTypeSettings_SupportsMagnets = true;
   
@@ -142,7 +144,7 @@ module frame_plain(
       position_fill_grid_y = position_fill_grid_y,
       extra_down = extra_down, 
       frameLipHeight = frameLipHeight,
-      cornerRadius = gf_cup_corner_radius,
+      cornerRadius = env_corner_radius(),
       remove_bottom_taper = remove_bottom_taper,
       reducedWallHeight = reducedWallHeight){
         //cell cavities
@@ -151,6 +153,35 @@ module frame_plain(
         if($children >=2) children(1);
       }
   }
+}
+debug_baseplate_cavities = false;
+if(debug_baseplate_cavities){
+  baseplate_cavities(1,1,10);
+  
+  translate([50,0,0])
+  baseplate_cavities(1,1,10, magnetSize=[0,0]);
+  translate([100,0,0])
+  baseplate_cavities(1,1,10, centerScrewEnabled=true);
+  translate([150,0,0])
+  baseplate_cavities(1,1,10, magnetSize=[0,0], centerScrewEnabled=true);
+
+  translate([0,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true);
+  translate([50,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true, magnetSize=[0,0]);
+  translate([100,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true, centerScrewEnabled=true);
+  translate([150,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true, magnetSize=[0,0], centerScrewEnabled=true);
+
+  translate([0,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true);
+  translate([50,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true, magnetSize=[0,0]);
+  translate([100,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true, centerScrewEnabled=true);
+  translate([150,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true, magnetSize=[0,0], centerScrewEnabled=true);
 }
 
 module baseplate_cavities(
@@ -172,13 +203,22 @@ module baseplate_cavities(
   assert(is_num(num_y) && num_y >= 0 && num_y <=1, "num_y must be a number between 0 and 1");
   assert(is_num(baseCavityHeight), "baseCavityHeight must be a number");
   
+  fudgeFactor = 0.01;
+
+  magnet_position = baseCavityHeight-magnetSize.y-magnetTopCover-fudgeFactor;
+  magnet_easy_release = ((magnetZOffset > 0) != (magnetTopCover>0)) ? MagnetEasyRelease_outer : MagnetEasyRelease_off;
+  echo(magnet_position=magnet_position, baseCavityHeight=baseCavityHeight, magnetSize=magnetSize );
+      
   if(env_help_enabled("debug")) echo("baseplate_cavities", baseCavityHeight=baseCavityHeight, magnetSize=magnetSize, magnetZOffset=magnetZOffset, magnetTopCover=magnetTopCover);
    
   counterSinkDepth = 2.5;
   screwOuterChamfer = 8.5;
   weightDepth = 4;
 
-  magnet_position = calculateAttachmentPositions(magnetSize[0]);
+  magnet_screw_size = max(
+        cornerScrewEnabled ? 8.5 : 0,
+        magnetSize[0]);
+  magnet_screw_position = calculateAttachmentPositions(magnet_screw_size);
   magnetborder = 5;
   
   _centerScrewEnabled = centerScrewEnabled && num_x >= 1 && num_y >=1;
@@ -188,9 +228,22 @@ module baseplate_cavities(
     (reverseAlignment.x ? (-1/2+num_x) : 1/2)*env_pitch().x,
     (reverseAlignment.y ? (-1/2+num_y) : 1/2)*env_pitch().y, 0])
   union(){
-    gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
-      translate([0, 0, baseCavityHeight-magnetSize.y-magnetTopCover]) 
-      cylinder(d=magnetSize[0], h=magnetSize.y);
+    gridcopycorners(r=magnet_screw_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
+      //Magnets
+        rdeg =
+          $gcci[2] == [ 1, 1] ? 90 :
+          $gcci[2] == [-1, 1] ? 180 :
+          $gcci[2] == [-1,-1] ? -90 :
+          $gcci[2] == [ 1,-1] ? 0 : 0;
+        rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
+      translate([0, 0, magnetSize.y/2+magnet_position])
+      mirror(magnet_position <= 0 ? [0,0,0] : [0,0,1])
+      magnet_easy_release(
+        magnetDiameter=magnetSize[0], 
+        magnetThickness=magnetSize.y+fudgeFactor, 
+        easyMagnetRelease=magnet_easy_release != MagnetEasyRelease_off,
+        center = true);
+      //cylinder(d=magnetSize[0], h=magnetSize.y);
 
       // counter-sunk holes in the bottom
       if(cornerScrewEnabled){
@@ -227,16 +280,14 @@ module baseplate_cavities(
     
     //rounded souround for the magnet
     if(magnetSouround && !_centerScrewEnabled && !_weightHolder){
-      supportDiameter = max(
-        cornerScrewEnabled ? 8.5 : 0,
-        magnetSize[0]) + magnetborder;
+      supportDiameter = magnet_screw_size + magnetborder;
 
       difference(){
         translate([-env_pitch().x/2,-env_pitch().y/2,0])
           cube([env_pitch().x,env_pitch().y,baseCavityHeight]);
         if((cornerScrewEnabled || magnetSize[0]> 0))
         translate([0, 0, -fudgeFactor*2]) 
-        gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
+        gridcopycorners(r=magnet_screw_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
           rdeg =
             $gcci[2] == [ 1, 1] ? 90 :
             $gcci[2] == [-1, 1] ? 180 :

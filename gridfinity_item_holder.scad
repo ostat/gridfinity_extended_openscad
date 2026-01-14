@@ -36,10 +36,13 @@ itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard","custom":custom shape - beta feature]
 // The number of sides for a round hole
 itemholder_hole_sides = 4; 
-// Diameter of the round hole
+// Diameter of, round hole, or corners for square hole
 itemholder_hole_diameter = 5; //0.1
+// Radius of the bottom of the custom shape
+itemholder_hole_bottom_radius = 0;
 // The size the hole
 itemholder_hole_size = [20, 25]; //0.1
+itemholder_hole_rotation = 0;
 
 /* [Item Holder - Item Layout] */
 // Should the grid be square or hex
@@ -51,7 +54,8 @@ itemholder_hole_gridx = 0; //1
 // Number of holes in the y dimension, 0 is dynamic, y.5, is only valid for hex.
 itemholder_hole_gridy = 0; //0.5
 //Auto set the bin height based on the hole size.
-itemholder_auto_bin_height = true;
+itemholder_auto_bin_height = "enabled"; //["enabled","enabled_full","disabled"]
+// The number of sides for a round hole 
 itemholder_compartments = [1,1]; //[1:10]
 // Spacing around the compartments
 itemholder_compartment_spacing = 3; //0.1
@@ -176,10 +180,12 @@ sliding_lid_lip_enabled = false;
 /* [Finger Slide] */
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
-// Radius of the corner fillet
-fingerslide_radius = 8;
-// wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
-fingerslide_walls=[1,0,0,0];  //[0:1:1]
+// Radius of the corner fillet, 0:none, >1: radius in mm, <0 dimention/abs(n) (i.e. -3 is 1/3 the width)
+fingerslide_radius = -3;
+// wall to enable on, front, back, left, right. 0: disabled; 1: enabled using radius; >1: override radius.
+fingerslide_walls=[1,0,0,0];
+//Align the fingerslide with the lip
+fingerslide_lip_aligned=true;
 
 /* [Tapered Corner] */
 tapered_corner = "none"; //[none, rounded, chamfered]
@@ -191,23 +197,27 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
 // Spacing between pattern
-wallpattern_hole_spacing = 2; //0.1
+wallpattern_strength = 2; //0.1
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1];  //[0:1:1]
+// rotate the grid
+wallpattern_rotate_grid=false;
+//Size of the hole
+wallpattern_cell_size = [10,10]; //0.1
 // Add the pattern to the dividers
 wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
-wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
-//Size of the hole
-wallpattern_hole_size = [5,5]; //0.1
+wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
 wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 // border around the wall pattern, default is wall thickness
 wallpattern_border = 0;
+// depth of imprint in mm, 0 = is wall width.
+wallpattern_depth = 0; // 0.1
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
@@ -253,6 +263,8 @@ text_1 = false;
 text_size = 6; // 0.1
 // Depth of text, in mm
 text_depth = 0.3; // 0.01
+// Offset of text , in mm
+text_offset = [0, 0]; // 0.1
 // Font to use
 text_font = "Aldo";  // [Aldo, B612, "Open Sans", Ubuntu]
 // Add free-form text line to bin bottom (printing date, serial, etc)
@@ -303,13 +315,13 @@ module mycustomshape(){
   //item spacing 4
   translate([4,0,0])
   union(){
-    chamfered_cube(size=[9.9,25.3,30], chamfer = 1, cornerRadius = 1);
+    chamfered_cube(size=[9.9,25.3,30], topChamfer = 1, cornerRadius = 1, bottomRadius=0);
     translate([-2.1,7.55,0])
-    chamfered_cube(size=[3,10,30], chamfer = 1, cornerRadius = 1);
+    chamfered_cube(size=[3,10,30], topChamfer = 1, cornerRadius = 1, bottomRadius=0);
   }
   
   //You can use any shapes but these are some example shapes
-  //chamfered_cube(size=[10,10,10], chamfer = 1, cornerRadius = 1);
+  //chamfered_cube(size=[10,10,10], chamfer = 1, cornerRadius = 1,  bottomRadius=0);
   //chamferedRectangleTop(size=[10,10,10], chamfer = 1, cornerRadius = 1);
   //chamferedHalfCylinder(h=10, r=5, circleFn=64, chamfer=0.5);
   //chamferedCylinder(h=10, r=5, circleFn=64, chamfer=0.5);
@@ -402,6 +414,8 @@ module itemholder(
   holeClearance = 0.2,
   holeSpacing = 0,
   holeGrid  = [0,0],
+  holeRotation = [0,0,0],
+  holeBottomRadius = 0,
   floorThickness,
   wallThickness,
   compartments = [1,1],
@@ -472,10 +486,11 @@ module itemholder(
                 chamfer = holeChamfer,
                 alternate = _multiCardCompact > 0 && (($idx.y % 2) != $idx.x % 2));
             } else if(item[ishape] == "square") {
+              rotate_around([0,0,holeRotation], [_holeSize.x/2, _holeSize.y/2])
               chamfered_cube(
                 size = [_holeSize.x, _holeSize.y, _depth+fudgeFactor], 
-                chamfer=holeChamfer, 
-                cornerRadius=item[iitemDiameter]/2);
+                topChamfer=holeChamfer, 
+                cornerRadius=item[iitemDiameter]/2, bottomRadius=holeBottomRadius);
             } else if(item[ishape] == "halfround") {
               translate([_holeSize.x/2,_holeSize.y/2,0])
                 chamferedHalfCylinder(
@@ -518,6 +533,13 @@ module itemholder(
     ,help);
 }
 
+module rotate_around(roation, center){
+   translate([center.x,center.y])
+   rotate(roation)
+   translate([-center.x,-center.y])
+   children();
+}
+
 module samplesholder(
   knowItemCode = "custom",
   customHoleBaseShape,
@@ -528,6 +550,7 @@ module samplesholder(
   holeSize = [10,10],
   holeDepth = 5, 
   holeChamfer = 1,
+  holeBottomRadius=0,
   holeClearance = 0.2,
   wallThickness,
   help = false)
@@ -577,7 +600,7 @@ module samplesholder(
       translate([-_holeSize.x/2-wallThickness,-_holeSize.y/2-wallThickness,-wallThickness-fudgeFactor])
         cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
       translate([-_holeSize.x/2,-_holeSize.y/2,0])
-        chamfered_cube([_holeSize.x, _holeSize.y, _depth+fudgeFactor], chamfer=holeChamfer, cornerRadius=item[iitemDiameter]/2);
+        chamfered_cube([_holeSize.x, _holeSize.y, _depth+fudgeFactor], topChamfer=holeChamfer, cornerRadius=item[iitemDiameter]/2, bottomRadius=holeBottomRadius);
     }
   } else if(item[ishape] == "halfround") {
     difference(){
@@ -627,6 +650,8 @@ module gridfinity_itemholder(
   itemholder_hole_clearance = itemholder_hole_clearance,
   itemholder_hole_depth = itemholder_hole_depth,
   itemholder_hole_chamfer = itemholder_hole_chamfer,
+  itemholder_hole_rotation = itemholder_hole_rotation,
+  itemholder_hole_bottom_radius = itemholder_hole_bottom_radius,
   itemholder_compartments = itemholder_compartments,
   itemholder_compartment_spacing = itemholder_compartment_spacing,
   itemholder_compartment_centered = itemholder_compartment_centered,
@@ -651,8 +676,11 @@ module gridfinity_itemholder(
     labelSize=label_size,
     labelRelief=label_relief,
     labelWalls=label_walls),
-  fingerslide=fingerslide,
-  fingerslide_radius=fingerslide_radius,
+  finger_slide_settings = FingerSlideSettings(
+    type = fingerslide,
+    radius = fingerslide_radius,
+    walls = fingerslide_walls,
+    lip_aligned = fingerslide_lip_aligned),
   magnet_size=enable_magnets?magnet_size:[0,0],
   magnet_easy_release=magnet_easy_release,
   screw_size=enable_screws?screw_size:[0,0],
@@ -663,21 +691,26 @@ module gridfinity_itemholder(
   wall_thickness=wall_thickness,
   hole_overhang_remedy=hole_overhang_remedy,
   efficient_floor=efficient_floor,
-  chamber_wall_thickness=chamber_wall_thickness,
-  vertical_chambers = vertical_chambers,
-  vertical_separator_bend_position=vertical_separator_bend_position,
-  vertical_separator_bend_angle=vertical_separator_bend_angle,
-  vertical_separator_bend_separation=vertical_separator_bend_separation,
-  vertical_separator_cut_depth=vertical_separator_cut_depth,
-  vertical_irregular_subdivisions=vertical_irregular_subdivisions,
-  vertical_separator_config=vertical_separator_config,
-  horizontal_chambers=horizontal_chambers,
-  horizontal_separator_bend_position=horizontal_separator_bend_position,
-  horizontal_separator_bend_angle=horizontal_separator_bend_angle,
-  horizontal_separator_bend_separation=horizontal_separator_bend_separation,
-  horizontal_separator_cut_depth=horizontal_separator_cut_depth,
-  horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
-  horizontal_separator_config=horizontal_separator_config, 
+  vertical_chambers = ChamberSettings(
+    chambers_count = vertical_chambers,
+    chamber_wall_thickness = chamber_wall_thickness,
+    chamber_wall_headroom = chamber_wall_headroom,
+    separator_bend_position = vertical_separator_bend_position,
+    separator_bend_angle = vertical_separator_bend_angle,
+    separator_bend_separation = vertical_separator_bend_separation,
+    separator_cut_depth = vertical_separator_cut_depth,
+    irregular_subdivisions = vertical_irregular_subdivisions,
+    separator_config = vertical_separator_config),
+  horizontal_chambers = ChamberSettings(
+    chambers_count = horizontal_chambers,
+    chamber_wall_thickness = chamber_wall_thickness,
+    chamber_wall_headroom = chamber_wall_headroom,
+    separator_bend_position = horizontal_separator_bend_position,
+    separator_bend_angle = horizontal_separator_bend_angle,
+    separator_bend_separation = horizontal_separator_bend_separation,
+    separator_cut_depth = horizontal_separator_cut_depth,
+    irregular_subdivisions = horizontal_irregular_subdivisions,
+    separator_config = horizontal_separator_config),
   half_pitch=half_pitch,
   lip_settings = LipSettings(
     lipStyle=lip_style, 
@@ -696,28 +729,32 @@ module gridfinity_itemholder(
   wall_pattern_settings = PatternSettings(
     patternEnabled = wallpattern_enabled, 
     patternStyle = wallpattern_style, 
+    patternRotate = wallpattern_rotate_grid,
     patternFill = wallpattern_fill,
     patternBorder = wallpattern_border, 
-    patternHoleSize = wallpattern_hole_size, 
+    patternDepth = wallpattern_depth,
+    patternCellSize = wallpattern_cell_size, 
     patternHoleSides = wallpattern_hole_sides,
-    patternHoleSpacing = wallpattern_hole_spacing, 
+    patternStrength = wallpattern_strength, 
     patternHoleRadius = wallpattern_hole_radius,
     patternGridChamfer = wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
     patternBrickWeight = wallpattern_pattern_brick_weight,
-    patternFs = wallpattern_pattern_quality), 
-  wallcutout_vertical=wallcutout_vertical,
-  wallcutout_vertical_position=wallcutout_vertical_position,
-  wallcutout_vertical_width=wallcutout_vertical_width,
-  wallcutout_vertical_angle=wallcutout_vertical_angle,
-  wallcutout_vertical_height=wallcutout_vertical_height,
-  wallcutout_vertical_corner_radius=wallcutout_vertical_corner_radius,
-  wallcutout_horizontal=wallcutout_horizontal,
-  wallcutout_horizontal_position=wallcutout_horizontal_position,
-  wallcutout_horizontal_width=wallcutout_horizontal_width,
-  wallcutout_horizontal_angle=wallcutout_horizontal_angle,
-  wallcutout_horizontal_height=wallcutout_horizontal_height,
-  wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
+    patternFs = wallpattern_pattern_quality),
+  wallcutout_vertical_settings = WallCutoutSettings(
+    type = wallcutout_vertical, 
+    position = wallcutout_vertical_position, 
+    width = wallcutout_vertical_width,
+    angle = wallcutout_vertical_angle,
+    height = wallcutout_vertical_height, 
+    corner_radius = wallcutout_vertical_corner_radius),
+  wallcutout_horizontal_settings = WallCutoutSettings(
+    type = wallcutout_horizontal, 
+    position = wallcutout_horizontal_position, 
+    width = wallcutout_horizontal_width,
+    angle = wallcutout_horizontal_angle,
+    height = wallcutout_horizontal_height, 
+    corner_radius = wallcutout_horizontal_corner_radius),
   extension_enabled=[
     [extension_x_enabled,extension_x_position],
     [extension_y_enabled,extension_y_position]],
@@ -751,17 +788,21 @@ module gridfinity_itemholder(
           holeClearance = itemholder_hole_clearance);
 
   calculatedItemDepth = itemCalc[icHoleSize].z;
-
+  calculatedItemClearanceHeight = item[iitemHeight];
   // min floor height
   baseClearanceHeight = cupBaseClearanceHeight(magnet_size[1], screw_size[1], center_magnet_thickness);
   
   //calculate the bin height. This math is not right
-  height = !itemholder_auto_bin_height || calculatedItemDepth <=0 ? num_z
+  height = 
+    let(itemheightneeded = itemholder_auto_bin_height == "enabled_full" ? calculatedItemClearanceHeight: calculatedItemDepth)
+    itemholder_auto_bin_height == "disabled" || itemheightneeded <=0 
+      ? num_z
       : filled_in != "disabled"
-        ? (baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z
-        : ceil((baseClearanceHeight + floor_thickness + calculatedItemDepth)/env_pitch().z);
+        ? (baseClearanceHeight + floor_thickness + itemheightneeded)/env_pitch().z
+        : ceil((baseClearanceHeight + floor_thickness + itemheightneeded)/env_pitch().z);
+   
   // calculate floor thickness
-  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=calculatedItemDepth + gf_cup_floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
+  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=calculatedItemDepth + floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
 
   
   if(env_help_enabled("info")) echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedUsableFloorThickness=calculatedUsableFloorThickness, baseClearanceHeight=baseClearanceHeight, height=height); 
@@ -779,9 +820,7 @@ module gridfinity_itemholder(
           labelSize=label_size,
           labelRelief=label_relief,
           labelWalls=label_walls),
-        fingerslide=fingerslide,
-        fingerslide_radius=fingerslide_radius,
-        fingerslide_walls=fingerslide_walls,
+        finger_slide_settings = finger_slide_settings,
         cupBase_settings = CupBaseSettings(
           magnetSize = magnet_size,
           magnetEasyRelease = magnet_easy_release, 
@@ -796,22 +835,8 @@ module gridfinity_itemholder(
           flatBase=flat_base,
           spacer=spacer),
         wall_thickness=wall_thickness,
-        chamber_wall_thickness=chamber_wall_thickness,
-        chamber_wall_headroom=chamber_wall_headroom,
         vertical_chambers = vertical_chambers,
-        vertical_separator_bend_position=vertical_separator_bend_position,
-        vertical_separator_bend_angle=vertical_separator_bend_angle,
-        vertical_separator_bend_separation=vertical_separator_bend_separation,
-        vertical_separator_cut_depth=vertical_separator_cut_depth,
-        vertical_irregular_subdivisions=vertical_irregular_subdivisions,
-        vertical_separator_config=vertical_separator_config,
         horizontal_chambers=horizontal_chambers,
-        horizontal_separator_bend_position=horizontal_separator_bend_position,
-        horizontal_separator_bend_angle=horizontal_separator_bend_angle,
-        horizontal_separator_bend_separation=horizontal_separator_bend_separation,
-        horizontal_separator_cut_depth=horizontal_separator_cut_depth,
-        horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
-        horizontal_separator_config=horizontal_separator_config, 
         lip_settings=lip_settings,
         headroom=headroom,
         tapered_corner=tapered_corner,
@@ -820,18 +845,8 @@ module gridfinity_itemholder(
         wallpattern_walls=wallpattern_walls,
         wallpattern_dividers_enabled=wallpattern_dividers_enabled,
         wall_pattern_settings = wall_pattern_settings, 
-        wallcutout_vertical=wallcutout_vertical,
-        wallcutout_vertical_position=wallcutout_vertical_position,
-        wallcutout_vertical_width=wallcutout_vertical_width,
-        wallcutout_vertical_angle=wallcutout_vertical_angle,
-        wallcutout_vertical_height=wallcutout_vertical_height,
-        wallcutout_vertical_corner_radius=wallcutout_vertical_corner_radius,
-        wallcutout_horizontal=wallcutout_horizontal,
-        wallcutout_horizontal_position=wallcutout_horizontal_position,
-        wallcutout_horizontal_width=wallcutout_horizontal_width,
-        wallcutout_horizontal_angle=wallcutout_horizontal_angle,
-        wallcutout_horizontal_height=wallcutout_horizontal_height,
-        wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
+        wallcutout_vertical_settings=wallcutout_vertical_settings,
+        wallcutout_horizontal_settings=wallcutout_horizontal_settings,
         extendable_Settings = ExtendableSettings(
           extendablexEnabled = extension_x_enabled, 
           extendablexPosition = extension_x_position, 
@@ -851,17 +866,14 @@ module gridfinity_itemholder(
           baseTextLine2Value = text_2_text,
           baseTextFontSize = text_size,
           baseTextFont = text_font,
-          baseTextDepth = text_depth
-        )
-      );
+          baseTextDepth = text_depth,
+          baseTextOffset = text_offset));
       /*<!!end gridfinity_basic_cup!!>*/
 
       itemholder_z_bottom = max(
           baseClearanceHeight, 
           baseClearanceHeight + floor_thickness - calculatedItemDepth);
       
-      echo("gridfinity_itemholder", baseClearanceHeight=baseClearanceHeight, floor_thickness=floor_thickness, calculatedUsableFloorThickness=calculatedUsableFloorThickness, calculatedItemDepth=calculatedItemDepth, itemholder_z_bottom=itemholder_z_bottom)
-
       color(color_extension)
       translate([0, 0, itemholder_z_bottom])
       itemholder(
@@ -879,6 +891,8 @@ module gridfinity_itemholder(
         holeChamfer = itemholder_hole_chamfer,
         holeGrid  = itemholder_hole_grid,
         holeClearance = itemholder_hole_clearance,
+        holeRotation = itemholder_hole_rotation,
+        holeBottomRadius = itemholder_hole_bottom_radius,
         floorThickness = calculatedUsableFloorThickness,
         wallThickness = wall_thickness,
         compartments = itemholder_compartments,
@@ -901,6 +915,7 @@ module gridfinity_itemholder(
       holeDepth = itemholder_hole_depth, 
       holeChamfer = itemholder_hole_chamfer,
       holeClearance = itemholder_hole_clearance,
+      holeBottomRadius = itemholder_hole_bottom_radius,
       wallThickness = itemholder_sample_wall_thickness,
       help=help);
   }
@@ -912,6 +927,6 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, height],
+  cut = [cutx, cuty, 0],
   setColour = set_colour)
 gridfinity_itemholder();

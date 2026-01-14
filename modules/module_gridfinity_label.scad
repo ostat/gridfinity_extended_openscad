@@ -32,6 +32,7 @@ iLabelSettings_position = 1;
 iLabelSettings_size = 2;
 iLabelSettings_relief = 3;
 iLabelSettings_walls = 4;
+iLabelSettings_dividers = 5;
 
 LabelStyle_disabled = "disabled";
 LabelStyle_normal = "normal";
@@ -51,8 +52,17 @@ LabelPosition_leftchamber = "leftchamber";
 LabelPosition_rightchamber = "rightchamber";
 LabelPosition_centerchamber = "centerchamber";
 LabelPosition_values = [LabelPosition_left,LabelPosition_center,LabelPosition_right,LabelPosition_leftchamber,LabelPosition_rightchamber,LabelPosition_centerchamber];
-function validateLabelPosition(value) = 
+function validateLabelPosition(value) =
   assert(list_contains(LabelPosition_values, value), typeerror("LabelPosition", value))
+  value;
+
+LabelDividers_disabled = "disabled";
+LabelDividers_horizontal = "horizontal";
+LabelDividers_vertical = "vertical";
+LabelDividers_both = "both";
+LabelDividers_values = [LabelDividers_disabled, LabelDividers_horizontal, LabelDividers_vertical, LabelDividers_both];
+function validateLabelDividers(value) =
+  assert(list_contains(LabelDividers_values, value), typeerror("LabelDividers", value))
   value;
   
 function calculateLabelSize(label_size) = 
@@ -69,14 +79,16 @@ function calculateLabelSize(label_size) =
         [labelx,labely,labelz,labelr];
 
 function LabelSettings(
-    labelStyle= "normal", 
-    labelPosition="left", 
-    // Width, Depth, Height, Radius.   
+    labelStyle= "normal",
+    labelPosition="left",
+    // Width, Depth, Height, Radius.
     labelSize=[0,14,0,0.6],
     // Size in mm of relief where appropiate. Width, depth, height, radius
     labelRelief=[0,0,0,0.6],
     // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
-    labelWalls=[0,1,0,0]) = 
+    labelWalls=[0,1,0,0],
+    // Enable labels on internal divider walls. "disabled", "horizontal", "vertical", "both"
+    labelDividers="disabled") =
   let(
     labelRelief = is_num(labelRelief) ? [0,0,labelRelief,0] : labelRelief,
     labelWalls = is_undef(labelWalls) ? [0,1,0,0] : labelWalls,
@@ -85,7 +97,8 @@ function LabelSettings(
       labelPosition,
       labelSize,
       labelRelief,
-      labelWalls],
+      labelWalls,
+      labelDividers],
     validatedResult = ValidateLabelSettings(result)
   ) validatedResult;
 
@@ -94,9 +107,9 @@ function LabelSettings(
                 : label_position == LabelPosition_right || label_position == LabelPosition_rightchamber ? label_num_x-labelSocketSize.x-socketPadding
                 : label_position == LabelPosition_center || label_position == LabelPosition_centerchamber ? (label_num_x-labelSocketSize.x)/2
                 : socketPadding;
-                
+
 function ValidateLabelSettings(settings) =
-  assert(is_list(settings) && len(settings)== 5, "Label Settings must be a list of length 5")
+  assert(is_list(settings) && len(settings)== 6, "Label Settings must be a list of length 6")
   assert(is_list(settings[iLabelSettings_size]) && len(settings[iLabelSettings_size])==4, "Label Settings Size must length 4")
   assert(is_list(settings[iLabelSettings_relief]) && len(settings[iLabelSettings_relief])==4, "Label Settings relief must length 4")
   assert(is_list(settings[iLabelSettings_walls]) && len(settings[iLabelSettings_walls])==4, "Label Settings walls must length 4") [
@@ -104,7 +117,8 @@ function ValidateLabelSettings(settings) =
       validateLabelPosition(settings[iLabelSettings_position]),
       settings[iLabelSettings_size],
       settings[iLabelSettings_relief],
-      settings[iLabelSettings_walls]];
+      settings[iLabelSettings_walls],
+      validateLabelDividers(settings[iLabelSettings_dividers])];
 
 module gridfinity_label(
   num_x,
@@ -271,6 +285,179 @@ module gridfinity_label(
           }
     }
   }
+
+  // Render labels on internal separator walls
+  label_dividers = label_settings[iLabelSettings_dividers];
+  if(label_dividers != LabelDividers_disabled) {
+    // Define labelPoints for internal separator labels (same as outer walls)
+    dividerLabelPoints = [[ 0-labelSize.y, -labelCornerRadius],
+      [ 0, -labelCornerRadius ],
+      [ 0, -labelCornerRadius-labelSize.z ]
+    ];
+
+    color(env_colour(color_label))
+    tz(zpoint+fudgeFactor)
+    union() {
+    // Labels on horizontal separators (dividers running along X axis, creating rows in Y)
+    // These separators face "back" direction (toward +Y)
+    if((label_dividers == LabelDividers_horizontal || label_dividers == LabelDividers_both) &&
+       is_list(horizontal_separator_positions) && len(horizontal_separator_positions) > 0) {
+      for(sep_idx = [0:len(horizontal_separator_positions)-1]) {
+        sep = horizontal_separator_positions[sep_idx];
+        sep_y_pos = sep[iSeparatorPosition];
+        sep_wall_thickness = is_list(sep[iSeparatorWallThickness])
+          ? sep[iSeparatorWallThickness][0]
+          : sep[iSeparatorWallThickness];
+
+        // Calculate chamber widths based on vertical separators
+        horzChamberWidths = len(vertical_separator_positions) < 1 ||
+          label_position == LabelPosition_left ||
+          label_position == LabelPosition_center ||
+          label_position == LabelPosition_right ?
+            [ num_x*env_pitch().x ]
+            : [ for (i=[0:len(vertical_separator_positions)])
+              (i==len(vertical_separator_positions)
+                ? num_x*env_pitch().x
+                : vertical_separator_positions[i][iSeparatorPosition]) - (i==0 ? 0 : vertical_separator_positions[i-1][iSeparatorPosition]) ];
+
+        horzLabelWidthmm = labelSize.x <= 0 ? num_x*env_pitch().x : labelSize.x * env_pitch().x;
+
+        // Position at the separator, facing back (+Y direction)
+        translate([0, sep_y_pos + sep_wall_thickness/2, 0])
+        rotate([0,0,0])
+        for (i=[0:len(horzChamberWidths)-1]) {
+          horzChamberStart = i == 0
+            ? 0
+            : vertical_separator_positions[i-1][iSeparatorPosition] +
+              vertical_separator_positions[i-1][iSeparatorBendSeparation]/2
+                *(vertical_separator_positions[i-1][iSeparatorBendAngle] < 0 ? -1 : 1);
+          horzChamberWidth = horzChamberWidths[i];
+          horz_label_num_x = (horzLabelWidthmm == 0 || horzLabelWidthmm > horzChamberWidth) ? horzChamberWidth : horzLabelWidthmm;
+          horz_label_pos_x = ((label_position == "center" || label_position == "centerchamber") ? (horzChamberWidth - horz_label_num_x) / 2
+                          : (label_position == "right" || label_position == "rightchamber") ? horzChamberWidth - horz_label_num_x
+                          : 0);
+
+          translate([(horzChamberStart + horz_label_pos_x)+labelCornerRadius,-labelCornerRadius,0])
+          union(){
+            difference(){
+              if(render_option == "label" || render_option == "labelwithsocket")
+              union(){
+                hull() for (y=[0, 1, 2])
+                translate([0, dividerLabelPoints[y][0], dividerLabelPoints[y][1]])
+                  rotate([0, 90, 0])
+                  union(){
+                    tz(abs(horz_label_num_x-labelCornerRadius*2))
+                    sphere(r=labelCornerRadius);
+                    sphere(r=labelCornerRadius);
+                  }
+                }
+
+              if(render_option == "labelwithsocket")
+                labelSockets(
+                  label_style=label_style,
+                  label_relief=label_relief,
+                  labelPoints=dividerLabelPoints,
+                  label_position=label_position,
+                  labelCornerRadius=labelCornerRadius,
+                  label_num_x=horz_label_num_x,
+                  socket_padding = socket_padding);
+            }
+
+            if(render_option == "socket")
+              labelSockets(
+                label_style=label_style,
+                label_relief=label_relief,
+                labelPoints=dividerLabelPoints,
+                label_position=label_position,
+                labelCornerRadius=labelCornerRadius,
+                label_num_x=horz_label_num_x,
+                socket_padding = socket_padding);
+          }
+        }
+      }
+    }
+
+    // Labels on vertical separators (dividers running along Y axis, creating columns in X)
+    // These separators face "right" direction (toward +X)
+    if((label_dividers == LabelDividers_vertical || label_dividers == LabelDividers_both) &&
+       is_list(vertical_separator_positions) && len(vertical_separator_positions) > 0) {
+      for(sep_idx = [0:len(vertical_separator_positions)-1]) {
+        sep = vertical_separator_positions[sep_idx];
+        sep_x_pos = sep[iSeparatorPosition];
+        sep_wall_thickness = is_list(sep[iSeparatorWallThickness])
+          ? sep[iSeparatorWallThickness][0]
+          : sep[iSeparatorWallThickness];
+
+        // Calculate chamber widths based on horizontal separators
+        vertChamberWidths = len(horizontal_separator_positions) < 1 ||
+          label_position == LabelPosition_left ||
+          label_position == LabelPosition_center ||
+          label_position == LabelPosition_right ?
+            [ num_y*env_pitch().y ]
+            : [ for (i=[0:len(horizontal_separator_positions)])
+              (i==len(horizontal_separator_positions)
+                ? num_y*env_pitch().y
+                : horizontal_separator_positions[i][iSeparatorPosition]) - (i==0 ? 0 : horizontal_separator_positions[i-1][iSeparatorPosition]) ];
+
+        vertLabelWidthmm = labelSize.x <= 0 ? num_y*env_pitch().y : labelSize.x * env_pitch().y;
+
+        // Position at the separator, facing right (+X direction) - rotate 270 like rightWall
+        translate([sep_x_pos + sep_wall_thickness/2, num_y*env_pitch().y, 0])
+        rotate([0,0,270])
+        for (i=[0:len(vertChamberWidths)-1]) {
+          vertChamberStart = i == 0
+            ? 0
+            : horizontal_separator_positions[i-1][iSeparatorPosition] +
+              horizontal_separator_positions[i-1][iSeparatorBendSeparation]/2
+                *(horizontal_separator_positions[i-1][iSeparatorBendAngle] < 0 ? -1 : 1)
+                * -1; // reversed
+          vertChamberWidth = vertChamberWidths[i];
+          vert_label_num_x = (vertLabelWidthmm == 0 || vertLabelWidthmm > vertChamberWidth) ? vertChamberWidth : vertLabelWidthmm;
+          vert_label_pos_x = ((label_position == "center" || label_position == "centerchamber") ? (vertChamberWidth - vert_label_num_x) / 2
+                          : (label_position == "right" || label_position == "rightchamber") ? vertChamberWidth - vert_label_num_x
+                          : 0);
+
+          translate([(vertChamberStart + vert_label_pos_x)+labelCornerRadius,-labelCornerRadius,0])
+          union(){
+            difference(){
+              if(render_option == "label" || render_option == "labelwithsocket")
+              union(){
+                hull() for (y=[0, 1, 2])
+                translate([0, dividerLabelPoints[y][0], dividerLabelPoints[y][1]])
+                  rotate([0, 90, 0])
+                  union(){
+                    tz(abs(vert_label_num_x-labelCornerRadius*2))
+                    sphere(r=labelCornerRadius);
+                    sphere(r=labelCornerRadius);
+                  }
+                }
+
+              if(render_option == "labelwithsocket")
+                labelSockets(
+                  label_style=label_style,
+                  label_relief=label_relief,
+                  labelPoints=dividerLabelPoints,
+                  label_position=label_position,
+                  labelCornerRadius=labelCornerRadius,
+                  label_num_x=vert_label_num_x,
+                  socket_padding = socket_padding);
+            }
+
+            if(render_option == "socket")
+              labelSockets(
+                label_style=label_style,
+                label_relief=label_relief,
+                labelPoints=dividerLabelPoints,
+                label_position=label_position,
+                labelCornerRadius=labelCornerRadius,
+                label_num_x=vert_label_num_x,
+                socket_padding = socket_padding);
+          }
+        }
+      }
+    }
+    } // end union for divider labels
+  }
 }
 
 module labelSockets(
@@ -320,7 +507,7 @@ module labelSockets(
         abs(label_num_x)-fullLipWidth*2-binClearance,
         abs(labelPoints[0][0]-labelPoints[1][0])-fullLipWidth,
         (label_relief.z == 0 ? 1 : label_relief.z) + fudgeFactor];
-      translate([-labelCornerRadius+binClearance/2+fullLipWidth,-.3+labelPoints[0][0]+max(labelCornerRadius,label_relief.y+0.5),0-label_relief.z-fudgeFactor])
+      translate([-labelCornerRadius+binClearance/2+fullLipWidth,-.3+labelPoints[0][0]+max(labelCornerRadius,label_relief.y+0.5),fudgeFactor-label_relief.z])
       label_pred_socket(size=predSize);
     } 
     else if(label_style == LabelStyle_gflabel){
@@ -333,7 +520,7 @@ module labelSockets(
               : label_position == LabelPosition_right ? fullLipWidth
               : label_position == LabelPosition_center ? (label_num_x-gflabelSize.x)/2
               : fullLipWidth;
-        translate([gflabelLeftPosition-labelCornerRadius/2,labelPoints[0][0]+0.25,0])
+        translate([gflabelLeftPosition-labelCornerRadius/2,labelPoints[0][0]+0.25,fudgeFactor])
       label_gflabel_socket(
         size=gflabelSize,
         radius=label_relief[3]);

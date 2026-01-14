@@ -1,4 +1,4 @@
-include <thridparty/ub_helptxt.scad>
+include <thirdparty/ub_helptxt.scad>
 include <module_utility.scad>
 include <functions_environment.scad>
 include <functions_general.scad>
@@ -6,19 +6,31 @@ include <gridfinity_constants.scad>
 include <functions_gridfinity.scad>
 include <module_gridfinity_cup_base.scad>     
 
-module pad_grid(num_x, num_y, half_pitch=false, flat_base="off", minimium_size = 0.2) {
+module pad_grid(
+  num_x, 
+  num_y, 
+  half_pitch=false, 
+  flat_base="off", 
+  minimium_size = 0.2,
+  pitch=env_pitch(), 
+  positionGridx = "near", 
+  positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
   assert(is_bool(half_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
+  //echo("pad_grid", flat_base=flat_base, half_pitch=half_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
   pad_copy(
     num_x = num_x, 
     num_y = num_y, 
     half_pitch = half_pitch, 
     flat_base = flat_base, 
-    minimium_size = minimium_size)
+    minimium_size = minimium_size,
+    pitch=pitch, 
+    positionGridx = positionGridx, 
+    positionGridy = positionGridy)
       pad_oversize($pad_copy_size.x, $pad_copy_size.y);
 }
 
@@ -177,7 +189,13 @@ module pad_oversize(
   assert(is_num(extend_down), "extend_down must be a number >= 0");
   
   if(env_help_enabled("trace")) echo("pad_oversize", num_x=num_x, num_y=num_y, margins= margins);
-  pad_corner_position = [env_pitch().x/2 - 4,env_pitch().y/2 - 4]; // must be 17 to be compatible
+
+  // pad_corner_position = [env_pitch().x/2 - 4,env_pitch().y/2 - 4]; 
+  // must be 17 to be compatible
+  pad_corner_position = [
+    env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
+    env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
+
   bevel1_top = 0.8;     // z of top of bottom-most bevel (bottom of bevel is at z=0)
   bevel2_bottom = 2.6;  // z of bottom of second bevel
   bevel2_top = 5;       // z of top of second bevel
@@ -198,11 +216,11 @@ module pad_oversize(
         hull() cornercopy(pad_corner_position, num_x, num_y) {
           if (sharp_corners) {
             translate(bevel2_bottom) 
-            cylsq2(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+            cylsq2(d1=(env_corner_radius()-2.15+radialgap)*2, d2=(env_corner_radius()+0.25+radialgap+bonus_ht)*2, h=bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
             tz(bevel2_bottom) 
-            cylinder(d1=3.2+2*radialgap, d2=7.5+0.5+2*radialgap+2*bonus_ht, h=bevel2_top-bevel2_bottom+bonus_ht);
+            cylinder(d1=(env_corner_radius()-2.15+radialgap)*2, d2=(env_corner_radius()+0.25+radialgap+bonus_ht)*2, h=bevel2_top-bevel2_bottom+bonus_ht);
           }
         }
       }
@@ -213,12 +231,12 @@ module pad_oversize(
           if (sharp_corners) {
             cylsq(d=1.6+2*radialgap, h=0.1);
             translate([0, 0, bevel1_top]) 
-            cylsq(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
+            cylsq(d=(env_corner_radius()-2.15+radialgap)*2, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
           else {
-            cylinder(d=remove_bottom_taper ? 3.2+2*radialgap : 1.6+2*radialgap, h=0.1);
+            cylinder(d=remove_bottom_taper ? (env_corner_radius()-2.15+radialgap)*2 : 1.6+2*radialgap, h=0.1);
             translate([0, 0, bevel1_top]) 
-              cylinder(d=3.2+2*radialgap, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
+              cylinder(d=(env_corner_radius()-2.15+radialgap)*2, h=1.9+bevel2_top-bevel2_bottom+bonus_ht);
           }
         }
       }
@@ -247,7 +265,14 @@ module pad_oversize(
   }
 }
  
-module pad_copy(num_x, num_y, half_pitch=false, flat_base="off", minimium_size = 0.2) {
+module pad_copy(
+  num_x, num_y, 
+  half_pitch=false, 
+  flat_base="off", 
+  minimium_size = 0.2,
+  pitch=env_pitch(), 
+  positionGridx = "near", 
+  positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
   assert(is_bool(half_pitch));
@@ -264,23 +289,27 @@ module pad_copy(num_x, num_y, half_pitch=false, flat_base="off", minimium_size =
     }
   }
   else if (half_pitch) {
-    gridcopy(ceil(num_x*2), ceil(num_y*2), env_pitch()/2) {
-      //Calculate pad size, last cells might not be 100%
-      $pad_copy_size = [          
-          ($gci.x == ceil(num_x*2)-1 ? (num_x*2-$gci.x)/2 : 0.5),
-          ($gci.y == ceil(num_y*2)-1 ? (num_y*2-$gci.y)/2 : 0.5)];
-      if(env_help_enabled("debug")) echo("pad_grid_half_pitch", gci=$gci, pad_copy_size=$pad_copy_size);
+    gridcopy(
+      num_x=num_x*2, 
+      num_y=num_y*2, 
+      pitch=[pitch.y/2,pitch.x/2,pitch.z],
+      positionGridx = positionGridx, 
+      positionGridy = positionGridy) {
+      $pad_copy_size = $gc_size/2;
+      if(env_help_enabled("debug")) echo("pad_grid_half_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
          children();      }
     }
   }
   else {
-    gridcopy(ceil(num_x), ceil(num_y)) {
-      //Calculate pad size, last cells might not be 100%
-      $pad_copy_size = [
-          ($gci.x == ceil(num_x)-1 ? num_x-$gci.x : 1),
-          ($gci.y == ceil(num_y)-1 ? num_y-$gci.y : 1)];
-      if(env_help_enabled("debug")) echo("pad_grid", gci=$gci, pad_copy_size=$pad_copy_size);
+    gridcopy(
+      num_x=num_x, 
+      num_y=num_y, 
+      pitch=pitch,
+      positionGridx = positionGridx, 
+      positionGridy = positionGridy) {
+      $pad_copy_size = $gc_size;
+      if(env_help_enabled("debug")) echo("pad_grid", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
         children();
       }
@@ -304,8 +333,8 @@ module gridcopy(
       centerGrid = positionGrid == "center",
       padding = ceil(num) != num ? (num - floor(num))/(centerGrid?2:1) : 0,
       count = ceil(num) + ((padding > 0 && centerGrid) ? 1 :0),
-      hasPrePad = padding != 0 && (positionGrid == "center" || positionGrid == "near"),
-      hasPostPad = padding != 0 && (positionGrid == "center" || positionGrid == "far"))
+      hasPrePad = padding != 0 && (positionGrid == "center" || positionGrid == "far"),
+      hasPostPad = padding != 0 && (positionGrid == "center" || positionGrid == "near"))
       [for (i = [ 0 : count - 1 ]) 
         i == 0 && hasPrePad ? [padding,false]
           : i == count-1 && hasPostPad ? [padding,false]
@@ -344,7 +373,14 @@ module gridcopy(
 // pitch, size of one unit.
 // center, center the grid
 // reverseAlignment, reverse the alignment of the corners
-module gridcopycorners(num_x, num_y, r, onlyBoxCorners = false, pitch=env_pitch(), center = false, reverseAlignment=[false,false]) {
+module gridcopycorners(
+  num_x, 
+  num_y, 
+  r, 
+  onlyBoxCorners = false, 
+  pitch=env_pitch(), 
+  center = false, 
+  reverseAlignment=[false,false]) {
   assert(is_list(pitch), "pitch must be a list");
   assert(is_list(r), "pitch must be a list");
   assert(is_num(num_x), "num_x must be a number");
@@ -414,15 +450,37 @@ module debug_cut(cutx, cuty, cutz) {
     children();
     
     //Render the cut, used for debugging
-    if(cutx > 0 && cutz > 0 && $preview){
+    if(cutx != 0 && $preview){
       color(color_cut)
+      translate(cutx > 0 
+        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+        : [(num_x-abs(cutx))*env_pitch().x-fudgeFactor,-fudgeFactor,-fudgeFactor])
       translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([env_pitch().x*cutx,num_y*env_pitch().y+fudgeFactor*2,(cutz+1)*env_pitch().z]);
+        cube([
+            abs(cutx)*env_pitch().x, 
+            num_y*env_pitch().y+fudgeFactor*2,
+            (num_z+1)*env_pitch().z+fudgeFactor*2]);
     }
-    if(cuty > 0 && cutz > 0 && $preview){
+    if(cuty != 0 && $preview){
       color(color_cut)
-      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([num_x*env_pitch().x+fudgeFactor*2,env_pitch().y*cuty,(cutz+1)*env_pitch().z]);
+      translate(cuty > 0 
+        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+        : [-fudgeFactor,(num_y-abs(cuty))*env_pitch().y-fudgeFactor,-fudgeFactor])
+        cube([
+          num_x*env_pitch().x+fudgeFactor*2,
+          abs(cuty)*env_pitch().y,
+          (num_z+1)*env_pitch().z+fudgeFactor*2]);
+    }
+    if(cutz != 0 && $preview){
+      color(color_cut)
+      translate(cutz > 0 
+        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+        : [-fudgeFactor,-fudgeFactor,(num_z+1-abs(cutz))*env_pitch().z-fudgeFactor]
+        )
+        cube([
+          num_x*env_pitch().x+fudgeFactor*2,
+          num_y*env_pitch().y+fudgeFactor*2,
+          abs(cutz)*env_pitch().z]);
     }
   }
 }

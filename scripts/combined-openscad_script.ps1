@@ -159,26 +159,19 @@ function Save-CombinedOpenScadFile([string]$ScadFilePath, [string]$OutputFolder)
     $inputFilePath = $ScadFilePath
     $file = Get-Item -LiteralPath $inputFilePath 
     Write-host "Creating combined file for $($file.Name)" -ForegroundColor Green
-    $resulLines = Get-CombinedOpenScadFile -ScadFilePath $inputFilePath
+    $resulLines = (Get-CombinedOpenScadFile -ScadFilePath $inputFilePath)
+    $resulLines = $resulLines | where {$_ -ne $null} | ForEach-Object { $_.ToString() }
+    Write-host "found lines $($resulLines.count )"
+    $output_path = (Join-Path $OutputFolder $file.Name)
+    #$resulLines | Out-File $output_path -Encoding utf8 
 
-    $resulLines | Out-File (Join-Path $OutputFolder $file.Name) -Encoding utf8
+    #$MyRawString = Get-Content -Raw $MyPath
+    $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
+    [System.IO.File]::WriteAllLines($output_path, $resulLines, $Utf8NoBomEncoding)
 }
+
 cls
 
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_basic_cup.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_drawers.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_socket_holder.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_sliding_lid.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_tray.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_item_holder.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_vertical_divider.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_sieve.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_lid.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_marbel.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_baseplate.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_cutlerytray.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_silverware.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_glue_stick.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_vertical_divider.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_chess.scad') -OutputFolder $OutputFolder
-Save-CombinedOpenScadFile -ScadFilePath (join-path $script:SourceFolder 'gridfinity_baseplate_flsun_q5.scad') -OutputFolder $OutputFolder
+Get-ChildItem $script:SourceFolder -Filter '*.scad' | ForEach-Object {
+    Save-CombinedOpenScadFile -ScadFilePath $_.FullName -OutputFolder $OutputFolder
+}

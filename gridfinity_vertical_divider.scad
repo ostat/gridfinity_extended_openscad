@@ -4,6 +4,7 @@ include <modules/functions_general.scad>
 use <modules/module_gridfinity_cup.scad>
 include <modules/module_gridfinity_cup_base.scad>
 use <modules/module_gridfinity_block.scad>
+include <modules/module_patterns.scad>
 
 /* [Divider] */
 divider_count = 4;
@@ -18,25 +19,29 @@ divider_back_top_angle=45;
 
 /* [Wall Pattern] */
 // Grid wall patter
-wallpattern_enabled=true;
+wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
 // Spacing between pattern
-wallpattern_hole_spacing = 2; //0.1
+wallpattern_strength = 2; //0.1
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1];  //[0:1:1]
+// rotate the grid
+wallpattern_rotate_grid=false;
+//Size of the hole
+wallpattern_cell_size = [10,10]; //0.1
 // Add the pattern to the dividers
 wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
-wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
-//Size of the hole
-wallpattern_hole_size = [5,5]; //0.1
+wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
-wallpattern_fill = "space"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
 // border around the wall pattern, default is wall thickness
 wallpattern_border = 0;
+// depth of imprint in mm, 0 = is wall width.
+wallpattern_depth = 0; // 0.1
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
@@ -245,21 +250,28 @@ module Gridfinity_Divider(
   backTopInset=divider_back_top_inset,
   backTopAngle=divider_back_top_angle,
   wallpatternEnabled=wallpattern_enabled,
-  wallpatternStyle=wallpattern_style,
-  wallpatternHoleSpacing=wallpattern_hole_spacing,
-  wallpatternHoleSides=wallpattern_hole_sides,
-  wallpatternHoleSize=wallpattern_hole_size,
-  wallpatternHoleRadius=wallpattern_hole_radius,
-  wallpatternFill=wallpattern_fill,
-  wallpatternGridChamfer = wallpattern_pattern_grid_chamfer,
-  wallpatternVoronoiNoise = wallpattern_pattern_voronoi_noise,
-  wallpatternBrickWeight = wallpattern_pattern_brick_weight) {
+  pattern_settings = PatternSettings(
+    patternEnabled = wallpattern_enabled, 
+    patternStyle = wallpattern_style, 
+    patternRotate = wallpattern_rotate_grid,
+    patternFill = wallpattern_fill,
+    patternBorder = wallpattern_border, 
+    patternDepth = wallpattern_depth,
+    patternCellSize = wallpattern_cell_size, 
+    patternHoleSides = wallpattern_hole_sides,
+    patternStrength = wallpattern_strength, 
+    patternHoleRadius = wallpattern_hole_radius,
+    patternGridChamfer = wallpattern_pattern_grid_chamfer,
+    patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+    patternBrickWeight = wallpattern_pattern_brick_weight,
+    patternFs = wallpattern_pattern_quality)
+    ) {
 
   num_x = calcDimensionWidth(width);
   num_y = calcDimensionDepth(depth);
   num_z = calcDimensionHeight(height);
   floorHeight = calculateFloorHeight(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=floor_thickness,num_z=num_z, efficient_floor=cupBase_settings[iCupBase_EfficientFloor], flat_base=flat_base);
-    
+
   gridfinity_cup(
     width=width, depth=depth, height=height,
     cupBase_settings=cupBase_settings,
@@ -269,9 +281,9 @@ module Gridfinity_Divider(
       labelStyle="disabled"));
   
   for(i = [0 : divider_count-1]){
-    canvis = [dividerHeight, num_x*env_pitch().x-gf_tolerance];
-    ypos = (num_y*env_pitch().y-gf_cup_corner_radius*2-dividerWidth)/(divider_count-1)*i;
-    translate([gf_tolerance/2,gf_cup_corner_radius+dividerWidth+ypos,floorHeight])
+    canvis = [dividerHeight, num_x*env_pitch().x-env_clearance().x];
+    ypos = (num_y*env_pitch().y-env_corner_radius()*2-dividerWidth)/(divider_count-1)*i;
+    translate([env_clearance().x/2,env_corner_radius()+dividerWidth+ypos,floorHeight])
     PatternedDivider(
       height = canvis.x,
       length = canvis.y,
@@ -287,7 +299,7 @@ module Gridfinity_Divider(
         //rotate([0,0,-90])
         if(wallpatternEnabled)
         translate([canvis.y/2,canvis.x/2])
-        cutout_pattern(
+        /*cutout_pattern(
           patternStyle = wallpatternStyle,
           canvasSize = [canvis.y,canvis.x], //Swap x and y and rotate so hex is easier to print
           border=wallpattern_border*2,
@@ -302,7 +314,26 @@ module Gridfinity_Divider(
           patternGridChamfer=wallpatternGridChamfer,
           patternVoronoiNoise=wallpatternVoronoiNoise,
           patternBrickWeight=wallpatternBrickWeight,
-          patternFs = wallpattern_pattern_quality);
+          patternFs = wallpattern_pattern_quality);*/
+        cutout_pattern(
+          patternStyle = pattern_settings[iPatternStyle],
+          canvasSize = [canvis.y,canvis.x], 
+          border = (pattern_settings[iPatternBorder] == 0 ? dividerWidth : pattern_settings[iPatternBorder])*2,
+          customShape = false,
+          circleFn = pattern_settings[iPatternHoleSides],
+          cellSize = pattern_settings[iPatternCellSize],
+          strength = pattern_settings[iPatternStrength],
+          holeHeight = dividerWidth*2,
+          center = true,
+          fill = pattern_settings[iPatternFill], 
+          patternGridChamfer = pattern_settings[iPatternGridChamfer],
+          patternVoronoiNoise = pattern_settings[iPatternVoronoiNoise],
+          patternBrickWeight = pattern_settings[iPatternBrickWeight],
+          partialDepth = pattern_settings[iPatternDepth] != 0,
+          holeRadius = pattern_settings[iPatternHoleRadius],
+          source = "Gridfinity Divider",
+          rotateGrid = pattern_settings[iPatternRotate],
+          patternFs = pattern_settings[iPatternFs]);
         }
     }
 }
