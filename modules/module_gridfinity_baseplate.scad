@@ -37,6 +37,23 @@ Default_Connector_Filament_Length = 8;
 Default_Connector_Snaps_Enabled = false;
 Default_Connector_Snaps_Clearance = 0.1;
 
+
+debug_gridfinity_baseplate = false;
+if(debug_gridfinity_baseplate){
+  $fn = 64;
+  echo("debug_gridfinity_baseplate is enabled");
+  translate([-50,0,0])
+  gridfinity_baseplate(
+    num_x = 1,
+    num_y = 2);
+    
+  translate([-100,0,0])
+  baseplate(
+    width = 1, 
+    depth = 2,
+    remove_bottom_taper = true);
+}
+  
 module gridfinity_baseplate(
   num_x = 2,
   num_y = 3,
@@ -61,21 +78,7 @@ module gridfinity_baseplate(
   customGridEnabled = false,
   gridPositions = [[1]],
   remove_bottom_taper = false,
-  frameConnectorSettings = FrameConnectorSettings(
-    connectorOnly = false, 
-    connectorPosition = Default_Connector_Position, 
-    connectorClipEnabled = Default_Connector_Clip_Enabled,
-    connectorClipSize = Default_Connector_Clip_Size,
-    connectorClipTolerance = Default_Connector_Clip_Tolerance, 
-    connectorButterflyEnabled = Default_Connector_Butterfly_Enabled,
-    connectorButterflySize = Default_Connector_Butterfly_Size,
-    connectorButterflyRadius = Default_Connector_Butterfly_Radius,
-    connectorButterflyTolerance = Default_Connector_Butterfly_Tolerance,
-    connectorFilamentEnabled = Default_Connector_Filament_Enabled,
-    connectorFilamentDiameter = Default_Connector_Filament_Diameter,
-    connectorFilamentLength = Default_Connector_Filament_Length,
-    connectorSnapsStyle = Default_Connector_Snaps_Enabled,
-    connectorSnapsClearance = Default_Connector_Snaps_Clearance))
+  frameConnectorSettings = FrameConnectorSettings())
 {
   _gridPositions = customGridEnabled ? gridPositions : [[1]];
   
@@ -92,7 +95,7 @@ module gridfinity_baseplate(
     : num_y;
 
     debug_cut()
-    intersection(){
+    intersection() {
       union() {
         for(xi = [0:len(_gridPositions)-1])
           for(yi = [0:len(_gridPositions[xi])-1])

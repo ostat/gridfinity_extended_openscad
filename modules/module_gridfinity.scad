@@ -78,7 +78,7 @@ module frame_additives(
   assert(is_bool(enable_grippers));
 
   frameWallReduction = reducedWallHeight >= 0 ? max(0, frameLipHeight-reducedWallHeight) : -1;
-  echo("frame_addatives", childres = $children);
+  if(env_help_enabled("debug")) echo("frame_addatives", childres = $children);
       
     translate([0, 0, -fudgeFactor]) 
       gridcopy(
@@ -449,38 +449,42 @@ module debug_cut(cutx, cuty, cutz) {
   difference(){
     children();
     
-    //Render the cut, used for debugging
-    if(cutx != 0 && $preview){
-      color(color_cut)
-      translate(cutx > 0 
-        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
-        : [(num_x-abs(cutx))*env_pitch().x-fudgeFactor,-fudgeFactor,-fudgeFactor])
-      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([
-            abs(cutx)*env_pitch().x, 
-            num_y*env_pitch().y+fudgeFactor*2,
+    if((cutx != 0 || cuty != 0 || cutz != 0) && $preview){
+      echo("debug_cut is enabled", cutx=cutx, cuty=cuty, cutz=cutz);
+
+      //Render the cut, used for debugging
+      if(cutx != 0 && $preview){
+        color(color_cut)
+        translate(cutx > 0 
+          ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+          : [(num_x-abs(cutx))*env_pitch().x-fudgeFactor,-fudgeFactor,-fudgeFactor])
+        translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+          cube([
+              abs(cutx)*env_pitch().x, 
+              num_y*env_pitch().y+fudgeFactor*2,
+              (num_z+1)*env_pitch().z+fudgeFactor*2]);
+      }
+      if(cuty != 0 && $preview){
+        color(color_cut)
+        translate(cuty > 0 
+          ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+          : [-fudgeFactor,(num_y-abs(cuty))*env_pitch().y-fudgeFactor,-fudgeFactor])
+          cube([
+            num_x*env_pitch().x+fudgeFactor*2,
+            abs(cuty)*env_pitch().y,
             (num_z+1)*env_pitch().z+fudgeFactor*2]);
-    }
-    if(cuty != 0 && $preview){
-      color(color_cut)
-      translate(cuty > 0 
-        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
-        : [-fudgeFactor,(num_y-abs(cuty))*env_pitch().y-fudgeFactor,-fudgeFactor])
-        cube([
-          num_x*env_pitch().x+fudgeFactor*2,
-          abs(cuty)*env_pitch().y,
-          (num_z+1)*env_pitch().z+fudgeFactor*2]);
-    }
-    if(cutz != 0 && $preview){
-      color(color_cut)
-      translate(cutz > 0 
-        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
-        : [-fudgeFactor,-fudgeFactor,(num_z+1-abs(cutz))*env_pitch().z-fudgeFactor]
-        )
-        cube([
-          num_x*env_pitch().x+fudgeFactor*2,
-          num_y*env_pitch().y+fudgeFactor*2,
-          abs(cutz)*env_pitch().z]);
+      }
+      if(cutz != 0 && $preview){
+        color(color_cut)
+        translate(cutz > 0 
+          ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+          : [-fudgeFactor,-fudgeFactor,(num_z+1-abs(cutz))*env_pitch().z-fudgeFactor]
+          )
+          cube([
+            num_x*env_pitch().x+fudgeFactor*2,
+            num_y*env_pitch().y+fudgeFactor*2,
+            abs(cutz)*env_pitch().z]);
+      }
     }
   }
 }

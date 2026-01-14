@@ -104,10 +104,8 @@ fn = 0;
 
 /* [debug] */
 Render_Position = "center"; //[default,center,zero]
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+// Debug slice
+cut = [0,0,0]; //0.1
 // enable loging of help messages during render.
 enable_help = false;
 
@@ -265,7 +263,6 @@ if(Connector_Only)
 }
 else 
 {
-
   plate_list = let(
       num_x=calcDimensionWidth(Width), 
       num_y=calcDimensionDepth(Depth),
@@ -304,7 +301,7 @@ else
     render_position = Render_Position,
     pitch = pitch,
     help = enable_help,
-    cut = [cutx, cuty, 2])
+    cut = cut)
     gridfinity_baseplate(
       num_x = plate[1].x[iPlate_size],//calcDimensionWidth(Width),
       num_y = plate[1].y[iPlate_size],//calcDimensionWidth(Depth),

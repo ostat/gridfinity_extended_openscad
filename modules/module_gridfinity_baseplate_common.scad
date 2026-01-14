@@ -5,7 +5,51 @@ use <module_gridfinity_block.scad>
 include <module_magnet.scad>
 
 iBaseplateTypeSettings_SupportsMagnets = true;
+
+debug_baseplate_cavities = false;
+if(debug_baseplate_cavities){
+  echo("debug_baseplate_cavities is enabled");
+  $fn = 64;
   
+  translate([-50,0,0])
+  frame_plain(
+    grid_num_x = 1, 
+    grid_num_y = 2);
+    
+  translate([-100,0,0])
+  frame_plain(
+    grid_num_x = 1, 
+    grid_num_y = 2,
+    remove_bottom_taper = true);
+
+  baseplate_cavities(1,1,10);
+  
+  translate([50,0,0])
+  baseplate_cavities(1,1,10, magnetSize=[0,0]);
+  translate([100,0,0])
+  baseplate_cavities(1,1,10, centerScrewEnabled=true);
+  translate([150,0,0])
+  baseplate_cavities(1,1,10, magnetSize=[0,0], centerScrewEnabled=true);
+
+  translate([0,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true);
+  translate([50,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true, magnetSize=[0,0]);
+  translate([100,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true, centerScrewEnabled=true);
+  translate([150,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true, magnetSize=[0,0], centerScrewEnabled=true);
+
+  translate([0,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true);
+  translate([50,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true, magnetSize=[0,0]);
+  translate([100,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true, centerScrewEnabled=true);
+  translate([150,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true, magnetSize=[0,0], centerScrewEnabled=true);
+}
+
 function lookupKey(dictionary, key, default=undef) = let(results = [
   for (record = dictionary)
   if (record[0] == key)
@@ -153,35 +197,6 @@ module frame_plain(
         if($children >=2) children(1);
       }
   }
-}
-debug_baseplate_cavities = false;
-if(debug_baseplate_cavities){
-  baseplate_cavities(1,1,10);
-  
-  translate([50,0,0])
-  baseplate_cavities(1,1,10, magnetSize=[0,0]);
-  translate([100,0,0])
-  baseplate_cavities(1,1,10, centerScrewEnabled=true);
-  translate([150,0,0])
-  baseplate_cavities(1,1,10, magnetSize=[0,0], centerScrewEnabled=true);
-
-  translate([0,50,0])
-  baseplate_cavities(1,1,10, weightHolder=true);
-  translate([50,50,0])
-  baseplate_cavities(1,1,10, weightHolder=true, magnetSize=[0,0]);
-  translate([100,50,0])
-  baseplate_cavities(1,1,10, weightHolder=true, centerScrewEnabled=true);
-  translate([150,50,0])
-  baseplate_cavities(1,1,10, weightHolder=true, magnetSize=[0,0], centerScrewEnabled=true);
-
-  translate([0,100,0])
-  baseplate_cavities(1,1,10, cornerScrewEnabled=true);
-  translate([50,100,0])
-  baseplate_cavities(1,1,10, cornerScrewEnabled=true, magnetSize=[0,0]);
-  translate([100,100,0])
-  baseplate_cavities(1,1,10, cornerScrewEnabled=true, centerScrewEnabled=true);
-  translate([150,100,0])
-  baseplate_cavities(1,1,10, cornerScrewEnabled=true, magnetSize=[0,0], centerScrewEnabled=true);
 }
 
 module baseplate_cavities(

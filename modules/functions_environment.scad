@@ -48,10 +48,11 @@ module set_environment(
   $cuty = calcDimensionWidth(cut.y);
   $cutz = calcDimensionWidth(cut.z);
 
-  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn,  clearance=clearance, corner_radius=corner_radius, height_includes_lip=height_includes_lip, lip_enabled=lip_enabled);
+  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn);
   echo("🟩set_environment", width=width, depth=depth, height=height, pitch=pitch);
   echo("🟩set_environment", num_x=num_x, num_y=num_y, num_z=num_z);
-  
+  echo("🟩set_environment", clearance=clearance, corner_radius=corner_radius, height_includes_lip=height_includes_lip, lip_enabled=lip_enabled);
+  echo("🟩set_environment", render_position=render_position, cut=cut, help=help, setColour=setColour, randomSeed=randomSeed, force_render=force_render, generate_filter=generate_filter);
   
   //Position the object
   translate(gridfinityRenderPosition(render_position,num_x,num_y))

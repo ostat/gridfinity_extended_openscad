@@ -3,6 +3,22 @@ include <gridfinity_constants.scad>
 use <module_gridfinity_block.scad>
 use <module_gridfinity_baseplate_common.scad>
 
+debug_baseplate_regular = false;
+if(debug_baseplate_regular){
+  $fn = 64;
+  echo("debug_baseplate_regular is enabled");
+  translate([-50,0,0])
+  baseplate_regular(
+    grid_num_x = 1, 
+    grid_num_y = 2);
+    
+  translate([-100,0,0])
+  baseplate_regular(
+    grid_num_x = 1, 
+    grid_num_y = 2,
+    remove_bottom_taper = true);
+}
+
 module baseplate_regular(
   grid_num_x,
   grid_num_y,
@@ -25,7 +41,7 @@ module baseplate_regular(
   roundedCorners = 15,
   remove_bottom_taper = false) {
 
-  echo("baseplate_regular", children=$children);
+  if(env_help_enabled("debug")) echo("baseplate_regular", children=$children);
   //These should be base constants
   minFloorThickness = 1;
   counterSinkDepth = 2.5;
