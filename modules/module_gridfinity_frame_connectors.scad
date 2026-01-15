@@ -50,6 +50,57 @@ if(show_frame_connector_demo){
   
   translate([10,-30,0])
   wall_snaps_additive();
+  
+  translate([20,-30,0])
+  sample(size = [10,10,4]){
+    wall_snaps_cavity(lock_height = 2, style = ConnectorSnapsStyle_larger);
+    wall_snaps_additive(lock_height = 2, style = ConnectorSnapsStyle_larger);
+  }
+  
+  translate([20,-50,0])
+  sample(size = [10,10,4]){
+    wall_snaps_cavity(lock_height = 2, style = ConnectorSnapsStyle_smaller);
+    wall_snaps_additive(lock_height = 2, style = ConnectorSnapsStyle_smaller);
+  }
+  
+  translate([20,-70,0])
+  sample(size = [15,2,4]){
+    wall_snaps_cavity(lock_height = 2, style = ConnectorSnapsStyle_wall);
+    wall_snaps_additive(lock_height = 2, style = ConnectorSnapsStyle_wall);
+  }
+  
+  difference(){
+    union(){
+    
+      translate([-5,0,0])
+      cube([10,10,2]);
+      
+      rotate([0,0,180])
+      wall_snaps_additive();
+    }
+    
+    wall_snaps_cavity();
+  }
+ 
+}
+
+module sample(
+  size = [10,10,2]){
+  
+  difference(){
+    union(){
+    
+      translate([-size.x/2,0,0])
+      cube(size);
+      
+      if($children >=2) {
+        rotate([0,0,180])
+        children(1);
+      }
+    }
+  
+    if($children >=1) children(0); 
+  }
 }
 
 iFrameConnectors_ConnectorOnly=0;
@@ -83,7 +134,8 @@ function validateFrameConnectorsPosition(value) =
 ConnectorSnapsStyle_disabled = "disabled";
 ConnectorSnapsStyle_larger = "larger";
 ConnectorSnapsStyle_smaller = "smaller";
-ConnectorSnapsStyle_values = [ConnectorSnapsStyle_disabled,ConnectorSnapsStyle_larger,ConnectorSnapsStyle_smaller];
+ConnectorSnapsStyle_wall = "wall";
+ConnectorSnapsStyle_values = [ConnectorSnapsStyle_disabled,ConnectorSnapsStyle_larger,ConnectorSnapsStyle_smaller, ConnectorSnapsStyle_wall];
 function validateConnectorSnapsStyle(value) = 
   assert(list_contains(ConnectorSnapsStyle_values, value), typeerror("ConnectorSnapsStyle", value))
   value;
@@ -164,7 +216,7 @@ style = ConnectorSnapsStyle_larger) {
 
 module wall_snaps_cavity(
   lock_height = 2,
-  clearance = 0.1,
+  clearance = 0.2,
   style = ConnectorSnapsStyle_larger) {
   fudge_factor = 0.01;
   translate([0,0,-clearance])
@@ -186,43 +238,61 @@ module wall_snaps(
 lock_height = 2,
 clearance = 0,
 style = ConnectorSnapsStyle_larger) {
+  fudge_factor = 0.01;
+ 
   if(style == ConnectorSnapsStyle_larger){
     base_width = 1.5;
-    left_nub_size = 2;
-    left_nub_position = [-0.5,2.5]; 
-    right_nub = 1;
-    right_nub_position = [1.1,1.5];
-    fudge_factor = 0.01;
+    long_nub_size = 2;
+    long_nub_position = [-0.5,2.5]; 
+    short_nub = 1;
+    short_nub_position = [1.1,1.5];
     base_size = [base_width, 0.1];
 
     hull(){
       translate([0, -fudge_factor])
       square(base_size);
       
-      translate(left_nub_position)
-      circle(d=left_nub_size+clearance);
+      translate(long_nub_position)
+      circle(d=long_nub_size+clearance);
       
-      translate(right_nub_position)
-      circle(d=right_nub+clearance);
+      translate(short_nub_position)
+      circle(d=short_nub);
     }
   } else if (style == ConnectorSnapsStyle_smaller) {
     base_width = 1.5;
-    left_nub_size = 2;
-    left_nub_position = [0.5,1.5]; 
-    right_nub = 1;
-    right_nub_position = [1.1,1.5];
-    fudge_factor = 0.01;
+    long_nub_size = 2;
+    long_nub_position = [0.5,1.5]; 
+    short_nub = 1;
+    short_nub_position = [1.1,1.5];
     base_size = [base_width, 0.1];
     
     hull(){
       translate([0, -fudge_factor])
       square(base_size);
       
-      translate(left_nub_position)
-      circle(d=left_nub_size+clearance);
+      translate(long_nub_position)
+      circle(d=long_nub_size+clearance);
       
-      translate(right_nub_position)
-      circle(d=right_nub+clearance);
+      translate(short_nub_position)
+      circle(d=short_nub);
+    }
+  } else if (style == ConnectorSnapsStyle_wall) {
+    base_width = 1.5;
+    long_nub_size = 2;
+    long_nub_position = [0.5,1]; 
+    short_nub = 1.5;
+    short_nub_position = [0.95,1];
+    base_size = [base_width, 0.1];
+    
+    hull(){
+      translate([0, -fudge_factor])
+      square(base_size);
+      
+      translate(long_nub_position)
+      circle(d=long_nub_size+clearance);
+      
+      translate(short_nub_position)
+      circle(d=short_nub);
     }
   }
 }
@@ -284,6 +354,14 @@ module frame_connector_cavities(
             FilamentCutter(
               l=connectorFilamentLength,
               d=connectorFilamentDiameter);
+          
+          if(connectorSnapsStyle != ConnectorSnapsStyle_disabled)
+            translate([0,0,-$frameBaseHeight])
+            rotate([0,0,270])
+            wall_snaps_cavity(
+              lock_height = 2,
+              clearance = connectorSnapsClearance,
+              style = ConnectorSnapsStyle_wall);
           }
 
         if(connectorPosition == "intersection" || connectorPosition == "both")
@@ -359,20 +437,37 @@ module frame_connectors_additives(
     union(){
       if(env_help_enabled("debug")) echo("frame_connectors_additives", gci=$gci, gc_size=$gc_size, gc_is_corner=$gc_is_corner, gc_position=$gc_position, width=width, depth=depth, connectorButterflyEnabled  = connectorButterflyEnabled, connectorFilamentEnabled = connectorFilamentEnabled, connectorClipEnabled = connectorClipEnabled, connectorSnapsStyle = connectorSnapsStyle);
 
-        if(connectorPosition == "intersection" || connectorPosition == "both")
-        PositionCellCornerConnector(
-        left=$gci.x==0&&$gc_size.x==1&&$gc_size.y==1,
-        right=$gci.x>=$gc_count.x-1 && $gc_size.x==1&&$gc_size.y==1,
-        front=$gci.y==0&&$gc_size.x==1&&$gc_size.y==1,
-        back=$gci.y>=$gc_count.y-1&&$gc_size.x==1&&$gc_size.y==1) {
-     
-         if(connectorSnapsStyle != ConnectorSnapsStyle_disabled && !$corner)
-            translate([0,0,-$frameBaseHeight])
-            rotate([0,0,90])
-            wall_snaps_additive(
-              lock_height = 2,
-              style = connectorSnapsStyle);
-        }
+      if(connectorPosition == "center_wall" || connectorPosition == "both")
+      PositionCellCenterConnector(
+      left=$gci.x==0&&$gc_size.x==1&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsLeft],
+      right=$gci.x>=$gc_count.x-1&&$gc_size.x==1&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsRight],
+      front=$gci.y==0&&$gc_size.x==1&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsFront],
+      back=$gci.y>=$gc_count.y-1&&$gc_size.x==1&&$gc_size.y==1&& $allowConnectors[iAllowConnectorsBack]) {
+        
+        if(connectorSnapsStyle != ConnectorSnapsStyle_disabled)
+          #translate([0,0,-$frameBaseHeight])
+          rotate([0,0,90])
+          wall_snaps_additive(
+            lock_height = 2,
+            clearance = connectorSnapsClearance,
+            style = ConnectorSnapsStyle_wall);
+      }
+
+          
+      if(connectorPosition == "intersection" || connectorPosition == "both")
+      PositionCellCornerConnector(
+      left=$gci.x==0&&$gc_size.x==1&&$gc_size.y==1,
+      right=$gci.x>=$gc_count.x-1 && $gc_size.x==1&&$gc_size.y==1,
+      front=$gci.y==0&&$gc_size.x==1&&$gc_size.y==1,
+      back=$gci.y>=$gc_count.y-1&&$gc_size.x==1&&$gc_size.y==1) {
+   
+       if(connectorSnapsStyle != ConnectorSnapsStyle_disabled && !$corner)
+          translate([0,0,-$frameBaseHeight])
+          rotate([0,0,90])
+          wall_snaps_additive(
+            lock_height = 2,
+            style = connectorSnapsStyle);
+      }
     }
   }
 }
