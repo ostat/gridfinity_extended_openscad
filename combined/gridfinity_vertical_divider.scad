@@ -6658,7 +6658,8 @@ module MagnetAndScrewRecess(
   overhangFixLayers = 3,
   overhangFixDepth = 0.2,
   easyMagnetRelease = true,
-  magnetCaptiveHeight = 0){
+  magnetCaptiveHeight = 0,
+  magnet_rotation_deg =){
      fudgeFactor = 0.01;
     union(){
       SequentialBridgingDoubleHole(

@@ -22,8 +22,12 @@ module MagnetAndScrewRecess(
   overhangFixLayers = 3,
   overhangFixDepth = 0.2,
   easyMagnetRelease = true,
-  magnetCaptiveHeight = 0){
-     fudgeFactor = 0.01;
+  enableSideAccess = true,  
+  magnetCaptiveHeight = 0,
+  easyReleaseRotation = 0,
+  magnetRotation = 0,
+  magnetCaptiveSideAccessSize = [0,0,0]){
+  fudgeFactor = 0.01;
     union(){
       SequentialBridgingDoubleHole(
         outerHoleRadius = magnetDiameter/2,
@@ -33,9 +37,17 @@ module MagnetAndScrewRecess(
         overhangBridgeCount = overhangFixLayers,
         overhangBridgeThickness = overhangFixDepth,
         magnetCaptiveHeight = magnetCaptiveHeight);
+
+      if(enableSideAccess){
+        translate([0,0,magnetCaptiveHeight])
+        rotate([0,0,45])
+        translate([0,-magnetDiameter/2,0])
+        cube(magnetCaptiveSideAccessSize);
+      }
+      rotate([0,0,easyReleaseRotation])
       magnet_easy_release(
         magnetDiameter = magnetDiameter,
-        magnetThickness = magnetThickness,
+        magnetThickness = magnetThickness+magnetCaptiveHeight,
         easyMagnetRelease = easyMagnetRelease
       );
   }
@@ -54,12 +66,12 @@ module magnet_easy_release(
   outerPlusBridgeHeight = magnetThickness;
   translate(center ? [0,0,-outerPlusBridgeHeight/2] : [0,0,0] )
   union(){
-    cylinder(r=magnetDiameter/2, h=outerPlusBridgeHeight);
     if(easyMagnetRelease && magnetDiameter > 0)
     difference(){
       hull(){
-        translate([0,-releaseWidth/2,0])  
-          cube([magnetDiameter/2+releaseLength,releaseWidth,magnetThickness]);
+        blockSize = magnetDiameter*2/3;
+        translate([magnetDiameter/2-blockSize,-releaseWidth/2,0])  
+          cube([blockSize+releaseLength,releaseWidth,magnetThickness]);
         translate([magnetDiameter/2+releaseLength,0,0])  
           cylinder(d=releaseWidth, h=magnetThickness);
       }

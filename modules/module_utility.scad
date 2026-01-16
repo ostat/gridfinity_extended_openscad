@@ -420,6 +420,7 @@ module SequentialBridgingDoubleHole(
   overhangBridgeCount = bridgeRequired ? overhangBridgeCount : 0;
   overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
   outerPlusBridgeHeight = hasOuter ? outerHoleDepth + overhangBridgeHeight : 0;
+  
   if(hasOuter || hasInner)
   union(){
     difference(){

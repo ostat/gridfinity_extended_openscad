@@ -122,11 +122,12 @@ iFrameConnectors_FilamentLength=11;
 iFrameConnectors_SnapsStyle=12;
 iFrameConnectors_SnapsClearance=13;
 
+FrameConnectorsPosition_disabled = "disabled";
 FrameConnectorsPosition_centerwall = "center_wall";
 FrameConnectorsPosition_intersection = "intersection";
 FrameConnectorsPosition_both = "both";
 
-FrameConnectorsPosition_values = [FrameConnectorsPosition_centerwall, FrameConnectorsPosition_intersection, FrameConnectorsPosition_both];
+FrameConnectorsPosition_values = [FrameConnectorsPosition_disabled, FrameConnectorsPosition_centerwall, FrameConnectorsPosition_intersection, FrameConnectorsPosition_both];
 function validateFrameConnectorsPosition(value) = 
   assert(list_contains(FrameConnectorsPosition_values, value), typeerror("FrameConnectorsPosition", value))
   value;
@@ -198,7 +199,6 @@ function ValidateFrameConnectorSettings(settings) =
       validateConnectorSnapsStyle(settings[iFrameConnectors_SnapsStyle]),
       settings[iFrameConnectors_SnapsClearance]];
       
-
 module wall_snaps_additive(
 lock_height = 2,
 clearance = 0,
@@ -212,7 +212,6 @@ style = ConnectorSnapsStyle_larger) {
     wall_snaps(lock_height = lock_height, style = style);
   }
 }
-
 
 module wall_snaps_cavity(
   lock_height = 2,

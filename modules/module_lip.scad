@@ -212,12 +212,13 @@ module cupLip_cavity(
       reducedWallWidth = lip_top_relief_width,
       reducedWallOuterEdgesOnly=true){
         echo("donothign");
-        frame_connectors(
+        frame_connector_cavities(
           width = num_x, 
           depth = num_y,
-          connectorPosition = lip_clip_position,
-          connectorClipEnabled = connectorsEnabled);
-      };
+           frameConnectorSettings = FrameConnectorSettings(
+            connectorPosition = lip_clip_position, 
+            connectorClipEnabled = connectorsEnabled));
+      }
 
     //lower cavity
     frame_cavity(

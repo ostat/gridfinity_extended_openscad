@@ -79,6 +79,8 @@ enable_screws = false;
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+// Use with captive magnet for a 'refinded style' magnet
+magnet_side_access = false;
 // raise the magnet void inside the part for print-in-magnets
 magnet_captive_height = 0; // .1
 //size of screw, diameter and height. Zack's original used 3 and 6
@@ -332,6 +334,7 @@ gridfinity_cup(
   cupBase_settings = CupBaseSettings(
     magnetSize = enable_magnets?magnet_size:[0,0],
     magnetEasyRelease = magnet_easy_release, 
+    magnetSideAccess = magnet_side_access,
     magnetCaptiveHeight = magnet_captive_height,
     centerMagnetSize = center_magnet_size, 
     screwSize = enable_screws?screw_size:[0,0],

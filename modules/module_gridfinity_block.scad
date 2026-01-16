@@ -67,7 +67,8 @@ module grid_block(
   flat_base=cupBase_settings[iCupBase_FlatBase];
   center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
   magnet_easy_release = cupBase_settings[iCupBase_MagnetEasyRelease];
-  
+  magnet_side_access = cupBase_settings[iCupBase_MagnetSideAccess];
+    
   outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
 
@@ -177,12 +178,15 @@ module grid_block(
     color(env_colour(color_basehole))
     tz(-fudgeFactor)
     gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only){
-        rdeg =
+        magnet_rotation =
           $gcci[2] == [ 1, 1] ? 90 :
           $gcci[2] == [-1, 1] ? 180 :
-          $gcci[2] == [-1,-1] ? -90 :
+          $gcci[2] == [-1,-1] ? 270 :
           $gcci[2] == [ 1,-1] ? 0 : 0;
-        rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
+        magnetCaptiveSideAccessSize = magnet_rotation == 0 || magnet_rotation == 180 
+          ? env_pitch().x/2 - magnet_position.x 
+          : env_pitch().y/2 - magnet_position.y;
+        rotate([0,0,magnet_rotation-45])
         MagnetAndScrewRecess(
           magnetDiameter = magnet_size[iCylinderDimension_Diameter],
           magnetThickness = magnet_size[iCylinderDimension_Height]+0.1,
@@ -191,7 +195,11 @@ module grid_block(
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
           easyMagnetRelease = magnet_easy_release != MagnetEasyRelease_off,
-          magnetCaptiveHeight = cupBase_settings[iCupBase_MagnetCaptiveHeight]);
+          magnetCaptiveHeight = cupBase_settings[iCupBase_MagnetCaptiveHeight],
+          easyReleaseRotation = (magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180),
+          magnetRotation = magnet_rotation,
+          enableSideAccess = magnet_side_access,
+          magnetCaptiveSideAccessSize = [magnetCaptiveSideAccessSize, magnet_size[iCylinderDimension_Diameter], magnet_size[iCylinderDimension_Height]+0.1]);
     }
   }
  
