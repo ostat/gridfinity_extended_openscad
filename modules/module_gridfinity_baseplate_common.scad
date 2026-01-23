@@ -104,11 +104,11 @@ module frame_plain(
     roundedCorners = 15,
     reduceWallTaper = false,
     secondaryCornerRadius = -1,
-    cornerRoles = [1,1,1,1])
-  
-  secondaryCornerRadius = secondaryCornerRadius == -1 ? cornerRadius : secondaryCornerRadius;
+    cornerRoles = [1,1,1,1],
     remove_bottom_taper = false,
     reduceWallTaper = false) {
+  
+  secondaryCornerRadius = secondaryCornerRadius == -1 ? cornerRadius : secondaryCornerRadius;
   frameLipHeight = extra_down > 0 ? height -0.6 : height;
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
 
