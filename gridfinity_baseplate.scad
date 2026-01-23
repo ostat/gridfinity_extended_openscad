@@ -72,7 +72,7 @@ Connector_Filament_Length = 8;
 
 //This feature is not yet finalized, or working properly. 
 Connector_Snaps_Enabled = "disabled"; //["disabled","larger","smaller"]
-Connector_Snaps_Clearance = 0.5;
+Connector_Snaps_Clearance = 0.2;
 
 /* [Custom Grid]*/
 //Enable custom grid, you will configure this in the (Lid not supported)

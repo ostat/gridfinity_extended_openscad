@@ -1086,7 +1086,6 @@ module partitioned_cavity(num_x, num_y, num_z,
   half_pitch=cupBase_settings[iCupBase_HalfPitch];        
   magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
   screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
-  magnet_easy_release=cupBase_settings[iCupBase_MagnetEasyRelease];
   floor_thickness=cupBase_settings[iCupBase_FloorThickness];  
   zpoint = env_pitch().z*num_z-headroom;
 
@@ -1161,7 +1160,6 @@ module basic_cavity(num_x, num_y, num_z,
   floor_thickness=cupBase_settings[iCupBase_FloorThickness]; 
   magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
   screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
-  magnet_easy_release=cupBase_settings[iCupBase_MagnetEasyRelease];
   flat_base=cupBase_settings[iCupBase_FlatBase];
   spacer=cupBase_settings[iCupBase_Spacer];
   box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
@@ -1341,7 +1339,13 @@ module basic_cavity(num_x, num_y, num_z,
                   floor_thickness = floor_thickness,
                   magnet_size = cupBase_settings[iCupBase_MagnetSize] + [0, cupBase_settings[iCupBase_MagnetCaptiveHeight]],
                   screw_size = cupBase_settings[iCupBase_ScrewSize],
-                  wall_thickness = magnet_easy_release == MagnetEasyRelease_inner ? wall_thickness*2 : wall_thickness );
+                  //thicnken walls if needed for easy release magnet inner or side access.
+                  //if magnet is captive, 
+                  wall_thickness = 
+                    ((cupBase_settings[iCupBase_NormalisedMagnetEasyRelease] == MagnetEasyRelease_inner && cupBase_settings[iCupBase_MagnetCaptiveHeight] == 0)
+                    || (cupBase_settings[iCupBase_MagnetEasyRelease] != MagnetEasyRelease_off && cupBase_settings[iCupBase_MagnetSideAccess]))
+                      ? wall_thickness*2
+                      : wall_thickness );
           }
         }
       }

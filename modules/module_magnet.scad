@@ -5,14 +5,20 @@ MagnetEasyRelease_auto = "auto";
 MagnetEasyRelease_inner = "inner"; 
 MagnetEasyRelease_outer = "outer"; 
 MagnetEasyRelease_values = [MagnetEasyRelease_off, MagnetEasyRelease_auto, MagnetEasyRelease_inner, MagnetEasyRelease_outer];
-  function validateMagnetEasyRelease(value, efficientFloorValue) = 
+function validateMagnetEasyRelease(value) = 
   //Convert boolean to list value
-  let(value = is_bool(value) ? value ? MagnetEasyRelease_auto : MagnetEasyRelease_off : value,
-      autoValue = value == MagnetEasyRelease_auto 
+  let(validatedValue = is_bool(value) ? value ? MagnetEasyRelease_auto : MagnetEasyRelease_off : value)
+  assert(list_contains(MagnetEasyRelease_values, validatedValue), typeerror("MagnetEasyRelease", validatedValue))
+  validatedValue;
+
+//Convert the Magnet auto to the normalised value
+function NormaliseAutoMagnetEasyRelease(value, efficientFloorValue) = 
+  //Convert boolean to list value
+  let(normalisedValue = value == MagnetEasyRelease_auto 
         ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer 
         : value) 
-  assert(list_contains(MagnetEasyRelease_values, autoValue), typeerror("MagnetEasyRelease", autoValue))
-  autoValue;
+  assert(list_contains(MagnetEasyRelease_values, normalisedValue), typeerror("MagnetEasyRelease", normalisedValue))
+  normalisedValue;
 
 module MagnetAndScrewRecess(
   magnetDiameter = 10,
@@ -44,7 +50,7 @@ module MagnetAndScrewRecess(
         translate([0,-magnetDiameter/2,0])
         cube(magnetCaptiveSideAccessSize);
       }
-      rotate([0,0,easyReleaseRotation])
+      rotate(enableSideAccess ? [0,0,45+180] : [0,0,easyReleaseRotation])
       magnet_easy_release(
         magnetDiameter = magnetDiameter,
         magnetThickness = magnetThickness+magnetCaptiveHeight,
@@ -61,7 +67,7 @@ module magnet_easy_release(
 ){
   fudgeFactor = 0.01;
   
-  releaseWidth = 1.3;
+  releaseWidth = 2;
   releaseLength = 1.5;
   outerPlusBridgeHeight = magnetThickness;
   translate(center ? [0,0,-outerPlusBridgeHeight/2] : [0,0,0] )

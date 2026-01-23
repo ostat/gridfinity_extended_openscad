@@ -66,8 +66,6 @@ module grid_block(
   half_pitch=cupBase_settings[iCupBase_HalfPitch];
   flat_base=cupBase_settings[iCupBase_FlatBase];
   center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
-  magnet_easy_release = cupBase_settings[iCupBase_MagnetEasyRelease];
-  magnet_side_access = cupBase_settings[iCupBase_MagnetSideAccess];
     
   outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
@@ -194,11 +192,12 @@ module grid_block(
           screwDepth = screw_size[iCylinderDimension_Height],
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagnetRelease = magnet_easy_release != MagnetEasyRelease_off,
+          easyMagnetRelease = cupBase_settings[iCupBase_MagnetEasyRelease] == MagnetEasyRelease_off ? false : 
+                              cupBase_settings[iCupBase_MagnetCaptiveHeight] > 0 && cupBase_settings[iCupBase_MagnetSideAccess] == false ? false : true,
           magnetCaptiveHeight = cupBase_settings[iCupBase_MagnetCaptiveHeight],
-          easyReleaseRotation = (magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180),
+          easyReleaseRotation = (cupBase_settings[iCupBase_NormalisedMagnetEasyRelease] == MagnetEasyRelease_outer ? 0 : 180),
           magnetRotation = magnet_rotation,
-          enableSideAccess = magnet_side_access,
+          enableSideAccess = cupBase_settings[iCupBase_MagnetSideAccess],
           magnetCaptiveSideAccessSize = [magnetCaptiveSideAccessSize, magnet_size[iCylinderDimension_Diameter], magnet_size[iCylinderDimension_Height]+0.1]);
     }
   }

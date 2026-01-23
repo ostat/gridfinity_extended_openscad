@@ -28,22 +28,23 @@ spacer = false;
 
 iCupBase_MagnetSize=0;
 iCupBase_MagnetEasyRelease=1;
-iCupBase_CenterMagnetSize=2;
-iCupBase_ScrewSize=3;
-iCupBase_HoleOverhangRemedy=4;
-iCupBase_CornerAttachmentsOnly=5;
-iCupBase_FloorThickness=6;
-iCupBase_CavityFloorRadius=7;
-iCupBase_EfficientFloor=8;
-iCupBase_HalfPitch=9;
-iCupBase_FlatBase=10;
-iCupBase_Spacer=11;
-iCupBase_MinimumPrintablePadSize=12;
-iCupBase_FlatBaseRoundedRadius=13;
-iCupBase_FlatBaseRoundedEasyPrint=14;
-iCupBase_MagnetCaptiveHeight=15;
-iCupBase_AlignGrid=16;
-iCupBase_MagnetSideAccess=17;
+iCupBase_NormalisedMagnetEasyRelease=2;
+iCupBase_CenterMagnetSize=3;
+iCupBase_ScrewSize=4;
+iCupBase_HoleOverhangRemedy=5;
+iCupBase_CornerAttachmentsOnly=6;
+iCupBase_FloorThickness=7;
+iCupBase_CavityFloorRadius=8;
+iCupBase_EfficientFloor=9;
+iCupBase_HalfPitch=10;
+iCupBase_FlatBase=11;
+iCupBase_Spacer=12;
+iCupBase_MinimumPrintablePadSize=13;
+iCupBase_FlatBaseRoundedRadius=14;
+iCupBase_FlatBaseRoundedEasyPrint=15;
+iCupBase_MagnetCaptiveHeight=16;
+iCupBase_AlignGrid=17;
+iCupBase_MagnetSideAccess=18;
 
 iCylinderDimension_Diameter=0;
 iCylinderDimension_Height=1;
@@ -102,12 +103,13 @@ function CupBaseSettings(
         : screwSize,
       
     efficientFloor = validateEfficientFloor(efficientFloor),
+    magnetEasyRelease = validateMagnetEasyRelease(magnetEasyRelease),
     centerMagnetSize = efficientFloor != EfficientFloor_off ? [0, 0] : centerMagnetSize,
     cavityFloorRadius = efficientFloor != EfficientFloor_off ? 0 : cavityFloorRadius,
-    magnetEasyRelease = validateMagnetEasyRelease(magnetEasyRelease, efficientFloor),
     result = [
       magnetSize[0] == 0 || magnetSize[1] == 0 ? [0,0] : magnetSize, 
-      validateMagnetEasyRelease(magnetEasyRelease), 
+      magnetEasyRelease, 
+      NormaliseAutoMagnetEasyRelease(magnetEasyRelease, efficientFloor),
       centerMagnetSize[0] == 0 || centerMagnetSize[1] == 0 ? [0,0] : centerMagnetSize,
       screwSize[0] == 0 || screwSize[1] == 0 ? [0,0] : screwSize, 
       holeOverhangRemedy, 
@@ -129,7 +131,7 @@ function CupBaseSettings(
   ) validatedResult;
   
 function ValidateCupBaseSettings(settings, num_x, num_y) =
-  assert(is_list(settings) && len(settings) == 18, typeerror_list("CupBase Settings", settings, 18))
+  assert(is_list(settings) && len(settings) == 19, typeerror_list("CupBase Settings", settings, 19))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_CenterMagnetSize]) && len(settings[iCupBase_CenterMagnetSize])==2, "CenterMagnet Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_ScrewSize]) && len(settings[iCupBase_ScrewSize])==2, "ScrewSize Magnet Setting must be a list of length 2")
@@ -144,23 +146,19 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_num(settings[iCupBase_MagnetCaptiveHeight]), "CupBase Magnet Captive height setting must a number")
   assert(is_list(settings[iCupBase_AlignGrid]) && len(settings[iCupBase_AlignGrid])==2, "CupBase AlignGrid Setting must be a list of length 2")
   assert(is_bool(settings[iCupBase_MagnetSideAccess]), "CupBase MagnetSideAccess Settings must be a boolean")
-  
-  let(
-    efficientFloor = validateEfficientFloor(settings[iCupBase_EfficientFloor]),
-    magnetEasyRelease = validateMagnetEasyRelease(settings[iCupBase_MagnetEasyRelease], efficientFloor),
-    flatBase = validateFlatBase(settings[iCupBase_FlatBase])
-  ) [
+  [
       settings[iCupBase_MagnetSize],
-      magnetEasyRelease,
+      validateMagnetEasyRelease(settings[iCupBase_MagnetEasyRelease]),
+      settings[iCupBase_NormalisedMagnetEasyRelease],
       settings[iCupBase_CenterMagnetSize],
       settings[iCupBase_ScrewSize],
       settings[iCupBase_HoleOverhangRemedy],
       settings[iCupBase_CornerAttachmentsOnly],
       settings[iCupBase_FloorThickness],
       settings[iCupBase_CavityFloorRadius],
-      efficientFloor,
+      validateEfficientFloor(settings[iCupBase_EfficientFloor]),
       settings[iCupBase_HalfPitch],
-      flatBase,
+      validateFlatBase(settings[iCupBase_FlatBase]),
       settings[iCupBase_Spacer],
       settings[iCupBase_MinimumPrintablePadSize],
       settings[iCupBase_FlatBaseRoundedRadius],
