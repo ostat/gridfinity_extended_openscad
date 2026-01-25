@@ -87,7 +87,7 @@ module baseplate_regular(
             magnetZOffset=magnetZOffset,
             magnetTopCover=magnetTopCover,
             centerScrewEnabled = centerScrewEnabled && $gc_is_corner.x && $gc_is_corner.y,
-            cornerScrewEnabled = cornerScrewEnabled,
+            cornerScrewEnabled = cornerScrewEnabled || (magnetSize[0] > 0),
             weightHolder = weightHolder,
             cornerRadius = cornerRadius,
             roundedCorners = roundedCorners,

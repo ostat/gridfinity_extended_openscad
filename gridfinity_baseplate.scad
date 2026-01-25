@@ -313,7 +313,7 @@ else
       position_grid_in_outer_x = plate[1].x[iPlate_posOuter], //position_grid_in_outer_x,
       position_grid_in_outer_y = plate[1].y[iPlate_posOuter], //position_grid_in_outer_y,
       plate_corner_radius = plate_corner_radius,
-      magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
+      magnetSize = Enable_Magnets ? [Magnet_Size.x, Magnet_Size.y] : [0,0],
       magnetZOffset = Magnet_Z_Offset,
       magnetTopCover=Magnet_Top_Cover,
       reducedWallHeight = Reduced_Wall_Height, 
