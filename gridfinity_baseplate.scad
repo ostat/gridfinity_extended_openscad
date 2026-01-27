@@ -41,8 +41,9 @@ Magnet_Size = [6.5, 2.4];  // .1
 Magnet_Z_Offset = 0;  // .1
 //raises the magnet, and creates a ceiling to capture the magnet
 Magnet_Top_Cover = 0;  // .1
-//Enable side slot to help pry magnets out
-Enable_Easy_Release = false;
+// [Magnet Release Options]
+// Method to help remove magnets: "none", "slot" (side pry), "hole" (poke from behind)
+Magnet_Release_Method = "none"; //[none, slot, hole]
 //Enable screws in the bin corner under the magnets
 Corner_Screw_Enabled = false;
 //Enable hold down screw in the center
@@ -317,7 +318,7 @@ else
       magnetSize = Enable_Magnets ? [Magnet_Size.x, Magnet_Size.y] : [0,0],
       magnetZOffset = Magnet_Z_Offset,
       magnetTopCover=Magnet_Top_Cover,
-      magnetEasyRelease = Enable_Easy_Release,
+      magnetReleaseMethod = Magnet_Release_Method,
       reducedWallHeight = Reduced_Wall_Height, 
       reduceWallTaper = Reduced_Wall_Taper, 
       cornerScrewEnabled  = Corner_Screw_Enabled,
