@@ -24,7 +24,9 @@ position_grid_in_outer_y = "center";//[near, center, far]
 //Reduce the frame wall size to this value
 Reduced_Wall_Height = -1; //0.1
 Reduced_Wall_Taper = false; 
-plate_corner_radius = 3.75; //[0:0.01:3.75]
+plate_corner_radius = 3.75; //0.01
+//Corner radius for the inner corners (Works well with build_plate_enabled)
+secondary_corner_radius = 3.75; //0.01
 /* [Printer bed options] */
 build_plate_enabled = "disabled";//[disabled, enabled, unique]
 //spread out the plates, use if last row is small.
@@ -313,6 +315,16 @@ else
       position_grid_in_outer_x = plate[1].x[iPlate_posOuter], //position_grid_in_outer_x,
       position_grid_in_outer_y = plate[1].y[iPlate_posOuter], //position_grid_in_outer_y,
       plate_corner_radius = plate_corner_radius,
+      secondary_corner_radius = secondary_corner_radius,
+      corner_roles = let(
+          nx=len(listy), 
+          ny=len(plate_list)
+        ) [
+          (ix==0 && iy==0) ? 1 : 0,       // BL (0,0) -> 0
+          (ix==0 && iy==ny-1) ? 1 : 0,    // TL (0,1) -> 1
+          (ix==nx-1 && iy==0) ? 1 : 0,    // BR (1,0) -> 2
+          (ix==nx-1 && iy==ny-1) ? 1 : 0   // TR (1,1) -> 3
+        ],
       magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
       magnetZOffset = Magnet_Z_Offset,
       magnetTopCover=Magnet_Top_Cover,

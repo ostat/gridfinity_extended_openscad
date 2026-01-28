@@ -38,6 +38,8 @@ module baseplate_regular(
   cornerScrewEnabled = false,
   weightHolder = false,
   cornerRadius = gf_cup_corner_radius,
+  secondaryCornerRadius = -1,
+  cornerRoles = [1,1,1,1],
   roundedCorners = 15,
   remove_bottom_taper = false) {
 
@@ -71,6 +73,8 @@ module baseplate_regular(
       extra_down=frameBaseHeight,
       remove_bottom_taper = remove_bottom_taper,
       cornerRadius = cornerRadius,
+      secondaryCornerRadius = secondaryCornerRadius,
+      cornerRoles = cornerRoles,
       reducedWallHeight=reducedWallHeight,
       reduceWallTaper=reduceWallTaper,
       roundedCorners = roundedCorners){
