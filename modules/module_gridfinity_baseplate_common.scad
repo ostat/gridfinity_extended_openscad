@@ -217,6 +217,7 @@ module baseplate_cavities(
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
   magnetZOffset = 0,
   magnetTopCover = 0,
+  magnetReleaseMethod = "none",
   magnetSouround = true,
   centerScrewEnabled = false,
   cornerScrewEnabled = false,
@@ -232,7 +233,11 @@ module baseplate_cavities(
   fudgeFactor = 0.01;
 
   magnet_position = baseCavityHeight-magnetSize.y-magnetTopCover-fudgeFactor;
-  magnet_easy_release = ((magnetZOffset > 0) != (magnetTopCover>0)) ? MagnetEasyRelease_outer : MagnetEasyRelease_off;
+  // 1. Determine if we use the SLOT style
+  use_slot = (magnetReleaseMethod == "slot");
+  // 2. Determine if we use the HOLE style
+  use_hole = (magnetReleaseMethod == "hole");
+  magnet_easy_release = (use_slot) ? MagnetEasyRelease_outer : MagnetEasyRelease_off;
   echo(magnet_position=magnet_position, baseCavityHeight=baseCavityHeight, magnetSize=magnetSize );
       
   if(env_help_enabled("debug")) echo("baseplate_cavities", baseCavityHeight=baseCavityHeight, magnetSize=magnetSize, magnetZOffset=magnetZOffset, magnetTopCover=magnetTopCover);
@@ -270,6 +275,18 @@ module baseplate_cavities(
         easyMagnetRelease=magnet_easy_release != MagnetEasyRelease_off,
         center = true);
       //cylinder(d=magnetSize[0], h=magnetSize.y);
+	  // Drill straight hole if screws are off (for thin tabs)
+      if (!cornerScrewEnabled && magnetSize[0] > 0) {
+          translate([0, 0, magnet_position])
+          cylinder(d=magnetSize[0], h=magnetSize.y + fudgeFactor);
+      }
+      
+      // If method is "hole", drill a smaller cylinder from the bottom up to the magnet
+      if (use_hole && magnetSize[0] > 0) {
+          // Center the cylinder. Cut from Z=0 up to magnet_position.
+          translate([0, 0, -fudgeFactor])
+          cylinder(d=magnetSize[0]/2, h=magnet_position + fudgeFactor*2);
+      }
 
       // counter-sunk holes in the bottom
       if(cornerScrewEnabled){
