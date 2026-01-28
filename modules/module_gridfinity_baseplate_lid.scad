@@ -46,7 +46,8 @@ module baseplate_lid(
         filledin = tray ? "enabled" : "enabledfilllip" , //[disabled, enabled, enabledfilllip]
         cupBase_settings = CupBaseSettings(
           flatBase=flat_base,
-          halfPitch=half_pitch),
+          halfPitch=half_pitch,
+          alignGrid=[position_fill_grid_x, position_fill_grid_y]),
         lip_settings = LipSettings());
     }
   

@@ -1,4 +1,5 @@
 include <gridfinity_constants.scad>
+include <module_magnet.scad>
 
 /* [Base]
 // (Zack's design uses magnet diameter of 6.5) 
