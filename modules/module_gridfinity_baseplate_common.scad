@@ -102,8 +102,13 @@ module frame_plain(
     cornerRadius = gf_cup_corner_radius,
     reducedWallHeight = -1,
     roundedCorners = 15,
+    reduceWallTaper = false,
+    secondaryCornerRadius = -1,
+    cornerRoles = [1,1,1,1],
     remove_bottom_taper = false,
     reduceWallTaper = false) {
+  
+  secondaryCornerRadius = secondaryCornerRadius == -1 ? cornerRadius : secondaryCornerRadius;
   frameLipHeight = extra_down > 0 ? height -0.6 : height;
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
 
@@ -141,6 +146,8 @@ module frame_plain(
             ? outer_height 
             : reducedWallHeight >= 0 ? extra_down+reducedWallHeight : extra_down+frameLipHeight,
           cornerRadius = cornerRadius,
+          secondaryCornerRadius = secondaryCornerRadius,
+          cornerRoles = cornerRoles,
           roundedCorners = roundedCorners);
         
         //padded outer upper
@@ -151,6 +158,8 @@ module frame_plain(
           trim=trim, 
           height=extra_down + (reducedWallHeight >= 0 ? reducedWallHeight : frameLipHeight),
           cornerRadius = cornerRadius,
+          secondaryCornerRadius = secondaryCornerRadius,
+          cornerRoles = cornerRoles,
           roundedCorners = roundedCorners);
       }
     
@@ -162,6 +171,8 @@ module frame_plain(
         trim=trim, 
         height=extra_down+frameLipHeight,
         cornerRadius = cornerRadius,
+        secondaryCornerRadius = secondaryCornerRadius,
+        cornerRoles = cornerRoles,
         roundedCorners = roundedCorners);
         
       translate(centerGridPosition)
@@ -351,6 +362,8 @@ module outer_baseplate(
   extendedDepth = 0,
   trim=0, 
   cornerRadius = gf_cup_corner_radius,
+  secondaryCornerRadius = -1,
+  cornerRoles = [1,1,1,1],
   roundedCorners = 15){
     
   assert(is_num(num_x), "num_x must be a number");
@@ -362,15 +375,20 @@ module outer_baseplate(
   assert(is_num(cornerRadius), "cornerRadius must be a number");
   assert(is_num(roundedCorners), "roundedCorners must be a number");
   
+  secondaryCornerRadius = secondaryCornerRadius == -1 ? cornerRadius : secondaryCornerRadius;
+  
     fudgeFactor = 0.01;
-  corner_position = [env_pitch().x/2-cornerRadius-trim, env_pitch().y/2-cornerRadius-trim];
+    //Use 0 as reference for positioning to simplify variable radius logic
+    ref_radius = 0; 
+    corner_position = [env_pitch().x/2-ref_radius-trim, env_pitch().y/2-ref_radius-trim];
  //full outer material to build from
   hull() 
     cornercopy(corner_position, num_x, num_y) {
-      radius = max(bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? cornerRadius : 0.01, 0.01);// 0.01 is almost zero to get a square edge....
+      target_radius = cornerRoles[$idx[0]*2 + $idx[1]] == 1 ? cornerRadius : secondaryCornerRadius;
+      radius = max(bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? target_radius : 0.01, 0.01);// 0.01 is almost zero to get a square edge....
       ctrn = [
-        ($idx[0] == 0 ? -1 : 1)*(cornerRadius-radius), 
-        ($idx[1] == 0 ? -1 : 1)*(cornerRadius-radius), -extendedDepth];
+        ($idx[0] == 0 ? -1 : 1)*(ref_radius-radius), 
+        ($idx[1] == 0 ? -1 : 1)*(ref_radius-radius), -extendedDepth];
       translate(ctrn)
       union(){
         translate([0, 0, baseTaper])

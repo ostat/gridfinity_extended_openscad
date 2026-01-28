@@ -65,6 +65,8 @@ module gridfinity_baseplate(
   position_grid_in_outer_x = "center",
   position_grid_in_outer_y = "center",
   plate_corner_radius=gf_cup_corner_radius,
+  secondary_corner_radius = -1,
+  corner_roles = [1,1,1,1],
   magnetSize = Default_Magnet_Size,
   magnetZOffset=0,
   magnetTopCover=0,
@@ -136,6 +138,8 @@ module gridfinity_baseplate(
                 frameConnectorSettings = frameConnectorSettings,
                 plate_corner_radius = plate_corner_radius,
                 remove_bottom_taper = remove_bottom_taper,
+                secondary_corner_radius = secondary_corner_radius,
+                corner_roles = corner_roles,
                 roundedCorners = gridPosCorners == 1 ? 15 : gridPosCorners - 2);
             }
           }
@@ -166,6 +170,8 @@ module baseplate(
   weightedEnable = false,
   plateOptions = "default",
   plate_corner_radius = gf_cup_corner_radius,
+  secondary_corner_radius = -1,
+  corner_roles = [1,1,1,1],
   roundedCorners = 15,
   frameConnectorSettings = [],
   remove_bottom_taper = true)
@@ -201,6 +207,8 @@ module baseplate(
       cornerScrewEnabled = cornerScrewEnabled,
       weightHolder = weightedEnable,
       cornerRadius = plate_corner_radius,
+          secondaryCornerRadius = secondary_corner_radius,
+          cornerRoles = corner_roles,
       roundedCorners=roundedCorners,
       remove_bottom_taper=remove_bottom_taper){
         frame_connector_cavities(
