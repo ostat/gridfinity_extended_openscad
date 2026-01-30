@@ -91,6 +91,7 @@ module SlidingLid(
   lidLowerRadius = innerWallRadius+lidMinWallThickness;
   lidUpperRadius = limitHeight ? lidLowerRadius-lidThickness/2 : fudgeFactor;
   height = limitHeight ? lidThickness : innerWallRadius+lidMinWallThickness-fudgeFactor;
+  echo("lip_style XXXXXXXX", lipStyle);
   difference()
   {
     union(){
@@ -269,15 +270,17 @@ module SlidingLidCavity(
   if(sliding_lid_settings[slidingLidLipEnabled])
   {
     translate([0,0,0])
-      cube([num_x*env_pitch().x,env_corner_radius(),aboveLidHeight+fudgeFactor*3]);
+      // #cube([num_x*env_pitch().x,env_corner_radius(),aboveLidHeight+fudgeFactor*3]);
+      cube([num_x*env_pitch().x,env_corner_radius(),aboveLidHeight+fudgeFactor*3+5]);
+      // echo("SSSSSS:", fudgeFactor);
   } else {
     //translate([-env_pitch().x/2,-env_pitch().y/2,zpoint]) 
     //cube([num_x*env_pitch().x,env_corner_radius(),headroom+gf_Lip_Height]);
     //innerWallRadius = env_corner_radius()-wall_thickness;
     translate([0,env_corner_radius(),aboveLidHeight]) 
     rotate([270,0,0])
-    chamferedCorner(
-      cornerRadius = aboveLidHeight/4,
+    #chamferedCorner(
+      cornerRadius = aboveLidHeight/4 + 1,
       chamferLength = aboveLidHeight,
       length=num_x*env_pitch().x, 
       height = aboveLidHeight,
