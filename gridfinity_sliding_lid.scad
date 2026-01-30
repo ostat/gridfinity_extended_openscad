@@ -14,7 +14,7 @@ use <modules/module_gridfinity_block.scad>
 
 /* [Sliding Lid] */
 // select what to render
-render_choice = "both";//[both, lid, cup]
+render_choice = "both";//[both, lid, cup, both connected]
 sliding_lid_enabled = true;
 // 0 = wall thickness *2
 sliding_lid_thickness = 0; //0.1
@@ -292,7 +292,7 @@ set_environment(
   randomSeed = random_seed,
   force_render = force_render)
   union(){
-  if(render_choice == "both" || render_choice == "cup")
+  if(render_choice == "both" || render_choice == "cup" || render_choice == "both connected")
   {
     gridfinity_cup(
       width=width, depth=depth, height=height,
@@ -423,7 +423,7 @@ set_environment(
         baseTextOffset = text_offset));
   }
 
-  if(render_choice == "both" || render_choice == "lid")
+  if(render_choice == "both" || render_choice == "lid" || render_choice == "both connected")
   {
     num_x = calcDimensionWidth(width);
     num_y = calcDimensionDepth(depth);
