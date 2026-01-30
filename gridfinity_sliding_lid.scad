@@ -294,6 +294,7 @@ set_environment(
   union(){
   if(render_choice == "both" || render_choice == "cup" || render_choice == "both connected")
   {
+  color("red")
     gridfinity_cup(
       width=width, depth=depth, height=height,
       filled_in=filled_in,

@@ -49,6 +49,7 @@ module SlidingLid(
   num_x, 
   num_y,
   wall_thickness,
+  headroom = 0.8,
   clearance = 0,
   lidThickness,
   lidMinSupport,
@@ -98,7 +99,7 @@ module SlidingLid(
       if(addLiptoLid)
       color(env_colour(color_topcavity, isLip = true))
       difference(){
-        translate([0,0,lidThickness-fudgeFactor*3])
+        translate([0,0,headroom + lidThickness-fudgeFactor*3])
         cupLip(
           num_x = num_x, 
           num_y = num_y, 
@@ -107,7 +108,7 @@ module SlidingLid(
           lip_top_relief_height = lip_top_relief_height,
           wall_thickness = 1.2);
         translate([0,lidLowerRadius,lidThickness-fudgeFactor*4])
-          cube([num_x*env_pitch().x,num_y*env_pitch().y,4+fudgeFactor*2]);
+          cube([num_x*env_pitch().x,num_y*env_pitch().y,headroom + 4+fudgeFactor*2]);
       }
 
       color(env_colour(color_lid))
@@ -125,10 +126,10 @@ module SlidingLid(
         difference(){
           hull()
             cornercopy(inner_corner_center, num_x, num_y){
-              cylinder(r=env_corner_radius(), h=lidThickness);
+              cylinder(r=env_corner_radius(), h=headroom+lidThickness);
           }         
           translate([-fudgeFactor,lidLowerRadius,-fudgeFactor])
-            cube([num_x*env_pitch().x+fudgeFactor*2,num_y*env_pitch().y+fudgeFactor,lidThickness+fudgeFactor*2]);
+            cube([num_x*env_pitch().x+fudgeFactor*2,num_y*env_pitch().y+fudgeFactor,lidThickness+headroom+fudgeFactor*2]);
         }
       }
     }
@@ -270,9 +271,7 @@ module SlidingLidCavity(
   if(sliding_lid_settings[slidingLidLipEnabled])
   {
     translate([0,0,0])
-      // #cube([num_x*env_pitch().x,env_corner_radius(),aboveLidHeight+fudgeFactor*3]);
-      cube([num_x*env_pitch().x,env_corner_radius(),aboveLidHeight+fudgeFactor*3+5]);
-      // echo("SSSSSS:", fudgeFactor);
+      cube([num_x*env_pitch().x,env_corner_radius(),aboveLidHeight+fudgeFactor*3 + 10]);
   } else {
     //translate([-env_pitch().x/2,-env_pitch().y/2,zpoint]) 
     //cube([num_x*env_pitch().x,env_corner_radius(),headroom+gf_Lip_Height]);
