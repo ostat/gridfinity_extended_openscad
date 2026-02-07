@@ -283,11 +283,18 @@ module baseplate_cavities(
       
       // If method is "hole", drill a smaller cylinder from the bottom up to the magnet
       if (use_hole && magnetSize[0] > 0) {
-          // Center the cylinder. Cut from Z=0 up to magnet_position.
-          translate([0, 0, -fudgeFactor])
-          cylinder(d=magnetSize[0]/2, h=magnet_position + fudgeFactor*2);
+      
+        if(magnetZOffset > 0){
+            // Center the cylinder. Cut from Z=0 up to magnet_position.
+            translate([0, 0, -fudgeFactor])
+            cylinder(d=magnetSize[0]/2, h=magnet_position + fudgeFactor*2);
+          }
+          if(magnetTopCover > 0){
+            translate([0, 0, magnet_position+magnetSize[1]-fudgeFactor])
+            cylinder(d=magnetSize[0]/2, h=magnetTopCover + fudgeFactor*2);
+          }
       }
-
+      
       // counter-sunk holes in the bottom
       if(cornerScrewEnabled){
         cylinder(d=3.5, h=baseCavityHeight);

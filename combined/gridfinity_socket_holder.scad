@@ -1,7 +1,9 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_socket_holder.scad'. Generated 2025-11-08 11:08
+//Combined version of 'gridfinity_socket_holder.scad'. Generated 2026-02-08 09:16
 ///////////////////////////////////////
+
 part = 5; //[1: "METRIC", 2: "IMPERIAL", 3: "Imperial < 1/2\"", 4: "Imperial >= 1/2\"", 5: "Metric >=7mm", 6: "Metric <7mm"]
+
 if (part == 1) {
   socket_holder(4, [12,12,12,13,14,16,16,17,21,22], "METRIC");
 }
@@ -20,7 +22,9 @@ else if (part == 5) {
 else if (part == 6) {
   socket_holder(2, [12,12,12,12,12,12], "metric<7mm");
 }
+
 function inc(v, a=.6) = [for (i = v) i+a ];
+
 module socket_holder(num_x=1, widths=[], name="", num_z=3) {
   difference() {
     grid_block(num_x, 1, num_z);
@@ -34,8 +38,10 @@ module socket_holder(num_x=1, widths=[], name="", num_z=3) {
     translate([-18,-18,22])cube([usable_w,42-6,50]);
   }
 }
+
 function move(v, i=0, r=0, lo=0) = i > 0 ? move(v, i-1, r+(v[i-1]+v[i])/2, lo) + lo : r;
 function sum(v, i=0, r=0) = i < len(v) ? sum(v, i+1, v[i] + r) : r;
+
 module sockets(widths=[], width = 100) {
   leftover = width - sum(widths);
   if(env_help_enabled("debug")) echo(leftover=leftover, "(should be greater than 0)");
