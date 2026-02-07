@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Get current branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Skip if branch starts with dev/
+case "$BRANCH" in
+  dev/*)
+    echo "Pre-commit hook skipped on branch $BRANCH"
+    exit 0
+    ;;
+esac
+
+STAGED=$(git diff --cached --name-only)
+SCAD_CHANGED=$(echo "$STAGED" | grep -E '\.scad$')
+
+if [ -z "$SCAD_CHANGED" ]; then
+    echo "No .scad files changed. Skipping compile."
+    exit 0
+fi
+
+# Otherwise, run your script
+echo "Running OpenSCAD compile script..."
+
+powershell.exe -ExecutionPolicy Bypass -File scripts/combined-openscad_script.ps1
+
+if [ $? -ne 0 ]; then
+  echo "Compile failed. Commit aborted."
+  exit 1
+fi
+
+git add combined/
