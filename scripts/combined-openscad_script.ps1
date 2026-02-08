@@ -172,6 +172,10 @@ function Save-CombinedOpenScadFile([string]$ScadFilePath, [string]$OutputFolder)
 
 cls
 
+#remove old combined files
+Remove-Item (join-path $OutputFolder '*.scad') -Force
+
+#remove old combined files
 Get-ChildItem $script:SourceFolder -Filter '*.scad' | ForEach-Object {
     Save-CombinedOpenScadFile -ScadFilePath $_.FullName -OutputFolder $OutputFolder
 }
