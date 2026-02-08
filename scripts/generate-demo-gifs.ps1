@@ -208,7 +208,7 @@ function Create-ImageForDemo(
             $cmdArgs += " $($scadScriptPath)"
             Write-Host  $cmdArgs
             $executionResult = (Start-ProcessWithOutputs -commandTitle $scenarioName -commandPath $script:ScadExePath -ArgumentList $cmdArgs)
-                            write-warning  "stderr: $($executionResult.stderr)"
+            write-warning  "stderr: $($executionResult.stderr)"
             write-host "openscad executionTime: $($executionResult.executionTime)"
 
             if($executionResult.stderr -cmatch 'ERROR\:\s' -or $executionResult.ExitCode -ne 0){

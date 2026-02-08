@@ -1,6 +1,6 @@
 // include instead of use, so we get the pitch
 include <modules/gridfinity_constants.scad>
-use <gridfinity_baseplate.scad>   // for frame_plain
+use <modules/module_gridfinity_baseplate_common.scad>    // for frame_plain
 
 ear_hole_x = 182.5; // distance between existing screw holes on FLSUN q5.
 ear_hole_y = 7; // distance of screw hole from the front panel.
@@ -11,8 +11,7 @@ M4_d = 4.2; // diameter needed for an M4 bolt.
 wallThickness = 0.2; //Extend and imbed in to wall to fit around corner
 
 union(){
-  translate([gf_pitch/2, gf_pitch/2, 0]) 
-    frame_plain(4, 1, height = cube_z);
+  frame_plain(4, 1, height = cube_z);
     
   for (i = [0,1]) {
     x = i * ear_hole_x - from_ends-wallThickness;

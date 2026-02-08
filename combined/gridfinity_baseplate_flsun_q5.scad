@@ -1,5 +1,5 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate_flsun_q5.scad'. Generated 2026-02-08 09:16
+//Combined version of 'gridfinity_baseplate_flsun_q5.scad'. Generated 2026-02-09 08:20
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -12,8 +12,7 @@ M4_d = 4.2; // diameter needed for an M4 bolt.
 wallThickness = 0.2; //Extend and imbed in to wall to fit around corner
 
 union(){
-  translate([gf_pitch/2, gf_pitch/2, 0]) 
-    frame_plain(4, 1, height = cube_z);
+  frame_plain(4, 1, height = cube_z);
     
   for (i = [0,1]) {
     x = i * ear_hole_x - from_ends-wallThickness;

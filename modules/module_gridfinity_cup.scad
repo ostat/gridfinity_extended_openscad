@@ -971,6 +971,7 @@ module bin_floor_pattern(
       // Subtract magnet/screw pads if enabled
       magnet_diameter = cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
       screw_diameter = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter];
+      screw_depth = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
       if (magnet_diameter > 0 || screw_depth > 0) {
         magnet_positions = calculateAttachmentPositions(magnet_diameter, screw_diameter);
         pad_radius = max(magnet_diameter, screw_diameter) / 2 + cutoutclearance_divider*2;

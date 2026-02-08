@@ -1,5 +1,5 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_glue_stick.scad'. Generated 2026-02-08 09:16
+//Combined version of 'gridfinity_glue_stick.scad'. Generated 2026-02-09 08:20
 ///////////////////////////////////////
 
 cup_height = 5;
@@ -8,13 +8,22 @@ easement_z = 0.7; // a slightly large opening at the top for compliance while in
 minimum_wall = 4;
 blocks_needed = ceil((stick_diameter+2*minimum_wall)/env_pitch().x);
 
+$fn = 64;
+
+set_environment(
+  width = 1,
+  depth = 1,
+  height = 2,
+  render_position = "center")
 glue_stick_cup(blocks_needed, blocks_needed, cup_height);
 
 
 module glue_stick_cup(num_x=1, num_y=1, num_z=2) {
   difference() {
-    grid_block(num_x, num_y, num_z, magnet_diameter=0, screw_depth=0, position="center");
-    glue_stick(num_z, stick_diameter);
+    grid_block(num_x, num_y, num_z, 
+      cupBase_settings = CupBaseSettings());
+      translate([num_x*env_pitch().x/2, num_y*env_pitch().y/2, 0])
+      glue_stick(num_z, stick_diameter);
   }
 }
 

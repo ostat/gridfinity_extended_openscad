@@ -1,5 +1,5 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_sieve.scad'. Generated 2026-02-08 09:16
+//Combined version of 'gridfinity_sieve.scad'. Generated 2026-02-09 08:20
 ///////////////////////////////////////
 
 /*<!!start gridfinity_sieve!!>*/
@@ -66,10 +66,8 @@ label_relief = [0,0,0,0.6]; // 0.1
 label_walls=[0,1,0,0];  //[0:1:1]
 
 /* [debug] */
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+//Slice the bin
+cut = [0,0,0]; //0.1
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -1156,6 +1154,7 @@ module bin_floor_pattern(
       // Subtract magnet/screw pads if enabled
       magnet_diameter = cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
       screw_diameter = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter];
+      screw_depth = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
       if (magnet_diameter > 0 || screw_depth > 0) {
         magnet_positions = calculateAttachmentPositions(magnet_diameter, screw_diameter);
         pad_radius = max(magnet_diameter, screw_diameter) / 2 + cutoutclearance_divider*2;
@@ -1903,7 +1902,7 @@ function PatternSettings(
     patternCellSize, 
     patternHoleSides,
     patternStrength, 
-    patternHoleRadius,
+    patternHoleRadius=0.5,
     patternFs = 0,
     patternGridChamfer=0,
     patternVoronoiNoise=0,
@@ -8490,7 +8489,7 @@ function CupBaseTextSettings(
   baseTextFontSize,
   baseTextFont,
   baseTextDepth,
-  baseTextOffset) = 
+  baseTextOffset = [0,0]) = 
   [baseTextLine1Enabled, 
   baseTextLine2Enabled,
   baseTextLine1Value,
@@ -9733,15 +9732,15 @@ module gridfinity_sieve(
       lip_settings=lip_settings,
       headroom=headroom,
         floor_pattern_settings = PatternSettings(
-        patternEnabled = true, 
-        patternStyle = sieve_grid_style, 
-        patternFill = sieve_compartment_fill,
-        patternBorder = sieve_compartment_clearance, 
-        patternCellSize = cellSize, 
-        patternStrength = sieve_strength,
-        patternHoleSides = 6,
-        patternRotateGrid = sieve_rotate_grid,
-        patternGridChamfer=sieve_hole_chamfer));
+          patternEnabled = true, 
+          patternStyle = sieve_grid_style, 
+          patternFill = sieve_compartment_fill,
+          patternBorder = sieve_compartment_clearance, 
+          patternCellSize = cellSize, 
+          patternStrength = sieve_strength,
+          patternHoleSides = 6,
+          patternRotate = sieve_rotate_grid,
+          patternGridChamfer = sieve_hole_chamfer));
     /*<!!end gridfinity_basic_cup!!>*/
   }
 }
@@ -9752,5 +9751,5 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, height])
+  cut = cut)
 gridfinity_sieve();

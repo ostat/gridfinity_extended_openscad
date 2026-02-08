@@ -18,7 +18,7 @@ function CupBaseTextSettings(
   baseTextFontSize,
   baseTextFont,
   baseTextDepth,
-  baseTextOffset) = 
+  baseTextOffset = [0,0]) = 
   [baseTextLine1Enabled, 
   baseTextLine2Enabled,
   baseTextLine1Value,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////
-//Combined version of 'stanley_basic_cup.scad'. Generated 2026-02-08 09:16
+//Combined version of 'stanley_basic_cup.scad'. Generated 2026-02-09 08:20
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -69,25 +69,6 @@ vertical_separator_config = "10.5|21|42|50|60";
 horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 horizontal_separator_config = "10.5|21|42|50|60";
-
-/* [Removable Divider Walls] */
-divider_walls_enabled = false;
-// Wall to enable on, x direction, y direction
-divider_walls = [1,1]; //[0:1:1]
-// Thickness of the divider walls.
-divider_walls_thickness = 2.5;  //0.1
-// Spacing between the divider walls (0=divider_walls_thickness*2).
-divider_walls_spacing = 0; //0.1
-// Thickness of the support walls (0=walls_thickness*2).
-divider_walls_support_thickness = 2;
-// Size of the slot in the divider walls. width(0=divider_walls_thickness), depth(0=divider_walls_support_thickness)
-divider_wall_slot_size = [0,0];
-// Clearance between the divider walls top
-divider_headroom = 0.1;
-// Clearance subtracted from the removable divider wall. Width, Length
-divider_clearance = [0.3, 0.2];
-// Number of slot spanning divider to generate.
-divider_slot_spanning = 2;
 
 /* [Base] */
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
@@ -244,10 +225,8 @@ text_2 = false;
 text_2_text = "Gridfinity Extended";
 
 /* [debug] */
-// Slice along the x axis
-cutx = 0; //0.1
-// Slice along the y axis
-cuty = 0; //0.1
+// Slice cup
+cut = [0,0,0]; //0.1
 // Enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -1375,6 +1354,7 @@ module bin_floor_pattern(
       // Subtract magnet/screw pads if enabled
       magnet_diameter = cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
       screw_diameter = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter];
+      screw_depth = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
       if (magnet_diameter > 0 || screw_depth > 0) {
         magnet_positions = calculateAttachmentPositions(magnet_diameter, screw_diameter);
         pad_radius = max(magnet_diameter, screw_diameter) / 2 + cutoutclearance_divider*2;
@@ -2122,7 +2102,7 @@ function PatternSettings(
     patternCellSize, 
     patternHoleSides,
     patternStrength, 
-    patternHoleRadius,
+    patternHoleRadius=0.5,
     patternFs = 0,
     patternGridChamfer=0,
     patternVoronoiNoise=0,
@@ -8709,7 +8689,7 @@ function CupBaseTextSettings(
   baseTextFontSize,
   baseTextFont,
   baseTextDepth,
-  baseTextOffset) = 
+  baseTextOffset = [0,0]) = 
   [baseTextLine1Enabled, 
   baseTextLine2Enabled,
   baseTextLine1Value,
@@ -9918,7 +9898,7 @@ set_environment(
   pitch = stanley_model_settings[istanley_model_settings_pitch],
   clearance = clearance,
   corner_radius=stanley_model_settings[istanley_model_corner_radius],
-  cut = [cutx, cuty, height],
+  cut = cut,
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)
@@ -9972,16 +9952,6 @@ gridfinity_cup(
     separator_cut_depth = horizontal_separator_cut_depth,
     irregular_subdivisions = horizontal_irregular_subdivisions,
     separator_config = horizontal_separator_config),
-  divider_wall_removable_settings = DividerRemovableSettings(
-    enabled=divider_walls_enabled,
-    walls=divider_walls,
-    headroom=divider_headroom,
-    support_thickness=divider_walls_support_thickness,
-    slot_size=divider_wall_slot_size,
-    divider_spacing=divider_walls_spacing,
-    divider_thickness=divider_walls_thickness,
-    divider_clearance=divider_clearance,
-    divider_slot_spanning=divider_slot_spanning),
   lip_settings = LipSettings(
     lipStyle=lip_style, 
     lipSideReliefTrigger=lip_side_relief_trigger, 

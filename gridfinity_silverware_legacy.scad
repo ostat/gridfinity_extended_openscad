@@ -30,12 +30,17 @@ margin = 1;  // .1
 height_in_mm = 35;
 
 /* [Gridfinity features] */
-// (Zack's design uses magnet diameter of 6.5)
-magnet_diameter = 0;  // .1
-// Create relief for magnet removal 
-magnet_easy_release = true;
-// (Zack's design uses depth of 6)
-screw_depth = 0;
+// Enable magnets
+enable_magnets = false;
+// Enable screws
+enable_screws = false;
+//size of magnet, diameter and height. Zack's original used 6.5 and 2.4
+magnet_size = [6.5, 2.4];  // .1
+//create relief for magnet removal
+magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+//size of screw, diameter and height. Zack's original used 3 and 6
+screw_size = [3, 6]; // .1
+
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 1.0;
 
@@ -131,15 +136,26 @@ module recur_stack_silver(xtop, xbot, silv, inverted) {
 }
 
 // top level generator
-module silverware_pockets(defs, md=magnet_diameter, sd=screw_depth) {
-  mag_ht = md > 0 ? 2.4: 0;
-  m3_ht = sd;
+module silverware_pockets(defs, 
+    magnet_size=magnet_size, 
+    screw_size=screw_size,
+    magnet_easy_release=magnet_easy_release,
+    enable_magnets = enable_magnets,
+    enable_screws = enable_screws
+  ) {
+  mag_ht = enable_magnets ? magnet_size[iCylinderDimension_Height] : 0;
+  m3_ht = enable_screws ? enable_screws[iCylinderDimension_Height] : 0;
   part_ht = 5;  // height of bottom side groove between gridfinity units
   floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
   
   difference() {
     translate(gridfinityRenderPosition("center",width,depth))
-    grid_block(width, depth, height, magnet_diameter=md, screw_depth=sd);
+    grid_block(width, depth, height, 
+    cupBase_settings = CupBaseSettings(
+      magnetSize = enable_magnets?magnet_size:[0,0],
+      screwSize = enable_screws?screw_size:[0,0])
+      );
+    
     translate([0, 0, floorht]) 
       linear_extrude(height=7*height) 
       stack_silver(defs);

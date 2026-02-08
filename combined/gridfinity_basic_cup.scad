@@ -1,5 +1,5 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-08 09:16
+//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-09 08:20
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -1362,6 +1362,7 @@ module bin_floor_pattern(
       // Subtract magnet/screw pads if enabled
       magnet_diameter = cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
       screw_diameter = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter];
+      screw_depth = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
       if (magnet_diameter > 0 || screw_depth > 0) {
         magnet_positions = calculateAttachmentPositions(magnet_diameter, screw_diameter);
         pad_radius = max(magnet_diameter, screw_diameter) / 2 + cutoutclearance_divider*2;
@@ -2109,7 +2110,7 @@ function PatternSettings(
     patternCellSize, 
     patternHoleSides,
     patternStrength, 
-    patternHoleRadius,
+    patternHoleRadius=0.5,
     patternFs = 0,
     patternGridChamfer=0,
     patternVoronoiNoise=0,
@@ -8696,7 +8697,7 @@ function CupBaseTextSettings(
   baseTextFontSize,
   baseTextFont,
   baseTextDepth,
-  baseTextOffset) = 
+  baseTextOffset = [0,0]) = 
   [baseTextLine1Enabled, 
   baseTextLine2Enabled,
   baseTextLine1Value,

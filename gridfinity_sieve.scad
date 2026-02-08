@@ -66,10 +66,8 @@ label_relief = [0,0,0,0.6]; // 0.1
 label_walls=[0,1,0,0];  //[0:1:1]
 
 /* [debug] */
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+//Slice the bin
+cut = [0,0,0]; //0.1
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -156,15 +154,15 @@ module gridfinity_sieve(
       lip_settings=lip_settings,
       headroom=headroom,
         floor_pattern_settings = PatternSettings(
-        patternEnabled = true, 
-        patternStyle = sieve_grid_style, 
-        patternFill = sieve_compartment_fill,
-        patternBorder = sieve_compartment_clearance, 
-        patternCellSize = cellSize, 
-        patternStrength = sieve_strength,
-        patternHoleSides = 6,
-        patternRotateGrid = sieve_rotate_grid,
-        patternGridChamfer=sieve_hole_chamfer));
+          patternEnabled = true, 
+          patternStyle = sieve_grid_style, 
+          patternFill = sieve_compartment_fill,
+          patternBorder = sieve_compartment_clearance, 
+          patternCellSize = cellSize, 
+          patternStrength = sieve_strength,
+          patternHoleSides = 6,
+          patternRotate = sieve_rotate_grid,
+          patternGridChamfer = sieve_hole_chamfer));
     /*<!!end gridfinity_basic_cup!!>*/
   }
 }
@@ -175,5 +173,5 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, height])
+  cut = cut)
 gridfinity_sieve();

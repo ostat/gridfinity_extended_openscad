@@ -385,7 +385,6 @@ module silverware_pockets(defs, md=magnet_size[1], sd=screw_size[1]) {
       flatBaseRoundedRadius = flat_base_rounded_radius,
       flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
     wall_thickness=wall_thickness,
-    divider_wall_removable_settings = DividerRemovableSettings(),
     vertical_chambers = ChamberSettings(
       chamber_wall_thickness = chamber_wall_thickness,
       chamber_wall_headroom = chamber_wall_headroom,

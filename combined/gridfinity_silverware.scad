@@ -1,5 +1,5 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-08 09:16
+//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-09 08:20
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -4389,6 +4389,7 @@ module bin_floor_pattern(
       // Subtract magnet/screw pads if enabled
       magnet_diameter = cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
       screw_diameter = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter];
+      screw_depth = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
       if (magnet_diameter > 0 || screw_depth > 0) {
         magnet_positions = calculateAttachmentPositions(magnet_diameter, screw_diameter);
         pad_radius = max(magnet_diameter, screw_diameter) / 2 + cutoutclearance_divider*2;
@@ -4882,7 +4883,7 @@ function PatternSettings(
     patternCellSize, 
     patternHoleSides,
     patternStrength, 
-    patternHoleRadius,
+    patternHoleRadius=0.5,
     patternFs = 0,
     patternGridChamfer=0,
     patternVoronoiNoise=0,
@@ -8657,7 +8658,7 @@ function CupBaseTextSettings(
   baseTextFontSize,
   baseTextFont,
   baseTextDepth,
-  baseTextOffset) = 
+  baseTextOffset = [0,0]) = 
   [baseTextLine1Enabled, 
   baseTextLine2Enabled,
   baseTextLine1Value,
@@ -9963,7 +9964,6 @@ module silverware_pockets(defs, md=magnet_size[1], sd=screw_size[1]) {
       flatBaseRoundedRadius = flat_base_rounded_radius,
       flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
     wall_thickness=wall_thickness,
-    divider_wall_removable_settings = DividerRemovableSettings(),
     vertical_chambers = ChamberSettings(
       chamber_wall_thickness = chamber_wall_thickness,
       chamber_wall_headroom = chamber_wall_headroom,

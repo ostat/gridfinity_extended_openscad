@@ -94,10 +94,8 @@ floor_thickness = 1.5;
 half_pitch = true;
 
 /* [debug] */
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+//Slice the bin
+cut = [0,0,0]; 
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -919,7 +917,7 @@ set_environment(
   render_position = render_position,
   help = enable_help,
   //pitch = pitch,
-  cut = [cutx, cuty, height],
+  cut = cut,
   setColour = set_colour,
   randomSeed = random_seed) 
 gridfinity_marble();

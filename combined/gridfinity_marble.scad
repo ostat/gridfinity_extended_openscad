@@ -1,5 +1,5 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_marble.scad'. Generated 2026-02-08 09:16
+//Combined version of 'gridfinity_marble.scad'. Generated 2026-02-09 08:20
 ///////////////////////////////////////
 
 
@@ -93,10 +93,8 @@ floor_thickness = 1.5;
 half_pitch = true;
 
 /* [debug] */
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+//Slice the bin
+cut = [0,0,0]; 
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -1183,6 +1181,7 @@ module bin_floor_pattern(
       // Subtract magnet/screw pads if enabled
       magnet_diameter = cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
       screw_diameter = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter];
+      screw_depth = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
       if (magnet_diameter > 0 || screw_depth > 0) {
         magnet_positions = calculateAttachmentPositions(magnet_diameter, screw_diameter);
         pad_radius = max(magnet_diameter, screw_diameter) / 2 + cutoutclearance_divider*2;
@@ -1930,7 +1929,7 @@ function PatternSettings(
     patternCellSize, 
     patternHoleSides,
     patternStrength, 
-    patternHoleRadius,
+    patternHoleRadius=0.5,
     patternFs = 0,
     patternGridChamfer=0,
     patternVoronoiNoise=0,
@@ -8517,7 +8516,7 @@ function CupBaseTextSettings(
   baseTextFontSize,
   baseTextFont,
   baseTextDepth,
-  baseTextOffset) = 
+  baseTextOffset = [0,0]) = 
   [baseTextLine1Enabled, 
   baseTextLine2Enabled,
   baseTextLine1Value,
@@ -11027,7 +11026,7 @@ set_environment(
   render_position = render_position,
   help = enable_help,
   //pitch = pitch,
-  cut = [cutx, cuty, height],
+  cut = cut,
   setColour = set_colour,
   randomSeed = random_seed) 
 gridfinity_marble();

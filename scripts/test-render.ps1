@@ -1,7 +1,16 @@
 Param(
     [string]$OpenScadPath,
-    [string]$ScadScriptFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName
+    [string]$ScadScriptFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName,
+    [switch]$saveResults,
+    [string]$outputScriptFolder = 'test_results'
 )
+
+$outputScriptFolderPath = Join-Path $ScadScriptFolder $outputScriptFolder
+if($saveResults) {
+    if(!(Test-Path -Path $outputScriptFolderPath)) {
+        New-Item -ItemType Directory -Path $outputScriptFolderPath -Force
+    }
+}
 
 if (-not $OpenScadPath) {
 
@@ -22,7 +31,7 @@ if (-not $OpenScadPath) {
         )
 
         foreach ($path in $candidates) {
-            if (![string]::IsNullOrEmpty($path) -and (Test-Path $path)) {
+            if (![string]::IsNullOrEmpty($path) -and (Test-Path -Path $path)) {
                 $OpenScadPath = $path
                 break
             }
@@ -110,7 +119,13 @@ Get-ChildItem -LiteralPath $ScadScriptFolder -Filter *.scad | ForEach-Object {
     $cmdArgs += " --export-format binstl"
     $cmdArgs += " --enable textmetrics"
     $cmdArgs += " --backend Manifold"
-    $cmdArgs += " -o NUL"
+
+    if($saveResults) {
+        $cmdArgs += " -o `"$(Join-Path $outputScriptFolderPath $_.BaseName).stl`""
+    }
+    else {
+        $cmdArgs += " -o NUL"
+    }
     $cmdArgs += " $($scadScriptPath)"
 
     $executionResult = (Start-ProcessWithOutputs -commandPath $script:OpenScadPath -ArgumentList $cmdArgs)
