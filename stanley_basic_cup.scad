@@ -347,7 +347,7 @@ gridfinity_cup(
     floorThickness = stanley_model_settings[istanley_model_settings_wall],
     cavityFloorRadius = cavity_floor_radius,
     efficientFloor="off",
-    halfPitch=false,
+    subPitch=1,
     flatBase="rounded",
     spacer=false,
     minimumPrintablePadSize=0.2,

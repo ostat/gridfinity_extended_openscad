@@ -90,8 +90,8 @@ lip_clip_position = "disabled"; //[disabled, intersection]
 /* [Base] */
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 1.5;
-// Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = true;
+// Enable to subdivide bottom pads to allow sub-cell offsets
+sub_pitch = 1; //[1,2,3,4]
 
 /* [debug] */
 //Slice the bin
@@ -206,11 +206,11 @@ module gridfinity_marble(
   width=width, depth=depth, height=height,
   position = render_position,
   floor_thickness = floor_thickness,
-  half_pitch = half_pitch,
+  sub_pitch = sub_pitch,
   wall_thickness=wall_thickness) {
   
   lip_style = marble_style == "ramp" ? "none" : lip_style;
-  halfPitch=marble_style == "cup" ? false : half_pitch;
+  subPitch = marble_style == "cup" ? 1 : sub_pitch;
   
   difference() {
     num_x = calcDimensionWidth(width);
@@ -226,7 +226,7 @@ module gridfinity_marble(
         centerMagnetSize = [0,0], 
         screwSize = [0,0], 
         cavityFloorRadius = -1,
-        halfPitch=halfPitch,
+        subPitch=subPitch,
         flatBase=false,
         spacer=false),
       wall_thickness=wall_thickness,

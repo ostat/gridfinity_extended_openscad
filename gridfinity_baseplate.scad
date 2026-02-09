@@ -7,9 +7,9 @@ use <modules/module_gridfinity_frame_connectors.scad>
 // Plate Style
 Base_Plate_Options = "default";//[default:Efficient base, cnclaser:CNC or Laser cut]
 // X dimension. grid units (multiples of 42mm) or mm.
-Width = [2, 0]; //0.1
+Width = [3, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
-Depth = [1, 0]; //0.1
+Depth = [2, 0]; //0.1
 oversize_method = "fill"; //[crop, fill]
 position_fill_grid_x = "near";//[near, center, far]
 position_fill_grid_y = "near";//[near, center, far]
@@ -27,6 +27,7 @@ Reduced_Wall_Taper = false;
 plate_corner_radius = 3.75; //0.01
 //Corner radius for the inner corners (Works well with build_plate_enabled)
 secondary_corner_radius = 3.75; //0.01
+
 /* [Printer bed options] */
 build_plate_enabled = "disabled";//[disabled, enabled, unique]
 //spread out the plates, use if last row is small.
@@ -63,18 +64,18 @@ Connector_Clip_Enabled = false;
 Connector_Clip_Size = 10;
 Connector_Clip_Tolerance = 0.1;
 
-//This feature is not yet finalized, or working properly. 
+//This feature is not yet finalised, or working properly. 
 Connector_Butterfly_Enabled = false;
 Connector_Butterfly_Size = [5,4,1.5];
 Connector_Butterfly_Radius = 0.1;
 Connector_Butterfly_Tolerance = 0.1;
 
-//This feature is not yet finalized, or working properly. 
+//This feature is not yet finalised, or working properly. 
 Connector_Filament_Enabled = false;
 Connector_Filament_Diameter = 2;
 Connector_Filament_Length = 8;
 
-//This feature is not yet finalized, or working properly. 
+//This feature is not yet finalised, or working properly. 
 Connector_Snaps_Enabled = "disabled"; //["disabled","larger","smaller"]
 Connector_Snaps_Clearance = 0.2;
 

@@ -8,7 +8,7 @@
 #    use <filename> imports modules and functions, but does not execute any commands other than those definitions.
 #
 #For use imports, if there is a function call, it would now get called so we need a way to prevent that:
-#Manually add a comment to imported fileso we know what lines to to remove to prevent the execution
+#Manually add a comment to imported file so we know what lines to to remove to prevent the execution
 #i.e. basic_cup();//execution point
 #
 #The injected files need to go after the config block. To detect this we look for a module call.
@@ -54,7 +54,6 @@ function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child, [int]$c
     Get-Content -LiteralPath $ScadFilePath -Encoding utf8 | ForEach-Object {
         #If the line is an include, process that file
         if($_ -imatch '^\s?(use|include) <(.*)>'){
-            $includeType = $Matches[1]
             Write-CustomHost "Matched $($Matches[1]) path $($Matches[2])" -ForegroundColor Green -padCount $childCount
             [string]$childPath = resolve-path (Join-Path $scadFile.Directory.FullName $Matches[2])
             if($script:LinkedFiles.Contains($childPath)){
@@ -125,11 +124,7 @@ function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child, [int]$c
 
     #Processing all child files has completed, create the combined content
     [string[]]$combinedLines = @()
-    #add a comment to the top of the combined file so we know when it was 'compiled'
-    $combinedLines += '///////////////////////////////////////'
-    $combinedLines += "//Combined version of '$($scadFile.Name)'. Generated $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
-    $combinedLines += '///////////////////////////////////////'
-    
+
     $injected = $false
     $fileLines | ForEach-Object {
         
@@ -153,27 +148,94 @@ function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child, [int]$c
     return $combinedLines
 }
 
+function Get-StringArrayHash([string[]]$StringArray) {
+    $combinedString = $StringArray -join "`n"
+    $bytes = [System.Text.Encoding]::UTF8.GetBytes($combinedString)
+    $hasher = [System.Security.Cryptography.SHA256]::Create()
+    try {
+        $hashBytes = $hasher.ComputeHash($bytes)
+        return [System.BitConverter]::ToString($hashBytes) -replace '-', ''
+    }
+    finally {
+        $hasher.Dispose()
+    }
+}
+
+function Test-StringInFile([string]$FilePath, [string]$SearchString) {
+    if (-not (Test-Path $FilePath)) {
+        return $false
+    }
+    
+    try {
+        Get-Content $FilePath -Encoding UTF8 | ForEach-Object {
+            if ($_.Contains($SearchString)) {
+                return $true
+            }
+        }
+        return $false
+    }
+    catch {
+        return $false
+    }
+}
+
 function Save-CombinedOpenScadFile([string]$ScadFilePath, [string]$OutputFolder){
     $script:LinkedFiles = [ordered]@{}
 
-    $inputFilePath = $ScadFilePath
-    $file = Get-Item -LiteralPath $inputFilePath 
-    Write-host "Creating combined file for $($file.Name)" -ForegroundColor Green
-    $resulLines = (Get-CombinedOpenScadFile -ScadFilePath $inputFilePath)
-    $resulLines = $resulLines | where {$_ -ne $null} | ForEach-Object { $_.ToString() }
-    Write-host "found lines $($resulLines.count )"
-    $output_path = (Join-Path $OutputFolder $file.Name)
-    #$resulLines | Out-File $output_path -Encoding utf8 
+    $ScadFile = Get-Item -LiteralPath $ScadFilePath 
+    Write-host "Creating combined file for $($ScadFile.Name)" -ForegroundColor Green
+    $combinedLines = (Get-CombinedOpenScadFile -ScadFilePath $ScadFilePath)
+    $combinedLines = $combinedLines | Where-Object {$_ -ne $null} | ForEach-Object { $_.ToString() }
+    $combinedHash = Get-StringArrayHash -StringArray $combinedLines
+    $output_path = (Join-Path $OutputFolder $ScadFile.Name)
 
+    write-host "combinedHash: $combinedHash"
+    if(Test-StringInFile -FilePath $output_path -SearchString $combinedHash) {
+        Write-Host "Skipping $($ScadFile.Name), no changes detected." -ForegroundColor Yellow
+        return
+    }
+
+    [string[]]$resultLines = @()
+    $resultLines += '///////////////////////////////////////'
+    $resultLines += "//Combined version of '$($ScadFile.Name)'. Generated $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+    $resultLines += "//Content hash $($combinedHash)"
+    $resultLines += '///////////////////////////////////////'
+    $resultLines += $combinedLines
+
+    Write-host "found lines $($resultLines.count)"
+    
     #$MyRawString = Get-Content -Raw $MyPath
     $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
-    [System.IO.File]::WriteAllLines($output_path, $resulLines, $Utf8NoBomEncoding)
+    [System.IO.File]::WriteAllLines($output_path, $resultLines, $Utf8NoBomEncoding)
 }
 
-cls
+function Remove-OrphanedFiles {
+    param (
+        [Parameter(Mandatory)]
+        [string]$Source,
+        [Parameter(Mandatory)]
+        [string]$Target
+    )
+
+    # Get filenames from source
+    $SourceFiles = Get-ChildItem -Path $Source -File -Filter '*.scad' |
+                   Select-Object -ExpandProperty Name
+
+    # Get files from target
+    Get-ChildItem -Path $Target -File -Filter '*.scad' | ForEach-Object {
+        $file = $_
+        if ($file.Name -notin $SourceFiles) {
+            Remove-Item -Path $file.FullName -Force
+            Write-Host "Deleted: $($file.Name)"
+        }
+    }
+}
+
+Clear-Host
 
 #remove old combined files
-Remove-Item (join-path $OutputFolder '*.scad') -Force
+#due to how git handles modified datetime this might not catch all changes
+Remove-OrphanedFiles -Source $script:SourceFolder -Target $OutputFolder
 
 #remove old combined files
 Get-ChildItem $script:SourceFolder -Filter '*.scad' | ForEach-Object {

@@ -20,7 +20,7 @@ cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth] 
 // Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = false;
+sub_pitch = 1;
 // Removes the internal grid from base the shape
 flat_base = false;
 // Remove floor to create a vertical spacer
@@ -37,7 +37,7 @@ iCupBase_CornerAttachmentsOnly=6;
 iCupBase_FloorThickness=7;
 iCupBase_CavityFloorRadius=8;
 iCupBase_EfficientFloor=9;
-iCupBase_HalfPitch=10;
+iCupBase_SubPitch=10;
 iCupBase_FlatBase=11;
 iCupBase_Spacer=12;
 iCupBase_MinimumPrintablePadSize=13;
@@ -83,7 +83,8 @@ function CupBaseSettings(
     floorThickness = gf_cup_floor_thickness,
     cavityFloorRadius = -1,
     efficientFloor = EfficientFloor_off,
-    halfPitch = false,
+    halfPitch = false, //legacy
+    subPitch = 1,
     flatBase = FlatBase_off,
     spacer = false,
     minimumPrintablePadSize = 0,
@@ -118,7 +119,7 @@ function CupBaseSettings(
       floorThickness,
       cavityFloorRadius,
       validateEfficientFloor(efficientFloor),
-      halfPitch,
+      halfPitch ? 2 : subPitch,
       validateFlatBase(flatBase),
       spacer,
       minimumPrintablePadSize,
@@ -140,7 +141,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_bool(settings[iCupBase_CornerAttachmentsOnly]), "CupBase CornerAttachmentsOnly Settings must be a boolean")
   assert(is_num(settings[iCupBase_FloorThickness]), "CupBase FloorThickness Settings must be a number")
   assert(is_num(settings[iCupBase_CavityFloorRadius]), "CupBase CavityFloorRadius Settings must be a number")
-  assert(is_bool(settings[iCupBase_HalfPitch]), "CupBase HalfPitch Settings must be a boolean")
+  assert(is_num(settings[iCupBase_SubPitch]), "CupBase SubPitch Settings must be a number")
   assert(is_string(settings[iCupBase_FlatBase]), "CupBase FlatBase Settings must be a string")
   assert(is_bool(settings[iCupBase_Spacer]), "CupBase Spacer Settings must be a boolean")
   assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
@@ -158,7 +159,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       settings[iCupBase_FloorThickness],
       settings[iCupBase_CavityFloorRadius],
       validateEfficientFloor(settings[iCupBase_EfficientFloor]),
-      settings[iCupBase_HalfPitch],
+      settings[iCupBase_SubPitch],
       validateFlatBase(settings[iCupBase_FlatBase]),
       settings[iCupBase_Spacer],
       settings[iCupBase_MinimumPrintablePadSize],

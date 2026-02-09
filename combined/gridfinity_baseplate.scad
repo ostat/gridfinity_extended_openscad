@@ -1,14 +1,15 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate.scad'. Generated 2026-02-09 08:20
+//Combined version of ''. Generated 2026-02-09 21:12
+//Content hash 1060EE4B401F5196374685BC3282DA5B438FB8475C5466B73D5F35D58756E45B
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
 // Plate Style
 Base_Plate_Options = "default";//[default:Efficient base, cnclaser:CNC or Laser cut]
 // X dimension. grid units (multiples of 42mm) or mm.
-Width = [2, 0]; //0.1
+Width = [3, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
-Depth = [1, 0]; //0.1
+Depth = [2, 0]; //0.1
 oversize_method = "fill"; //[crop, fill]
 position_fill_grid_x = "near";//[near, center, far]
 position_fill_grid_y = "near";//[near, center, far]
@@ -26,6 +27,7 @@ Reduced_Wall_Taper = false;
 plate_corner_radius = 3.75; //0.01
 //Corner radius for the inner corners (Works well with build_plate_enabled)
 secondary_corner_radius = 3.75; //0.01
+
 /* [Printer bed options] */
 build_plate_enabled = "disabled";//[disabled, enabled, unique]
 //spread out the plates, use if last row is small.
@@ -62,18 +64,18 @@ Connector_Clip_Enabled = false;
 Connector_Clip_Size = 10;
 Connector_Clip_Tolerance = 0.1;
 
-//This feature is not yet finalized, or working properly. 
+//This feature is not yet finalised, or working properly. 
 Connector_Butterfly_Enabled = false;
 Connector_Butterfly_Size = [5,4,1.5];
 Connector_Butterfly_Radius = 0.1;
 Connector_Butterfly_Tolerance = 0.1;
 
-//This feature is not yet finalized, or working properly. 
+//This feature is not yet finalised, or working properly. 
 Connector_Filament_Enabled = false;
 Connector_Filament_Diameter = 2;
 Connector_Filament_Length = 8;
 
-//This feature is not yet finalized, or working properly. 
+//This feature is not yet finalised, or working properly. 
 Connector_Snaps_Enabled = "disabled"; //["disabled","larger","smaller"]
 Connector_Snaps_Clearance = 0.2;
 
@@ -276,7 +278,7 @@ module grid_block(
   screw_size=cupBase_settings[iCupBase_ScrewSize];
   hole_overhang_remedy=cupBase_settings[iCupBase_HoleOverhangRemedy];
   box_corner_attachments_only = cupBase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];
+  sub_pitch=cupBase_settings[iCupBase_SubPitch];
   flat_base=cupBase_settings[iCupBase_FlatBase];
   center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
     
@@ -345,7 +347,7 @@ module grid_block(
             pad_grid(
               num_x = num_x, 
               num_y = num_y, 
-              half_pitch = half_pitch, 
+              sub_pitch = sub_pitch, 
               flat_base = flat_base, 
               cupBase_settings[iCupBase_MinimumPrintablePadSize],
               pitch=env_pitch(), 
@@ -423,7 +425,7 @@ module grid_block(
     ,"screw_size",screw_size
     ,"position",position
     ,"hole_overhang_remedy",hole_overhang_remedy
-    ,"half_pitch",half_pitch
+    ,"sub_pitch",sub_pitch
     ,"box_corner_attachments_only",box_corner_attachments_only
     ,"flat_base",flat_base
     ,"lipSettings",lip_settings
@@ -445,7 +447,7 @@ module bin_overhang_chamfer(
   alignGrid = cupBase_settings[iCupBase_AlignGrid];
   cavityFloorRadius = cupBase_settings[iCupBase_CavityFloorRadius];
   efficientFloor = cupBase_settings[iCupBase_EfficientFloor];
-  half_pitch = cupBase_settings[iCupBase_HalfPitch];
+  sub_pitch = cupBase_settings[iCupBase_SubPitch];
   minimumPrintablePadSize = cupBase_settings[iCupBase_MinimumPrintablePadSize];
 
   calculate_bin_chamfer = function (
@@ -455,10 +457,10 @@ module bin_overhang_chamfer(
     wallThickness,
     cavityFloorRadius,
     efficientFloor,
-    halfPitch,
+    subPitch,
     minimumPrintablePadSize) 
     let(
-      over_hanging_lip = halfPitch ? (width*2-floor(width*2))/2 : (width-floor(width)),
+      over_hanging_lip = (width*subPitch-floor(width*subPitch))/subPitch,
       over_hanging_lip_mm = (over_hanging_lip)*pitch-clearance/4,
       calculatedCavityFloorRadius = calculateCavityFloorRadius(cavityFloorRadius, wallThickness, efficientFloor),
       outer_wall_radius = calculatedCavityFloorRadius + wallThickness*2,
@@ -475,7 +477,7 @@ module bin_overhang_chamfer(
       wallThickness = wall_thickness,
       cavityFloorRadius = cavityFloorRadius,
       efficientFloor = efficientFloor,
-      halfPitch = half_pitch,
+      subPitch = sub_pitch,
       minimumPrintablePadSize = minimumPrintablePadSize
     );
 
@@ -486,7 +488,7 @@ module bin_overhang_chamfer(
       wallThickness = wall_thickness,
       cavityFloorRadius = cavityFloorRadius,
       efficientFloor = efficientFloor,
-      halfPitch = half_pitch,
+      subPitch = sub_pitch,
       minimumPrintablePadSize = minimumPrintablePadSize
     );
 
@@ -538,7 +540,7 @@ module bin_overhang_chamfer(
 module pad_grid(
   num_x, 
   num_y, 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   minimium_size = 0.2,
   pitch=env_pitch(), 
@@ -546,15 +548,15 @@ module pad_grid(
   positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
-  assert(is_bool(half_pitch));
+  assert(is_num(sub_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
-  //echo("pad_grid", flat_base=flat_base, half_pitch=half_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
+  //echo("pad_grid", flat_base=flat_base, sub_pitch=sub_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
   pad_copy(
     num_x = num_x, 
     num_y = num_y, 
-    half_pitch = half_pitch, 
+    sub_pitch = sub_pitch, 
     flat_base = flat_base, 
     minimium_size = minimium_size,
     pitch=pitch, 
@@ -796,7 +798,7 @@ module pad_oversize(
  
 module pad_copy(
   num_x, num_y, 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   minimium_size = 0.2,
   pitch=env_pitch(), 
@@ -804,11 +806,11 @@ module pad_copy(
   positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
-  assert(is_bool(half_pitch));
+  assert(is_num(sub_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
-  if(env_help_enabled("debug")) echo("pad_copy", flat_base=flat_base, half_pitch=half_pitch, minimium_size=minimium_size);
+  if(env_help_enabled("debug")) echo("pad_copy", flat_base=flat_base, sub_pitch=sub_pitch, minimium_size=minimium_size);
  
   if (flat_base != FlatBase_off) {
     $pad_copy_size = [num_x, num_y];
@@ -817,15 +819,15 @@ module pad_copy(
       children();
     }
   }
-  else if (half_pitch) {
+  else if (sub_pitch > 1) {
     gridcopy(
-      num_x=num_x*2, 
-      num_y=num_y*2, 
-      pitch=[pitch.y/2,pitch.x/2,pitch.z],
+      num_x=num_x*sub_pitch, 
+      num_y=num_y*sub_pitch, 
+      pitch=[pitch.y/sub_pitch,pitch.x/sub_pitch,pitch.z],
       positionGridx = positionGridx, 
       positionGridy = positionGridy) {
-      $pad_copy_size = $gc_size/2;
-      if(env_help_enabled("debug")) echo("pad_grid_half_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
+      $pad_copy_size = $gc_size/sub_pitch;
+      if(env_help_enabled("debug")) echo("pad_grid_sub_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
          children();      }
     }
@@ -3336,7 +3338,7 @@ cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth] 
 // Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = false;
+sub_pitch = 1;
 // Removes the internal grid from base the shape
 flat_base = false;
 // Remove floor to create a vertical spacer
@@ -3353,7 +3355,7 @@ iCupBase_CornerAttachmentsOnly=6;
 iCupBase_FloorThickness=7;
 iCupBase_CavityFloorRadius=8;
 iCupBase_EfficientFloor=9;
-iCupBase_HalfPitch=10;
+iCupBase_SubPitch=10;
 iCupBase_FlatBase=11;
 iCupBase_Spacer=12;
 iCupBase_MinimumPrintablePadSize=13;
@@ -3399,7 +3401,8 @@ function CupBaseSettings(
     floorThickness = gf_cup_floor_thickness,
     cavityFloorRadius = -1,
     efficientFloor = EfficientFloor_off,
-    halfPitch = false,
+    halfPitch = false, //legacy
+    subPitch = 1,
     flatBase = FlatBase_off,
     spacer = false,
     minimumPrintablePadSize = 0,
@@ -3434,7 +3437,7 @@ function CupBaseSettings(
       floorThickness,
       cavityFloorRadius,
       validateEfficientFloor(efficientFloor),
-      halfPitch,
+      halfPitch ? 2 : subPitch,
       validateFlatBase(flatBase),
       spacer,
       minimumPrintablePadSize,
@@ -3456,7 +3459,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_bool(settings[iCupBase_CornerAttachmentsOnly]), "CupBase CornerAttachmentsOnly Settings must be a boolean")
   assert(is_num(settings[iCupBase_FloorThickness]), "CupBase FloorThickness Settings must be a number")
   assert(is_num(settings[iCupBase_CavityFloorRadius]), "CupBase CavityFloorRadius Settings must be a number")
-  assert(is_bool(settings[iCupBase_HalfPitch]), "CupBase HalfPitch Settings must be a boolean")
+  assert(is_num(settings[iCupBase_SubPitch]), "CupBase SubPitch Settings must be a number")
   assert(is_string(settings[iCupBase_FlatBase]), "CupBase FlatBase Settings must be a string")
   assert(is_bool(settings[iCupBase_Spacer]), "CupBase Spacer Settings must be a boolean")
   assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
@@ -3474,7 +3477,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       settings[iCupBase_FloorThickness],
       settings[iCupBase_CavityFloorRadius],
       validateEfficientFloor(settings[iCupBase_EfficientFloor]),
-      settings[iCupBase_HalfPitch],
+      settings[iCupBase_SubPitch],
       validateFlatBase(settings[iCupBase_FlatBase]),
       settings[iCupBase_Spacer],
       settings[iCupBase_MinimumPrintablePadSize],
@@ -5149,7 +5152,6 @@ module baseplate_cavities(
   // 2. Determine if we use the HOLE style
   use_hole = (magnetReleaseMethod == "hole");
   magnet_easy_release = (use_slot) ? MagnetEasyRelease_outer : MagnetEasyRelease_off;
-  echo(magnet_position=magnet_position, baseCavityHeight=baseCavityHeight, magnetSize=magnetSize );
       
   if(env_help_enabled("debug")) echo("baseplate_cavities", baseCavityHeight=baseCavityHeight, magnetSize=magnetSize, magnetZOffset=magnetZOffset, magnetTopCover=magnetTopCover);
    

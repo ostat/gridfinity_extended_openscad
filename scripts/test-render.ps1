@@ -1,16 +1,11 @@
 Param(
     [string]$OpenScadPath,
-    [string]$ScadScriptFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName,
+    $ScadScriptFolders = @(
+            (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName
+            ),
     [switch]$saveResults,
     [string]$outputScriptFolder = 'test_results'
 )
-
-$outputScriptFolderPath = Join-Path $ScadScriptFolder $outputScriptFolder
-if($saveResults) {
-    if(!(Test-Path -Path $outputScriptFolderPath)) {
-        New-Item -ItemType Directory -Path $outputScriptFolderPath -Force
-    }
-}
 
 if (-not $OpenScadPath) {
 
@@ -109,11 +104,20 @@ function Start-ProcessWithOutputs
 $ErrorActionPreference = "Stop"
 
 $failed = $false
+$ScadScriptFolders |ForEach-Object {
+    $ScadScriptFolder = $_
+    write-host "path: $ScadScriptFolder"
+    $outputScriptFolderPath = Join-Path $ScadScriptFolder $outputScriptFolder
+    if($saveResults) {
+        if(!(Test-Path -Path $outputScriptFolderPath)) {
+            New-Item -ItemType Directory -Path $outputScriptFolderPath -Force
+        }
+    }
 
-Get-ChildItem -LiteralPath $ScadScriptFolder -Filter *.scad | ForEach-Object {
+    Get-ChildItem -LiteralPath $ScadScriptFolder -Filter *.scad | ForEach-Object {
     $scadScriptPath = $_.FullName
 
-    Write-Host "`r`nTesting $($_.Name)"
+    Write-Host "`r`nTesting $($_.FullName)"
     
     $cmdArgs = ""
     $cmdArgs += " --export-format binstl"
@@ -141,7 +145,7 @@ Get-ChildItem -LiteralPath $ScadScriptFolder -Filter *.scad | ForEach-Object {
         write-Host "ExitCode: $($executionResult.ExitCode)"
         #write-Host "stderr: $($executionResult.stderr)"
     }
-}
+}}
 
 if ($failed) {
     throw "OpenSCAD validation failed"

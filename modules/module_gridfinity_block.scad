@@ -63,7 +63,7 @@ module grid_block(
   screw_size=cupBase_settings[iCupBase_ScrewSize];
   hole_overhang_remedy=cupBase_settings[iCupBase_HoleOverhangRemedy];
   box_corner_attachments_only = cupBase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];
+  sub_pitch=cupBase_settings[iCupBase_SubPitch];
   flat_base=cupBase_settings[iCupBase_FlatBase];
   center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
     
@@ -132,7 +132,7 @@ module grid_block(
             pad_grid(
               num_x = num_x, 
               num_y = num_y, 
-              half_pitch = half_pitch, 
+              sub_pitch = sub_pitch, 
               flat_base = flat_base, 
               cupBase_settings[iCupBase_MinimumPrintablePadSize],
               pitch=env_pitch(), 
@@ -210,7 +210,7 @@ module grid_block(
     ,"screw_size",screw_size
     ,"position",position
     ,"hole_overhang_remedy",hole_overhang_remedy
-    ,"half_pitch",half_pitch
+    ,"sub_pitch",sub_pitch
     ,"box_corner_attachments_only",box_corner_attachments_only
     ,"flat_base",flat_base
     ,"lipSettings",lip_settings
@@ -232,7 +232,7 @@ module bin_overhang_chamfer(
   alignGrid = cupBase_settings[iCupBase_AlignGrid];
   cavityFloorRadius = cupBase_settings[iCupBase_CavityFloorRadius];
   efficientFloor = cupBase_settings[iCupBase_EfficientFloor];
-  half_pitch = cupBase_settings[iCupBase_HalfPitch];
+  sub_pitch = cupBase_settings[iCupBase_SubPitch];
   minimumPrintablePadSize = cupBase_settings[iCupBase_MinimumPrintablePadSize];
 
   calculate_bin_chamfer = function (
@@ -242,10 +242,10 @@ module bin_overhang_chamfer(
     wallThickness,
     cavityFloorRadius,
     efficientFloor,
-    halfPitch,
+    subPitch,
     minimumPrintablePadSize) 
     let(
-      over_hanging_lip = halfPitch ? (width*2-floor(width*2))/2 : (width-floor(width)),
+      over_hanging_lip = (width*subPitch-floor(width*subPitch))/subPitch,
       over_hanging_lip_mm = (over_hanging_lip)*pitch-clearance/4,
       calculatedCavityFloorRadius = calculateCavityFloorRadius(cavityFloorRadius, wallThickness, efficientFloor),
       outer_wall_radius = calculatedCavityFloorRadius + wallThickness*2,
@@ -262,7 +262,7 @@ module bin_overhang_chamfer(
       wallThickness = wall_thickness,
       cavityFloorRadius = cavityFloorRadius,
       efficientFloor = efficientFloor,
-      halfPitch = half_pitch,
+      subPitch = sub_pitch,
       minimumPrintablePadSize = minimumPrintablePadSize
     );
 
@@ -273,7 +273,7 @@ module bin_overhang_chamfer(
       wallThickness = wall_thickness,
       cavityFloorRadius = cavityFloorRadius,
       efficientFloor = efficientFloor,
-      halfPitch = half_pitch,
+      subPitch = sub_pitch,
       minimumPrintablePadSize = minimumPrintablePadSize
     );
 

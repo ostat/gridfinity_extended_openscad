@@ -9,7 +9,7 @@ include <module_gridfinity_cup_base.scad>
 module pad_grid(
   num_x, 
   num_y, 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   minimium_size = 0.2,
   pitch=env_pitch(), 
@@ -17,15 +17,15 @@ module pad_grid(
   positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
-  assert(is_bool(half_pitch));
+  assert(is_num(sub_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
-  //echo("pad_grid", flat_base=flat_base, half_pitch=half_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
+  //echo("pad_grid", flat_base=flat_base, sub_pitch=sub_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
   pad_copy(
     num_x = num_x, 
     num_y = num_y, 
-    half_pitch = half_pitch, 
+    sub_pitch = sub_pitch, 
     flat_base = flat_base, 
     minimium_size = minimium_size,
     pitch=pitch, 
@@ -267,7 +267,7 @@ module pad_oversize(
  
 module pad_copy(
   num_x, num_y, 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   minimium_size = 0.2,
   pitch=env_pitch(), 
@@ -275,11 +275,11 @@ module pad_copy(
   positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
-  assert(is_bool(half_pitch));
+  assert(is_num(sub_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
-  if(env_help_enabled("debug")) echo("pad_copy", flat_base=flat_base, half_pitch=half_pitch, minimium_size=minimium_size);
+  if(env_help_enabled("debug")) echo("pad_copy", flat_base=flat_base, sub_pitch=sub_pitch, minimium_size=minimium_size);
  
   if (flat_base != FlatBase_off) {
     $pad_copy_size = [num_x, num_y];
@@ -288,15 +288,15 @@ module pad_copy(
       children();
     }
   }
-  else if (half_pitch) {
+  else if (sub_pitch > 1) {
     gridcopy(
-      num_x=num_x*2, 
-      num_y=num_y*2, 
-      pitch=[pitch.y/2,pitch.x/2,pitch.z],
+      num_x=num_x*sub_pitch, 
+      num_y=num_y*sub_pitch, 
+      pitch=[pitch.y/sub_pitch,pitch.x/sub_pitch,pitch.z],
       positionGridx = positionGridx, 
       positionGridy = positionGridy) {
-      $pad_copy_size = $gc_size/2;
-      if(env_help_enabled("debug")) echo("pad_grid_half_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
+      $pad_copy_size = $gc_size/sub_pitch;
+      if(env_help_enabled("debug")) echo("pad_grid_sub_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
          children();      }
     }

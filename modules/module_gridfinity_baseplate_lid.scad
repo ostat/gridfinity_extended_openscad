@@ -18,14 +18,14 @@ module baseplate_lid(
   cornerScrewEnabled = true,
   cornerRadius = gf_cup_corner_radius) {
   flat_base = lidOptions == "flat" ? FlatBase_gridfinity : FlatBase_off;
-  half_pitch = lidOptions == "halfpitch";
+  sub_pitch = lidOptions == "halfpitch" ? 2 : 1;
   efficient_base = lidOptions == "efficient";
   
   tray = false;
   
   height = 
     flat_base ? 0.7 : 
-    half_pitch ? 0.9 : 
+    sub_pitch > 1 ? 0.9 : 
     efficient_base ? lidEfficientBaseHeight : 1;
  
   //These should be base constants
@@ -46,7 +46,7 @@ module baseplate_lid(
         filledin = tray ? "enabled" : "enabledfilllip" , //[disabled, enabled, enabledfilllip]
         cupBase_settings = CupBaseSettings(
           flatBase=flat_base,
-          halfPitch=half_pitch,
+          subPitch=sub_pitch,
           alignGrid=[position_fill_grid_x, position_fill_grid_y]),
         lip_settings = LipSettings());
     }

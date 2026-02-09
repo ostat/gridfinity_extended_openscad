@@ -1,5 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_sieve.scad'. Generated 2026-02-09 08:20
+//Combined version of 'gridfinity_sieve.scad'. Generated 2026-02-09 22:35
+//Content hash D77EEFDD05BD24708F626C351874CE3839CD631F2763AA237471363846ABF4E9
 ///////////////////////////////////////
 
 /*<!!start gridfinity_sieve!!>*/
@@ -310,8 +311,7 @@ default_efficient_floor = "off";//["off","on","rounded","smooth"]
 // Remove floor to create a spacer
 default_spacer = false;
 // Half-pitch base pads for offset stacking
-default_half_pitch = false;
-
+default_sub_pitch = 1;
 // Limit attachments (magnets and screws) to box corners for faster printing.
 default_box_corner_attachments_only = true;
 // Removes the base grid from inside the shape
@@ -393,9 +393,15 @@ default_cutx = 0;//0.01
 default_cuty = 0;//0.01
 default_help = "info"; //["off","info","debug","trace"]
 
+set_environment(//execution point
   width = default_width,
   depth = default_depth,
   height = default_height,
+  setColour = default_set_colour,//execution point
+  help = default_help,//execution point
+  cut=[default_cutx,default_cuty, default_height]//execution point
+  )//execution point
+gridfinity_cup();//execution point
 */
 
 // It's recommended that all parameters other than x, y, z size should be specified by keyword 
@@ -430,7 +436,7 @@ module gridfinity_cup(
     floorThickness = default_floor_thickness,
     cavityFloorRadius = default_cavity_floor_radius,
     efficientFloor=default_efficient_floor,
-    halfPitch=default_half_pitch,
+    subPitch=default_sub_pitch,
     flatBase=default_flat_base,
     spacer=default_spacer),
   vertical_chambers = ChamberSettings(
@@ -1109,7 +1115,7 @@ module bin_floor_pattern(
       pad_copy(
         num_x = num_x, 
         num_y = num_y, 
-        half_pitch = cupBase_settings[iCupBase_HalfPitch], 
+        sub_pitch = cupBase_settings[iCupBase_SubPitch], 
         flat_base = cupBase_settings[iCupBase_FlatBase], 
         minimium_size = cupBase_settings[iCupBase_MinimumPrintablePadSize])
           translate([$pad_copy_size.x*env_pitch().x/2, $pad_copy_size.y*env_pitch().y/2,-fudgeFactor])
@@ -1267,7 +1273,6 @@ module partitioned_cavity(num_x, num_y, num_z,
   spacer=cupBase_settings[iCupBase_Spacer];
   box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
   efficient_floor=cupBase_settings[iCupBase_EfficientFloor]; 
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];        
   magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
   screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
   floor_thickness=cupBase_settings[iCupBase_FloorThickness];  
@@ -1347,7 +1352,6 @@ module basic_cavity(num_x, num_y, num_z,
   flat_base=cupBase_settings[iCupBase_FlatBase];
   spacer=cupBase_settings[iCupBase_Spacer];
   box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];
 
   //zpoint = env_pitch().z*num_z-headroom;
   
@@ -1507,7 +1511,7 @@ module basic_cavity(num_x, num_y, num_z,
           efficient_floor_grid(
             num_x, num_y,
             floorStyle = cupBase_settings[iCupBase_EfficientFloor],
-            half_pitch=half_pitch,
+            sub_pitch = cupBase_settings[iCupBase_SubPitch],
             flat_base=flat_base,
             floor_thickness=floor_thickness,
             efficientFloorGridHeight=efficientFloorGridHeight,
@@ -3437,7 +3441,7 @@ cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth] 
 // Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = false;
+sub_pitch = 1;
 // Removes the internal grid from base the shape
 flat_base = false;
 // Remove floor to create a vertical spacer
@@ -3454,7 +3458,7 @@ iCupBase_CornerAttachmentsOnly=6;
 iCupBase_FloorThickness=7;
 iCupBase_CavityFloorRadius=8;
 iCupBase_EfficientFloor=9;
-iCupBase_HalfPitch=10;
+iCupBase_SubPitch=10;
 iCupBase_FlatBase=11;
 iCupBase_Spacer=12;
 iCupBase_MinimumPrintablePadSize=13;
@@ -3500,7 +3504,8 @@ function CupBaseSettings(
     floorThickness = gf_cup_floor_thickness,
     cavityFloorRadius = -1,
     efficientFloor = EfficientFloor_off,
-    halfPitch = false,
+    halfPitch = false, //legacy
+    subPitch = 1,
     flatBase = FlatBase_off,
     spacer = false,
     minimumPrintablePadSize = 0,
@@ -3535,7 +3540,7 @@ function CupBaseSettings(
       floorThickness,
       cavityFloorRadius,
       validateEfficientFloor(efficientFloor),
-      halfPitch,
+      halfPitch ? 2 : subPitch,
       validateFlatBase(flatBase),
       spacer,
       minimumPrintablePadSize,
@@ -3557,7 +3562,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_bool(settings[iCupBase_CornerAttachmentsOnly]), "CupBase CornerAttachmentsOnly Settings must be a boolean")
   assert(is_num(settings[iCupBase_FloorThickness]), "CupBase FloorThickness Settings must be a number")
   assert(is_num(settings[iCupBase_CavityFloorRadius]), "CupBase CavityFloorRadius Settings must be a number")
-  assert(is_bool(settings[iCupBase_HalfPitch]), "CupBase HalfPitch Settings must be a boolean")
+  assert(is_num(settings[iCupBase_SubPitch]), "CupBase SubPitch Settings must be a number")
   assert(is_string(settings[iCupBase_FlatBase]), "CupBase FlatBase Settings must be a string")
   assert(is_bool(settings[iCupBase_Spacer]), "CupBase Spacer Settings must be a boolean")
   assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
@@ -3575,7 +3580,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       settings[iCupBase_FloorThickness],
       settings[iCupBase_CavityFloorRadius],
       validateEfficientFloor(settings[iCupBase_EfficientFloor]),
-      settings[iCupBase_HalfPitch],
+      settings[iCupBase_SubPitch],
       validateFlatBase(settings[iCupBase_FlatBase]),
       settings[iCupBase_Spacer],
       settings[iCupBase_MinimumPrintablePadSize],
@@ -6270,7 +6275,7 @@ module grid_block(
   screw_size=cupBase_settings[iCupBase_ScrewSize];
   hole_overhang_remedy=cupBase_settings[iCupBase_HoleOverhangRemedy];
   box_corner_attachments_only = cupBase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];
+  sub_pitch=cupBase_settings[iCupBase_SubPitch];
   flat_base=cupBase_settings[iCupBase_FlatBase];
   center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
     
@@ -6339,7 +6344,7 @@ module grid_block(
             pad_grid(
               num_x = num_x, 
               num_y = num_y, 
-              half_pitch = half_pitch, 
+              sub_pitch = sub_pitch, 
               flat_base = flat_base, 
               cupBase_settings[iCupBase_MinimumPrintablePadSize],
               pitch=env_pitch(), 
@@ -6417,7 +6422,7 @@ module grid_block(
     ,"screw_size",screw_size
     ,"position",position
     ,"hole_overhang_remedy",hole_overhang_remedy
-    ,"half_pitch",half_pitch
+    ,"sub_pitch",sub_pitch
     ,"box_corner_attachments_only",box_corner_attachments_only
     ,"flat_base",flat_base
     ,"lipSettings",lip_settings
@@ -6439,7 +6444,7 @@ module bin_overhang_chamfer(
   alignGrid = cupBase_settings[iCupBase_AlignGrid];
   cavityFloorRadius = cupBase_settings[iCupBase_CavityFloorRadius];
   efficientFloor = cupBase_settings[iCupBase_EfficientFloor];
-  half_pitch = cupBase_settings[iCupBase_HalfPitch];
+  sub_pitch = cupBase_settings[iCupBase_SubPitch];
   minimumPrintablePadSize = cupBase_settings[iCupBase_MinimumPrintablePadSize];
 
   calculate_bin_chamfer = function (
@@ -6449,10 +6454,10 @@ module bin_overhang_chamfer(
     wallThickness,
     cavityFloorRadius,
     efficientFloor,
-    halfPitch,
+    subPitch,
     minimumPrintablePadSize) 
     let(
-      over_hanging_lip = halfPitch ? (width*2-floor(width*2))/2 : (width-floor(width)),
+      over_hanging_lip = (width*subPitch-floor(width*subPitch))/subPitch,
       over_hanging_lip_mm = (over_hanging_lip)*pitch-clearance/4,
       calculatedCavityFloorRadius = calculateCavityFloorRadius(cavityFloorRadius, wallThickness, efficientFloor),
       outer_wall_radius = calculatedCavityFloorRadius + wallThickness*2,
@@ -6469,7 +6474,7 @@ module bin_overhang_chamfer(
       wallThickness = wall_thickness,
       cavityFloorRadius = cavityFloorRadius,
       efficientFloor = efficientFloor,
-      halfPitch = half_pitch,
+      subPitch = sub_pitch,
       minimumPrintablePadSize = minimumPrintablePadSize
     );
 
@@ -6480,7 +6485,7 @@ module bin_overhang_chamfer(
       wallThickness = wall_thickness,
       cavityFloorRadius = cavityFloorRadius,
       efficientFloor = efficientFloor,
-      halfPitch = half_pitch,
+      subPitch = sub_pitch,
       minimumPrintablePadSize = minimumPrintablePadSize
     );
 
@@ -6535,7 +6540,7 @@ module bin_overhang_chamfer(
 module pad_grid(
   num_x, 
   num_y, 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   minimium_size = 0.2,
   pitch=env_pitch(), 
@@ -6543,15 +6548,15 @@ module pad_grid(
   positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
-  assert(is_bool(half_pitch));
+  assert(is_num(sub_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
-  //echo("pad_grid", flat_base=flat_base, half_pitch=half_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
+  //echo("pad_grid", flat_base=flat_base, sub_pitch=sub_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
   pad_copy(
     num_x = num_x, 
     num_y = num_y, 
-    half_pitch = half_pitch, 
+    sub_pitch = sub_pitch, 
     flat_base = flat_base, 
     minimium_size = minimium_size,
     pitch=pitch, 
@@ -6793,7 +6798,7 @@ module pad_oversize(
  
 module pad_copy(
   num_x, num_y, 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   minimium_size = 0.2,
   pitch=env_pitch(), 
@@ -6801,11 +6806,11 @@ module pad_copy(
   positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
-  assert(is_bool(half_pitch));
+  assert(is_num(sub_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
-  if(env_help_enabled("debug")) echo("pad_copy", flat_base=flat_base, half_pitch=half_pitch, minimium_size=minimium_size);
+  if(env_help_enabled("debug")) echo("pad_copy", flat_base=flat_base, sub_pitch=sub_pitch, minimium_size=minimium_size);
  
   if (flat_base != FlatBase_off) {
     $pad_copy_size = [num_x, num_y];
@@ -6814,15 +6819,15 @@ module pad_copy(
       children();
     }
   }
-  else if (half_pitch) {
+  else if (sub_pitch > 1) {
     gridcopy(
-      num_x=num_x*2, 
-      num_y=num_y*2, 
-      pitch=[pitch.y/2,pitch.x/2,pitch.z],
+      num_x=num_x*sub_pitch, 
+      num_y=num_y*sub_pitch, 
+      pitch=[pitch.y/sub_pitch,pitch.x/sub_pitch,pitch.z],
       positionGridx = positionGridx, 
       positionGridy = positionGridy) {
-      $pad_copy_size = $gc_size/2;
-      if(env_help_enabled("debug")) echo("pad_grid_half_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
+      $pad_copy_size = $gc_size/sub_pitch;
+      if(env_help_enabled("debug")) echo("pad_grid_sub_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
          children();      }
     }
@@ -8967,7 +8972,7 @@ module FingerSlide(
 module efficient_floor_grid(
   num_x, num_y, 
   floorStyle = "on", 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   floor_thickness, 
   efficientFloorGridHeight=0,
@@ -8981,17 +8986,17 @@ module efficient_floor_grid(
       floorSmooth=(floorStyle == "smooth" ? 2 : 0),
         efficientFloorGridHeight=efficientFloorGridHeight);
   }
-  else if (half_pitch) {
+  else if (sub_pitch > 1) {
     gridcopy(
-      num_x = num_x*2, 
-      num_y = num_y*2, 
-      pitch = [env_pitch().y/2, env_pitch().x/2, env_pitch().z], 
+      num_x = num_x*sub_pitch, 
+      num_y = num_y*sub_pitch, 
+      pitch = [env_pitch().y/sub_pitch, env_pitch().x/sub_pitch, env_pitch().z], 
       positionGridx = align_grid.x, 
       positionGridy = align_grid.y
       ) {
       EfficientFloor(
-        $gc_size.x/2,
-        $gc_size.y/2, 
+        $gc_size.x/sub_pitch,
+        $gc_size.y/sub_pitch, 
         floor_thickness, 
         margins, 
         floorRounded=(floorStyle == "rounded"),
@@ -9706,7 +9711,7 @@ module gridfinity_sieve(
     floorThickness = floor_thickness,
     cavityFloorRadius = cavity_floor_radius,
     efficientFloor=efficient_floor,
-    halfPitch=false,
+    subPitch=1,
     flatBase=flat_base,
     spacer=false),
   wall_thickness=wall_thickness,

@@ -5,9 +5,12 @@ cup_height = 5;
 stick_diameter = 30;
 easement_z = 0.7; // a slightly large opening at the top for compliance while inserting.
 minimum_wall = 4;
-blocks_needed = ceil((stick_diameter+2*minimum_wall)/env_pitch().x);
 
+/* [Hidden] */
 $fn = 64;
+module end_of_customizer_opts() {}
+
+blocks_needed = ceil((stick_diameter+2*minimum_wall)/env_pitch().x);
 
 set_environment(
   width = 1,
@@ -15,7 +18,6 @@ set_environment(
   height = 2,
   render_position = "center")
 glue_stick_cup(blocks_needed, blocks_needed, cup_height);
-
 
 module glue_stick_cup(num_x=1, num_y=1, num_z=2) {
   difference() {

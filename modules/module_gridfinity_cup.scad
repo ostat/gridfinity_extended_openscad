@@ -121,8 +121,7 @@ default_efficient_floor = "off";//["off","on","rounded","smooth"]
 // Remove floor to create a spacer
 default_spacer = false;
 // Half-pitch base pads for offset stacking
-default_half_pitch = false;
-
+default_sub_pitch = 1;
 // Limit attachments (magnets and screws) to box corners for faster printing.
 default_box_corner_attachments_only = true;
 // Removes the base grid from inside the shape
@@ -247,7 +246,7 @@ module gridfinity_cup(
     floorThickness = default_floor_thickness,
     cavityFloorRadius = default_cavity_floor_radius,
     efficientFloor=default_efficient_floor,
-    halfPitch=default_half_pitch,
+    subPitch=default_sub_pitch,
     flatBase=default_flat_base,
     spacer=default_spacer),
   vertical_chambers = ChamberSettings(
@@ -926,7 +925,7 @@ module bin_floor_pattern(
       pad_copy(
         num_x = num_x, 
         num_y = num_y, 
-        half_pitch = cupBase_settings[iCupBase_HalfPitch], 
+        sub_pitch = cupBase_settings[iCupBase_SubPitch], 
         flat_base = cupBase_settings[iCupBase_FlatBase], 
         minimium_size = cupBase_settings[iCupBase_MinimumPrintablePadSize])
           translate([$pad_copy_size.x*env_pitch().x/2, $pad_copy_size.y*env_pitch().y/2,-fudgeFactor])
@@ -1084,7 +1083,6 @@ module partitioned_cavity(num_x, num_y, num_z,
   spacer=cupBase_settings[iCupBase_Spacer];
   box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
   efficient_floor=cupBase_settings[iCupBase_EfficientFloor]; 
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];        
   magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
   screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
   floor_thickness=cupBase_settings[iCupBase_FloorThickness];  
@@ -1164,7 +1162,6 @@ module basic_cavity(num_x, num_y, num_z,
   flat_base=cupBase_settings[iCupBase_FlatBase];
   spacer=cupBase_settings[iCupBase_Spacer];
   box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];
 
   //zpoint = env_pitch().z*num_z-headroom;
   
@@ -1324,7 +1321,7 @@ module basic_cavity(num_x, num_y, num_z,
           efficient_floor_grid(
             num_x, num_y,
             floorStyle = cupBase_settings[iCupBase_EfficientFloor],
-            half_pitch=half_pitch,
+            sub_pitch = cupBase_settings[iCupBase_SubPitch],
             flat_base=flat_base,
             floor_thickness=floor_thickness,
             efficientFloorGridHeight=efficientFloorGridHeight,

@@ -128,7 +128,7 @@ module gridfinity_sieve(
     floorThickness = floor_thickness,
     cavityFloorRadius = cavity_floor_radius,
     efficientFloor=efficient_floor,
-    halfPitch=false,
+    subPitch=1,
     flatBase=flat_base,
     spacer=false),
   wall_thickness=wall_thickness,

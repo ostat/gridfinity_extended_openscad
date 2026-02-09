@@ -78,8 +78,8 @@ screw_depth = 6;
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to chest corners (prints faster).
 chest_corner_attachments_only = true;
-// Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = false;
+// Enable to subdivide bottom pads to allow sub-cell offsets
+sub_pitch = 1; //[1,2,3,4]
 // Removes the internal grid from base the shape
 flat_base = "off";
 
@@ -318,7 +318,7 @@ module chest(
   bottomScrewDepth,
   bottomHoleOverhangRemedy,
   bottomCornerAttachmentsOnly,
-  bottomHalfPitch,
+  bottomSubPitch,
   bottomFlatBase,
   drawerCount,
   drawerInnerUnitSize,
@@ -357,7 +357,7 @@ module chest(
             screwSize=[4,bottomScrewDepth],
             holeOverhangRemedy=bottomHoleOverhangRemedy,
             cornerAttachmentsOnly=bottomCornerAttachmentsOnly,
-            halfPitch = bottomHalfPitch,
+            subPitch = bottomSubPitch,
             flatBase = bottomFlatBase));
             //echo(x=drawerInnerUnitSize.x, y=drawerInnerUnitSize.y);
          if(bottomGrid == "lugs") feet(drawerInnerUnitSize.x, drawerInnerUnitSize.y, outerChest.x);
@@ -591,7 +591,7 @@ module gridfinity_drawer(
     bottomScrewDepth = screw_depth,
     bottomHoleOverhangRemedy = hole_overhang_remedy,
     bottomCornerAttachmentsOnly = chest_corner_attachments_only,
-    bottomHalfPitch = half_pitch,
+    bottomSubPitch = sub_pitch,
     bottomFlatBase = flat_base,
     wallPatternBorderWidth=wallpattern_border_width,
     efficientBack = efficient_back,
@@ -659,7 +659,7 @@ module gridfinity_drawer(
       bottomScrewDepth=bottomScrewDepth,
       bottomHoleOverhangRemedy=bottomHoleOverhangRemedy,
       bottomCornerAttachmentsOnly=bottomCornerAttachmentsOnly,
-      bottomHalfPitch=bottomHalfPitch,
+      bottomSubPitch=bottomSubPitch,
       bottomFlatBase=bottomFlatBase,
       drawerCount=drawerCount,
       drawerInnerUnitSize=drawerInnerUnitSize,
