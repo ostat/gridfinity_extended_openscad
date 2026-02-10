@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of ''. Generated 2026-02-09 21:12
-//Content hash E96C2427CA7059CA23DF9469D343D5FE4F02EFDB0DDF5EA7FDCC5BE34195A372
+//Combined version of 'gridfinity_silverware_legacy.scad'. Generated 2026-02-10 21:01
+//Content hash 391010D4904533205990756A76A47D442264D51813403EB5281CB2B46DAFBA14
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -391,6 +391,8 @@ module pad_grid(
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
+  render_top = true;
+  render_bottom = true;
   //echo("pad_grid", flat_base=flat_base, sub_pitch=sub_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
   pad_copy(
     num_x = num_x, 
@@ -401,7 +403,11 @@ module pad_grid(
     pitch=pitch, 
     positionGridx = positionGridx, 
     positionGridy = positionGridy)
-      pad_oversize($pad_copy_size.x, $pad_copy_size.y);
+      pad_oversize(
+          $pad_copy_size.x, 
+          $pad_copy_size.y,
+          render_top=render_top,
+          render_bottom=render_bottom);
 }
 
 // like a cylinder but produces a square solid instead of a round one
@@ -1307,25 +1313,34 @@ module Mklon(tx=0,ty=0,tz=0,rx=0,ry=0,rz=0,mx=0,my=0,mz=1)
 utility_demo = false;
 
 if(utility_demo && $preview){
+  $fn = 64;
+  
   translate([400,0,0])
   union(){
-    bentWall(separation=0);
-    
-    translate([0,100,0])
-    bentWall(separation=0, thickness = [10,5]);
+    for(i = [0,1,2]){
+      translate([20*i,0,0])
+      bentWall(
+        separation=i==1? 10 : 0,
+        label_size = i==2?10:0);
 
-    translate([0,200,0])
-    bentWall(separation=0, thickness = [10,5], top_radius = -2);
+      translate([20*i,100,0])
+      bentWall(
+        separation=i==1? 10 : 0,
+        label_size = i==2?10:0, top_radius = -2);
 
-    
-    translate([20,0,0])
-    bentWall(separation=10);
-    
-    translate([20,100,0])
-    bentWall(separation=10, thickness = [10,5]);
+        
+      translate([20*i,200,0])
+      bentWall(
+        separation=i==1? 10 : 0, 
+        label_size = i==2?10:0,
+        thickness = [10,5]);
 
-    translate([20,200,0])
-    bentWall(separation=10, thickness = [10,5], top_radius = -2);
+      translate([20*i,300,0])
+      bentWall(
+        separation=i==1? 10 : 0, 
+        label_size = i==2?10:0,
+        thickness = [10,5], top_radius = -2);
+    }
   }
 }
 
@@ -1338,14 +1353,18 @@ module bentWall(
   lowerBendRadius=0,
   upperBendRadius=0,
   height=30,
-  thickness=[10,10],
+  thickness=[10,10], //top thickness, bottom thickness
   wall_cutout_depth = 0,
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
+  label_size = 10,
+  label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");
+  fudgeFactor = 0.01;
   
+  label_enabled = label_size > 0 && label_size*4 < length;
   thickness = is_num(thickness) ? [thickness,thickness] : thickness;
   thickness_bottom  = thickness.x;
   thickness_top = thickness.y;
@@ -1360,7 +1379,18 @@ module bentWall(
 
   bendPosition = get_related_value(bendPosition, length, length/2);
   
-  fudgeFactor = 0.01;
+  
+  label_z_height = label_enabled ? cos(label_angle)* label_size + thickness_bottom/2 : 0;
+  
+  cutoutHeight = max(get_related_value(wall_cutout_depth, height, 0), label_z_height);
+  cutoutRadius = label_enabled ? label_size/4 : get_related_value(wall_cutout_radius, cutoutHeight, cutoutHeight);
+
+  label_length = length-cutoutRadius*6;
+  cutoutLength = wall_cutout_width == 0 && label_enabled ? label_length : get_related_value(wall_cutout_width, length, length/2); 
+
+  //Thickness should match the wall thickness, for tapered walls find the right position
+  label_thickness = thickness_bottom-(thickness_bottom-thickness_top)*((cutoutHeight-thickness_bottom/2)/(height-thickness_bottom/2))/2;
+
   
   //#render()
   difference()
@@ -1389,12 +1419,9 @@ module bentWall(
         cube([thickness_bottom, length, thickness_bottom/2]);
       }
     }
-   
-    cutoutHeight = get_related_value(wall_cutout_depth, height, 0);
-    cutoutRadius = get_related_value(wall_cutout_radius, cutoutHeight, cutoutHeight);
-    cutoutLength = get_related_value(wall_cutout_width, length, length/2); 
 
-    if(wall_cutout_depth != 0){
+    //wall cutout section
+    if(cutoutHeight != 0){
       translate(centred_x ? [0,0,0] : [(separation+thickness)/2+fudgeFactor,0,0])
       translate([0,length/2,height])
       rotate([0,0,90])
@@ -1405,8 +1432,36 @@ module bentWall(
         thickness = (separation+thickness[0]+fudgeFactor*2),
         topHeight = 1);
     }
-   }
- }
+  }    
+  
+  //wall label section
+  if(label_enabled){
+    label_z = height-cutoutHeight;
+    label_length = cutoutLength-cutoutRadius;
+
+    
+    translate([label_thickness/2,length/2-label_length/2,0])
+    hull()
+    {
+      translate([0,0,label_z])
+      rotate([0,0,180])
+      rotate([90,0,0])
+      rotate_extrude(angle = 45)
+      square([label_thickness,label_length]);
+      //translate([0,0,label_z])
+      //rotate([45,0,90])
+      //cube([label_length,label_thickness,10]);
+      translate([0,0,label_z])
+      rotate([0,45,0])
+      translate([-label_thickness,label_length,0])
+      rotate([90,0,0])
+      roundedCube(
+          size =[label_thickness,label_size,label_length],
+          sideRadius = top_radius);
+    }
+        
+  }
+}
 
  if(utility_demo){
  

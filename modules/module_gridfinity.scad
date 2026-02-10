@@ -21,6 +21,8 @@ module pad_grid(
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
+  render_top = true;
+  render_bottom = true;
   //echo("pad_grid", flat_base=flat_base, sub_pitch=sub_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
   pad_copy(
     num_x = num_x, 
@@ -31,7 +33,11 @@ module pad_grid(
     pitch=pitch, 
     positionGridx = positionGridx, 
     positionGridy = positionGridy)
-      pad_oversize($pad_copy_size.x, $pad_copy_size.y);
+      pad_oversize(
+          $pad_copy_size.x, 
+          $pad_copy_size.y,
+          render_top=render_top,
+          render_bottom=render_bottom);
 }
 
 // like a cylinder but produces a square solid instead of a round one
