@@ -98,6 +98,8 @@ enable_screws = false;
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+// Use with captive magnet for a 'refinded style' magnet
+magnet_side_access = false;
 // raise the magnet void inside the part for print-in-magnets
 magnet_captive_height = 0; // .1
 //size of screw, diameter and height. Zack's original used 3 and 6
@@ -113,8 +115,8 @@ floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth]
-// Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = false;
+// Enable to subdivide bottom pads to allow sub-cell offsets
+sub_pitch = 1; //[1,2,3,4]
 // Removes the internal grid from base the shape
 flat_base = "off"; // [off, gridfinity:gridfinity stackable, rounded]
 // Remove floor to create a vertical spacer
@@ -136,12 +138,16 @@ label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel 
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
 // Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+// Enable labels on internal divider walls
+label_dividers = "disabled"; //[disabled, horizontal, vertical, both]
+
 label_size = [0,14,0,0.6]; // 0.01
 // Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 label_walls=[0,1,0,0];  //[0:1:1]
-    
+
+
 /* [Sliding Lid] */
 sliding_lid_enabled = false;
 // 0 = wall thickness *2
@@ -333,11 +339,12 @@ set_environment(
 gridfinity_cup(
   filled_in=filled_in,
   label_settings=LabelSettings(
-    labelStyle=label_style, 
-    labelPosition=label_position, 
+    labelStyle=label_style,
+    labelPosition=label_position,
     labelSize=label_size,
     labelRelief=label_relief,
-    labelWalls=label_walls),
+    labelWalls=label_walls,
+    labelDividers=label_dividers),
   finger_slide_settings = FingerSlideSettings(
     type = fingerslide,
     radius = fingerslide_radius,
@@ -346,6 +353,7 @@ gridfinity_cup(
   cupBase_settings = CupBaseSettings(
     magnetSize = enable_magnets?magnet_size:[0,0],
     magnetEasyRelease = magnet_easy_release, 
+    magnetSideAccess = magnet_side_access,
     magnetCaptiveHeight = magnet_captive_height,
     centerMagnetSize = center_magnet_size, 
     screwSize = enable_screws?screw_size:[0,0],
@@ -354,7 +362,7 @@ gridfinity_cup(
     floorThickness = floor_thickness,
     cavityFloorRadius = cavity_floor_radius,
     efficientFloor=efficient_floor,
-    halfPitch=half_pitch,
+    subPitch=sub_pitch,
     flatBase=flat_base,
     spacer=spacer,
     minimumPrintablePadSize=minimum_printable_pad_size,

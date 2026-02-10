@@ -13,7 +13,7 @@ include <module_fingerslide.scad>
 
 use <module_gridfinity_block.scad>
 use <module_gridfinity_efficient_floor.scad>
-use <module_attachment_clip.scad>
+
 use <module_calipers.scad>
 
 // X dimension. grid units (multiples of 42mm) or mm.
@@ -141,8 +141,7 @@ default_efficient_floor = "off";//["off","on","rounded","smooth"]
 // Remove floor to create a spacer
 default_spacer = false;
 // Half-pitch base pads for offset stacking
-default_half_pitch = false;
-
+default_sub_pitch = 1;
 // Limit attachments (magnets and screws) to box corners for faster printing.
 default_box_corner_attachments_only = true;
 // Removes the base grid from inside the shape
@@ -267,7 +266,7 @@ module gridfinity_cup(
     floorThickness = default_floor_thickness,
     cavityFloorRadius = default_cavity_floor_radius,
     efficientFloor=default_efficient_floor,
-    halfPitch=default_half_pitch,
+    subPitch=default_sub_pitch,
     flatBase=default_flat_base,
     spacer=default_spacer),
   divider_wall_removable_settings = DividerRemovableSettings(
@@ -468,7 +467,6 @@ module gridfinity_cup(
   union(){
     difference() {
 
-
         border = 0; //Believe this to be no longer needed
        
         wallpatternzpos = wallpatternClearanceHeight(
@@ -638,87 +636,25 @@ module gridfinity_cup(
       wall_thickness = wall_thickness,
       magnet_position = _magnet_position.x);
   
-      if(extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_disabled)
-        color(env_colour(color_wallcutout))
-        if(extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_front)
-        tz(-fudgeFactor)
-          cube([unitPositionTo_mm(extendable_Settings.x[1],num_x,env_pitch().x),num_y*env_pitch().y,(num_z+1)*env_pitch().z]);
-        else
-          translate([unitPositionTo_mm(extendable_Settings.x[1],num_x,env_pitch().x),0,-fudgeFactor])
-            cube([num_x*env_pitch().x-unitPositionTo_mm(extendable_Settings.x[1],num_x,env_pitch().x),num_y*env_pitch().y,(num_z+1)*env_pitch().z]);
-      
-      if(extendable_Settings.y[0]!=BinExtensionEnabled_disabled)
-        color(env_colour(color_wallcutout))
-        if(extendable_Settings.y[0]==BinExtensionEnabled_front)
-          tz(-fudgeFactor)
-          cube([env_pitch().x*num_x,unitPositionTo_mm(extendable_Settings.y[1],num_y,env_pitch().y),(num_z+1)*env_pitch().z]);
-        else
-          translate([0,unitPositionTo_mm(extendable_Settings.y[1],num_y,env_pitch().y),-fudgeFactor])
-          cube([env_pitch().x*num_x,num_y*env_pitch().x-unitPositionTo_mm(extendable_Settings.y[1],num_y,env_pitch().y),(num_z+1)*env_pitch().z]);
+    cut_bins_for_extension(
+      num_x = num_x,
+      num_y = num_y,
+      num_z = num_z,
+      extendable_Settings = extendable_Settings);
     }
     
-    if((extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_disabled || extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_disabled) && extendable_Settings[iExtendableTabsEnabled]) {
-      refTabHeight = extendable_Settings[iExtendableTabSize].x;
-      tabThickness = extendable_Settings[iExtendableTabSize].z == 0 ? 1.4 : extendable_Settings[iExtendableTabSize].z;//1.4; //This should be calculated
-      tabWidth = extendable_Settings[iExtendableTabSize].y;
-      tabStyle = extendable_Settings[iExtendableTabSize][iExtendableTabSizeStyle];
-      
-      floorHeight = calculateFloorHeight(
-        magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
-        screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height], 
-        center_magnet=cupBase_settings[iCupBase_CenterMagnetSize][iCylinderDimension_Height], 
-        floor_thickness=floor_thickness,
-        filled_in="disabled",
-        efficient_floor=cupBase_settings[iCupBase_EfficientFloor], 
-        flat_base=cupBase_settings[iCupBase_FlatBase],
-        captive_magnet_height=cupBase_settings[iCupBase_MagnetCaptiveHeight]) + calculateCavityFloorRadius(cupBase_settings[iCupBase_CavityFloorRadius], wall_thickness,efficient_floor)-tabThickness;
-      
-      //todo need to correct this
-      lipheight = lip_settings[iLipStyle] == "none" ? tabThickness
-        : lip_settings[iLipStyle] == "reduced" ? gf_lip_upper_taper_height+tabThickness
-        : lip_settings[iLipStyle] == "reduced_double" ? gf_lip_upper_taper_height+tabThickness
-        //Add tabThickness, as the taper can bleed in to the lip
-        : gf_lip_upper_taper_height + gf_lip_lower_taper_height-tabThickness;
-      ceilingHeight = env_pitch().z*num_z-headroom-lipheight;
+    //add the extention tabs
+    extension_tabs(
+      num_x = num_x,
+      num_y = num_y,
+      num_z = num_z,
+      extendable_Settings = extendable_Settings,
+      cupBase_settings = cupBase_settings,
+      lip_settings = lip_settings,
+      floor_thickness = floor_thickness,
+      wall_thickness = wall_thickness,
+      headroom = headroom);
     
-      //tabWorkingheight = (num_z-1)*env_pitch().z-gf_Lip_Height;
-      tabWorkingheight = ceilingHeight-floorHeight;
-    
-      tabsCount = max(floor(tabWorkingheight/refTabHeight),1);
-      tabHeight = tabWorkingheight/tabsCount;
-      if(env_help_enabled("debug")) echo("tabs", binHeight =num_z, tabHeight=tabHeight, floorHeight=floorHeight, cavity_floor_radius=cupBase_settings[iCupBase_CavityFloorRadius], tabThickness=tabThickness);
-      cutx = extendable_Settings.x[iExtendablePositionmm];
-      cuty = extendable_Settings.y[iExtendablePositionmm];
-      even = (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_back) ?
-                [[0,180,90], [cutx,num_y*env_pitch().y-wall_thickness-env_clearance().y/2,floorHeight], "darkgreen"]
-              : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,180,180], [wall_thickness+env_clearance().x/2,cuty,floorHeight], "green"]
-              : (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,180,270], [cutx,wall_thickness+env_clearance().y/2,floorHeight], "lime"]
-              : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,180,0], [num_x*env_pitch().x-wall_thickness-env_clearance().x/2,cuty,floorHeight], "aqua"] 
-              : [[0,0,0],[0,0,0], extendable_Settings, "grey"];
-      odd = (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,0,90], [cutx,wall_thickness+env_clearance().y/2,floorHeight], "pink"]
-            : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_front && extendable_Settings.x[iExtendableEnabled]!=BinExtensionEnabled_back) ?
-                [[0,0,180], [num_x*env_pitch().x-wall_thickness-env_clearance().y/2,cuty,floorHeight], "red"]
-            : (extendable_Settings.x[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_back) ?
-                [[0,0,270], [cutx,num_y*env_pitch().y-wall_thickness-env_clearance().y/2,floorHeight], "orange"]
-            : (extendable_Settings.y[iExtendableEnabled]==BinExtensionEnabled_back && extendable_Settings.y[iExtendableEnabled]!=BinExtensionEnabled_front) ?
-                [[0,0,0], [wall_thickness+env_clearance().x/2,cuty,floorHeight], "yellow"]
-            : [[0,0,0],[0,0,0], extendable_Settings, "grey"];
-              
-      for(i=[0:1:tabsCount-1])
-      {
-        isOdd = i % 2;
-        tabPos = isOdd == 0 ? even : odd;
-        if(env_help_enabled("trace")) echo("tabs", i=i, isOdd=isOdd, tabPos=tabPos);
-        tz((i+0.5)*tabHeight)
-        translate(tabPos[1])
-          rotate(tabPos[0])
-          attachment_clip(height=tabHeight, width=tabWidth, thickness=tabThickness, footingThickness=wall_thickness, tabStyle=tabStyle);
-      }
-    }
     
     if (lip_settings[iLipStyle] == "reduced_double") {
       label_size=calculateLabelSize(label_settings[iLabelSettings_size]);
@@ -1040,7 +976,7 @@ module bin_floor_pattern(
       pad_copy(
         num_x = num_x, 
         num_y = num_y, 
-        half_pitch = cupBase_settings[iCupBase_HalfPitch], 
+        sub_pitch = cupBase_settings[iCupBase_SubPitch], 
         flat_base = cupBase_settings[iCupBase_FlatBase], 
         minimium_size = cupBase_settings[iCupBase_MinimumPrintablePadSize])
           translate([$pad_copy_size.x*env_pitch().x/2, $pad_copy_size.y*env_pitch().y/2,-fudgeFactor])
@@ -1085,6 +1021,7 @@ module bin_floor_pattern(
       // Subtract magnet/screw pads if enabled
       magnet_diameter = cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
       screw_diameter = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Diameter];
+      screw_depth = cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
       if (magnet_diameter > 0 || screw_depth > 0) {
         magnet_positions = calculateAttachmentPositions(magnet_diameter, screw_diameter);
         pad_radius = max(magnet_diameter, screw_diameter) / 2 + cutoutclearance_divider*2;
@@ -1198,10 +1135,8 @@ module partitioned_cavity(num_x, num_y, num_z,
   spacer=cupBase_settings[iCupBase_Spacer];
   box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
   efficient_floor=cupBase_settings[iCupBase_EfficientFloor]; 
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];        
   magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
   screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
-  magnet_easy_release=cupBase_settings[iCupBase_MagnetEasyRelease];
   floor_thickness=cupBase_settings[iCupBase_FloorThickness];  
   zpoint = env_pitch().z*num_z-headroom;
 
@@ -1277,11 +1212,9 @@ module basic_cavity(num_x, num_y, num_z,
   floor_thickness=cupBase_settings[iCupBase_FloorThickness]; 
   magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
   screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
-  magnet_easy_release=cupBase_settings[iCupBase_MagnetEasyRelease];
   flat_base=cupBase_settings[iCupBase_FlatBase];
   spacer=cupBase_settings[iCupBase_Spacer];
   box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];
 
   //zpoint = env_pitch().z*num_z-headroom;
   
@@ -1451,7 +1384,7 @@ module basic_cavity(num_x, num_y, num_z,
           efficient_floor_grid(
             num_x, num_y,
             floorStyle = cupBase_settings[iCupBase_EfficientFloor],
-            half_pitch=half_pitch,
+            sub_pitch = cupBase_settings[iCupBase_SubPitch],
             flat_base=flat_base,
             floor_thickness=floor_thickness,
             efficientFloorGridHeight=efficientFloorGridHeight,
@@ -1467,7 +1400,13 @@ module basic_cavity(num_x, num_y, num_z,
                   floor_thickness = floor_thickness,
                   magnet_size = cupBase_settings[iCupBase_MagnetSize] + [0, cupBase_settings[iCupBase_MagnetCaptiveHeight]],
                   screw_size = cupBase_settings[iCupBase_ScrewSize],
-                  wall_thickness = magnet_easy_release == MagnetEasyRelease_inner ? wall_thickness*2 : wall_thickness );
+                  //thicnken walls if needed for easy release magnet inner or side access.
+                  //if magnet is captive, 
+                  wall_thickness = 
+                    ((cupBase_settings[iCupBase_NormalisedMagnetEasyRelease] == MagnetEasyRelease_inner && cupBase_settings[iCupBase_MagnetCaptiveHeight] == 0)
+                    || (cupBase_settings[iCupBase_MagnetEasyRelease] != MagnetEasyRelease_off && cupBase_settings[iCupBase_MagnetSideAccess]))
+                      ? wall_thickness*2
+                      : wall_thickness );
           }
         }
       }

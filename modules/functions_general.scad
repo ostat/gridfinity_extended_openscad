@@ -158,6 +158,14 @@ module color_conditional(enable=true, c, alpha = 1){
     children();
 }
 
+module exclusive_conditional(enable=true){
+  if(enable)
+    !children();
+  else
+    children();
+}
+
+
 module render_conditional(enable=true){
   if(enable)
     render()
@@ -166,6 +174,8 @@ module render_conditional(enable=true){
     union()
       children();
 }
+
+
 
 module hull_conditional(enabled = true)
 {

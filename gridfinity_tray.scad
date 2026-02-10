@@ -103,8 +103,8 @@ floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth] 
-// Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = false;
+// Enable to subdivide bottom pads to allow sub-cell offsets
+sub_pitch = 1; //[1,2,3,4]
 // Removes the internal grid from base the shape
 flat_base = "off";//[off,gridfinity,rounded]
 // Remove floor to create a vertical spacer
@@ -366,7 +366,7 @@ module gridfinity_tray(
     floorThickness = floor_thickness,
     cavityFloorRadius = cavity_floor_radius,
     efficientFloor=efficient_floor,
-    halfPitch=half_pitch,
+    subPitch=sub_pitch,
     flatBase=flat_base,
     spacer=spacer),
   wall_thickness=wall_thickness,
@@ -390,7 +390,7 @@ module gridfinity_tray(
     separator_cut_depth = horizontal_separator_cut_depth,
     irregular_subdivisions = horizontal_irregular_subdivisions,
     separator_config = horizontal_separator_config),
-  half_pitch=half_pitch,
+  sub_pitch = sub_pitch,
   lip_settings = LipSettings(
     lipStyle=lip_style, 
     lipSideReliefTrigger=lip_side_relief_trigger, 

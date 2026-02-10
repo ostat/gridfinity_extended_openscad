@@ -1,8 +1,8 @@
 use <../../__comm__/__to_ang_vect.scad>
 
-FINAL_ROW = [0, 0, 0, 1];
 function __m_rotation_q_rotation(a, v) = 
     let(
+        FINAL_ROW = [0, 0, 0, 1],
         uv = v / norm(v),
         s = sin(a / 2) * uv,
         w = sin(a) * uv,
@@ -23,7 +23,9 @@ function __m_rotation_q_rotation(a, v) =
     ];
 
 function __m_rotation_xRotation(a) = 
-    let(c = cos(a), s = sin(a))
+    let(
+        FINAL_ROW = [0, 0, 0, 1],
+        c = cos(a), s = sin(a))
     [
         [1, 0, 0, 0],
         [0, c, -s, 0],
@@ -32,7 +34,9 @@ function __m_rotation_xRotation(a) =
     ];
 
 function __m_rotation_yRotation(a) = 
-    let(c = cos(a), s = sin(a))
+    let(
+        FINAL_ROW = [0, 0, 0, 1],
+        c = cos(a), s = sin(a))
     [
         [c, 0, s, 0],
         [0, 1, 0, 0],
@@ -41,7 +45,9 @@ function __m_rotation_yRotation(a) =
     ];    
 
 function __m_rotation_zRotation(a) = 
-    let(c = cos(a), s = sin(a))
+    let(
+        FINAL_ROW = [0, 0, 0, 1],
+        c = cos(a), s = sin(a))
     [
         [c, -s, 0, 0],
         [s, c, 0, 0],
@@ -54,6 +60,7 @@ function __m_rotation_xyz_rotation(a) =
     __m_rotation_zRotation(ang[2]) * __m_rotation_yRotation(ang[1]) * __m_rotation_xRotation(ang[0]);
 
 function _m_rotation_impl(a, v) = 
+    let(FINAL_ROW = [0, 0, 0, 1])
     (a == 0 || a == [0, 0, 0] || a == [0] || a == [0, 0]) ? [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

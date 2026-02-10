@@ -9,7 +9,7 @@ include <module_gridfinity_cup_base.scad>
 module pad_grid(
   num_x, 
   num_y, 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   minimium_size = 0.2,
   pitch=env_pitch(), 
@@ -17,15 +17,15 @@ module pad_grid(
   positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
-  assert(is_bool(half_pitch));
+  assert(is_num(sub_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
-  //echo("pad_grid", flat_base=flat_base, half_pitch=half_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
+  //echo("pad_grid", flat_base=flat_base, sub_pitch=sub_pitch, positionGridx=positionGridx, positionGridy=positionGridy, minimium_size=minimium_size);
   pad_copy(
     num_x = num_x, 
     num_y = num_y, 
-    half_pitch = half_pitch, 
+    sub_pitch = sub_pitch, 
     flat_base = flat_base, 
     minimium_size = minimium_size,
     pitch=pitch, 
@@ -45,6 +45,55 @@ module cylsq2(d1, d2, h) {
   linear_extrude(height=h, scale=d2/d1)
   square([d1, d1], center=true);
 }
+
+module frame_additives(
+  num_x = 2, 
+  num_y = 1, 
+  position_fill_grid_x = "near",
+  position_fill_grid_y = "near",
+  render_top = true,
+  render_bottom = true,
+  remove_bottom_taper = false,
+  extra_down=0, 
+  frameLipHeight = 4,
+  cornerRadius = gf_cup_corner_radius,
+  reducedWallHeight = -1,
+  reducedWallWidth = -1,
+  reducedWallOuterEdgesOnly=false,
+  enable_grippers = false) {
+
+  assert(is_num(num_x));
+  assert(is_num(num_y));
+  assert(is_string(position_fill_grid_x));
+  assert(is_string(position_fill_grid_y));
+  assert(is_bool(render_top));
+  assert(is_bool(render_bottom));
+  assert(is_bool(remove_bottom_taper));
+  assert(is_num(extra_down));
+  assert(is_num(frameLipHeight));
+  assert(is_num(cornerRadius));
+  assert(is_num(reducedWallHeight));
+  assert(is_num(reducedWallWidth));
+  assert(is_bool(reducedWallOuterEdgesOnly));
+  assert(is_bool(enable_grippers));
+
+  frameWallReduction = reducedWallHeight >= 0 ? max(0, frameLipHeight-reducedWallHeight) : -1;
+  if(env_help_enabled("debug")) echo("frame_addatives", childres = $children);
+      
+    translate([0, 0, -fudgeFactor]) 
+      gridcopy(
+        num_x, 
+        num_y,
+        positionGridx = position_fill_grid_x,
+        positionGridy = position_fill_grid_y) {
+      if($gc_size.x > 0.2 && $gc_size.y >= 0.2){
+        
+        //wall reducers, cutouts and clips
+        children();
+    }
+  }
+}
+
 
 module frame_cavity(
   num_x = 2, 
@@ -101,19 +150,19 @@ module frame_cavity(
                 topHeight=1);
               }
 
-          //wall reducers, cutouts and clips
-          if($children >=2) children(1);
+      //wall reducers, cutouts and clips
+      if($children >=2) children(1);
 
-          pad_oversize(
-            num_x=$gc_size.x,
-            num_y=$gc_size.y,
-            margins=1,
-            extend_down=extra_down,
-            render_top=render_top,
-            render_bottom=render_bottom,
-            remove_bottom_taper=remove_bottom_taper)
-              //cell cavity
-              if($children >=1) children(0);
+      pad_oversize(
+        num_x=$gc_size.x,
+        num_y=$gc_size.y,
+        margins=1,
+        extend_down=extra_down,
+        render_top=render_top,
+        render_bottom=render_bottom,
+        remove_bottom_taper=remove_bottom_taper)
+          //cell cavity
+          if($children >=1) children(0);
     }
   }
 }
@@ -218,7 +267,7 @@ module pad_oversize(
  
 module pad_copy(
   num_x, num_y, 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   minimium_size = 0.2,
   pitch=env_pitch(), 
@@ -226,11 +275,11 @@ module pad_copy(
   positionGridy = "near") {
   assert(is_num(num_x));
   assert(is_num(num_y));
-  assert(is_bool(half_pitch));
+  assert(is_num(sub_pitch));
   assert(is_string(flat_base));
   assert(is_num(minimium_size));
 
-  if(env_help_enabled("debug")) echo("pad_copy", flat_base=flat_base, half_pitch=half_pitch, minimium_size=minimium_size);
+  if(env_help_enabled("debug")) echo("pad_copy", flat_base=flat_base, sub_pitch=sub_pitch, minimium_size=minimium_size);
  
   if (flat_base != FlatBase_off) {
     $pad_copy_size = [num_x, num_y];
@@ -239,15 +288,15 @@ module pad_copy(
       children();
     }
   }
-  else if (half_pitch) {
+  else if (sub_pitch > 1) {
     gridcopy(
-      num_x=num_x*2, 
-      num_y=num_y*2, 
-      pitch=[pitch.y/2,pitch.x/2,pitch.z],
+      num_x=num_x*sub_pitch, 
+      num_y=num_y*sub_pitch, 
+      pitch=[pitch.y/sub_pitch,pitch.x/sub_pitch,pitch.z],
       positionGridx = positionGridx, 
       positionGridy = positionGridy) {
-      $pad_copy_size = $gc_size/2;
-      if(env_help_enabled("debug")) echo("pad_grid_half_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
+      $pad_copy_size = $gc_size/sub_pitch;
+      if(env_help_enabled("debug")) echo("pad_grid_sub_pitch", gci=$gci, gc_size=$gc_size, pad_copy_size=$pad_copy_size);
       if($pad_copy_size.x >= minimium_size && $pad_copy_size.y >= minimium_size) {
          children();      }
     }
@@ -400,38 +449,42 @@ module debug_cut(cutx, cuty, cutz) {
   difference(){
     children();
     
-    //Render the cut, used for debugging
-    if(cutx != 0 && $preview){
-      color(color_cut)
-      translate(cutx > 0 
-        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
-        : [(num_x-abs(cutx))*env_pitch().x-fudgeFactor,-fudgeFactor,-fudgeFactor])
-      translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
-        cube([
-            abs(cutx)*env_pitch().x, 
-            num_y*env_pitch().y+fudgeFactor*2,
+    if((cutx != 0 || cuty != 0 || cutz != 0) && $preview){
+      echo("debug_cut is enabled", cutx=cutx, cuty=cuty, cutz=cutz);
+
+      //Render the cut, used for debugging
+      if(cutx != 0 && $preview){
+        color(color_cut)
+        translate(cutx > 0 
+          ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+          : [(num_x-abs(cutx))*env_pitch().x-fudgeFactor,-fudgeFactor,-fudgeFactor])
+        translate([-fudgeFactor,-fudgeFactor,-fudgeFactor])
+          cube([
+              abs(cutx)*env_pitch().x, 
+              num_y*env_pitch().y+fudgeFactor*2,
+              (num_z+1)*env_pitch().z+fudgeFactor*2]);
+      }
+      if(cuty != 0 && $preview){
+        color(color_cut)
+        translate(cuty > 0 
+          ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+          : [-fudgeFactor,(num_y-abs(cuty))*env_pitch().y-fudgeFactor,-fudgeFactor])
+          cube([
+            num_x*env_pitch().x+fudgeFactor*2,
+            abs(cuty)*env_pitch().y,
             (num_z+1)*env_pitch().z+fudgeFactor*2]);
-    }
-    if(cuty != 0 && $preview){
-      color(color_cut)
-      translate(cuty > 0 
-        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
-        : [-fudgeFactor,(num_y-abs(cuty))*env_pitch().y-fudgeFactor,-fudgeFactor])
-        cube([
-          num_x*env_pitch().x+fudgeFactor*2,
-          abs(cuty)*env_pitch().y,
-          (num_z+1)*env_pitch().z+fudgeFactor*2]);
-    }
-    if(cutz != 0 && $preview){
-      color(color_cut)
-      translate(cutz > 0 
-        ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
-        : [-fudgeFactor,-fudgeFactor,(num_z+1-abs(cutz))*env_pitch().z-fudgeFactor]
-        )
-        cube([
-          num_x*env_pitch().x+fudgeFactor*2,
-          num_y*env_pitch().y+fudgeFactor*2,
-          abs(cutz)*env_pitch().z]);
+      }
+      if(cutz != 0 && $preview){
+        color(color_cut)
+        translate(cutz > 0 
+          ? [-fudgeFactor,-fudgeFactor,-fudgeFactor]
+          : [-fudgeFactor,-fudgeFactor,(num_z+1-abs(cutz))*env_pitch().z-fudgeFactor]
+          )
+          cube([
+            num_x*env_pitch().x+fudgeFactor*2,
+            num_y*env_pitch().y+fudgeFactor*2,
+            abs(cutz)*env_pitch().z]);
+      }
     }
   }
 }

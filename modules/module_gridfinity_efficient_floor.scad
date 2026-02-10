@@ -8,7 +8,7 @@ use <module_utility.scad>
 module efficient_floor_grid(
   num_x, num_y, 
   floorStyle = "on", 
-  half_pitch=false, 
+  sub_pitch=1, 
   flat_base="off", 
   floor_thickness, 
   efficientFloorGridHeight=0,
@@ -22,17 +22,17 @@ module efficient_floor_grid(
       floorSmooth=(floorStyle == "smooth" ? 2 : 0),
         efficientFloorGridHeight=efficientFloorGridHeight);
   }
-  else if (half_pitch) {
+  else if (sub_pitch > 1) {
     gridcopy(
-      num_x = num_x*2, 
-      num_y = num_y*2, 
-      pitch = [env_pitch().y/2, env_pitch().x/2, env_pitch().z], 
+      num_x = num_x*sub_pitch, 
+      num_y = num_y*sub_pitch, 
+      pitch = [env_pitch().y/sub_pitch, env_pitch().x/sub_pitch, env_pitch().z], 
       positionGridx = align_grid.x, 
       positionGridy = align_grid.y
       ) {
       EfficientFloor(
-        $gc_size.x/2,
-        $gc_size.y/2, 
+        $gc_size.x/sub_pitch,
+        $gc_size.y/sub_pitch, 
         floor_thickness, 
         margins, 
         floorRounded=(floorStyle == "rounded"),

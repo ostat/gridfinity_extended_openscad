@@ -63,11 +63,10 @@ module grid_block(
   screw_size=cupBase_settings[iCupBase_ScrewSize];
   hole_overhang_remedy=cupBase_settings[iCupBase_HoleOverhangRemedy];
   box_corner_attachments_only = cupBase_settings[iCupBase_CornerAttachmentsOnly];
-  half_pitch=cupBase_settings[iCupBase_HalfPitch];
+  sub_pitch=cupBase_settings[iCupBase_SubPitch];
   flat_base=cupBase_settings[iCupBase_FlatBase];
   center_magnet_size = cupBase_settings[iCupBase_CenterMagnetSize];
-  magnet_easy_release = cupBase_settings[iCupBase_MagnetEasyRelease];
-  
+    
   outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
 
@@ -133,7 +132,7 @@ module grid_block(
             pad_grid(
               num_x = num_x, 
               num_y = num_y, 
-              half_pitch = half_pitch, 
+              sub_pitch = sub_pitch, 
               flat_base = flat_base, 
               cupBase_settings[iCupBase_MinimumPrintablePadSize],
               pitch=env_pitch(), 
@@ -177,12 +176,15 @@ module grid_block(
     color(env_colour(color_basehole))
     tz(-fudgeFactor)
     gridcopycorners(num_x, num_y, magnet_position, box_corner_attachments_only){
-        rdeg =
+        magnet_rotation =
           $gcci[2] == [ 1, 1] ? 90 :
           $gcci[2] == [-1, 1] ? 180 :
-          $gcci[2] == [-1,-1] ? -90 :
+          $gcci[2] == [-1,-1] ? 270 :
           $gcci[2] == [ 1,-1] ? 0 : 0;
-        rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
+        magnetCaptiveSideAccessSize = magnet_rotation == 0 || magnet_rotation == 180 
+          ? env_pitch().x/2 - magnet_position.x 
+          : env_pitch().y/2 - magnet_position.y;
+        rotate([0,0,magnet_rotation-45])
         MagnetAndScrewRecess(
           magnetDiameter = magnet_size[iCylinderDimension_Diameter],
           magnetThickness = magnet_size[iCylinderDimension_Height]+0.1,
@@ -190,8 +192,13 @@ module grid_block(
           screwDepth = screw_size[iCylinderDimension_Height],
           overhangFixLayers = overhang_fix,
           overhangFixDepth = overhang_fix_depth,
-          easyMagnetRelease = magnet_easy_release != MagnetEasyRelease_off,
-          magnetCaptiveHeight = cupBase_settings[iCupBase_MagnetCaptiveHeight]);
+          easyMagnetRelease = cupBase_settings[iCupBase_MagnetEasyRelease] == MagnetEasyRelease_off ? false : 
+                              cupBase_settings[iCupBase_MagnetCaptiveHeight] > 0 && cupBase_settings[iCupBase_MagnetSideAccess] == false ? false : true,
+          magnetCaptiveHeight = cupBase_settings[iCupBase_MagnetCaptiveHeight],
+          easyReleaseRotation = (cupBase_settings[iCupBase_NormalisedMagnetEasyRelease] == MagnetEasyRelease_outer ? 0 : 180),
+          magnetRotation = magnet_rotation,
+          enableSideAccess = cupBase_settings[iCupBase_MagnetSideAccess],
+          magnetCaptiveSideAccessSize = [magnetCaptiveSideAccessSize, magnet_size[iCylinderDimension_Diameter], magnet_size[iCylinderDimension_Height]+0.1]);
     }
   }
  
@@ -203,7 +210,7 @@ module grid_block(
     ,"screw_size",screw_size
     ,"position",position
     ,"hole_overhang_remedy",hole_overhang_remedy
-    ,"half_pitch",half_pitch
+    ,"sub_pitch",sub_pitch
     ,"box_corner_attachments_only",box_corner_attachments_only
     ,"flat_base",flat_base
     ,"lipSettings",lip_settings
@@ -225,7 +232,7 @@ module bin_overhang_chamfer(
   alignGrid = cupBase_settings[iCupBase_AlignGrid];
   cavityFloorRadius = cupBase_settings[iCupBase_CavityFloorRadius];
   efficientFloor = cupBase_settings[iCupBase_EfficientFloor];
-  half_pitch = cupBase_settings[iCupBase_HalfPitch];
+  sub_pitch = cupBase_settings[iCupBase_SubPitch];
   minimumPrintablePadSize = cupBase_settings[iCupBase_MinimumPrintablePadSize];
 
   calculate_bin_chamfer = function (
@@ -235,10 +242,10 @@ module bin_overhang_chamfer(
     wallThickness,
     cavityFloorRadius,
     efficientFloor,
-    halfPitch,
+    subPitch,
     minimumPrintablePadSize) 
     let(
-      over_hanging_lip = halfPitch ? (width*2-floor(width*2))/2 : (width-floor(width)),
+      over_hanging_lip = (width*subPitch-floor(width*subPitch))/subPitch,
       over_hanging_lip_mm = (over_hanging_lip)*pitch-clearance/4,
       calculatedCavityFloorRadius = calculateCavityFloorRadius(cavityFloorRadius, wallThickness, efficientFloor),
       outer_wall_radius = calculatedCavityFloorRadius + wallThickness*2,
@@ -255,7 +262,7 @@ module bin_overhang_chamfer(
       wallThickness = wall_thickness,
       cavityFloorRadius = cavityFloorRadius,
       efficientFloor = efficientFloor,
-      halfPitch = half_pitch,
+      subPitch = sub_pitch,
       minimumPrintablePadSize = minimumPrintablePadSize
     );
 
@@ -266,7 +273,7 @@ module bin_overhang_chamfer(
       wallThickness = wall_thickness,
       cavityFloorRadius = cavityFloorRadius,
       efficientFloor = efficientFloor,
-      halfPitch = half_pitch,
+      subPitch = sub_pitch,
       minimumPrintablePadSize = minimumPrintablePadSize
     );
 

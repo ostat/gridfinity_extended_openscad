@@ -1,209 +1,101 @@
 ///////////////////////////////////////
-//Combined version of ''. Generated 2026-02-09 21:12
-//Content hash B01AFAAEF45955E0FC8F0383DA17624A7B666594BC2856910B35ED792938477E
+//Combined version of 'gridfinity_marble.scad'. Generated 2026-02-09 22:35
+//Content hash E8B5AF9DC6470B8D469B4353B292634DB929DE5B11AFDB01488701119DD734E4
 ///////////////////////////////////////
 
-/*<!!start gridfinity_tray!!>*/
-/* [Tray] */
-tray_corner_radius = 2;
 
-//Height above the base height
-tray_zpos = 0;
-tray_magnet_radius = 5;
-tray_magnet_thickness = 5;
-tray_spacing = 2; //0.1
-tray_vertical_compartments = 1;
-tray_horizontal_compartments = 1;
-/*
-xpos,ypos,xsize,ysize,radius,depth. 
-dimensions of the tray cutout, a string with comma separated values, and pipe (|) separated trays.
- - xpos, ypos, the x/y position in gridfinity units.
- - xsize, ysize. the x/y size in gridfinity units. 
- - radius, [optional] corner radius in mm.
- - depth, [optional] depth in mm
- - example "0,0,2,1|2,0,2,1,2,5"
-*/
-//[[xpos,ypos,xsize,ysize,radius,depth]]. xpos, ypos, the x/y position in gridfinity units.xsize, ysize. the x/y size in gridfinity units. radius, [optional] corner radius in mm.depth, [optional] depth in mm\nexample "0,0,2,1|2,0,2,1,2,5"
-tray_custom_compartments = "0, 0, 0.5, 3, 2, 6|0.5, 0, 0.5, 3,2, 6|1, 0, 3, 1.5|1, 1.5, 3, 1.5";
+/*<!!start gridfinity_marble!!>*/
+/* [marbleRun] */
+marble_style = "blank"; //[blank, dish, ramp, cup]
+//Size of the marble track. Default 19.
+marble_diameter = 19;
 
-// Debug, Color Compartments
-tray_color_compartments = false;
-// Debug, Highlight Compartments
-tray_highlight_compartments = false;
+//1=42mm, 1.5=63mm, 2=84mm
+Block_Dimention = 1; //[1, 1.5, 2]
 
-/*<!!end gridfinity_tray!!>*/
+//3=21mm, 4=28mm
+Block_Layer_Height = 3; //[3, 4]
+
+Ramp_Base_Offset = 0; //0.1
+
+/* [Cup Top] */
+marble_top_style = "straight"; //[none,straight,straight_double,straight_triple,straights,ramp,ramp+dip,ramp+corner,cross,cross+dip,cross+doubledip,dip,corner,corners,cornerramp, triple_corner, straight+corner, split, bend+corner]
+marble_top_rotate = 0; //90
+marble_top_mirror = [0,0,0]; //[0:1]
+marble_top_position = [0,0]; //0.1
+marble_top_profile = "auto"; //[auto, top, round, printable_round]
+marble_top_highlight = false; 
+ 
+/* [Cup Middle] */
+marble_middle_style = "none"; //[none,straight,straight_double,straight_triple,straights,ramp,cross,cross+dip,dip,corner,corners,cornerramp,triple_corner, straight+corner, split, bend+corner]
+marble_middle_rotate = 0; //90
+marble_middle_mirror = [0,0,0]; //[0:1]
+marble_middle_position = [0,0]; //0.1
+marble_middle_profile = "auto"; //[auto, top, round, printable_round]
+marble_middle_highlight = false; 
+
+/* [Cup layer2 (42mm)] */
+marble_level2_style = "none"; //[none,straight,straight_double,straight_triple,straights,ramp,cross,cross+dip,dip,corner,corners,cornerramp,triple_corner, straight+corner, split, bend+corner]
+marble_level2_rotate = 0; //90
+marble_level2_mirror = [0,0,0]; //[0:1]
+marble_level2_position = [0,0]; //0.1
+marble_level2_profile = "auto"; //[auto, top, round, printable_round]
+marble_level2_highlight = false; 
+
+/* [Cup layer1 (21mm)] */
+marble_level1_style = "none"; //[none,straight,straight_double,straight_triple,straights,ramp,cross,cross+dip,dip,corner,corners,cornerramp,triple_corner, straight+corner, split, bend+corner]
+marble_level1_rotate = 0; //90
+marble_level1_mirror = [0,0,0]; //[0:1]
+marble_level1_position = [0,0]; //0.1
+marble_level1_profile = "auto"; //[auto, top, round, printable_round]
+marble_level1_highlight = false; 
+
+/* [Cup Bottom] */
+marble_bottom_style = "none"; //[none,straight,straight_double,straight_triple,straights,ramp,cross,cross+dip,dip,corner,corners,cornerramp,triple_corner, straight+corner, split, bend+corner]
+marble_bottom_rotate = 0; //90
+marble_bottom_mirror = [0,0,0]; //[0:1]
+marble_bottom_position = [0,0]; //0.1
+marble_bottom_profile = "auto"; //[auto, top, round, printable_round]
+marble_bottom_highlight = false; 
+
+/*<!!end gridfinity_marble!!>*/
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
 // X dimension. grid units (multiples of 42mm) or mm.
-width = [4, 0]; //0.5
+width = [2, 0]; //0.5
 // Y dimension. grid units (multiples of 42mm) or mm.
-depth = [3, 0]; //0.5
+depth = [1, 0]; //0.5
 // Z dimension excluding. grid units (multiples of 7mm) or mm.
-height = [3, 0]; //0.1
-// Fill in solid block (overrides all following options)
-filled_in = true; 
+height = [3, 0]; //3
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
-// Remove some or all of lip
-position = "center"; //[default,center,zero]
 //under size the bin top by this amount to allow for better stacking
-headroom = 0.8; // 0.1
+headroom = 0; // 0.1
 
 /* [Cup Lip] */
 // Style of the cup lip
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
-// Create a relie
-lip_top_relief_height = -1; // 0.1
+// Create a relief in the lip
+lip_top_relief_height = 0; // 0.1
+// how much of the lip to retain on each end
+lip_top_relief_width = 8.5; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = true;
+// enable lip clip for connection cups
+lip_clip_position = "disabled"; //[disabled, intersection]
 
-/* [Subdivisions] */
-chamber_wall_thickness = 1.2;
-//Reduce the wall height by this amount
-chamber_wall_headroom = 0;//0.1
-// X dimension subdivisions
-vertical_chambers = 1;
-vertical_separator_bend_position = 0;
-vertical_separator_bend_angle = 0;
-vertical_separator_bend_separation = 0;
-vertical_separator_cut_depth=0;
-horizontal_chambers = 1;
-horizontal_separator_bend_position = 0;
-horizontal_separator_bend_angle = 0;
-horizontal_separator_bend_separation = 0;
-horizontal_separator_cut_depth=0;
-// Enable irregular subdivisions
-vertical_irregular_subdivisions = false;
-// Separator positions are defined in terms of grid units from the left end
-vertical_separator_config = "10.5|21|42|50|60";
-// Enable irregular subdivisions
-horizontal_irregular_subdivisions = false;
-// Separator positions are defined in terms of grid units from the left end
-horizontal_separator_config = "10.5|21|42|50|60";
-      
 /* [Base] */
-//size of magnet, diameter and height. Zack's original used 6.5 and 2.4 
-magnet_size = [6.5, 2.4];  // .1
-//create relief for magnet removal
-magnet_easy_release = "auto";//["off","auto","inner","outer"] 
-//size of screw, diameter and height. Zack's original used 3 and 6
-screw_size = [3, 6]; // .1
-//size of center magnet, diameter and height. 
-center_magnet_size = [0,0];
-// Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
-hole_overhang_remedy = 2;
-//Only add attachments (magnets and screw) to box corners (prints faster).
-box_corner_attachments_only = true;
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
-floor_thickness = 0.7;
-cavity_floor_radius = -1;// .1
-// Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//[off,on,rounded,smooth] 
+floor_thickness = 1.5;
 // Enable to subdivide bottom pads to allow sub-cell offsets
 sub_pitch = 1; //[1,2,3,4]
-// Removes the internal grid from base the shape
-flat_base = "off";//[off,gridfinity,rounded]
-// Remove floor to create a vertical spacer
-spacer = false;
-
-/* [Label] */
-label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
-// Include overhang for labeling (and specify left/right/center justification)
-label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
-// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
-label_size = [0,14,0,0.6]; // 0.01
-// Size in mm of relief where appropriate. Width, depth, height, radius
-label_relief = [0,0,0,0.6]; // 0.1
-// wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
-label_walls=[0,1,0,0];  //[0:1:1]
-
-/* [Finger Slide] */
-// Include larger corner fillet
-fingerslide = "none"; //[none, rounded, chamfered]
-// Radius of the corner fillet, 0:none, >1: radius in mm, <0 dimention/abs(n) (i.e. -3 is 1/3 the width)
-fingerslide_radius = -3;
-// wall to enable on, front, back, left, right. 0: disabled; 1: enabled using radius; >1: override radius.
-fingerslide_walls=[1,0,0,0];
-//Align the fingerslide with the lip
-fingerslide_lip_aligned=true;
-
-/* [Tapered Corner] */
-tapered_corner = "none"; //[none, rounded, chamfered]
-tapered_corner_size = 10;
-// Set back of the tapered corner, default is the gridfinity corner radius
-tapered_setback = -1;//gridfinity_corner_radius/2;
-
-/* [Wall Pattern] */
-// Grid wall patter
-wallpattern_enabled=false;
-// Style of the pattern
-wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
-// Spacing between pattern
-wallpattern_strength = 2; //0.1
-// wall to enable on, front, back, left, right.
-wallpattern_walls=[1,1,1,1];  //[0:1:1]
-// rotate the grid
-wallpattern_rotate_grid=false;
-//Size of the hole
-wallpattern_cell_size = [10,10]; //0.1
-// Add the pattern to the dividers
-wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
-//Number of sides of the hole op
-wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
-//Radius of corners
-wallpattern_hole_radius = 0.5;
-// pattern fill mode
-wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-// border around the wall pattern, default is wall thickness
-wallpattern_border = 0;
-// depth of imprint in mm, 0 = is wall width.
-wallpattern_depth = 0; // 0.1
-//grid pattern hole taper
-wallpattern_pattern_grid_chamfer = 0; //0.1
-//voronoi pattern noise, 
-wallpattern_pattern_voronoi_noise = 0.75; //0.01
-//brick pattern center weight
-wallpattern_pattern_brick_weight = 5;
-//$fs for floor pattern, min size face.
-wallpattern_pattern_quality = 0.4;//0.1:0.1:2
-
-/* [Wall Cutout] */
-wallcutout_vertical ="disabled"; //[disabled, enabled, inneronly, wallsonly, frontonly, backonly]
-// wallcoutout position -0.5: disabled; Positive: GF units; Negative: ratio length/abs(value)
-wallcutout_vertical_position=[-2,-0.5,-0.5,-0.5];  //0.01
-//default will be binwidth/2
-wallcutout_vertical_width=0;
-wallcutout_vertical_angle=70;
-//default will be binHeight. 0: radius, -1 floor, Positive: depth from top; Negative: ratio height/abs(value)
-wallcutout_vertical_height=0;
-wallcutout_vertical_corner_radius=5;
-wallcutout_horizontal ="disabled"; //[disabled, enabled, inneronly, wallsonly, leftonly, rightonly]
-// wallcoutout position -0.5: disabled; Positive: GF units; Negative: ratio length/abs(value)
-wallcutout_horizontal_position=[-2,-0.5,-0.5,-0.5];  //0.01
-//default will be binwidth/2
-wallcutout_horizontal_width=0;
-wallcutout_horizontal_angle=70;
-//default will be binHeight
-wallcutout_horizontal_height=0;
-wallcutout_horizontal_corner_radius=5;
-
-/* [Extendable] */
-extension_x_enabled = "disabled"; //[disabled, front, back]
-extension_x_position = 0.5; 
-extension_y_enabled = "disabled"; //[disabled, front, back]
-extension_y_position = 0.5; 
-extension_tabs_enabled = true;
-//Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
-extension_tab_size= [10,0,0,0];
 
 /* [debug] */
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+//Slice the bin
+cut = [0,0,0]; 
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -224,7 +116,101 @@ random_seed = 0; //0.0001
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
+//Combined from path gridfinity_constants.scad
+
+
+// dimensions as declared on https://gridfinity.xyz/specification/
+
+//Gridfinity grid size
+gf_pitch = 42;
+//Gridfinity height size
+gf_zpitch = 7;
+
+gf_taper_angle = 45;
+
+// cup
+gf_cup_corner_radius = 3.75;
+gf_cup_floor_thickness = 0.7;  
+
+// CupBase
+gf_cupbase_lower_taper_height = 0.8;
+gf_cupbase_riser_height = 1.8;
+gf_cupbase_upper_taper_height = 2.15;
+gf_cupbase_magnet_position = 4.8; 
+gf_cupbase_screw_diameter = 3; 
+gf_cupbase_screw_depth = 6;
+gf_magnet_diameter = 6.5;
+gf_magnet_thickness = 2.4;
+gf_base_grid_clearance_height = 3.5;
+
+//stacking lips
+// Standard lip
+// \        gf_lip_upper_taper_height 
+//  |       gf_lip_riser_height
+//   \      gf_lip_lower_taper_height
+//    |     gf_lip_height
+//   /      gf_lip_support_taper_height
+//  /
+// /
+///
+// Reduced lip
+// \        gf_lip_upper_taper_height 
+//  |       gf_lip_riser_height
+// /        gf_lip_reduced_support_taper_height
+/// 
+gf_lip_lower_taper_height = 0.7;
+gf_lip_riser_height = 1.8;
+gf_lip_upper_taper_height = 1.9;
+gf_lip_height = 1.2;
+//gf_lip_support_taper_height = 2.5;
+//gf_lip_reduced_support_taper_height = 1.9;
+
+// base plate
+gf_baseplate_lower_taper_height = 0.7;
+gf_baseplate_riser_height = 1.8;
+gf_baseplate_upper_taper_height = 2.15;
+gf_baseplate_magnet_od = 6.5;
+gf_baseplate_magnet_thickness = 2.4;
+
+// top lip height 4.4mm
+gf_Lip_Height = 4.4-0.6;//gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;
+
+// cupbase height 4.75mm + 0.25.
+function gfBaseHeight() = gf_cupbase_lower_taper_height + gf_cupbase_riser_height + gf_cupbase_upper_taper_height+0.25; //results in 5
+gf_min_base_height = gfBaseHeight(); 
+
+// base heighttop lip height 4.4mm
+function gfBasePlateHeight() = gf_baseplate_lower_taper_height + gf_baseplate_riser_height + gf_baseplate_upper_taper_height;
+
+ 
+
+// old names, that will get replaced
+/*
+gridfinity_lip_height = gf_Lip_Height; 
+gridfinity_corner_radius = gf_cup_corner_radius ; 
+gridfinity_zpitch = env_pitch().z;
+minFloorThickness = gf_cup_floor_thickness;  
+const_magnet_height = gf_magnet_thickness;
+*/
+
+//Small amount to add to prevent clipping in openSCAD
+fudgeFactor = 0.01;
+
+color_cup = "LightSlateGray";
+color_divider = "Gainsboro"; //LemonChiffon
+color_topcavity = "Green";//"SteelBlue";
+color_label = "DarkCyan";
+color_cupcavity = "LightGreen"; //IndianRed
+color_wallcutout = "SandyBrown";
+color_basehole = "DarkSlateGray";
+color_base = "DimGray";
+color_extension = "lightpink";
+color_text = "Yellow"; //Gold
+color_cut = "Black";
+color_lid = "MediumAquamarine";
+//CombinedEnd from path gridfinity_constants.scad
 //Combined from path module_gridfinity_cup.scad
+
 
 
 
@@ -1627,99 +1613,6 @@ module basic_cavity(num_x, num_y, num_z,
   }
 }
 //CombinedEnd from path module_gridfinity_cup.scad
-//Combined from path gridfinity_constants.scad
-
-
-// dimensions as declared on https://gridfinity.xyz/specification/
-
-//Gridfinity grid size
-gf_pitch = 42;
-//Gridfinity height size
-gf_zpitch = 7;
-
-gf_taper_angle = 45;
-
-// cup
-gf_cup_corner_radius = 3.75;
-gf_cup_floor_thickness = 0.7;  
-
-// CupBase
-gf_cupbase_lower_taper_height = 0.8;
-gf_cupbase_riser_height = 1.8;
-gf_cupbase_upper_taper_height = 2.15;
-gf_cupbase_magnet_position = 4.8; 
-gf_cupbase_screw_diameter = 3; 
-gf_cupbase_screw_depth = 6;
-gf_magnet_diameter = 6.5;
-gf_magnet_thickness = 2.4;
-gf_base_grid_clearance_height = 3.5;
-
-//stacking lips
-// Standard lip
-// \        gf_lip_upper_taper_height 
-//  |       gf_lip_riser_height
-//   \      gf_lip_lower_taper_height
-//    |     gf_lip_height
-//   /      gf_lip_support_taper_height
-//  /
-// /
-///
-// Reduced lip
-// \        gf_lip_upper_taper_height 
-//  |       gf_lip_riser_height
-// /        gf_lip_reduced_support_taper_height
-/// 
-gf_lip_lower_taper_height = 0.7;
-gf_lip_riser_height = 1.8;
-gf_lip_upper_taper_height = 1.9;
-gf_lip_height = 1.2;
-//gf_lip_support_taper_height = 2.5;
-//gf_lip_reduced_support_taper_height = 1.9;
-
-// base plate
-gf_baseplate_lower_taper_height = 0.7;
-gf_baseplate_riser_height = 1.8;
-gf_baseplate_upper_taper_height = 2.15;
-gf_baseplate_magnet_od = 6.5;
-gf_baseplate_magnet_thickness = 2.4;
-
-// top lip height 4.4mm
-gf_Lip_Height = 4.4-0.6;//gf_lip_lower_taper_height + gf_lip_riser_height + gf_lip_upper_taper_height;
-
-// cupbase height 4.75mm + 0.25.
-function gfBaseHeight() = gf_cupbase_lower_taper_height + gf_cupbase_riser_height + gf_cupbase_upper_taper_height+0.25; //results in 5
-gf_min_base_height = gfBaseHeight(); 
-
-// base heighttop lip height 4.4mm
-function gfBasePlateHeight() = gf_baseplate_lower_taper_height + gf_baseplate_riser_height + gf_baseplate_upper_taper_height;
-
- 
-
-// old names, that will get replaced
-/*
-gridfinity_lip_height = gf_Lip_Height; 
-gridfinity_corner_radius = gf_cup_corner_radius ; 
-gridfinity_zpitch = env_pitch().z;
-minFloorThickness = gf_cup_floor_thickness;  
-const_magnet_height = gf_magnet_thickness;
-*/
-
-//Small amount to add to prevent clipping in openSCAD
-fudgeFactor = 0.01;
-
-color_cup = "LightSlateGray";
-color_divider = "Gainsboro"; //LemonChiffon
-color_topcavity = "Green";//"SteelBlue";
-color_label = "DarkCyan";
-color_cupcavity = "LightGreen"; //IndianRed
-color_wallcutout = "SandyBrown";
-color_basehole = "DarkSlateGray";
-color_base = "DimGray";
-color_extension = "lightpink";
-color_text = "Yellow"; //Gold
-color_cut = "Black";
-color_lid = "MediumAquamarine";
-//CombinedEnd from path gridfinity_constants.scad
 //Combined from path functions_general.scad
 
 
@@ -9805,297 +9698,1351 @@ Pivot(messpunkt=messpunkt,p0=translate,active=[1,1,1,1,norm(translate)]);
 
 }// end Caliper
 //CombinedEnd from path ub_caliper.scad
+//Combined from path ring_extrude.scad
+
+
+
+
+
+
+/**
+* ring_extrude.scad
+*
+* @copyright Justin Lin, 2017
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-ring_extrude.html
+*
+**/
+
+
+module ring_extrude(shape_pts, radius, angle = 360, twist = 0, scale = 1.0, triangles = "SOLID") {
+    if(twist == 0 && scale == 1.0) {
+        rotate_extrude(angle = angle) 
+        translate([radius, 0, 0]) 
+            polygon(shape_pts);
+    } else {
+        a_step = 360 / __frags(radius);
+
+        angles = is_num(angle) ? [0, angle] : angle;
+
+        m = floor(angles[0] / a_step) + 1;
+        n = floor(angles[1] / a_step);
+
+        leng = radius * cos(a_step / 2);
+
+        begin_r = leng / cos((m - 0.5) * a_step - angles[0]);
+        end_r =  leng / cos((n + 0.5) * a_step - angles[1]);
+
+        angs = [
+            [90, 0, angles[0]], 
+            each [for(i = m; i <= n; i = i + 1) [90, 0, a_step * i]]
+        ];
+
+        pts = [
+            __ra_to_xy(begin_r, angles[0]), 
+            each [for(i = m; i <= n; i = i + 1) __ra_to_xy(radius, a_step * i)]
+        ];
+
+        is_angle_frag_end = angs[len(angs) - 1][2] == angles[1];
+        
+        all_angles = is_angle_frag_end ? 
+            angs : [each angs, [90, 0, angles[1]]];
+            
+        all_points = is_angle_frag_end ? 
+            pts : [each pts, __ra_to_xy(end_r, angles[1])];
+
+        sections = cross_sections(shape_pts, all_points, all_angles, twist, scale);
+
+        sweep(
+            sections,
+            triangles = triangles
+        );
+
+        // hook for testing
+        test_ring_extrude(sections, angle);
+    }
+}
+
+// Override it to test
+module test_ring_extrude(sections, angle) {
+
+}
+//CombinedEnd from path ring_extrude.scad
+//Combined from path __frags.scad
+
+
+function __frags(radius) = 
+    $fn == 0 ?  
+        max(min(360 / $fa, radius * 6.283185307179586 / $fs), 5) :
+        max($fn, 3);
+//CombinedEnd from path __frags.scad
+//Combined from path __ra_to_xy.scad
+
+
+function __ra_to_xy(r, a) = [r * cos(a), r * sin(a)];
+//CombinedEnd from path __ra_to_xy.scad
+//Combined from path cross_sections.scad
+
+
+
+
+
+/**
+* cross_sections.scad
+*
+* @copyright Justin Lin, 2017
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-cross_sections.html
+*
+**/
+
+
+function cross_sections(shape_pts, path_pts, angles, twist = 0, scale = 1.0) =
+    let(
+        len_path_pts_minus_one = len(path_pts) - 1,
+        sh_pts = len(shape_pts[0]) == 3 ? [for(p = shape_pts) [each p, 1]] : [for(p = shape_pts) [each p, 0, 1]],
+        pth_pts = len(path_pts[0]) == 3 ? path_pts : [for(p = path_pts) [each p, 0]]
+    )
+    twist == 0 && scale == 1.0 ?
+    [
+        for(i = [0:len_path_pts_minus_one])
+        let(transform_m = m_translation(pth_pts[i]) * m_rotation(angles[i]))
+        [
+            for(p = sh_pts) 
+            let(transformed = transform_m * p)
+            [transformed.x, transformed.y, transformed.z]
+        ]
+    ] :
+    let(
+        twist_step = twist / len_path_pts_minus_one,
+        scale_step_vt = (is_num(scale) ? let(s = scale - 1) [s, s, 0] : ([each scale, 0] - [1, 1, 0])) / len_path_pts_minus_one,
+        one_s = [1, 1, 1]
+    )
+    [
+        for(i = [0:len_path_pts_minus_one])
+        let(
+            transform_m = m_translation(pth_pts[i]) * 
+                          m_rotation(angles[i]) * 
+                          m_rotation(twist_step * i) * 
+                          m_scaling(scale_step_vt * i + one_s)
+        )
+        [
+            for(p = sh_pts) 
+            let(transformed = transform_m * p)
+            [transformed.x, transformed.y, transformed.z]
+        ]
+    ];
+//CombinedEnd from path cross_sections.scad
+//Combined from path m_scaling.scad
+
+
+
+/**
+* m_scaling.scad
+*
+* @copyright Justin Lin, 2019
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_scaling.html
+*
+**/
+
+
+function m_scaling(s) = _m_scaling_impl(s);
+//CombinedEnd from path m_scaling.scad
+//Combined from path _m_scaling_impl.scad
+
+
+function __m_scaling_to_3_elems_scaling_vect(s) =
+     let(leng = len(s))
+     leng == 3 ? s : 
+     leng == 2 ? [each s, 1] : [s.x, 1, 1];
+
+function __m_scaling_to_scaling_vect(s) = is_num(s) ? [s, s, s] : __m_scaling_to_3_elems_scaling_vect(s);
+
+
+function _m_scaling_impl(s) = 
+    let(
+        FINAL_ROW = [0, 0, 0, 1],
+        v = __m_scaling_to_scaling_vect(s))
+    [
+        [v.x, 0, 0, 0],
+        [0, v.y, 0, 0],
+        [0, 0, v.z, 0],
+        FINAL_ROW
+    ];
+//CombinedEnd from path _m_scaling_impl.scad
+//Combined from path m_translation.scad
+
+
+
+/**
+* m_translation.scad
+*
+* @copyright Justin Lin, 2019
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_translation.html
+*
+**/
+
+
+function m_translation(v) = _m_translation_impl(v);
+//CombinedEnd from path m_translation.scad
+//Combined from path _m_translation_impl.scad
+
+
+function _to_3_elems_translation_vect(v) =
+     let(leng = len(v))
+     leng == 3 ? v : 
+     leng == 2 ? [each v, 0] : [v.x, 0, 0];
+
+function _to_translation_vect(v) = is_num(v) ? [v, 0, 0] : _to_3_elems_translation_vect(v);
+
+
+function _m_translation_impl(v) = 
+    let(
+        FINAL_ROW = [0, 0, 0, 1],
+        vt = _to_translation_vect(v))
+    [ 
+        [1, 0, 0, vt.x],
+        [0, 1, 0, vt.y],
+        [0, 0, 1, vt.z],
+        FINAL_ROW
+    ];
+//CombinedEnd from path _m_translation_impl.scad
+//Combined from path m_rotation.scad
+
+
+
+/**
+* m_rotation.scad
+*
+* @copyright Justin Lin, 2019
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_rotation.html
+*
+**/
+
+
+function m_rotation(a, v) = _m_rotation_impl(a, v);
+//CombinedEnd from path m_rotation.scad
+//Combined from path _m_rotation_impl.scad
+
+
+
+
+function __m_rotation_q_rotation(a, v) = 
+    let(
+        FINAL_ROW = [0, 0, 0, 1],
+        uv = v / norm(v),
+        s = sin(a / 2) * uv,
+        w = sin(a) * uv,
+
+        xx = 2 * s.x ^ 2,
+        yy = 2 * s.y ^ 2,
+        zz = 2 * s.z ^ 2,
+
+        xy = 2 * s.x * s.y,
+        xz = 2 * s.x * s.z,
+        yz = 2 * s.y * s.z
+    )
+    [
+        [1 - yy - zz, xy - w.z, xz + w.y, 0],
+        [xy + w.z, 1 - xx - zz, yz - w.x, 0],
+        [xz - w.y, yz + w.x, 1 - xx - yy, 0],
+        FINAL_ROW
+    ];
+
+function __m_rotation_xRotation(a) = 
+    let(
+        FINAL_ROW = [0, 0, 0, 1],
+        c = cos(a), s = sin(a))
+    [
+        [1, 0, 0, 0],
+        [0, c, -s, 0],
+        [0, s, c, 0],
+        FINAL_ROW
+    ];
+
+function __m_rotation_yRotation(a) = 
+    let(
+        FINAL_ROW = [0, 0, 0, 1],
+        c = cos(a), s = sin(a))
+    [
+        [c, 0, s, 0],
+        [0, 1, 0, 0],
+        [-s, 0, c, 0],
+        FINAL_ROW
+    ];    
+
+function __m_rotation_zRotation(a) = 
+    let(
+        FINAL_ROW = [0, 0, 0, 1],
+        c = cos(a), s = sin(a))
+    [
+        [c, -s, 0, 0],
+        [s, c, 0, 0],
+        [0, 0, 1, 0],
+        FINAL_ROW
+    ];    
+
+function __m_rotation_xyz_rotation(a) =
+    let(ang = __to_ang_vect(a))
+    __m_rotation_zRotation(ang[2]) * __m_rotation_yRotation(ang[1]) * __m_rotation_xRotation(ang[0]);
+
+function _m_rotation_impl(a, v) = 
+    let(FINAL_ROW = [0, 0, 0, 1])
+    (a == 0 || a == [0, 0, 0] || a == [0] || a == [0, 0]) ? [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        FINAL_ROW
+    ] : (is_undef(v) ? __m_rotation_xyz_rotation(a) : __m_rotation_q_rotation(a, v));
+//CombinedEnd from path _m_rotation_impl.scad
+//Combined from path __to_ang_vect.scad
+
+
+function __to_3_elems_ang_vect(a) =
+     let(leng = len(a))
+     leng == 3 ? a : 
+     leng == 2 ? [each a, 0] : [a.x, 0, 0];
+
+function __to_ang_vect(a) = is_num(a) ? [0, 0, a] : __to_3_elems_ang_vect(a);
+//CombinedEnd from path __to_ang_vect.scad
+//Combined from path sweep.scad
+
+
+
+/**
+* sweep.scad
+*
+* @copyright Justin Lin, 2020
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-sweep.html
+*
+**/
+
+
+module sweep(sections, triangles = "SOLID") {
+
+    function side_indexes(sects, begin_idx = 0) = 
+        let(       
+            leng_sects = len(sects),
+            leng_pts_sect = len(sects[0]),
+            range_j = [begin_idx:leng_pts_sect:begin_idx + (leng_sects - 2) * leng_pts_sect],
+            range_i = [0:leng_pts_sect - 1]
+        ) 
+        concat(
+            [
+                for(j = range_j, i = range_i)
+                let(i2 = j + (i + 1) % leng_pts_sect)
+                [
+                    j + i, 
+                    i2, 
+                    i2 + leng_pts_sect
+                ]
+            ],
+            [
+                for(j = range_j, i = range_i)
+                let(ji = j + i)
+                [
+                    ji, 
+                    j + (i + 1) % leng_pts_sect + leng_pts_sect , 
+                    ji + leng_pts_sect
+                ]
+            ]      
+        );
+
+    
+    function the_same_after_twisting(f_sect, l_sect) =
+        let(found = search([l_sect[0]], f_sect)[0], leng = len(l_sect))
+        found != [] && 
+        len([for(i = 0; l_sect[i] == f_sect[(found + i) % leng]; i = i + 1) undef]) == leng;
+
+    function to_v_pts(sects) = [for(sect = sects) each sect];                   
+
+    module solid_sections(sects) {
+        leng_sects = len(sects);
+        leng_pts_sect = len(sects[0]);
+        first_sect = sects[0];
+        last_sect = sects[leng_sects - 1];
+   
+        v_pts = to_v_pts(sects);
+
+        begin_end_the_same =
+            first_sect == last_sect || the_same_after_twisting(first_sect, last_sect);
+
+        if(begin_end_the_same) {
+            f_idxes = side_indexes(sects);
+
+            polyhedron(v_pts, f_idxes); 
+
+            // hook for testing
+            test_sweep_solid(v_pts, f_idxes, triangles);
+        } else {
+            from = leng_pts_sect * (leng_sects - 1);
+            f_idxes = [
+                [each [leng_pts_sect - 1:-1:0]], 
+                each side_indexes(sects), 
+                [each [from:from + leng_pts_sect - 1]]
+            ];
+            
+            polyhedron(v_pts, f_idxes);   
+
+            // hook for testing
+            test_sweep_solid(v_pts, f_idxes, triangles);             
+        }
+    }
+
+    module hollow_sections(sects) {
+        leng_sects = len(sects);
+        leng_sect = len(sects[0]);
+        half_leng_sect = leng_sect / 2;
+        half_leng_v_pts = leng_sects * half_leng_sect;
+
+        function strip_sects(begin_idx, end_idx) = 
+            let(range = [begin_idx:end_idx])
+            [for(sect = sects) [for(j = range) sect[j]]]; 
+
+        range = [0:half_leng_sect - 1];
+        function first_idxes() = 
+            [
+                for(i = range) 
+                let(i3 = (i + 1) % half_leng_sect)
+                [
+                    i,
+                    i + half_leng_v_pts,
+                    i3 + half_leng_v_pts, 
+                    i3
+                ] 
+            ];
+
+        function last_idxes(begin_idx) = 
+            [
+                for(i = range) 
+                let(bi = begin_idx + i, i2 = begin_idx + (i + 1) % half_leng_sect)
+                [
+                    bi,
+                    i2,
+                    i2 + half_leng_v_pts,
+                    bi + half_leng_v_pts
+                ]     
+            ];            
+
+        outer_sects = strip_sects(0, half_leng_sect - 1);
+        inner_sects = strip_sects(half_leng_sect, leng_sect - 1);
+
+        outer_idxes = side_indexes(outer_sects);
+        inner_idxes = [for(idxes = side_indexes(inner_sects, half_leng_v_pts)) reverse(idxes)];
+
+        first_outer_sect = outer_sects[0];
+        last_outer_sect = outer_sects[leng_sects - 1];
+        first_inner_sect = inner_sects[0];
+        last_inner_sect = inner_sects[leng_sects - 1];
+        
+        leng_pts_sect = len(first_outer_sect);
+
+        begin_end_the_same = 
+           (first_outer_sect == last_outer_sect && first_inner_sect == last_inner_sect) ||
+           (
+               the_same_after_twisting(first_outer_sect, last_outer_sect) && 
+               the_same_after_twisting(first_inner_sect, last_inner_sect)
+           ); 
+
+        v_pts = concat(to_v_pts(outer_sects), to_v_pts(inner_sects));
+
+        if(begin_end_the_same) {
+            f_idxes = concat(outer_idxes, inner_idxes);
+
+            polyhedron(
+                v_pts,
+                f_idxes
+            );      
+
+            // hook for testing
+            test_sweep_solid(v_pts, f_idxes, triangles);                     
+        } else {
+            f_idxes = concat(
+                first_idxes(), 
+                outer_idxes, 
+                inner_idxes, 
+                last_idxes(half_leng_v_pts - half_leng_sect)
+            );
+            
+            polyhedron(
+                v_pts,
+                f_idxes
+            ); 
+
+            // hook for testing
+            test_sweep_solid(v_pts, f_idxes, triangles);              
+        }
+    }
+    
+    module triangles_defined_sections() {
+        faces = [
+            [0, 1, 2], [3, 5, 4], 
+            [1, 3, 4], [2, 1, 4], [2, 3, 0], 
+            [0, 3, 1], [2, 4, 5], [2, 5, 3]
+        ];
+        module two_sections(section1, section2) {
+            for(idx = triangles) {
+                polyhedron(
+                    concat(
+                        [for(i = idx) section1[i]], 
+                        [for(i = idx) section2[i]]
+                    ),
+                    faces
+                );
+            }
+        }
+        
+        for(i = [0:len(sections) - 2]) {
+             two_sections(
+                 sections[i], 
+                 sections[i + 1]
+             );
+        }
+    }
+    
+    if(triangles == "SOLID") {
+        solid_sections(sections);
+    } else if(triangles == "HOLLOW") {
+        hollow_sections(sections);
+    }
+    else {
+        triangles_defined_sections();
+    }
+}
+
+// override it to test
+
+module test_sweep_solid(points, faces, triangles) {
+
+}
+//CombinedEnd from path sweep.scad
+//Combined from path reverse.scad
+
+
+/**
+* reverse.scad
+*
+* @copyright Justin Lin, 2019
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-reverse.html
+*
+**/ 
+
+function reverse(lt) = [for(i = len(lt) - 1; i > -1; i = i - 1) lt[i]];
+//CombinedEnd from path reverse.scad
 
 //Some online generators do not like direct setting of fa,fs,fn
 $fa = fa; 
 $fs = fs; 
-$fn = fn;  
+$fn = fn;
 
-//Index for custom config arrays
-ixPos = 0;
-iyPos = 1;
-ixSize = 2;
-iySize = 3;
-iCornerRadius = 4;
-iDepth = 5;
+//Version number printed on the bottom.
+marble_version = 0.5;
+show_demo_tracks = false;
 
-// module to build the tray cutouts
-// This is what will be executed by external scripts
-module tray(
-  num_x=1, 
-  num_y=2, 
-  num_z, 
-  cornerRadius, 
-  trayZpos, 
-  spacing,
-  cutoutSize, 
-  baseHeight,
-  floorThickness,
-  wallThickness,
-  verticalCompartments = 1,
-  horizontalCompartments = 1,
-  customCompartments = "",
-  tray_color_compartments = false
-  ) 
-{
+function addClearance(dim, clearance) =
+    [dim.x > 0 ? dim.x+clearance : 0
+    ,dim.y > 0 ? dim.y+clearance : 0
+    ,dim.z];
 
-  cellSpacing = spacing/2;
-
-  verticalCompartments = verticalCompartments > 0 ? verticalCompartments : num_x ;
-  horizontalCompartments = horizontalCompartments > 0 ? horizontalCompartments : num_y;
-  //todo, this could be simplified, by to produce a single array for ether scenario.
-  if(len(customCompartments) == 0)
-  {
-    //Non custom components
-    if(env_help_enabled("trace")) echo(n=num_x*env_pitch().x-(verticalCompartments+1)*spacing,d=verticalCompartments);
-    xSize = (num_x*env_pitch().x-(verticalCompartments+1)*spacing)/verticalCompartments;
-    xStep = xSize + spacing;
-    ySize = (num_y*env_pitch().y-(horizontalCompartments+1)*spacing)/horizontalCompartments;
-    yStep = ySize + spacing;
-    
-    for(x =[0:1:verticalCompartments-1])
-    {
-      for(y =[0:1:horizontalCompartments-1])
-      {
-        if(env_help_enabled("trace")) echo(x=x,y=y,xStep=xStep,yStep=yStep);
-        translate([spacing+x*xStep,spacing+y*yStep,baseHeight+max(trayZpos,floorThickness)])
-        roundedCube(
-            xSize, ySize,
-            num_z*env_pitch().z,
-            bottomRadius = cornerRadius,
-            sideRadius = cornerRadius);
-      }
-    }
+module get_pattern(pattern){
+  if(pattern == "top"){
+    profile_top(); 
+  } else if(pattern == "round"){
+    profile_round(); 
+  } else if(pattern == "printable_round"){
+    profile_printable_round(); 
+  } else { //auto
+    children();
   }
-  else
-  {
-    if(env_help_enabled("debug")) echo(customCompartments = splitCustomConfig(customCompartments));
-    //custom components
-    compartments = split(customCompartments, "|");
-    
-    scl = [
-      (num_x*env_pitch().x-cellSpacing*2)/(num_x*env_pitch().x),
-      (num_y*env_pitch().y-cellSpacing*2)/(num_y*env_pitch().y),1];
-    translate([cellSpacing,cellSpacing,0])
-    scale(scl)
-    union()
-      for (x =[0:1:len(compartments)-1])
-      {
-          comp =csv_parse(compartments[x]);
-          xpos = get_related_value(comp[ixPos],num_x,0);
-          ypos = get_related_value(comp[iyPos],num_y,0);
-          xsize = get_related_value(comp[ixSize],num_x,0);
-          ysize = get_related_value(comp[iySize],num_y,0);
-          radius = len(comp) >= 5 
-            ? get_related_value(comp[iCornerRadius], cornerRadius, 0) 
-            : cornerRadius;
-          depth = let(
-            bin_top = num_z*env_pitch().z,
-            min_depth = max(trayZpos,floorThickness),
-            user_selected = (len(comp) >= 6 ? comp[iDepth] : min_depth))
-            baseHeight+get_related_value(user_selected, bin_top, bin_top);
+}
 
-          echo("tray", xpos=xpos, ypos=ypos, xsize=xsize, ysize=ysize, radius=radius, depth=depth);
-          color_conditional(tray_color_compartments && $preview, color_from_list(x), 1)
-          translate([cellSpacing+xpos*env_pitch().x,cellSpacing+ypos*env_pitch().y,depth])
-          roundedCube(
-              xsize*env_pitch().x-cellSpacing*2,
-              ysize*env_pitch().y-cellSpacing*2,
-              //Added 5, as I need to deal with the lip overhang
-              num_z*env_pitch().z-depth+fudgeFactor+5,
-              bottomRadius = radius,
-              sideRadius = radius);
-    }
+
+if(show_demo_tracks)
+{
+  !union(){
+      num_x = calcDimensionWidth(width);
+      num_y = calcDimensionDepth(depth);
+      num_z = calcDimensionHeight(height);
+    
+    color("green")
+    translate([0,0,0])
+      track_straight(100)
+      profile_top(marbleDiameter=20,lipRadius=4.0);
+
+    color("green")
+    translate([0,40,0])
+      track_corner()
+      profile_top(marbleDiameter=20,lipRadius=4.0);
+    
+    color("green")
+    translate([0,100,0])
+      track_ramp(100,40,10, rotation=-90)
+      profile_top(marbleDiameter=20,lipRadius=4.0);
+    
+    color("green")
+    translate([0,140,0])
+      track_ramp(100,40,10)
+      profile_top(marbleDiameter=20,lipRadius=4.0);
+    
+    color("green")
+    translate([0,180,0])
+      bent_extrusion()
+      profile_top(marbleDiameter=20,lipRadius=4.0);
+
+    color("green")
+    translate([0,220,0])
+      bent_extrusion(
+        start_straight=10,
+        end_straight=10,
+        length=2*gf_pitch,
+        bend_radius=15,
+        bend_offset=1*gf_pitch/4)
+        rotate(90)
+        profile_ramp(marbleDiameter=20);
+        
+   color("green")
+   translate([0,-60,0])
+    track_corner_ramp()
+             //rotate(270)
+          profile_middle(marbleDiameter=19);
+    //profile_ramp(marbleDiameter=20);
   }
 }
 
 // Generates the gridfinity bin with cutouts.
 // Runs the function without needing to pass the variables.
-module gridfinity_tray(
-  //tray settings
-  tray_spacing = tray_spacing,
-  tray_corner_radius = tray_corner_radius, 
-  tray_zpos = tray_zpos, 
-  tray_vertical_compartments = tray_vertical_compartments,
-  tray_horizontal_compartments = tray_horizontal_compartments,
-  tray_custom_compartments = tray_custom_compartments,
-  tray_highlight_compartments=tray_highlight_compartments,
-  tray_color_compartments=tray_color_compartments,
+module gridfinity_marble(
+  //marble settings
+  marble_style=marble_style,
+  marbleDiameter=marble_diameter,
   //gridfinity settings
   width=width, depth=depth, height=height,
-  position=position,
-  filled_in=filled_in,
-  label_settings=LabelSettings(
-    labelStyle=label_style, 
-    labelPosition=label_position, 
-    labelSize=label_size,
-    labelRelief=label_relief,
-    labelWalls=label_walls),
-  finger_slide_settings = FingerSlideSettings(
-    type = fingerslide,
-    radius = fingerslide_radius,
-    walls = fingerslide_walls,
-    lip_aligned = fingerslide_lip_aligned),
-  cupBase_settings = CupBaseSettings(
-    magnetSize = magnet_size, 
-    magnetEasyRelease = magnet_easy_release, 
-    centerMagnetSize = center_magnet_size, 
-    screwSize = screw_size, 
-    holeOverhangRemedy = hole_overhang_remedy, 
-    cornerAttachmentsOnly = box_corner_attachments_only,
-    floorThickness = floor_thickness,
-    cavityFloorRadius = cavity_floor_radius,
-    efficientFloor=efficient_floor,
-    subPitch=sub_pitch,
-    flatBase=flat_base,
-    spacer=spacer),
-  wall_thickness=wall_thickness,
-  vertical_chambers = ChamberSettings(
-    chambers_count = vertical_chambers,
-    chamber_wall_thickness = chamber_wall_thickness,
-    chamber_wall_headroom = chamber_wall_headroom,
-    separator_bend_position = vertical_separator_bend_position,
-    separator_bend_angle = vertical_separator_bend_angle,
-    separator_bend_separation = vertical_separator_bend_separation,
-    separator_cut_depth = vertical_separator_cut_depth,
-    irregular_subdivisions = vertical_irregular_subdivisions,
-    separator_config = vertical_separator_config),
-  horizontal_chambers = ChamberSettings(
-    chambers_count = horizontal_chambers,
-    chamber_wall_thickness = chamber_wall_thickness,
-    chamber_wall_headroom = chamber_wall_headroom,
-    separator_bend_position = horizontal_separator_bend_position,
-    separator_bend_angle = horizontal_separator_bend_angle,
-    separator_bend_separation = horizontal_separator_bend_separation,
-    separator_cut_depth = horizontal_separator_cut_depth,
-    irregular_subdivisions = horizontal_irregular_subdivisions,
-    separator_config = horizontal_separator_config),
+  position = render_position,
+  floor_thickness = floor_thickness,
   sub_pitch = sub_pitch,
-  lip_settings = LipSettings(
-    lipStyle=lip_style, 
-    lipSideReliefTrigger=lip_side_relief_trigger, 
-    lipTopReliefHeight=lip_top_relief_height, 
-    lipNotch=lip_top_notches),
-  headroom=headroom,
-  tapered_corner=tapered_corner,
-  tapered_corner_size = tapered_corner_size,
-  tapered_setback = tapered_setback,
-  wallpattern_walls=wallpattern_walls, 
-  wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-  wall_pattern_settings = PatternSettings(
-    patternEnabled = wallpattern_enabled, 
-    patternStyle = wallpattern_style, 
-    patternRotate = wallpattern_rotate_grid,
-    patternFill = wallpattern_fill,
-    patternBorder = wallpattern_border, 
-    patternDepth = wallpattern_depth,
-    patternCellSize = wallpattern_cell_size, 
-    patternHoleSides = wallpattern_hole_sides,
-    patternStrength = wallpattern_strength, 
-    patternHoleRadius = wallpattern_hole_radius,
-    patternGridChamfer = wallpattern_pattern_grid_chamfer,
-    patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
-    patternBrickWeight = wallpattern_pattern_brick_weight,
-    patternFs = wallpattern_pattern_quality), 
-  wallcutout_vertical_settings = WallCutoutSettings(
-    type = wallcutout_vertical, 
-    position = wallcutout_vertical_position, 
-    width = wallcutout_vertical_width,
-    angle = wallcutout_vertical_angle,
-    height = wallcutout_vertical_height, 
-    corner_radius = wallcutout_vertical_corner_radius),
-  wallcutout_horizontal_settings = WallCutoutSettings(
-    type = wallcutout_horizontal, 
-    position = wallcutout_horizontal_position, 
-    width = wallcutout_horizontal_width,
-    angle = wallcutout_horizontal_angle,
-    height = wallcutout_horizontal_height, 
-    corner_radius = wallcutout_horizontal_corner_radius),
-  extendable_Settings = ExtendableSettings(
-    extendablexEnabled = extension_x_enabled, 
-    extendablexPosition = extension_x_position, 
-    extendableyEnabled = extension_y_enabled, 
-    extendableyPosition = extension_y_position, 
-    extendableTabsEnabled = extension_tabs_enabled, 
-    extendableTabSize = extension_tab_size),
-  cutx=cutx,
-  cuty=cuty,
-  help=enable_help) {
+  wall_thickness=wall_thickness) {
   
-  num_x = calcDimensionWidth(width);
-  num_y = calcDimensionDepth(depth);
-  num_z = calcDimensionHeight(height);
-  
-  if(env_help_enabled("info")) echo("gridfinity_tray", num_x=num_x, num_y=num_y, num_z=num_z);
+  lip_style = marble_style == "ramp" ? "none" : lip_style;
+  subPitch = marble_style == "cup" ? 1 : sub_pitch;
   
   difference() {
-    /*<!!start gridfinity_basic_cup!!>*/
+    num_x = calcDimensionWidth(width);
+    num_y = calcDimensionDepth(depth);
+    num_z = calcDimensionHeight(height);
+    
+  /*<!!start gridfinity_basic_cup!!>*/
     gridfinity_cup(
       width=width, depth=depth, height=height,
-      filled_in=filled_in,
-      label_settings=label_settings,
-      cupBase_settings = cupBase_settings,
-      finger_slide_settings=finger_slide_settings,
+      filled_in=true,
+      cupBase_settings= CupBaseSettings(
+        magnetSize = [0,0], 
+        centerMagnetSize = [0,0], 
+        screwSize = [0,0], 
+        cavityFloorRadius = -1,
+        subPitch=subPitch,
+        flatBase=false,
+        spacer=false),
       wall_thickness=wall_thickness,
-      vertical_chambers = vertical_chambers,
-      horizontal_chambers=horizontal_chambers,
-      lip_settings=lip_settings,
+      lip_settings = LipSettings(
+        lipStyle=lip_style, 
+        lipSideReliefTrigger=lip_side_relief_trigger, 
+        lipTopReliefHeight=lip_top_relief_height, 
+        lipTopReliefWidth=lip_top_relief_width,
+        lipNotch=lip_top_notches,
+        lipClipPosition=lip_clip_position),
       headroom=headroom,
-      tapered_corner=tapered_corner,
-      tapered_corner_size = tapered_corner_size,
-      tapered_setback = tapered_setback,
-      wallpattern_walls=wallpattern_walls, 
-      wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-      wall_pattern_settings = wall_pattern_settings, 
-      wallcutout_vertical_settings = wallcutout_vertical_settings,
-      wallcutout_horizontal_settings = wallcutout_horizontal_settings,
-      extendable_Settings = ExtendableSettings(
-        extendablexEnabled = extension_x_enabled, 
-        extendablexPosition = extension_x_position, 
-        extendableyEnabled = extension_y_enabled, 
-        extendableyPosition = extension_y_position, 
-        extendableTabsEnabled = extension_tabs_enabled, 
-        extendableTabSize = extension_tab_size));
+      cupBaseTextSettings = CupBaseTextSettings(
+        baseTextLine1Enabled = true,
+        baseTextLine2Enabled = true,
+        baseTextLine1Value = str("m", marbleDiameter, "      ", "v", marble_version),
+        baseTextFontSize = 4,
+        baseTextFont = "aldo",
+        baseTextDepth = 0.4));
     /*<!!end gridfinity_basic_cup!!>*/
-
-    highlight_conditional(tray_highlight_compartments && $preview)
-    tray(
-      num_x = num_x,
-      num_y = num_y,
-      num_z = num_z, 
-      floorThickness = floor_thickness,
-      wallThickness = wall_thickness,
-      spacing = tray_spacing,
-      cornerRadius = tray_corner_radius, 
-      trayZpos = tray_zpos, 
-      baseHeight = cupBaseClearanceHeight(
-                    magnet_size[iCylinderDimension_Height], 
-                    screw_size[iCylinderDimension_Height],
-                    center_magnet_size[iCylinderDimension_Height]),
-      verticalCompartments = tray_vertical_compartments,
-      horizontalCompartments = tray_horizontal_compartments,
-      customCompartments = tray_custom_compartments,
-      tray_color_compartments=tray_color_compartments);
       
-      //This seems like a complicated way to do this, but it guarantees order will be correct.
-      configArray = [
-        [ixPos, 0], 
-        [iyPos, 0], 
-        [ixSize, num_z], 
-        [iySize, num_x], 
-        [iCornerRadius, tray_corner_radius], 
-        [iDepth, num_z]];
+    if(marble_top_style != "none"){
+      conditional_highlight(marble_top_highlight)
+      translate(marble_top_position*gf_pitch)
+      translate([0,0,num_z*gf_zpitch])
+        //mirror(marble_top_mirror)
+        path(
+          num_x=num_x, num_y=num_y,
+          num_z=num_z,
+          style = marble_top_style,
+          top = true,
+          r=marble_top_rotate,
+          m=marble_top_mirror)
+        get_pattern(marble_top_profile)
+        profile_top(marbleDiameter);    
+    }
+    
+    if(marble_middle_style != "none"){
+      conditional_highlight(marble_middle_highlight)
+      translate(marble_middle_position*gf_pitch)
+      translate([0,0,num_z*gf_zpitch/2])
+        //mirror(marble_middle_mirror)
+        path(
+          num_x=num_x, num_y=num_y,num_z=num_z/2,
+          style = marble_middle_style, 
+          r=marble_middle_rotate,
+          m=marble_middle_mirror)
+        get_pattern(marble_top_profile)
+        profile_middle(marbleDiameter);    
+    }
 
-      if(env_help_enabled("info")) echo(outputCustomConfig("tray", replace_Items(configArray, [])));
+    if(marble_level2_style != "none"){
+      conditional_highlight(marble_level2_highlight)
+      translate(marble_level2_position*gf_pitch)
+      translate([0,0,gf_zpitch*6])
+        //mirror(marble_level2_mirror)
+        path(
+          num_x=num_x, num_y=num_y,num_z=6,
+          style = marble_level2_style, 
+          r=marble_level2_rotate,
+          m=marble_level2_mirror)
+        get_pattern(marble_level2_profile)
+        profile_middle(marbleDiameter);    
+    }
+    
+    if(marble_level1_style != "none"){
+      conditional_highlight(marble_level1_highlight)
+      translate(marble_level1_position*gf_pitch)
+      translate([0,0,gf_zpitch*3])
+        //mirror(marble_level1_mirror)
+        path(
+          num_x=num_x, num_y=num_y,num_z=3,
+          style = marble_level1_style, 
+          r=marble_level1_rotate,
+          m=marble_level1_mirror)
+        get_pattern(marble_level1_profile)
+        profile_middle(marbleDiameter);    
+    }
+   
+    if(marble_bottom_style != "none"){
+      conditional_highlight(marble_bottom_highlight)
+      translate(marble_bottom_position*gf_pitch)
+        //mirror(marble_bottom_mirror)
+        path(
+          num_x=num_x, num_y=num_y,num_z=0,
+          style = marble_bottom_style,
+          r=marble_bottom_rotate,
+          m=marble_bottom_mirror)
+        get_pattern(marble_bottom_profile)
+        profile_bottom(marbleDiameter);    
+    }
+    
+    if(marble_style == "cup"){
+      cup_zpos = num_x ==1 && num_x == 1 ? floor_thickness : gfBaseHeight()+floor_thickness;
+      cup_border = 5;
+      cup_radius = (min(num_x*gf_pitch,num_y*gf_pitch)-cup_border)/2;
+      translate([num_x*gf_pitch/2,num_y*gf_pitch/2,cup_zpos])
+        roundedCylinder(
+            h=num_z*gf_zpitch-cup_zpos,
+            r=cup_radius,
+            roundedr=0,
+            roundedr1=marbleDiameter/2,
+            roundedr2=0);
+      
+      translate([0,0,num_z*gf_zpitch])
+        style_cross(num_x,num_y)
+        profile_top(marbleDiameter); 
+    }
+    
+    if(marble_style == "ramp" || marble_style == "ramp2"){
+      inramp = num_x*(num_x ==1 ? 2 : 5);
+      rampheight = num_z - 3;
+      translate([0,num_y*gf_pitch/2,num_z*gf_zpitch])
+        track_ramp(
+          length=num_x*gf_pitch, 
+          divation=gf_zpitch*rampheight, 
+          inramp=inramp,
+          rotation=-90)
+          rotate(90)
+          profile_ramp(marbleDiameter,erraser = [num_y*gf_pitch,gf_zpitch*rampheight+4]);
+    }
+    
+    
+    if(marble_style == "dish"){
+      cornerRadius=5;
+      upperLength=min(num_z*gf_zpitch/4,cornerRadius/2);
+      transitionLength=num_z*gf_zpitch/4;
+      lowerLength=min(num_z*gf_zpitch/4,cornerRadius/2);
+      dishHeight = upperLength+transitionLength+lowerLength;  
+      
+      translate([(num_x*gf_pitch)/2,(num_y*gf_pitch)/2,(num_z*gf_zpitch)])
+      rounded_taper(
+        upperRadius=((num_x*gf_pitch)-6)/2,
+        upperLength=upperLength,
+        lowerRadius=marbleDiameter/2,
+        transitionLength=transitionLength,
+        lowerLength=lowerLength+1,
+        cornerRadius=cornerRadius,
+        alignTop=true);
+       
+      translate([(num_x-1)*gf_pitch/2,num_y*gf_pitch/2,num_z*gf_zpitch-(dishHeight)])
+        rotate([270,0,0])
+        track_corner(){
+          circle(r=marbleDiameter/2);
+          rotate(270)
+          profile_middle(marbleDiameter);
+        }
+        
+       if(num_x>1){
+          translate([0,num_y*gf_pitch/2,num_z*gf_zpitch-(dishHeight)-gf_pitch/2])
+          track_straight(length =(num_x-1)/2*gf_pitch+fudgeFactor)
+          profile_middle(marbleDiameter); 
+       }
+    }
   }
 }
 
+module conditional_highlight(highlight){ 
+  if(highlight && $preview){
+    #children();
+  } else {
+    children();
+  }
+}
+module path(
+  num_x,
+  num_y,
+  num_z,
+  style,
+  top = false,
+  r=0,
+  m=[0,0,0],
+  marbleDiameter=marble_diameter){
+  _num_x = abs(r)/90%2 == 1 ? num_y : num_x;
+  _num_y = abs(r)/90%2 == 1 ? num_x : num_y;
+  
+  translate([num_x*gf_pitch/2,num_y*gf_pitch/2,0])
+  rotate([0,0,r])
+  mirror(m)
+  translate([-_num_x*gf_pitch/2,-_num_y*gf_pitch/2,0])
+  union(){
+    if(style == "straight"){
+      translate([0,_num_y*gf_pitch/2,0])
+        track_straight(length = _num_x*gf_pitch)
+        children();  
+    }
+    
+    if(style == "straights"){
+      for(yi=[0.5:0.5:_num_y-0.5])
+      translate([0,yi*gf_pitch,0])
+        track_straight(length = _num_x*gf_pitch)
+        children(); 
+    }
+    
+    if(style == "straight_double"){
+      translate([0,_num_y*gf_pitch/4,0])
+        track_straight(length = _num_x*gf_pitch)
+        children();  
+      translate([0,_num_y*gf_pitch*3/4,0])
+        track_straight(length = _num_x*gf_pitch)
+        children();    
+    }
+    
+    if(style == "straight_triple"){
+      translate([0,_num_y*gf_pitch/6,0])
+        track_straight(length = _num_x*gf_pitch)
+        children();    
+      translate([0,_num_y*gf_pitch/2,0])
+        track_straight(length = _num_x*gf_pitch)
+        children();    
+      translate([0,_num_y*gf_pitch*5/6,0])
+        track_straight(length = _num_x*gf_pitch)
+        children();    
+    } 
+    
+    if(style == "cross" || style == "cross+dip" || style == "cross+doubledip"){
+      style_cross(_num_x,_num_y, center_only=true)
+        children(); 
+      
+      /*
+      if(_num_x>=2 && _num_y >=2){
+        style_corners(_num_x, _num_y)
+          children(); 
+      }*/ 
+    
+      if(style == "cross+dip" || style == "cross+doubledip"){
+        translate([_num_x*gf_pitch/2,_num_y*gf_pitch/2-gf_pitch/2,style == "cross+doubledip"? -gf_zpitch : 0]) 
+        rotate([0,90,0])
+        track_corner(
+          radius = gf_pitch/2,
+          inramp = gf_pitch/8,
+          inextention = _num_x*gf_pitch/2 - gf_pitch/2)
+          rotate(270)
+          profile_middle(marble_diameter);
+      } 
+    }
+    
+    if(style == "dip"){
+      translate([0,_num_y*gf_pitch/2,-3*gf_zpitch]) 
+      rotate([90,0,0])
+      track_corner(
+        radius = gf_pitch/2,
+        inramp = gf_pitch/4)
+        profile_basic(marble_diameter);
+        
+      translate([_num_y*gf_pitch/2,0,0]) 
+      rotate([0,90,0])
+      track_corner(
+        radius = gf_pitch/2,
+        inramp = gf_pitch/4)
+        rotate(270)
+        profile_middle(marble_diameter);
+    } 
+
+    if(style == "ramp" || style == "ramp+dip" || style == "ramp+corner"){
+      echo("ramp", num_z=num_z, rampheight=rampheight);
+      x = style == "ramp+dip" || style == "ramp+corner" ? _num_x-1 : _num_x;
+      inramp = x*(x == 1 ? 4 : 5);
+      outramp = style == "ramp" ? inramp : 0;
+      
+      rampheight = num_z >=6 ? 3 : 1.6;
+      translate([0,_num_y*gf_pitch/2,0])
+      union(){
+        track_ramp(
+          length=x*gf_pitch+fudgeFactor, 
+          divation=gf_zpitch*rampheight, 
+          inramp=inramp,
+          outramp=outramp,
+          rotation=-90){
+            rotate(90)
+            if(top) profile_top(marble_diameter); 
+            else profile_middle(marble_diameter);
+            rotate(90)    
+            profile_middle(marble_diameter);
+            rotate(90)    
+            profile_middle(marble_diameter);         
+        }
+      
+      if(style == "ramp+dip"){
+        translate([(_num_x-1)*gf_pitch,0,-gf_zpitch*(rampheight+3)])
+        rotate([90,0,0])
+        track_corner(
+          radius = gf_pitch/2,
+          inramp = gf_pitch/16)
+          rotate(90)
+          profile_middle(marble_diameter);
+      } 
+
+      if(style == "ramp+corner"){
+        translate([(_num_x-1)*gf_pitch,gf_pitch/2,-gf_zpitch*rampheight])
+        rotate([0,0,270])
+        track_corner()
+        profile_middle(marble_diameter);
+      }
+     } 
+    }
+    
+    if(style == "cornerramp"){
+      
+      rampheight = Ramp_Base_Offset > 0 ? Ramp_Base_Offset 
+        : num_z >= 6 ? 3 
+        : Block_Dimention == 1.5 ? 0.9 : 1.5; 
+      track_corner_ramp(
+      height = rampheight*gf_zpitch)
+        //rotate(270)
+        //rotate(20)
+        children();
+    } 
+    
+    if(style == "corner"){
+      track_corner()
+        children();
+    } 
+    
+    if(style == "corners"){
+      style_corners(_num_x, _num_y)
+        children(); 
+    } 
+
+    if(style == "straight+corner"){
+      translate([0,_num_y*gf_pitch/2,0])
+        track_straight(length = _num_x*gf_pitch)
+        children(); 
+        
+      style_corners(_num_x, _num_y)
+        children(); 
+    }
+    
+    if(style == "triple_corner"){
+      track_corner(gf_pitch+gf_pitch/2)
+        children();
+  
+      translate([2*gf_pitch,2*gf_pitch,0])
+        rotate([0,0,180])
+        track_corner()
+        children();
+        
+      track_corner()
+        children();
+   }
+
+   if(style == "bend+corner"){
+      translate([0, _num_y*gf_pitch/2]) 
+      track_ramp(
+        length = _num_x*gf_pitch, 
+        divation = _num_y*gf_pitch/4, 
+        inramp = 10)
+          children();
+          
+      translate([2*gf_pitch,0,0])
+        rotate([0,0,90])
+        track_corner()
+        children();
+
+  }
+  
+  if(style == "split"){
+      translate([0, _num_y*gf_pitch/2]) 
+      track_ramp(
+        length = _num_x*gf_pitch, 
+        divation = _num_y*gf_pitch/4, 
+        inramp = 10)
+          children();
+
+      translate([0, _num_y*gf_pitch/2]) 
+      track_ramp(
+        length = _num_x*gf_pitch, 
+        divation = -_num_y*gf_pitch/4, 
+        inramp = 10)
+          children();
+     }
+  }
+}
+
+module style_corners(num_x, num_y){
+  track_corner()
+    children();
+      
+ if(num_x>=Block_Dimention*1.5 && num_y >=Block_Dimention*1.5)
+  translate([0,num_y*gf_pitch,0])
+    rotate([0,0,270])
+    track_corner()
+      children();  
+    
+ if(num_y >=Block_Dimention*1.5)
+    translate([num_x*gf_pitch,0,0])
+    rotate([0,0,90])
+    track_corner()
+      children();
+  
+  if(num_x>=Block_Dimention)
+    translate([num_x*gf_pitch,num_y*gf_pitch,0])
+      rotate([0,0,180])
+      track_corner()
+        children();  
+}
+
+module style_cross(num_x, num_y, center_only=false){
+  if(center_only){
+    translate([0,num_y*gf_pitch/2,0])
+      track_straight(length = num_x*gf_pitch)
+      children();       
+    translate([num_x*gf_pitch/2,0,0])
+      rotate([0,0,90])
+      track_straight(length = num_y*gf_pitch)
+      children(); 
+  } else {      
+    for(yi=[0.5:0.5:num_y-0.5])
+      translate([0,yi*gf_pitch,0])
+      track_straight(length = num_x*gf_pitch)
+      children();   
+      
+    for(xi=[0.5:0.5:num_x-0.5])
+      translate([xi*gf_pitch,0,0])
+      rotate([0,0,90])
+      track_straight(length = num_y*gf_pitch)
+      children(); 
+  }
+}          
+
+module track_ramp(
+  length, 
+  divation, 
+  inramp, 
+  outramp, 
+  radius=15,
+  rotation = 0) {
+  
+  assert(length>0, "length > 0");
+  //assert(divation>0, "divation > 0");
+
+  outramp = is_undef(outramp) ? inramp:outramp;
+  rotate([0,90,0])
+  rotate([0,0, rotation])
+  bent_extrusion(
+    start_straight=inramp,
+    end_straight=outramp,
+    length=length,
+    bend_radius=15,
+    bend_offset=divation){
+      children(0);
+      if($children >=2) children(1); else children(0);
+      if($children >=3) children(2); else children(0);
+    }
+}
+
+module track_straight(length){
+  rotate([0,90,0])
+  linear_extrude(height = length)
+  
+  children(); 
+}
+
+module track_corner_ramp(
+  radius = Block_Dimention/2*gf_pitch,
+  height = Block_Layer_Height*gf_zpitch/2,
+  shape_radius = marble_diameter/2,
+  inramp = 0,
+  $fn = 64)
+{
+  L=radius;
+  D=height;
+  B=sqrt(L^2+(D-shape_radius)^2);
+  Z=sqrt(B^2-shape_radius^2);
+  a1=atan((D-shape_radius)/L);
+  a1_2=asin((D-shape_radius)/B);
+  a2=atan(shape_radius/Z);
+  a2_2=asin(shape_radius/B);
+  a=a1+a2;
+  echo(L=L, D=D, B=B, Z=Z,a1=a1,a1_2=a1_2,a2=a2,a2_2=a2_2,a=a);
+  
+  function rotate_point(x, y, theta) = [
+      x * cos(theta) - y * sin(theta),
+      x * sin(theta) + y * cos(theta)];
+
+  function shape_printable_circle(r, rotate = 0) = let(
+    flat_top_width = (r*2)/2.5,
+    flat_top_height = r+0.5,
+    circle = [for (i=[0:ceil($fn*3/4)-1]) let (a=i*360/$fn-225+rotate) r * [cos(a), sin(a)]],
+    flat = [rotate_point(flat_top_width/2,flat_top_height,rotate),rotate_point(-flat_top_width/2,flat_top_height,rotate)])
+    concat(circle, flat);
+ 
+    zAngle = a;
+   
+   
+    translate([0,0,-shape_radius])
+    rotate([0,zAngle,0])
+    translate([0,0,shape_radius])
+    union(){
+    
+      translate([0,radius-Z,0])
+      ring_extrude(shape_printable_circle(shape_radius, rotate=zAngle), radius = Z, twist = -zAngle, angle = 90);
+      
+      translate([0,radius,0])
+      rotate([0,270,90])
+      translate([-shape_radius,0,0])
+      rotate([0,0,-0.01])
+      ring_extrude(shape_printable_circle(shape_radius, rotate=270), radius = shape_radius , twist = 0, angle = zAngle+0.01);
+    }
+    
+    //center 
+    //translate([0, 0,start_straight]) 
+    //translate([0,bend_radius,0])
+    //rotate([-a,0,0])
+    translate([radius,(radius-Z)+fudgeFactor,-height])
+    rotate([90,90,0])
+    linear_extrude(radius-Z+fudgeFactor)
+      children();  
+}
+
+module track_corner(
+  radius = Block_Dimention/2*gf_pitch,
+  inramp = 0,
+  inextention = 0,
+  outextention = 0)
+{
+  radius = radius-inramp; 
+  instraight = +inramp + inextention;
+  outstraight = inramp + outextention;
+  
+  rotate([90,90,0])
+  translate([0,inramp,-inramp]) 
+  union(){
+    if(instraight>0)
+    translate([0,radius,instraight])
+    rotate([0,90,-180])
+      track_straight(length = instraight+fudgeFactor)
+      children();
+      
+    if(outstraight>0)
+    translate([0,fudgeFactor,-radius])
+    rotate([90,0,270])
+      track_straight(length = outstraight+fudgeFactor)
+      children();
+    
+    translate([0,0])
+    rotate([0,90,0])
+      union(){
+        rotate_extrude(angle=90, convexity=10)
+        difference(){
+         translate([radius, 0]) 
+            rotate(90)
+            children();
+          
+         translate([-100,-50])
+          square(100,100);
+        }    
+      }
+  }
+}
+
+  
+module bent_extrusion(
+  start_straight=5,
+  end_straight=5,
+  length=42,
+  bend_radius=15,
+  bend_offset=21){
+  
+  workingLength = length -start_straight-end_straight;
+  L=workingLength /2;
+  D=bend_offset/2;
+  B=sqrt(L^2+(D-bend_radius)^2);
+  Z=sqrt(B^2-bend_radius^2);
+  a1=atan((D-bend_radius)/L);
+  a1_2=asin((D-bend_radius)/B);
+  a2=atan(bend_radius/Z);
+  a2_2=asin(bend_radius/B);
+  a=a1+a2;
+  echo(workingLength=workingLength, children = $children, L=L, D=D, B=B, Z=Z,a1=a1,a1_2=a1_2,a2=a2,a2_2=a2_2,a=a);
+
+   //render() // fix for PolySet -> Manifold conversion failed: NotManifold Trying to repair and reconstruct mesh..
+   union(){
+    centerChild = $children >= 2 ? 1 : 0;
+    //Start angled piece
+      translate([0, 0,start_straight]) 
+      rotate([0,90,0])
+      rotate([0,0,-90])
+      translate([-bend_radius, 0]) 
+      rotate_extrude(angle=-a, convexity=20)
+      translate([bend_radius, 0]) 
+      rotate([0,0,90])
+      children(centerChild);  
+
+      //center 
+      translate([0, 0,start_straight]) 
+      translate([0,bend_radius,0])
+      rotate([-a,0,0])
+      translate([0,-bend_radius,-fudgeFactor])
+      linear_extrude(Z*2+fudgeFactor*2)
+      children(centerChild);  
+    
+    //End angled piece
+    translate([0,bend_offset,length-end_straight])
+      rotate([0,90,0])
+      rotate([0,0,-90])
+      translate([bend_radius, 0]) 
+      rotate_extrude(angle=-a, convexity=20)
+      difference(){
+        translate([-bend_radius, 0]) 
+        rotate([0,0,90])
+          children(centerChild);  
+         translate([0,-50])
+         square(100,100);
+      }
+
+    if(start_straight>0){
+      //translate([0,num_y*gf_pitch*3/4,num_z*gf_zpitch])
+      //rotate([0,90,0])
+      linear_extrude(start_straight+fudgeFactor)
+      children(0);  
+    }
+    
+    if(end_straight>0){
+      translate([0,bend_offset,length-end_straight-fudgeFactor])
+      //rotate([0,90,0])
+      linear_extrude(end_straight+fudgeFactor)
+      children($children-1);  
+    }
+  }
+}
+
+//stencil for a top layer track, rounds over the wall
+module profile_basic(marbleDiameter=marble_diameter){
+  profile_round(marbleDiameter); 
+}
+
+//stencil for a top layer track, rounds over the wall
+module profile_bottom(marbleDiameter=marble_diameter){
+  profile_round_printable(marbleDiameter);
+}
+
+module profile_middle(marbleDiameter=marble_diameter){
+  profile_round_printable(marbleDiameter);
+}
+
+module profile_round(marbleDiameter=marble_diameter){
+  circle(r=marbleDiameter/2); 
+}
+
+module profile_round_printable(marbleDiameter=marble_diameter){
+  flat_top_width = marbleDiameter/2.5;
+  flat_top_height = marbleDiameter/2+0.5;
+  rotate(90)
+  hull(){
+    circle(r=marbleDiameter/2); 
+    translate([-flat_top_width/2,0])
+    square([flat_top_width,flat_top_height]); 
+  }
+}
+
+//stencil for a top layer track, rounds over the wall
+module profile_top(
+  marbleDiameter=marble_diameter,
+  lipRadius=3.8){
+  difference(){
+    union(){
+      circle(r=marbleDiameter/2); 
+      translate([-marbleDiameter/2,-marbleDiameter/2-lipRadius])
+      square(size=[marbleDiameter/2,marbleDiameter+lipRadius*2]);
+    }
+    
+    if(lipRadius>0){
+      translate([0,-marbleDiameter/2-lipRadius])
+      circle(r=lipRadius); 
+      translate([0,marbleDiameter/2+lipRadius])
+      circle(r=lipRadius); 
+    }
+  }
+}
+
+//stencil for a top layer track, rounds over the wall
+module profile_ramp(marbleDiameter,erraser=[0,0]){
+  erraser = [max(marbleDiameter,erraser.x), max(marbleDiameter,erraser.y)];
+  difference(){
+    union(){
+      circle(r=marbleDiameter/2); 
+      translate([-erraser.y,-erraser.x/2])
+      square(size=[erraser.y,erraser.x]);
+    }
+  }
+}
+
+render()
 set_environment(
   width = width,
   depth = depth,
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, 0],
-  randomSeed = random_seed)
-gridfinity_tray();
+  //pitch = pitch,
+  cut = cut,
+  setColour = set_colour,
+  randomSeed = random_seed) 
+gridfinity_marble();

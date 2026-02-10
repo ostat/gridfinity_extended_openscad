@@ -286,7 +286,7 @@ fn = 0;
 random_seed = 0; //0.0001
 // force render on costly components
 force_render = true;
-generate_filter = "none"; // [everything, cup, divider_walls_double_sided, divider_walls_single_sided, divider_walls_straight_sided, divider_walls_bent_x, divider_walls_bent_y]
+generate_filter = "everything"; // [everything, cup, divider_walls_double_sided, divider_walls_single_sided, divider_walls_straight_sided, divider_walls_bent_x, divider_walls_bent_y]
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
@@ -298,32 +298,33 @@ $fs = fs;
 $fn = fn;  
 
 generate(generate_filter);
+
 module mw_plate_1() {
-  generate("cup");
+  !generate("cup");
 }
 
 module mw_plate_2() {
- generate("divider_walls_double_sided");
+ !generate("divider_walls_double_sided");
 }
 
 module mw_plate_3() {
- generate("divider_walls_single_sided");
+ !generate("divider_walls_single_sided");
 }
 
 module mw_plate_4() {
- generate("divider_walls_straight_sided");
+ !generate("divider_walls_straight_sided");
 }
 
 module mw_plate_5() {
- generate("divider_walls_bent_x");
+ !generate("divider_walls_bent_x");
 }
 
 module mw_plate_6() {
- generate("divider_walls_bent_y");
+ !generate("divider_walls_bent_y");
 }
 
 module mw_assembly_view() {
-  generate("");
+  !generate("");
 }
 
 module generate(filter = generate_filter) {
