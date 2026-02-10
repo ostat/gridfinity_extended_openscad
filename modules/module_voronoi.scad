@@ -118,10 +118,12 @@ module rectangle_voronoi(
 {
   _spacing = spacing + radius*2;
   
-  // Calculate border margin: if fillBorderCells is true and borderMargin is not specified,
-  // use cellsize/2 as default to eliminate border cells
-  effectiveBorderMargin = fillBorderCells && borderMargin < 0 ? cellsize/2 : 
-                          borderMargin >= 0 ? borderMargin : 0;
+  // Calculate border margin:
+  // - If borderMargin is specified (>= 0), use that value
+  // - If fillBorderCells is true and borderMargin is -1, auto-calculate as cellsize/2
+  // - Otherwise use 0 (no margin)
+  effectiveBorderMargin = borderMargin >= 0 ? borderMargin :
+                          fillBorderCells ? cellsize/2 : 0;
   
   // Adjust canvas size to account for border margin
   adjustedCanvasSize = [canvasSize.x - 2*effectiveBorderMargin, 
