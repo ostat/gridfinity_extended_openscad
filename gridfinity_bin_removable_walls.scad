@@ -69,7 +69,8 @@ divider_wall_cutout_width = 0; //0.1
 divider_wall_cutout_radius = 0; //0.1
 //radius of wall top, -ve relative to thickness
 divider_top_radius = 0; //0.1
-    
+//add label to the divider wall  
+divider_label_size = 0;
 
 /* [Base] */
 // Enable magnets
@@ -388,7 +389,8 @@ gridfinity_cup(
     divider_wall_cutout_depth = divider_wall_cutout_depth,
     divider_wall_cutout_width = divider_wall_cutout_width,
     divider_wall_cutout_radius = divider_wall_cutout_radius,
-    divider_top_radius = divider_top_radius),
+    divider_top_radius = divider_top_radius,
+    divider_label_size = divider_label_size),
   vertical_chambers = ChamberSettings(),
   horizontal_chambers = ChamberSettings(),
   lip_settings = LipSettings(

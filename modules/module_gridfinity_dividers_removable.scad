@@ -14,6 +14,7 @@ iDividerRemovable_DividerWallCutoutDepth = 9;
 iDividerRemovable_DividerWallCutoutWidth = 10;
 iDividerRemovable_DividerWallCutoutRadius = 11;
 iDividerRemovable_DividerTopRadius = 12;
+iDividerRemovable_DividerLabelSize = 13;
 
 debug_removable_walls = false;
 
@@ -149,7 +150,8 @@ function DividerRemovableSettings(
     divider_wall_cutout_depth = 0,
     divider_wall_cutout_width = 0,
     divider_wall_cutout_radius = 0,
-    divider_top_radius = 0
+    divider_top_radius = 0,
+    divider_label_size = 0
     ) = 
   let(
     result = [
@@ -165,7 +167,8 @@ function DividerRemovableSettings(
       divider_wall_cutout_depth,
       divider_wall_cutout_width,
       divider_wall_cutout_radius,
-      divider_top_radius],
+      divider_top_radius,
+      divider_label_size],
     validatedResult = ValidateDividerRemovableSettings(result)
   ) validatedResult;
 
@@ -182,7 +185,7 @@ function calculate_divider_useable_dimensions(num_x, num_y, pitch = [], wall_thi
 //wall_thickness should be called default_divider_thickness 
 function ValidateDividerRemovableSettings(settings, wall_thickness = 0) =
   assert(is_list(settings), "Divider Removable Settings must be a list")
-  assert(len(settings)==13, "Divider Removable Settings must length 13")
+  assert(len(settings)==14, "Divider Removable Settings must length 13")
   assert(is_bool(settings[iDividerRemovable_Enabled]), "Divider Removable Enabled must be a boolean")
   assert(is_list(settings[iDividerRemovable_Walls]) && len(settings[iDividerRemovable_Walls])==2, "Divider Removable Walls Settings must length 2")
   assert(is_num(settings[iDividerRemovable_Headroom]), "Divider Removable Headroom must be a number")
@@ -197,7 +200,8 @@ function ValidateDividerRemovableSettings(settings, wall_thickness = 0) =
   assert(is_num(settings[iDividerRemovable_DividerWallCutoutWidth]), "Divider wall cutout width must be a number")
   assert(is_num(settings[iDividerRemovable_DividerWallCutoutRadius]), "Divider wall cutout radius must be a number")
   assert(is_num(settings[iDividerRemovable_DividerTopRadius]), "Divider top radius must be a number")
-
+  assert(is_num(settings[iDividerRemovable_DividerLabelSize]), "Divider label size must be a number")
+  
   let(
     divider_thickness = settings[iDividerRemovable_DividerThickness] <= 0 && wall_thickness > 0 ? wall_thickness*2 : settings[iDividerRemovable_DividerThickness],
     support_thickness = settings[iDividerRemovable_SupportThickness] <= 0 ? divider_thickness : settings[iDividerRemovable_SupportThickness],
@@ -218,7 +222,8 @@ function ValidateDividerRemovableSettings(settings, wall_thickness = 0) =
     settings[iDividerRemovable_DividerWallCutoutDepth],
     settings[iDividerRemovable_DividerWallCutoutWidth],
     settings[iDividerRemovable_DividerWallCutoutRadius],
-    settings[iDividerRemovable_DividerTopRadius]
+    settings[iDividerRemovable_DividerTopRadius],
+    settings[iDividerRemovable_DividerLabelSize]
   ];
 
 // Creates thickened sections in the outer walls to support removable divider slots.
@@ -496,6 +501,7 @@ module gridfinity_removable_divider_walls(
   divider_wall_cutout_width = divider_settings[iDividerRemovable_DividerWallCutoutWidth];
   divider_wall_cutout_radius = divider_settings[iDividerRemovable_DividerWallCutoutRadius];
   divider_top_radius = divider_settings[iDividerRemovable_DividerTopRadius];
+  divider_label_size = divider_settings[iDividerRemovable_DividerLabelSize];
   support_thickness = divider_settings[iDividerRemovable_SupportThickness];
   slot_spanning_count = divider_settings[iDividerRemovable_DividerSlotSpanningCount];
 
@@ -526,7 +532,8 @@ module gridfinity_removable_divider_walls(
     wall_cutout_depth = divider_wall_cutout_depth,
     wall_cutout_width = divider_wall_cutout_width,
     wall_cutout_radius = divider_wall_cutout_radius,
-    top_radius = divider_top_radius);
+    top_radius = divider_top_radius,
+    label_size = divider_label_size);
 }
 
 module removable_divider_walls(
@@ -540,7 +547,8 @@ module removable_divider_walls(
   wall_cutout_depth = 0,
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
-  top_radius = 0) {
+  top_radius = 0,
+  label_size = 0) {
 
   assert(is_list(divider_useable_dimensions), "divider_useable_dimensions must be a list");
   assert(is_list(slot_size), "slot_size must be a list");
@@ -555,14 +563,15 @@ module removable_divider_walls(
 
   function factorial(n) = n == 0 ? 1 : factorial(n - 1) * n;
 
+  
   for(iSep = [0:1:slot_spanning_count]){
-    space_pos = iSep <= 0 ? 0 :-divider_useable_dimensions.z-(iSep)*(divider_spacing+divider_thickness)*2;
+    space_pos = iSep <= 0 ? 0 :-(iSep)*(divider_spacing+divider_thickness)*2;
 
     if(env_generate_filter_enabled("divider_walls_bent_x"))
     if(support_walls.x == 1){
       divider_size = [divider_useable_dimensions.y, divider_thickness, divider_useable_dimensions.z];
       translate([-divider_useable_dimensions.z + space_pos, divider_useable_dimensions.y, 0])
-      rotate([90,0,270])
+      rotate([0,0,270])
       single_removable_divider_wall(
         divider_size=divider_size,
         slot_size=slot_size,
@@ -572,7 +581,8 @@ module removable_divider_walls(
         wall_cutout_depth = wall_cutout_depth,
         wall_cutout_width = wall_cutout_width,
         wall_cutout_radius = wall_cutout_radius,
-        top_radius = top_radius);
+        top_radius = top_radius,
+        label_size = label_size);
     }
 
     if(env_generate_filter_enabled("divider_walls_bent_y"))
@@ -580,7 +590,6 @@ module removable_divider_walls(
       divider_size = [divider_useable_dimensions.x, divider_thickness, divider_useable_dimensions.z];
 
       translate([0, -divider_useable_dimensions.z + space_pos, 0])
-      rotate([90,0,0])
       single_removable_divider_wall(
         divider_size=divider_size,
         slot_size=slot_size,
@@ -590,7 +599,8 @@ module removable_divider_walls(
         wall_cutout_depth = wall_cutout_depth,
         wall_cutout_width = wall_cutout_width,
         wall_cutout_radius = wall_cutout_radius,
-        top_radius = top_radius);
+        top_radius = top_radius,
+        label_size = label_size);
     }
   }
 
@@ -624,13 +634,13 @@ module removable_divider_walls(
     if(env_generate_filter_enabled("divider_walls_straight_sided"))
     for(icount = [0:count-1])
     translate([(max_width + divider_size.y*3)*3, -icount*divider_size.y*5 -divider_useable_dimensions.z/2, 0])
-    single_cross_removable_divider_wall(
+    single_removable_divider_wall(
       //divider_size.y*3 should be size, + slot, + side
       divider_size=[divider_size.x - ((divider_size.y*3)*icount), divider_size.y, divider_size.z],
       slot_size=slot_size,
       divider_clearance=divider_clearance,
-      divider_spacing=divider_spacing, 
-      left_slots=false, right_slots=false);
+      divider_spacing=divider_spacing,
+      label_size = label_size);
   }
 }
 
@@ -641,65 +651,79 @@ module single_removable_divider_wall(
   slot_size,
   divider_clearance,
   divider_spacing,
-  separation_count,
+  separation_count = 0,
   wall_cutout_depth = 0,
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
-  top_radius = 0){
+  top_radius = 0,
+  label_size = 0,
+  label_angle = 45){
 
-  assert(is_list(divider_size), "divider_size must be a list");
-  assert(is_list(slot_size), "slot_size must be a list");
-  assert(is_list(divider_clearance), "divider_clearance must be a list");
-  assert(is_num(divider_spacing), "divider_spacing must be a number");
-  assert(is_num(separation_count), "separation_count must be a number");
   assert(is_num(wall_cutout_depth), "wall_cutout_depth must be a number");
   assert(is_num(wall_cutout_width), "wall_cutout_width must be a number");
   assert(is_num(wall_cutout_radius), "wall_cutout_radius must be a number");
   assert(is_num(top_radius), "top_radius must be a number");
   
-  separation = separation_count <= 0 ? 0 : separation_count*divider_spacing+separation_count*divider_size.y;
+  base_removable_divider_wall(
+    divider_size = divider_size,
+    slot_size = slot_size,
+    divider_clearance = divider_clearance,
+    divider_spacing = divider_spacing,
+    separation_count = separation_count)
+      bentWall(
+        length=$size.x,
+        separation=$separation,
+        lowerBendRadius=divider_spacing,
+        upperBendRadius=divider_spacing,
+        height = $size.z,
+        thickness = $size.y,
+        wall_cutout_depth = wall_cutout_depth,
+        wall_cutout_width = wall_cutout_width,
+        wall_cutout_radius = 2,
+        top_radius = top_radius,
+        label_size = $separation == 0 ? label_size : 0,
+        label_angle = label_angle);
+}
 
-  slot = [
+//contains the common sections of a removeable divider wall.
+module base_removable_divider_wall(
+  divider_size,
+  slot_size,
+  divider_clearance,
+  divider_spacing,
+  separation_count = 0, //rename to bend separation
+){
+  assert(is_list(divider_size), "divider_size must be a list");
+  assert(is_list(slot_size), "slot_size must be a list");
+  assert(is_list(divider_clearance), "divider_clearance must be a list");
+  assert(is_num(separation_count), "separation_count must be a number");
+ 
+  $separation = separation_count <= 0 ? 0 : separation_count*divider_spacing+separation_count*divider_size.y;
+  $slot = [
     slot_size.y-divider_clearance.y/2, //Divide by 2 as there are two end
     slot_size.x-divider_clearance.x, 
     divider_size.z];
 
-  size = [ 
+  $size = [ 
     divider_size.x - slot_size.y*2,
     slot_size.x == divider_size.y ? divider_size.y-divider_clearance.x : divider_size.y,
     divider_size.z];
-
-  //echo("single_removable_divider_wall", divider_size = divider_size,  slot_size=slot_size, divider_clearance=divider_clearance, separation_count=separation_count);
-  //echo("single_removable_divider_wall", slot=slot, size=size, separation=separation);
-  
-  rotate([separation == 0 ? 0 : 270,0,0])
+ 
+  //rotate([270,0,0])
   union(){
-    translate([0,separation/2,0])
-    removable_wall_slot(slot);
+    translate([0,$separation/2,0])
+    removable_wall_slot($slot);
 
-    translate([slot[0],0,0])
-    //if(separation > 0){
-      translate([0,size.y/2,0])
+    translate([$slot[0],0,0])
+      translate([0,$size.y/2,0])
       rotate([0,0,270])
-      bentWall(
-        length=size.x,
-        separation=separation,
-        lowerBendRadius=divider_spacing,
-        upperBendRadius=divider_spacing,
-        height = size.z,
-        thickness = size.y,
-        wall_cutout_depth = wall_cutout_depth,
-        wall_cutout_width = wall_cutout_width,
-        wall_cutout_radius = wall_cutout_radius,
-        top_radius = top_radius);
-    //} else {
-    //  cube(size);
-    //}
+      children();
     
-    translate([slot[0]+size[0],-separation/2,0])
-    removable_wall_slot(slot);
-  }
+    translate([$slot[0]+$size[0],-$separation/2,0])
+    removable_wall_slot($slot);
+  } 
 }
+
 
 // Creates a single removable divider wall
 module single_cross_removable_divider_wall(
@@ -709,55 +733,37 @@ module single_cross_removable_divider_wall(
   divider_spacing,
   left_slots=true,
   right_slots=true){
+    fudge = 0.01;
 
-  assert(is_list(divider_size), "divider_size must be a list");
-  assert(is_list(slot_size), "slot_size must be a list");
-  assert(is_list(divider_clearance), "divider_clearance must be a list");
-  assert(is_num(divider_spacing), "divider_spacing must be a number");
-  
-  fudge = 0.01;
-
-  slot = [
-    slot_size.y-divider_clearance.y/2, //Divide by 2 as there are two end
-    slot_size.x-divider_clearance.x, 
-    divider_size.z];
-
-  size = [ 
-    divider_size.x - slot_size.y*2,
-    slot_size.x == divider_size.y ? divider_size.y-divider_clearance.x : divider_size.y,
-    divider_size.z];
-
-  //echo("single_removable_divider_wall", divider_size = divider_size,  slot_size=slot_size, divider_clearance=divider_clearance, separation_count=separation_count);
-
-  union(){
-    translate([0,(divider_size.y-slot.y)/2,0])
-    removable_wall_slot(slot);
-
-    translate([slot[0],0,0])
+    base_removable_divider_wall(
+      divider_size = divider_size,
+      slot_size = slot_size,
+      divider_clearance = divider_clearance,
+      divider_spacing = divider_spacing,
+      separation_count = 0)
+    rotate([0,0,90])
+    translate([0,-$slot[0]/2,0])
     difference(){
       translate([0,left_slots ? -divider_size.y:0,0])
-      cube([size.x, divider_size.y + (left_slots?divider_size.y:0)+ (right_slots?divider_size.y:0), size.z]);
+      cube([$size.x, divider_size.y + (left_slots?divider_size.y:0)+ (right_slots?divider_size.y:0), $size.z]);
 
       if(left_slots)
         translate([0,-divider_size.y-fudge,-fudge])
         divider_slots_in_support(
-          slot=[slot.x, slot.y, slot.z+fudge*2],
+          slot=[$slot.x, $slot.y, $slot.z+fudge*2],
           divider_thickness=divider_size.y,
           divider_spacing=divider_size.y*2,
-          useable_width=size.x);
+          useable_width=$size.x);
 
       if(right_slots)
-      translate([0, divider_size.y+divider_size.y-slot.y+fudge,-fudge])
+      translate([0, divider_size.y+divider_size.y-$slot.y+fudge,-fudge])
         divider_slots_in_support(
-          slot=[slot.x, slot.y, slot.z+fudge*2],
+          slot=[$slot.x, $slot.y, $slot.z+fudge*2],
           divider_thickness=divider_size.y,
           divider_spacing=divider_size.y*2,
-          useable_width=size.x);
+          useable_width=$size.x);
     }
-    
-    translate([slot[0]+size[0],(divider_size.y-slot.y)/2,0])
-    removable_wall_slot(slot);
-  }
+  //}
 }
 
 module divider_slots_in_support(
