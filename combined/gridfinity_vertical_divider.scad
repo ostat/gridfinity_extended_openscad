@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_vertical_divider.scad'. Generated 2026-02-10 21:01
-//Content hash E48CA3DBC5DCAF265FC08F8C52647C2BC09C692790ABFD38DADB54DCF48D7D4C
+//Combined version of 'gridfinity_vertical_divider.scad'. Generated 2026-02-10 22:34
+//Content hash 7834AA25C9CCE7769C325C38FE401A965539279EDC0F9E937E36E55260C31ED6
 ///////////////////////////////////////
 
 /* [Divider] */
@@ -1976,7 +1976,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");

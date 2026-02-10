@@ -50,7 +50,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");

@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_socket_holder.scad'. Generated 2026-02-10 21:01
-//Content hash 532B065D339410E2E8508E3328E3D3D048D4ECDF67F8BDA7A11E0A3210023FAA
+//Combined version of 'gridfinity_socket_holder.scad'. Generated 2026-02-10 22:34
+//Content hash 1F9D620434969069B54C493A6BD7C47B9F83105555059095F62876D9032AE458
 ///////////////////////////////////////
 
 part = 5; //[1: "METRIC", 2: "IMPERIAL", 3: "Imperial < 1/2\"", 4: "Imperial >= 1/2\"", 5: "Metric >=7mm", 6: "Metric <7mm"]
@@ -1318,7 +1318,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");

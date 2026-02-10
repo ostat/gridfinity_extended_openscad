@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_marble.scad'. Generated 2026-02-10 21:01
-//Content hash 59F1941E8576FFF5BDB4F4F02659DC906F6B25DEF7C444656A64A515B19F07B6
+//Combined version of 'gridfinity_marble.scad'. Generated 2026-02-10 22:34
+//Content hash 022A91DEA46B5D4945587C5373C04411D1B700491BA186C25FFCFD3BC58D023A
 ///////////////////////////////////////
 
 
@@ -3774,7 +3774,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");

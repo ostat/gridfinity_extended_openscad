@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate_flsun_q5.scad'. Generated 2026-02-10 21:00
-//Content hash 9845439890B9E6E898FEFBF020296AF3F89377495903D09803FA083F019A7DD4
+//Combined version of 'gridfinity_baseplate_flsun_q5.scad'. Generated 2026-02-10 22:34
+//Content hash B5CA5B829BC7015D7910280157367B93FE42041E39A5B71EA2FFC01C0D097AE1
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -572,7 +572,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");

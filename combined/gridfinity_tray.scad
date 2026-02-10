@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_tray.scad'. Generated 2026-02-10 21:01
-//Content hash E38276321C11594556F9790F00890700E74CA545639EDB6D06B7AF9E840DD386
+//Combined version of 'gridfinity_tray.scad'. Generated 2026-02-10 22:34
+//Content hash 420CC1E6096456A149E5CAE64F60E85AE568BB775D378A222976E14DA7727B4E
 ///////////////////////////////////////
 
 /*<!!start gridfinity_tray!!>*/
@@ -3881,7 +3881,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");

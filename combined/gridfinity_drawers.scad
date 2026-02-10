@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_drawers.scad'. Generated 2026-02-10 21:00
-//Content hash A309E6FEE3E5859B0A7679CA0B0D2922D61BCF34B011349EAF9B4470807F822C
+//Combined version of 'gridfinity_drawers.scad'. Generated 2026-02-10 22:34
+//Content hash A643F2C88AE85CBCC5B297E41E8CFD593ED6722BB9CA6D97541883E90B6EEEDC
 ///////////////////////////////////////
 // Gridfinity drawer system.
 // Intended for Gridfinity bins to sit in the drawers, meaning the outer chest will not fit neatly on to a gridfinity grid.
@@ -3784,7 +3784,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");

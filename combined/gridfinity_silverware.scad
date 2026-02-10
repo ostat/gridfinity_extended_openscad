@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-10 21:01
-//Content hash 8CA476054068E78228E5D9AFE943D3AB77D0D66568EA4688D994468B3DC11E9A
+//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-10 22:34
+//Content hash E415B5D8D0D4F52044718B096C4DFAFB9A0228C4AD25DCD84F5601F295E7E239
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -1255,7 +1255,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");

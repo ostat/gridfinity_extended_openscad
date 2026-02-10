@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_glue_stick.scad'. Generated 2026-02-10 21:00
-//Content hash D911CAC5B496A07231149A5316968729B5EF31945CB6E0E09D39F4A28F143BE5
+//Combined version of 'gridfinity_glue_stick.scad'. Generated 2026-02-10 22:34
+//Content hash 25A491E914CC105B33F5EB4FDF16801EFE563A1648333DD93E1C565E8A8EEE1D
 ///////////////////////////////////////
 
 cup_height = 5;
@@ -1321,7 +1321,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");

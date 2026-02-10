@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-10 21:00
-//Content hash 86B712B2FFBD85A477F42C2E04BAF955F1D1E2D139043B126C7D0E0F65CDD92C
+//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-10 22:34
+//Content hash 3D08E245A3742D5892B1DD43DDEB4850030B6193591AAA1BE8A9A3E1126AF571
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -3955,7 +3955,7 @@ module bentWall(
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
-  label_size = 10,
+  label_size = 0,
   label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");
