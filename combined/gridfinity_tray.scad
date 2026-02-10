@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_tray.scad'. Generated 2026-02-10 22:34
-//Content hash 420CC1E6096456A149E5CAE64F60E85AE568BB775D378A222976E14DA7727B4E
+//Combined version of 'gridfinity_tray.scad'. Generated 2026-02-11 08:23
+//Content hash 4158DCF58B6B050EE6E082794698B8AD98BF42371C459F7375AD8F6B03C92B30
 ///////////////////////////////////////
 
 /*<!!start gridfinity_tray!!>*/
@@ -96,7 +96,7 @@ center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
-box_corner_attachments_only = true;
+box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
@@ -354,7 +354,7 @@ default_spacer = false;
 // Half-pitch base pads for offset stacking
 default_sub_pitch = 1;
 // Limit attachments (magnets and screws) to box corners for faster printing.
-default_box_corner_attachments_only = true;
+default_box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 // Removes the base grid from inside the shape
 default_flat_base = false;
 /* Tapered Corner */
@@ -1312,7 +1312,6 @@ module partitioned_cavity(num_x, num_y, num_z,
   flat_base=cupBase_settings[iCupBase_FlatBase];
   cavity_floor_radius=cupBase_settings[iCupBase_CavityFloorRadius];
   spacer=cupBase_settings[iCupBase_Spacer];
-  box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
   efficient_floor=cupBase_settings[iCupBase_EfficientFloor]; 
   magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
   screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
@@ -3568,7 +3567,7 @@ center_magnet_thickness = 0;
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
-box_corner_attachments_only = true;
+box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
@@ -3604,6 +3603,18 @@ iCupBase_MagnetSideAccess=18;
 
 iCylinderDimension_Diameter=0;
 iCylinderDimension_Height=1;
+
+CornerAttachments_disabled = "disabled";
+CornerAttachments_enabled = "enabled";
+CornerAttachments_aligned = "aligned";
+
+CornerAttachments_values = [CornerAttachments_disabled, CornerAttachments_enabled, CornerAttachments_aligned];
+  function validateCornerAttachments(value) = 
+    //Convert boolean to list value
+    let(value = is_bool(value) ? value ? CornerAttachments_enabled : CornerAttachments_disabled : value)
+    assert(list_contains(CornerAttachments_values, value), typeerror("CornerAttachments", value))
+    value;  
+
 
 EfficientFloor_off = "off";
 EfficientFloor_on = "on";
@@ -3658,7 +3669,9 @@ function CupBaseSettings(
       is_num(screwSize) 
         ? [gf_cupbase_screw_diameter, screwSize]
         : screwSize,
-      
+    cornerAttachmentsOnly = is_bool(cornerAttachmentsOnly)
+      ? cornerAttachmentsOnly ? CornerAttachments_enabled : CornerAttachments_disabled
+      : cornerAttachmentsOnly,
     efficientFloor = validateEfficientFloor(efficientFloor),
     magnetEasyRelease = validateMagnetEasyRelease(magnetEasyRelease),
     centerMagnetSize = efficientFloor != EfficientFloor_off ? [0, 0] : centerMagnetSize,
@@ -3670,7 +3683,7 @@ function CupBaseSettings(
       centerMagnetSize[0] == 0 || centerMagnetSize[1] == 0 ? [0,0] : centerMagnetSize,
       screwSize[0] == 0 || screwSize[1] == 0 ? [0,0] : screwSize, 
       holeOverhangRemedy, 
-      cornerAttachmentsOnly,
+      validateCornerAttachments(cornerAttachmentsOnly),
       floorThickness,
       cavityFloorRadius,
       validateEfficientFloor(efficientFloor),
@@ -3693,7 +3706,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_list(settings[iCupBase_CenterMagnetSize]) && len(settings[iCupBase_CenterMagnetSize])==2, "CenterMagnet Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_ScrewSize]) && len(settings[iCupBase_ScrewSize])==2, "ScrewSize Magnet Setting must be a list of length 2")
   assert(is_num(settings[iCupBase_HoleOverhangRemedy]), "CupBase HoleOverhangRemedy Settings must be a number")
-  assert(is_bool(settings[iCupBase_CornerAttachmentsOnly]), "CupBase CornerAttachmentsOnly Settings must be a boolean")
+  assert(is_string(settings[iCupBase_CornerAttachmentsOnly]), "CupBase CornerAttachmentsOnly Settings must be a string")
   assert(is_num(settings[iCupBase_FloorThickness]), "CupBase FloorThickness Settings must be a number")
   assert(is_num(settings[iCupBase_CavityFloorRadius]), "CupBase CavityFloorRadius Settings must be a number")
   assert(is_num(settings[iCupBase_SubPitch]), "CupBase SubPitch Settings must be a number")
@@ -7097,7 +7110,7 @@ module gridcopycorners(
   num_x, 
   num_y, 
   r, 
-  onlyBoxCorners = false, 
+  onlyBoxCorners = false, //enabled, disabled, aligned
   pitch=env_pitch(), 
   center = false, 
   reverseAlignment=[false,false]) {
@@ -7107,6 +7120,12 @@ module gridcopycorners(
   assert(is_num(num_y), "num_y must be a number");
   r = is_num(r) ? [r,r] : r;
   
+  onlyBoxCornersEnabled = is_bool(onlyBoxCorners) ? onlyBoxCorners :
+    is_string(onlyBoxCorners) ? (onlyBoxCorners == "enabled" || onlyBoxCorners == "aligned") : false;
+  onlyBoxCornersAligned = onlyBoxCorners == "aligned";
+
+  cornerMultiplier = onlyBoxCornersAligned ? 1 : 2;
+
   translate(center ? [0,0] : [pitch.x/2,pitch.y/2])
   for (cellx=[1:ceil(num_x)], celly=[1:ceil(num_y)]) 
     for (quadrentx=[-1, 1], quadrenty=[-1, 1]) {
@@ -7123,11 +7142,11 @@ module gridcopycorners(
       //only copy if the cell is atleast half size
       if(cornerVisible)
         //only box corners or every cell corner
-        if(!onlyBoxCorners || 
+        if(!onlyBoxCornersEnabled || 
           ((cell.x == 1 && quadrent.x == -1) && (cell.y == 1  && quadrent.y == -1)) ||
-          (gridPosition.x*2 == floor(num_x*2) && gridPosition.y*2 == floor(num_y*2)) ||
-          ((cell.x == 1 && quadrent.x == -1) && gridPosition.y*2 == floor(num_y*2) ) ||
-          (gridPosition.x*2 == floor(num_x*2) && (cell.y == 1 && quadrent.y == -1))) 
+          (gridPosition.x*cornerMultiplier == floor(num_x*cornerMultiplier) && gridPosition.y*cornerMultiplier == floor(num_y*cornerMultiplier)) ||
+          ((cell.x == 1 && quadrent.x == -1) && gridPosition.y*cornerMultiplier == floor(num_y*cornerMultiplier) ) ||
+          (gridPosition.x*cornerMultiplier == floor(num_x*cornerMultiplier) && (cell.y == 1 && quadrent.y == -1))) 
           translate(trans)
           children();
     }

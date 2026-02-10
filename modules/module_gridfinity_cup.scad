@@ -123,7 +123,7 @@ default_spacer = false;
 // Half-pitch base pads for offset stacking
 default_sub_pitch = 1;
 // Limit attachments (magnets and screws) to box corners for faster printing.
-default_box_corner_attachments_only = true;
+default_box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 // Removes the base grid from inside the shape
 default_flat_base = false;
 /* [Tapered Corner] */
@@ -1081,7 +1081,6 @@ module partitioned_cavity(num_x, num_y, num_z,
   flat_base=cupBase_settings[iCupBase_FlatBase];
   cavity_floor_radius=cupBase_settings[iCupBase_CavityFloorRadius];
   spacer=cupBase_settings[iCupBase_Spacer];
-  box_corner_attachments_only=cupBase_settings[iCupBase_CornerAttachmentsOnly];
   efficient_floor=cupBase_settings[iCupBase_EfficientFloor]; 
   magnet_diameter=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Diameter];
   screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
