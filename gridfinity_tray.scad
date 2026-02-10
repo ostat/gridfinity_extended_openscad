@@ -166,6 +166,10 @@ wallpattern_depth = 0; // 0.1
 wallpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
 wallpattern_pattern_voronoi_noise = 0.75; //0.01
+//voronoi fill border cells to prevent overhangs
+wallpattern_pattern_voronoi_fill_border = false;
+//voronoi border margin (auto if -1)
+wallpattern_pattern_voronoi_border_margin = -1; //0.1
 //brick pattern center weight
 wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
@@ -416,7 +420,9 @@ module gridfinity_tray(
     patternGridChamfer = wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
     patternBrickWeight = wallpattern_pattern_brick_weight,
-    patternFs = wallpattern_pattern_quality), 
+    patternFs = wallpattern_pattern_quality,
+    patternVoronoiFillBorder = wallpattern_pattern_voronoi_fill_border,
+    patternVoronoiBorderMargin = wallpattern_pattern_voronoi_border_margin), 
   wallcutout_vertical_settings = WallCutoutSettings(
     type = wallcutout_vertical, 
     position = wallcutout_vertical_position, 
