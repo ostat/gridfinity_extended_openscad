@@ -77,6 +77,31 @@ module vrn2_from(points, spacing = 1, r = 0, delta = 0, chamfer = false, region_
     }
 }
 
+/**
+ * rectangle_voronoi - Generate a Voronoi pattern within a rectangular canvas
+ * 
+ * Creates a 3D Voronoi tessellation pattern that can be used for decorative
+ * cutouts in gridfinity bins and other objects.
+ * 
+ * NEW OVERHANG PREVENTION FEATURES:
+ * - fillBorderCells: When true, automatically creates a margin to eliminate
+ *   incomplete Voronoi cells at the borders that would create overhangs
+ * - borderMargin: Allows manual control of the border margin size. When set
+ *   to -1 (default) and fillBorderCells is true, automatically uses cellsize/2
+ * 
+ * @param canvasSize - [x, y, z] dimensions of the canvas
+ * @param points - Optional array of seed points. If empty, points are auto-generated
+ * @param cellsize - Size of cells for grid-based generation
+ * @param noise - Amount of randomness in point positions (0-1)
+ * @param grid - Use grid-based point generation
+ * @param gridOffset - Offset alternating rows for hex-like pattern
+ * @param spacing - Space between Voronoi cells
+ * @param radius - Corner radius of cells
+ * @param seed - Random seed for reproducibility
+ * @param center - Center the pattern on origin
+ * @param fillBorderCells - Eliminate border cells to prevent 3D print overhangs
+ * @param borderMargin - Manual border margin (auto if -1)
+ */
 module rectangle_voronoi(
    canvasSize = [200,200,10],
    points=[],
