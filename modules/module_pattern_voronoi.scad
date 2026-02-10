@@ -87,27 +87,39 @@ module rectangle_voronoi(
    spacing = 2, 
    radius = 0.5,
    seed = undef,
-   center=true)
+   center=true,
+   fillBorderCells = false,
+   borderMargin = -1)
 {
   _spacing = spacing + radius*2;
+  
+  // Calculate border margin: if fillBorderCells is true and borderMargin is not specified,
+  // use cellsize/2 as default to eliminate border cells
+  effectiveBorderMargin = fillBorderCells && borderMargin < 0 ? cellsize/2 : 
+                          borderMargin >= 0 ? borderMargin : 0;
+  
+  // Adjust canvas size to account for border margin
+  adjustedCanvasSize = [canvasSize.x - 2*effectiveBorderMargin, 
+                        canvasSize.y - 2*effectiveBorderMargin];
+  
   points = points != undef && is_list(points) && len(points) > 0 
     ? points 
     : grid ?
      let(
-      _pointCount = [ceil(canvasSize.x/cellsize)+1,ceil(canvasSize.y/cellsize)+1],
+      _pointCount = [ceil(adjustedCanvasSize.x/cellsize)+1,ceil(adjustedCanvasSize.y/cellsize)+1],
       seed = seed == undef ? rands(0, 100000, 2)[0] : seed,
       seeds = rands(0, 100000, 2, seed), // you need a different seed for x and y
       pointsx = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[0]),
       pointsy = rands(-cellsize/2*noise, cellsize/2*noise, _pointCount.x*_pointCount.y, seeds[1])
     )[for(i = [0:_pointCount.x-1], y = [0:_pointCount.y-1]) 
-        [i*cellsize + pointsx[i+y*_pointCount.x]-canvasSize.x/2 + (y % 2 == 0 && gridOffset ? cellsize/2 : 0),
-          y*cellsize + pointsy[i*_pointCount.y+y]-canvasSize.y/2]]
+        [i*cellsize + pointsx[i+y*_pointCount.x]-adjustedCanvasSize.x/2 + (y % 2 == 0 && gridOffset ? cellsize/2 : 0),
+          y*cellsize + pointsy[i*_pointCount.y+y]-adjustedCanvasSize.y/2]]
     : let(
-      _pointCount = max((canvasSize.x * canvasSize.y)/(cellsize^2), 30),
+      _pointCount = max((adjustedCanvasSize.x * adjustedCanvasSize.y)/(cellsize^2), 30),
       seed = seed == undef ? rands(0, 100000, 2)[0] : seed,
       seeds = rands(0, 100000, 2, seed), // you need a different seed for x and y
-      pointsx = rands(-canvasSize.x/2, canvasSize.x/2, _pointCount, seeds[0]),
-      pointsy = rands(-canvasSize.y/2, canvasSize.y/2, _pointCount, seeds[1])
+      pointsx = rands(-adjustedCanvasSize.x/2, adjustedCanvasSize.x/2, _pointCount, seeds[0]),
+      pointsy = rands(-adjustedCanvasSize.y/2, adjustedCanvasSize.y/2, _pointCount, seeds[1])
     )[for(i = [0:_pointCount-1]) [pointsx[i],pointsy[i]]];
   
   translate(center ? [0, 0, 0] : [canvasSize.x/2, canvasSize.y/2, 0])

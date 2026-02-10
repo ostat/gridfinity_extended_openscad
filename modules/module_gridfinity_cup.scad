@@ -767,7 +767,9 @@ module bin_wall_pattern(
                       holeRadius = wall_pattern_settings[iPatternHoleRadius],
                       source = "wall_pattern",
                       rotateGrid = wall_pattern_settings[iPatternRotate],
-                      patternFs = wall_pattern_settings[iPatternFs]);
+                      patternFs = wall_pattern_settings[iPatternFs],
+                      patternVoronoiFillBorder = wall_pattern_settings[iPatternVoronoiFillBorder],
+                      patternVoronoiBorderMargin = wall_pattern_settings[iPatternVoronoiBorderMargin]);
                       
                 if(enable_inner_walls && wallpattern_dividers_enabled == "vertical" || wallpattern_dividers_enabled == "both")
                   position_separators(
@@ -800,7 +802,9 @@ module bin_wall_pattern(
                           holeRadius = wall_pattern_settings[iPatternHoleRadius],
                           source="vertical separator wall pattern",
                           rotateGrid = wall_pattern_settings[iPatternRotate],
-                          patternFs = wall_pattern_settings[iPatternFs]);
+                          patternFs = wall_pattern_settings[iPatternFs],
+                          patternVoronoiFillBorder = wall_pattern_settings[iPatternVoronoiFillBorder],
+                          patternVoronoiBorderMargin = wall_pattern_settings[iPatternVoronoiBorderMargin]);
             }    
               
             //subtract dividers from wall patterns
@@ -841,7 +845,9 @@ module bin_wall_pattern(
                       holeRadius = wall_pattern_settings[iPatternHoleRadius],
                       source = "wall_pattern",
                       rotateGrid = wall_pattern_settings[iPatternRotate],
-                      patternFs = wall_pattern_settings[iPatternFs]);
+                      patternFs = wall_pattern_settings[iPatternFs],
+                      patternVoronoiFillBorder = wall_pattern_settings[iPatternVoronoiFillBorder],
+                      patternVoronoiBorderMargin = wall_pattern_settings[iPatternVoronoiBorderMargin]);
                       
                   if(enable_inner_walls && wallpattern_dividers_enabled == "horizontal" || wallpattern_dividers_enabled == "both")
                     position_separators(
@@ -875,7 +881,9 @@ module bin_wall_pattern(
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
                             source = "horizontal separator wall pattern",
                             rotateGrid = wall_pattern_settings[iPatternRotate],
-                            patternFs = wall_pattern_settings[iPatternFs]);
+                            patternFs = wall_pattern_settings[iPatternFs],
+                            patternVoronoiFillBorder = wall_pattern_settings[iPatternVoronoiFillBorder],
+                            patternVoronoiBorderMargin = wall_pattern_settings[iPatternVoronoiBorderMargin]);
             }
               
             //subtract dividers from outer wall pattern
@@ -947,6 +955,8 @@ module bin_floor_pattern(
             holeRadius = floor_pattern_settings[iPatternHoleRadius],
             patternFs = floor_pattern_settings[iPatternFs],
             rotateGrid = floor_pattern_settings[iPatternRotate],
+            patternVoronoiFillBorder = floor_pattern_settings[iPatternVoronoiFillBorder],
+            patternVoronoiBorderMargin = floor_pattern_settings[iPatternVoronoiBorderMargin],
             source="floor_pattern");
 
       //subtract dividers from floor pattern

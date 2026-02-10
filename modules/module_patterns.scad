@@ -17,6 +17,8 @@ iPatternGridChamfer=11;
 iPatternVoronoiNoise=12;
 iPatternBrickWeight=13;
 iPatternColored=14;
+iPatternVoronoiFillBorder=15;
+iPatternVoronoiBorderMargin=16;
 
 PatternStyle_grid = "grid";
 PatternStyle_hexgrid = "hexgrid";
@@ -66,7 +68,9 @@ function PatternSettings(
     patternGridChamfer=0,
     patternVoronoiNoise=0,
     patternBrickWeight=0,
-    patternColored="disabled"
+    patternColored="disabled",
+    patternVoronoiFillBorder=false,
+    patternVoronoiBorderMargin=-1
     ) = 
   let(
     result = [
@@ -84,14 +88,16 @@ function PatternSettings(
       patternGridChamfer,
       patternVoronoiNoise,
       patternBrickWeight,
-      patternColored
+      patternColored,
+      patternVoronoiFillBorder,
+      patternVoronoiBorderMargin
       ],
     validatedResult = ValidatePatternSettings(result)
   ) validatedResult;
 
 function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_list(settings), "Settings must be a list")
-  assert(len(settings)==15, "Settings must length 15")
+  assert(len(settings)==17, "Settings must length 17")
   assert(is_bool(settings[iPatternEnabled]), "settings[iPatternEnabled] must be a boolean")
   assert(is_string(settings[iPatternStyle]), "settings[iPatternStyle] must be a string")
   assert(is_bool(settings[iPatternRotate]), "settings[iPatternRotate] must be a boolean")
@@ -108,6 +114,8 @@ function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_num(settings[iPatternGridChamfer]), "settings[iPatternGridChamfer] must be a number")
   assert(is_num(settings[iPatternVoronoiNoise]) && settings[iPatternVoronoiNoise] >= 0 && settings[iPatternVoronoiNoise] <= 1, "settings[iPatternVoronoiNoise] must be between 0 and 1")
   assert(is_num(settings[iPatternBrickWeight]) && settings[iPatternBrickWeight] >= 0, "settings[iPatternBrickWeight] must be a non-negative number")
+  assert(is_bool(settings[iPatternVoronoiFillBorder]), "settings[iPatternVoronoiFillBorder] must be a boolean")
+  assert(is_num(settings[iPatternVoronoiBorderMargin]), "settings[iPatternVoronoiBorderMargin] must be a number")
     [settings[iPatternEnabled],
       validatePatternStyle(settings[iPatternStyle]),
       settings[iPatternRotate],
@@ -122,7 +130,9 @@ function ValidatePatternSettings(settings, num_x, num_y) =
       settings[iPatternGridChamfer],
       settings[iPatternVoronoiNoise],
       settings[iPatternBrickWeight],
-      settings[iPatternColored]
+      settings[iPatternColored],
+      settings[iPatternVoronoiFillBorder],
+      settings[iPatternVoronoiBorderMargin]
       ];
 
 function get_wallpattern_positions(
@@ -305,6 +315,8 @@ module cutout_pattern(
   border = 0,
   patternFs = 0,
   rotateGrid = false,
+  patternVoronoiFillBorder=false,
+  patternVoronoiBorderMargin=-1,
   source = ""){
 
   // validate inputs
@@ -367,7 +379,9 @@ module cutout_pattern(
         noise=patternVoronoiNoise,
         radius = holeRadius,
         center=center,
-        seed=env_random_seed());
+        seed=env_random_seed(),
+        fillBorderCells=patternVoronoiFillBorder,
+        borderMargin=patternVoronoiBorderMargin);
     }
     else if(patternStyle == PatternStyle_brick || patternStyle == PatternStyle_brickoffset){
       if(env_help_enabled("trace")) echo("cutout_pattern", canvasSize = [canvasSize.x,canvasSize.y,holeHeight], thickness = holeSpacing.x, round=1);
