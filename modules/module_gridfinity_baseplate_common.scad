@@ -1,6 +1,6 @@
 // include instead of use, so we get the pitch
 include <gridfinity_constants.scad>
-include <module_utility.scad>
+include <utility/utilities.scad>
 use <module_gridfinity_block.scad>
 include <module_magnet.scad>
 
@@ -268,7 +268,7 @@ module baseplate_cavities(
         rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
       translate([0, 0, magnetSize.y/2+magnet_position])
       mirror(magnet_position <= 0 ? [0,0,0] : [0,0,1])
-      magnet_easy_release(
+      magnet_release(
         magnetDiameter=magnetSize[0], 
         magnetThickness=magnetSize.y+fudgeFactor, 
         easyMagnetRelease=magnet_easy_release != MagnetEasyRelease_off,

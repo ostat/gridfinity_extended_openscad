@@ -198,7 +198,10 @@ module grid_block(
           easyReleaseRotation = (cupBase_settings[iCupBase_NormalisedMagnetEasyRelease] == MagnetEasyRelease_outer ? 0 : 180),
           magnetRotation = magnet_rotation,
           enableSideAccess = cupBase_settings[iCupBase_MagnetSideAccess],
-          magnetCaptiveSideAccessSize = [magnetCaptiveSideAccessSize, magnet_size[iCylinderDimension_Diameter], magnet_size[iCylinderDimension_Height]+0.1]);
+          magnetCaptiveSideAccessSize = [magnetCaptiveSideAccessSize, magnet_size[iCylinderDimension_Diameter], magnet_size[iCylinderDimension_Height]+0.1],
+          magnetCrushDepth = cupBase_settings[iCupBase_MagnetCrushDepth],
+          magnetChamfer = cupBase_settings[iCupBase_MagnetChamfer]
+        );
     }
   }
  
