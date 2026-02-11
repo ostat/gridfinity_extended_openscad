@@ -16,6 +16,10 @@ iDividerRemovable_DividerWallCutoutRadius = 11;
 iDividerRemovable_DividerTopRadius = 12;
 iDividerRemovable_DividerLabelSize = 13;
 
+
+iDividerRemovable_SlotWidth = 0;
+iDividerRemovable_SlotDepth = 1;
+
 debug_removable_walls = false;
 
 if(debug_removable_walls){
@@ -26,15 +30,28 @@ if(debug_removable_walls){
   wall_thickness = 2;
 
   support_walls = [1, 1];
-  divider_clearance = [0, 0];
+  divider_clearance = [0.2, 0.3];
 
-  divider_thickness = 2;
+  divider_thickness = 4;
   slot_size = [divider_thickness, divider_thickness];
   support_thickness = divider_thickness;
   divider_spacing = divider_thickness*2;
 
   slot_spanning_count = 3;
 
+  translate([-20,-20,0])
+  union(){
+    translate([0,-15,0])
+    removable_wall_slot(size = [2,2,20]);
+    
+    translate([0,-20,0])
+    rotate([0,0,180])
+    removable_wall_slot(size = [2,2,20]);
+    
+    translate([0,-30,0])
+    removable_wall_slot(size = [5,2,20]);
+  }
+  
   union() {
     calculated_wall_thickness = 
       [calculate_wall_thickness(outer_container.x, divider_thickness, divider_spacing, wall_thickness),
@@ -83,10 +100,13 @@ if(debug_removable_walls){
         }
       }
 
-      //translate([calculated_wall_thickness.y/2, calculated_wall_thickness.x/2, -fudge_factor])
+      #translate([calculated_wall_thickness.y/2, calculated_wall_thickness.x/2, -fudge_factor])
       translate([support_thickness, support_thickness, -fudge_factor])
       removable_divider_wall_slots(
-        divider_useable_dimensions = [divider_useable_dimensions.x, divider_useable_dimensions.y, divider_useable_dimensions.z+cube_clearance*2],
+        divider_useable_dimensions = [
+          divider_useable_dimensions.x, 
+          divider_useable_dimensions.y, 
+          divider_useable_dimensions.z+cube_clearance*2],
         support_thicknesses=calculated_wall_thickness,
         slot_size=slot_size,
         support_walls=support_walls,
@@ -101,7 +121,8 @@ if(debug_removable_walls){
       divider_clearance=divider_clearance,
       divider_spacing=divider_spacing,
       divider_thickness=divider_thickness,
-      slot_spanning_count=slot_spanning_count);
+      slot_spanning_count=slot_spanning_count,
+      $fn = 64);
   }
 }
 
@@ -119,8 +140,8 @@ function calculate_wall_thickness(width, divider_thickness, divider_spacing, wal
     total_divider = divider_width*count,
     //the thickness of the walls needed to fit the dividers
     calculated_wall_thickness = (useable_width-total_divider)/2+wall_support_thickness)
-  echo("calculate_wall_thickness_inputs", width = width, divider_thickness=divider_thickness, divider_spacing=divider_spacing, wall_support_thickness=wall_support_thickness)
-  echo("calculate_wall_thickness", useable_width=useable_width, divider_width=divider_width, total_divider=total_divider, calculated_wall_thickness=calculated_wall_thickness, count=count, calucalted_useable_width=width-calculated_wall_thickness*2)
+  //echo("calculate_wall_thickness_inputs", width = width, divider_thickness=divider_thickness, divider_spacing=divider_spacing, wall_support_thickness=wall_support_thickness)
+  //echo("calculate_wall_thickness", useable_width=useable_width, divider_width=divider_width, total_divider=total_divider, calculated_wall_thickness=calculated_wall_thickness, count=count, calucalted_useable_width=width-calculated_wall_thickness*2)
   calculated_wall_thickness;
 
 //returns the number of dividers that can fit in the useable width
@@ -173,14 +194,14 @@ function DividerRemovableSettings(
   ) validatedResult;
 
 // Calculate the usable internal dimensions for placing removable dividers.
-function calculate_divider_useable_dimensions(num_x, num_y, pitch = [], wall_thickness, padding =[0.5,0.5], bin_clearance_height, floor_height  ) = 
+function calculate_divider_useable_dimensions(num_x, num_y, pitch = [], wall_thickness, padding =[0.5,0.5], bin_corner_radius = gf_cup_corner_radius, bin_clearance_height, floor_height  ) = 
   assert(is_num(wall_thickness))
   let(
-    leadin_x = padding.x/2+wall_thickness,
-    leadin_y = padding.y/2+wall_thickness,
-    useable_x = num_x*pitch.x-leadin_x*2,
-    useable_y = num_y*pitch.x-leadin_y*2)
-  [[useable_x, useable_y, bin_clearance_height-floor_height],[leadin_x, leadin_y]];
+    exclusion_border_x = padding.x/2+wall_thickness,
+    exclusion_border_y = padding.y/2+wall_thickness,
+    useable_x = num_x*pitch.x-exclusion_border_x*2,
+    useable_y = num_y*pitch.x-exclusion_border_y*2)
+  [[useable_x, useable_y, bin_clearance_height-floor_height], [exclusion_border_x, exclusion_border_y], bin_corner_radius];
 
 //wall_thickness should be called default_divider_thickness 
 function ValidateDividerRemovableSettings(settings, wall_thickness = 0) =
@@ -265,13 +286,14 @@ module gridfinity_removable_divider_wall_reinforcement(
   divider_useable_dimensions = calculate_divider_useable_dimensions(
       num_x, num_y, pitch=env_pitch(),
       wall_thickness=wall_thickness, padding = padding, 
+      bin_corner_radius = env_corner_radius(),
       bin_clearance_height=zpoint, floor_height=floorHeight);
   
   calculated_wall_thickness = support_walls == [1,1] 
     ? [calculate_wall_thickness(divider_useable_dimensions[0].x, divider_thickness, divider_spacing, support_thickness),
     calculate_wall_thickness(divider_useable_dimensions[0].y, divider_thickness, divider_spacing, support_thickness)] 
     : [support_thickness, support_thickness];
-  echo("removable_divider_wall_reinforcement", divider_useable_dimensions=divider_useable_dimensions, calculated_wall_thickness=calculated_wall_thickness, support_thickness=support_thickness, support_walls=support_walls);
+  //echo("removable_divider_wall_reinforcement", divider_useable_dimensions=divider_useable_dimensions, calculated_wall_thickness=calculated_wall_thickness, support_thickness=support_thickness, support_walls=support_walls);
   translate([ wall_thickness+padding.x/2, wall_thickness+padding.y/2, floorHeight])
   removable_divider_wall_reinforcement(
     divider_useable_dimensions = [
@@ -377,6 +399,7 @@ module gridfinity_removable_divider_wall_slots(
       num_x, num_y, pitch=env_pitch(),
       wall_thickness=wall_thickness, 
       padding = padding, 
+      bin_corner_radius = env_corner_radius(),
       bin_clearance_height=zpoint*2, 
       floor_height=floorHeight);
 
@@ -388,10 +411,10 @@ module gridfinity_removable_divider_wall_slots(
   echo("removable_divider_wall_slots", divider_useable_dimensions=divider_useable_dimensions, calculated_wall_thickness=calculated_wall_thickness, support_thickness=support_thickness, slot_size=slot_size, support_walls=support_walls, divider_spacing=divider_spacing);
   
   //Add the slots the to the reinforced wall
-  leadin = divider_useable_dimensions[1];
+  exclusion_border = divider_useable_dimensions[1];
   translate([
-      leadin.x + (calculated_wall_thickness.x-support_thickness), 
-      leadin.y + (calculated_wall_thickness.y-support_thickness), 
+      exclusion_border.x + (calculated_wall_thickness.x-support_thickness), 
+      exclusion_border.y + (calculated_wall_thickness.y-support_thickness), 
       floorHeight])
   removable_divider_wall_slots(
     divider_useable_dimensions = [
@@ -423,20 +446,20 @@ module removable_divider_wall_slots(
     //width
     divider_useable_dimensions.y,
     //Position
-    [divider_spacing/2, 0, 0], //support_thicknesses.x-slot_size.y
+    [divider_spacing/2+support_thicknesses.x/2, 0, 0], //support_thicknesses.x-slot_size.y
     //rotation, mirror
     [0,0,0], [0,0,0],
     //cup width for calculating count
-    divider_useable_dimensions.x];
+    divider_useable_dimensions.x - support_thicknesses.x];
   left = [
     //width
     divider_useable_dimensions.x,
     //Position //+
-    [0, divider_spacing/2+support_thicknesses.y-slot_size.y, 0],
+    [0, divider_spacing/2+support_thicknesses.y/2, 0],
     //rotation, mirror
     [0,0,90], [1,0,0],
     //cup width for calculating count
-    divider_useable_dimensions.y];
+    divider_useable_dimensions.y - support_thicknesses.y];
 
   locations = [front, left];
   //echo("removable_dividers_slots", divider_useable_dimensions=divider_useable_dimensions, support_thickness=support_thickness, slot_size=slot_size, support_walls=support_walls, divider_spacing=divider_spacing);
@@ -456,11 +479,20 @@ module removable_divider_wall_slots(
       mirror(mirror)
       rotate(rotation)
       //translate([0,pos,0])
-      divider_slots_in_support(
+      arange_slots_in_support(
         slot=[slot_size.x, width, divider_useable_dimensions.z+fudge*2],
         divider_thickness=slot_size.x,
         divider_spacing=divider_spacing,
-        useable_width=cross_width);
+        useable_width=cross_width)
+          rotate([0,0,90])
+          base_removable_divider_wall(
+            divider_size = [width, slot_size.x, divider_useable_dimensions.z],
+            slot_size = slot_size,
+            divider_clearance = [0,0],
+            divider_spacing = divider_spacing)
+            translate([slot_size.x/2,0,0])
+            rotate([0,0,90])
+            cube(size=$size);
   }
 }
 
@@ -505,9 +537,12 @@ module gridfinity_removable_divider_walls(
   support_thickness = divider_settings[iDividerRemovable_SupportThickness];
   slot_spanning_count = divider_settings[iDividerRemovable_DividerSlotSpanningCount];
 
+  echo("gridfinity_removable_divider_walls", divider_settings=divider_settings, slot_size=slot_size, divider_label_size=divider_label_size);
+  
   divider_useable_dimensions = calculate_divider_useable_dimensions(
     num_x, num_y, pitch=env_pitch(),
     wall_thickness=wall_thickness, padding = env_clearance(), 
+    bin_corner_radius = env_corner_radius(),
     bin_clearance_height=zpoint-headroom, floor_height=floorHeight);
 
   calculated_wall_thickness = support_walls == [1,1] 
@@ -663,7 +698,6 @@ module single_removable_divider_wall(
   assert(is_num(wall_cutout_width), "wall_cutout_width must be a number");
   assert(is_num(wall_cutout_radius), "wall_cutout_radius must be a number");
   assert(is_num(top_radius), "top_radius must be a number");
-  
   base_removable_divider_wall(
     divider_size = divider_size,
     slot_size = slot_size,
@@ -691,35 +725,39 @@ module base_removable_divider_wall(
   slot_size,
   divider_clearance,
   divider_spacing,
-  separation_count = 0, //rename to bend separation
+  separation_count = 0, //rename to bend separation=
 ){
   assert(is_list(divider_size), "divider_size must be a list");
   assert(is_list(slot_size), "slot_size must be a list");
   assert(is_list(divider_clearance), "divider_clearance must be a list");
   assert(is_num(separation_count), "separation_count must be a number");
  
+  fudgeFactor = 0.01;
+  
   $separation = separation_count <= 0 ? 0 : separation_count*divider_spacing+separation_count*divider_size.y;
   $slot = [
     slot_size.y-divider_clearance.y/2, //Divide by 2 as there are two end
     slot_size.x-divider_clearance.x, 
     divider_size.z];
-
+    
+  //echo("base_removable_divider_wall", slot_size=slot_size, slot=$slot);
+  
   $size = [ 
     divider_size.x - slot_size.y*2,
     slot_size.x == divider_size.y ? divider_size.y-divider_clearance.x : divider_size.y,
     divider_size.z];
  
-  //rotate([270,0,0])
   union(){
-    translate([0,$separation/2,0])
+    translate([fudgeFactor,$separation/2,0])
     removable_wall_slot($slot);
 
     translate([$slot[0],0,0])
-      translate([0,$size.y/2,0])
+      //translate([0,$size.y/2,0])
       rotate([0,0,270])
       children();
     
-    translate([$slot[0]+$size[0],-$separation/2,0])
+    translate([$slot[0]*2+$size[0]-fudgeFactor,-$separation/2,0])
+    rotate([0,0,180])
     removable_wall_slot($slot);
   } 
 }
@@ -749,24 +787,36 @@ module single_cross_removable_divider_wall(
 
       if(left_slots)
         translate([0,-divider_size.y-fudge,-fudge])
-        divider_slots_in_support(
+        arange_slots_in_support(
           slot=[$slot.x, $slot.y, $slot.z+fudge*2],
           divider_thickness=divider_size.y,
           divider_spacing=divider_size.y*2,
-          useable_width=$size.x);
+          useable_width=$size.x)
+          rotate([0,0,270])
+          translate([-$slot.x,$slot.y/2,0])
+          removable_wall_slot(
+            size = [$slot.x, $slot.y, $slot.z+fudge*2],
+            radius = 0);
 
       if(right_slots)
-      translate([0, divider_size.y+divider_size.y-$slot.y+fudge,-fudge])
-        divider_slots_in_support(
+        translate([0, divider_size.y+divider_size.y-$slot.y+fudge,-fudge])
+        arange_slots_in_support(
           slot=[$slot.x, $slot.y, $slot.z+fudge*2],
           divider_thickness=divider_size.y,
           divider_spacing=divider_size.y*2,
-          useable_width=$size.x);
+          useable_width=$size.x)
+          rotate([0,0,90])
+          translate([0,-$slot.y/2,0])
+          removable_wall_slot(
+            size = [$slot.x, $slot.y, $slot.z+fudge*2],
+            radius = 0);
     }
   //}
 }
 
-module divider_slots_in_support(
+
+//Creats the slots in the wall support
+module arange_slots_in_support(
     slot, 
     divider_thickness, //width
     divider_spacing, //width*2
@@ -778,23 +828,48 @@ module divider_slots_in_support(
   assert(is_num(useable_width), "useable_width must be a number");
 
   count = divider_wall_count(divider_thickness=divider_thickness, divider_spacing=divider_spacing, useable_width=useable_width);
-
-  echo("divider_slots_in_support", count=count, divider_thickness=divider_thickness, divider_spacing=divider_spacing, useable_width=useable_width );
   
   if(count > 0)
     union()
       for(i=[0:count-1])
         translate([divider_thickness+(divider_thickness+divider_spacing)*i,0,0])
-        removable_wall_slot(slot);
+        children();
 }
 
 module removable_wall_slot(
-  size = []
+  size = [],
+  radius = 0.5,
+  nubs = 0.5
 ){
   assert(is_list(size), "size must be a list");
   assert(is_num(size.x), "size.x must be a number");
   assert(is_num(size.y), "size.y must be a number");
   assert(is_num(size.z), "size.z must be a number");
 
-  cube(size);
+  fudge = 0.001;
+  
+  slot_width = size[iDividerRemovable_SlotWidth];
+  slot_depth = size[iDividerRemovable_SlotDepth];
+  slot_height = size.z;
+  //echo("removable_wall_slot", size=size);
+  difference(){
+    translate([slot_width/2,0,slot_height/2])
+    rotate([0,270,270])
+    CubeWithRoundedCorner(
+      size=[slot_height,slot_width,slot_depth], 
+      cornerRadius = slot_width * radius,
+      center=true);
+    
+    nub_radius = nubs+slot_depth;
+    nub_pos = 5;
+    
+    translate([-fudge,nub_radius-nubs, nub_pos])
+    rotate([0,90,0])
+    cylinder(d=nub_radius, h=slot_width+fudge*2);
+
+    translate([-fudge,-nub_radius+nubs, nub_pos])
+    rotate([0,90,0])
+    cylinder(d=nub_radius, h=slot_width+fudge*2);
+
+  }
 }
