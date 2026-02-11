@@ -1,6 +1,6 @@
-include <thirdparty/ub_sbogen.scad>
-include <module_utility_wallcutout.scad>
-include <functions_general.scad>
+include <../thirdparty/ub_sbogen.scad>
+include <../utility/wallcutout.scad>
+include <../functions_general.scad>
 
 utility_demo = false;
 
@@ -447,60 +447,6 @@ module rotate_around_point(point=[], rotation=[]){
   children();
 }
 
-//sequential bridging for hanging hole. 
-//ref: https://hydraraptor.blogspot.com/2014/03/buried-nuts-and-hanging-holes.html
-//ref: https://www.youtube.com/watch?v=KBuWcT8XkhA
-module SequentialBridgingDoubleHole(
-  outerHoleRadius = 0,
-  outerHoleDepth = 0,
-  innerHoleRadius = 0,
-  innerHoleDepth = 0,
-  overhangBridgeCount = 2,
-  overhangBridgeThickness = 0.3,
-  overhangBridgeCutin = 0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
-  magnetCaptiveHeight = 0,
-  ) 
-{
-  fudgeFactor = 0.01;
-  
-  hasOuter = outerHoleRadius > 0 && outerHoleDepth >0;
-  hasInner = innerHoleRadius > 0 && innerHoleDepth > 0;
-  bridgeRequired = hasOuter && hasInner && outerHoleRadius > innerHoleRadius && innerHoleDepth > outerHoleDepth;
-  overhangBridgeCount = bridgeRequired ? overhangBridgeCount : 0;
-  overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
-  outerPlusBridgeHeight = hasOuter ? outerHoleDepth + overhangBridgeHeight : 0;
-  
-  if(hasOuter || hasInner)
-  union(){
-    difference(){
-      if (hasOuter) {
-        // move the cylinder up into the body to create internal void
-        translate([0,0,magnetCaptiveHeight])
-        if($children >=1){
-          translate([0,0,outerHoleDepth]);
-          cylinder(r=outerHoleRadius, h=overhangBridgeHeight+fudgeFactor);
-          children(0); 
-        } else { 
-          cylinder(r=outerHoleRadius, h=outerPlusBridgeHeight+fudgeFactor);
-        }
-      }
-      
-      if (overhangBridgeCount > 0) {
-        for(i = [0:overhangBridgeCount-1]) 
-          rotate([0,0,180/overhangBridgeCount*i])
-          for(x = [0:1]) 
-          rotate([0,0,180]*x)
-            translate([-outerHoleRadius,innerHoleRadius-overhangBridgeCutin,outerHoleDepth+overhangBridgeThickness*i])
-            cube([outerHoleRadius*2, outerHoleRadius, overhangBridgeThickness*overhangBridgeCount+fudgeFactor*2]);
-              }
-      }
-      
-      if (hasInner) {
-        translate([0,0,outerPlusBridgeHeight])
-        cylinder(r=innerHoleRadius, h=innerHoleDepth-outerPlusBridgeHeight);
-    }
-  }
-}
 
 //Creates a cube with a single rounded corner.
 //Centered around the rounded corner

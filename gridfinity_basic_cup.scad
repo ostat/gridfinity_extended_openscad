@@ -83,6 +83,10 @@ magnet_easy_release = "auto";//["off","auto","inner","outer"]
 magnet_side_access = false;
 // raise the magnet void inside the part for print-in-magnets
 magnet_captive_height = 0; // .1
+// add a wavy pattern to the magnet hole
+magnet_crush_depth = 0; //0.1
+// add a chamfer to the magent hole
+magnet_chamfer = 0; //0.1
 //size of screw, diameter and height. Zack's original used 3 and 6
 screw_size = [3, 6]; // .1
 //size of center magnet, diameter and height. 
@@ -336,6 +340,8 @@ gridfinity_cup(
     magnetEasyRelease = magnet_easy_release, 
     magnetSideAccess = magnet_side_access,
     magnetCaptiveHeight = magnet_captive_height,
+    magnetCrushDepth = magnet_crush_depth,
+    magnetChamfer = magnet_chamfer,
     centerMagnetSize = center_magnet_size, 
     screwSize = enable_screws?screw_size:[0,0],
     holeOverhangRemedy = hole_overhang_remedy, 

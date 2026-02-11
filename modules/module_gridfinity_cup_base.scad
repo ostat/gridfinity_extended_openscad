@@ -46,6 +46,8 @@ iCupBase_FlatBaseRoundedEasyPrint=15;
 iCupBase_MagnetCaptiveHeight=16;
 iCupBase_AlignGrid=17;
 iCupBase_MagnetSideAccess=18;
+iCupBase_MagnetCrushDepth=19;
+iCupBase_MagnetChamfer=20;
 
 iCylinderDimension_Diameter=0;
 iCylinderDimension_Height=1;
@@ -103,6 +105,8 @@ function CupBaseSettings(
     flatBaseRoundedRadius=-1,
     flatBaseRoundedEasyPrint=-1,
     magnetCaptiveHeight = 0,
+    magnetCrushDepth = 0,
+    magnetChamfer = 0,
     alignGrid = ["near", "near"],
     magnetSideAccess = false
     ) = 
@@ -141,13 +145,15 @@ function CupBaseSettings(
       flatBaseRoundedEasyPrint,
       magnetCaptiveHeight,
       alignGrid,
-      magnetSideAccess
+      magnetSideAccess,
+      magnetCrushDepth,
+      magnetChamfer
       ],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
   
 function ValidateCupBaseSettings(settings, num_x, num_y) =
-  assert(is_list(settings) && len(settings) == 19, typeerror_list("CupBase Settings", settings, 19))
+  assert(is_list(settings) && len(settings) == 21, typeerror_list("CupBase Settings", settings, 19))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_CenterMagnetSize]) && len(settings[iCupBase_CenterMagnetSize])==2, "CenterMagnet Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_ScrewSize]) && len(settings[iCupBase_ScrewSize])==2, "ScrewSize Magnet Setting must be a list of length 2")
@@ -181,5 +187,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       settings[iCupBase_FlatBaseRoundedEasyPrint],
       settings[iCupBase_MagnetCaptiveHeight],
       settings[iCupBase_AlignGrid],
-      settings[iCupBase_MagnetSideAccess]
+      settings[iCupBase_MagnetSideAccess],
+      settings[iCupBase_MagnetCrushDepth],
+      settings[iCupBase_MagnetChamfer]
       ];

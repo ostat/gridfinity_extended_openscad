@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'stanley_basic_cup.scad'. Generated 2026-02-11 08:23
-//Content hash 0579B011B19124EACF21D4CB44D5A6440912676EA990DA218AF3ECA1CB9D4D74
+//Combined version of 'stanley_basic_cup.scad'. Generated 2026-02-11 22:09
+//Content hash 951B6BDAD1A3E472282323C7FC2CFA276EB8EB85A03349EB7C8C1AB017F027AE
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -2442,6 +2442,7 @@ module cutout_pattern(
 
 
 
+
 griditemholder_demo = false;
 
 if(griditemholder_demo)
@@ -3666,6 +3667,8 @@ iCupBase_FlatBaseRoundedEasyPrint=15;
 iCupBase_MagnetCaptiveHeight=16;
 iCupBase_AlignGrid=17;
 iCupBase_MagnetSideAccess=18;
+iCupBase_MagnetCrushDepth=19;
+iCupBase_MagnetChamfer=20;
 
 iCylinderDimension_Diameter=0;
 iCylinderDimension_Height=1;
@@ -3723,6 +3726,8 @@ function CupBaseSettings(
     flatBaseRoundedRadius=-1,
     flatBaseRoundedEasyPrint=-1,
     magnetCaptiveHeight = 0,
+    magnetCrushDepth = 0,
+    magnetChamfer = 0,
     alignGrid = ["near", "near"],
     magnetSideAccess = false
     ) = 
@@ -3761,13 +3766,15 @@ function CupBaseSettings(
       flatBaseRoundedEasyPrint,
       magnetCaptiveHeight,
       alignGrid,
-      magnetSideAccess
+      magnetSideAccess,
+      magnetCrushDepth,
+      magnetChamfer
       ],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
   
 function ValidateCupBaseSettings(settings, num_x, num_y) =
-  assert(is_list(settings) && len(settings) == 19, typeerror_list("CupBase Settings", settings, 19))
+  assert(is_list(settings) && len(settings) == 21, typeerror_list("CupBase Settings", settings, 19))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_CenterMagnetSize]) && len(settings[iCupBase_CenterMagnetSize])==2, "CenterMagnet Magnet Setting must be a list of length 2")
   assert(is_list(settings[iCupBase_ScrewSize]) && len(settings[iCupBase_ScrewSize])==2, "ScrewSize Magnet Setting must be a list of length 2")
@@ -3801,7 +3808,9 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
       settings[iCupBase_FlatBaseRoundedEasyPrint],
       settings[iCupBase_MagnetCaptiveHeight],
       settings[iCupBase_AlignGrid],
-      settings[iCupBase_MagnetSideAccess]
+      settings[iCupBase_MagnetSideAccess],
+      settings[iCupBase_MagnetCrushDepth],
+      settings[iCupBase_MagnetChamfer]
       ];
 //CombinedEnd from path module_gridfinity_cup_base.scad
 //Combined from path module_magnet.scad
@@ -3841,7 +3850,9 @@ module MagnetAndScrewRecess(
   magnetCaptiveHeight = 0,
   easyReleaseRotation = 0,
   magnetRotation = 0,
-  magnetCaptiveSideAccessSize = [0,0,0]){
+  magnetCaptiveSideAccessSize = [0,0,0],
+  magnetCrushDepth=0.2,
+  magnetChamfer = 1){
   fudgeFactor = 0.01;
     union(){
       SequentialBridgingDoubleHole(
@@ -3851,7 +3862,20 @@ module MagnetAndScrewRecess(
         innerHoleDepth = screwDepth > 0 ? screwDepth+fudgeFactor : 0,
         overhangBridgeCount = overhangFixLayers,
         overhangBridgeThickness = overhangFixDepth,
-        magnetCaptiveHeight = magnetCaptiveHeight);
+        magnetCaptiveHeight = magnetCaptiveHeight)
+        union(){
+          cylinder_wavy(
+            r=magnetDiameter/2, 
+            h=$outer_height,
+            amplitude=magnetCrushDepth,
+            frequency = 8);
+          chamferedCylinder(
+            r=magnetDiameter/2-magnetCrushDepth*2, 
+            h=$outer_height,
+            bottomChamfer = magnetChamfer);
+        }    
+        
+
 
       if(enableSideAccess){
         translate([0,0,magnetCaptiveHeight])
@@ -3860,7 +3884,7 @@ module MagnetAndScrewRecess(
         cube(magnetCaptiveSideAccessSize);
       }
       rotate(enableSideAccess ? [0,0,45+180] : [0,0,easyReleaseRotation])
-      magnet_easy_release(
+      magnet_release(
         magnetDiameter = magnetDiameter,
         magnetThickness = magnetThickness+magnetCaptiveHeight,
         easyMagnetRelease = easyMagnetRelease
@@ -3868,7 +3892,7 @@ module MagnetAndScrewRecess(
   }
 }
 
-module magnet_easy_release(
+module magnet_release(
   magnetDiameter = 10,
   magnetThickness = 2,
   easyMagnetRelease = true,
@@ -3890,20 +3914,230 @@ module magnet_easy_release(
         translate([magnetDiameter/2+releaseLength,0,0])  
           cylinder(d=releaseWidth, h=magnetThickness);
       }
-      champherRadius = min(magnetThickness, releaseLength+releaseWidth/2);
+      chamferRadius = min(magnetThickness, releaseLength+releaseWidth/2);
       
       totalReleaseLength = magnetDiameter/2+releaseLength+releaseWidth/2;
       
       translate([totalReleaseLength,-releaseWidth/2-fudgeFactor,magnetThickness])
       rotate([270,0,90])
       roundedCorner(
-        radius = champherRadius, 
+        radius = chamferRadius,
         length = releaseWidth+2*fudgeFactor, 
         height = totalReleaseLength);
     }
   }
 }
 //CombinedEnd from path module_magnet.scad
+//Combined from path utilities.scad
+
+
+
+
+
+
+//A single file for all the utility modules to make the easier and cleaner to import.
+//CombinedEnd from path utilities.scad
+//Combined from path circle_wavy.scad
+
+
+wavy_circle_demo = false;
+
+if(wavy_circle_demo && $preview){
+  #circle_wavy(r=20);
+  
+  circle(r=20);
+  
+  translate([50,0,0])
+  cylinder_wavy();
+}
+
+module circle_wavy(
+    r = 20,
+    amplitude = 1,
+    frequency = 12,
+    steps = 360)
+{
+    assert(is_num(steps) && steps > 0, "Steps must be positive");
+    assert(is_num(frequency) && frequency > 0, "Frequency must be positive");
+    assert(is_num(amplitude) && amplitude >= 0, "Amplitude must be positive");
+    assert(is_num(r) && r > 0, "Radius must be positive");
+
+    if(amplitude == 0){
+        circle(r=r);
+    }
+    else {
+        outer = [
+            for (i = [0:steps])
+                let(
+                    angle = i * 360 / steps,
+                    rad = r + sin(angle * frequency) * amplitude
+                )
+                [ rad * cos(angle), rad * sin(angle) ]
+        ];
+
+        polygon(outer);
+    }
+}
+
+module cylinder_wavy(
+    r = 20,
+    h = 20,
+    amplitude = 1,
+    frequency = 12,
+    steps = 360) {
+
+    assert(is_num(steps) && steps > 0, "Steps must be positive");
+    assert(is_num(frequency) && frequency > 0, "Frequency must be positive");
+    assert(is_num(amplitude) && amplitude >= 0, "Amplitude must be positive");
+    assert(is_num(r) && r > 0, "r must be positive");
+    assert(is_num(h) && h > 0, "h must be positive");
+
+    linear_extrude(height=h)
+      circle_wavy(
+      r = r,
+      amplitude = amplitude,
+      frequency = frequency,
+      steps = steps);
+}
+//CombinedEnd from path circle_wavy.scad
+//Combined from path SequentialBridgingDoubleHole.scad
+
+
+//sequential bridging for hanging hole. 
+//ref: https://hydraraptor.blogspot.com/2014/03/buried-nuts-and-hanging-holes.html
+//ref: https://www.youtube.com/watch?v=KBuWcT8XkhA
+
+SequentialBridgingDoubleHole_demo = false;
+
+if(SequentialBridgingDoubleHole_demo && $preview){
+  $fn = 64;
+  translate([0,0,0])
+  SequentialBridgingDoubleHole(
+    outerHoleRadius = 10,
+    outerHoleDepth = 5,
+    innerHoleRadius = 5,
+    innerHoleDepth = 10,
+    overhangBridgeCount = 2,
+    overhangBridgeThickness = 0.3,
+    overhangBridgeCutin = 0.05,
+    magnetCaptiveHeight = 0);
+    
+    
+  translate([25,0,0])
+  SequentialBridgingDoubleHole(
+    outerHoleRadius = 10,
+    outerHoleDepth = 5,
+    innerHoleRadius = 5,
+    innerHoleDepth = 10,
+    overhangBridgeCount = 2,
+    overhangBridgeThickness = 0.3,
+    overhangBridgeCutin = 0.05,
+    magnetCaptiveHeight = 0)
+    cylinder(r=10, h=$outer_height );
+
+    translate([75,0,0])
+    SequentialBridgingDoubleHole(
+    outerHoleRadius = 10,
+    outerHoleDepth = 5,
+    innerHoleRadius = 5,
+    innerHoleDepth = 10,
+    overhangBridgeCount = 3,
+    overhangBridgeThickness = 0.3,
+    overhangBridgeCutin =0.05);
+
+    translate([75,30,0])
+    rotate([180,0,0])
+    difference(){
+    cylinder(h=10,r=15);
+    translate([0,0,-0.01])  
+    SequentialBridgingDoubleHole(
+        outerHoleRadius = 10,
+        outerHoleDepth = 5+0.01,
+        innerHoleRadius = 5,
+        innerHoleDepth = 10,
+        overhangBridgeCount = 3,
+        overhangBridgeThickness = 0.3,
+        overhangBridgeCutin =0.05);
+    }
+
+    translate([75,60,0])
+    SequentialBridgingDoubleHole(
+    outerHoleRadius = 0,
+    outerHoleDepth = 5,
+    innerHoleRadius = 5,
+    innerHoleDepth = 10,
+    overhangBridgeCount = 0,
+    overhangBridgeThickness = 0.3,
+    overhangBridgeCutin =0.05);
+
+    translate([75,90,0])
+    rotate([180,0,0])
+    difference(){
+    cylinder(h=10,r=15);
+    translate([0,0,-0.01])  
+    SequentialBridgingDoubleHole(
+        outerHoleRadius = 0,
+        outerHoleDepth = 5+0.01,
+        innerHoleRadius = 5,
+        innerHoleDepth = 10,
+        overhangBridgeCount = 0,
+        overhangBridgeThickness = 0.3,
+        overhangBridgeCutin =0.05);
+}
+}
+
+module SequentialBridgingDoubleHole(
+  outerHoleRadius = 0,
+  outerHoleDepth = 0,
+  innerHoleRadius = 0,
+  innerHoleDepth = 0,
+  overhangBridgeCount = 2,
+  overhangBridgeThickness = 0.3,
+  overhangBridgeCutin = 0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
+  magnetCaptiveHeight = 0) 
+{
+  fudgeFactor = 0.01;
+  
+  hasOuter = outerHoleRadius > 0 && outerHoleDepth >0;
+  hasInner = innerHoleRadius > 0 && innerHoleDepth > 0;
+  bridgeRequired = hasOuter && hasInner && outerHoleRadius > innerHoleRadius && innerHoleDepth > outerHoleDepth;
+  overhangBridgeCount = bridgeRequired ? overhangBridgeCount : 0;
+  overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
+  outerPlusBridgeHeight = hasOuter ? outerHoleDepth + overhangBridgeHeight : 0;
+  $outer_height = outerPlusBridgeHeight+fudgeFactor;
+  
+  if(hasOuter || hasInner)
+  union(){
+    difference(){
+      if (hasOuter) {
+        // move the cylinder up into the body to create internal void
+        translate([0,0,magnetCaptiveHeight])
+        if($children >=1){
+          //translate([0,0,outerHoleDepth]);
+          //cylinder(r=outerHoleRadius, h=overhangBridgeHeight+fudgeFactor);
+          children(0); 
+        } else { 
+          cylinder(r=outerHoleRadius, h=outerPlusBridgeHeight+fudgeFactor);
+        }
+      }
+      
+      if (overhangBridgeCount > 0) {
+        for(i = [0:overhangBridgeCount-1]) 
+          rotate([0,0,180/overhangBridgeCount*i])
+          for(x = [0:1]) 
+          rotate([0,0,180]*x)
+            translate([-outerHoleRadius,innerHoleRadius-overhangBridgeCutin,outerHoleDepth+overhangBridgeThickness*i])
+            cube([outerHoleRadius*2, outerHoleRadius, overhangBridgeThickness*overhangBridgeCount+fudgeFactor*2]);
+          }
+      }
+      
+      if (hasInner) {
+        translate([0,0,outerPlusBridgeHeight])
+        cylinder(r=innerHoleRadius, h=innerHoleDepth-outerPlusBridgeHeight);
+    }
+  }
+}
+//CombinedEnd from path SequentialBridgingDoubleHole.scad
 //Combined from path module_utility.scad
 
 
@@ -4357,60 +4591,6 @@ module rotate_around_point(point=[], rotation=[]){
   children();
 }
 
-//sequential bridging for hanging hole. 
-//ref: https://hydraraptor.blogspot.com/2014/03/buried-nuts-and-hanging-holes.html
-//ref: https://www.youtube.com/watch?v=KBuWcT8XkhA
-module SequentialBridgingDoubleHole(
-  outerHoleRadius = 0,
-  outerHoleDepth = 0,
-  innerHoleRadius = 0,
-  innerHoleDepth = 0,
-  overhangBridgeCount = 2,
-  overhangBridgeThickness = 0.3,
-  overhangBridgeCutin = 0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
-  magnetCaptiveHeight = 0,
-  ) 
-{
-  fudgeFactor = 0.01;
-  
-  hasOuter = outerHoleRadius > 0 && outerHoleDepth >0;
-  hasInner = innerHoleRadius > 0 && innerHoleDepth > 0;
-  bridgeRequired = hasOuter && hasInner && outerHoleRadius > innerHoleRadius && innerHoleDepth > outerHoleDepth;
-  overhangBridgeCount = bridgeRequired ? overhangBridgeCount : 0;
-  overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
-  outerPlusBridgeHeight = hasOuter ? outerHoleDepth + overhangBridgeHeight : 0;
-  
-  if(hasOuter || hasInner)
-  union(){
-    difference(){
-      if (hasOuter) {
-        // move the cylinder up into the body to create internal void
-        translate([0,0,magnetCaptiveHeight])
-        if($children >=1){
-          translate([0,0,outerHoleDepth]);
-          cylinder(r=outerHoleRadius, h=overhangBridgeHeight+fudgeFactor);
-          children(0); 
-        } else { 
-          cylinder(r=outerHoleRadius, h=outerPlusBridgeHeight+fudgeFactor);
-        }
-      }
-      
-      if (overhangBridgeCount > 0) {
-        for(i = [0:overhangBridgeCount-1]) 
-          rotate([0,0,180/overhangBridgeCount*i])
-          for(x = [0:1]) 
-          rotate([0,0,180]*x)
-            translate([-outerHoleRadius,innerHoleRadius-overhangBridgeCutin,outerHoleDepth+overhangBridgeThickness*i])
-            cube([outerHoleRadius*2, outerHoleRadius, overhangBridgeThickness*overhangBridgeCount+fudgeFactor*2]);
-              }
-      }
-      
-      if (hasInner) {
-        translate([0,0,outerPlusBridgeHeight])
-        cylinder(r=innerHoleRadius, h=innerHoleDepth-outerPlusBridgeHeight);
-    }
-  }
-}
 
 //Creates a cube with a single rounded corner.
 //Centered around the rounded corner
@@ -5059,7 +5239,7 @@ module R(x=0,y=0,z=0,help=false)
     HelpTxt("R",["x",x,"y",y,"z",z],help);
 }
 //CombinedEnd from path ub_sbogen.scad
-//Combined from path module_utility_wallcutout.scad
+//Combined from path wallcutout.scad
 
 
 iwalcutoutconfig_type = 0;
@@ -5247,8 +5427,9 @@ module WallCutout(
   }
 }
 
-//CombinedEnd from path module_utility_wallcutout.scad
-//Combined from path module_chamfered_shapes.scad
+//CombinedEnd from path wallcutout.scad
+//Combined from path chamfered_shapes.scad
+
 
 
 
@@ -5348,7 +5529,13 @@ module chamferedHalfCylinder(h, r, circleFn, chamfer=0.5) {
   }
 }
 
-module chamferedCylinder(h, r, circleFn, chamfer=0, topChamfer = 0.5, bottomChamfer = 0) {
+module chamferedCylinder(
+    h, 
+    r, 
+    circleFn, 
+    chamfer=0, 
+    topChamfer = 0, 
+    bottomChamfer = 0) {
   topChamfer = min(h, chamfer > 0 ? chamfer : topChamfer);
   bottomChamfer = min(h, chamfer > 0 ? chamfer : bottomChamfer);
   
@@ -5363,7 +5550,7 @@ module chamferedCylinder(h, r, circleFn, chamfer=0, topChamfer = 0.5, bottomCham
       cylinder(h=bottomChamfer, r1=r+bottomChamfer, r2=r,$fn = circleFn);
   }
 }
-//CombinedEnd from path module_chamfered_shapes.scad
+//CombinedEnd from path chamfered_shapes.scad
 //Combined from path module_pattern_voronoi.scad
 
 
@@ -6672,7 +6859,10 @@ module grid_block(
           easyReleaseRotation = (cupBase_settings[iCupBase_NormalisedMagnetEasyRelease] == MagnetEasyRelease_outer ? 0 : 180),
           magnetRotation = magnet_rotation,
           enableSideAccess = cupBase_settings[iCupBase_MagnetSideAccess],
-          magnetCaptiveSideAccessSize = [magnetCaptiveSideAccessSize, magnet_size[iCylinderDimension_Diameter], magnet_size[iCylinderDimension_Height]+0.1]);
+          magnetCaptiveSideAccessSize = [magnetCaptiveSideAccessSize, magnet_size[iCylinderDimension_Diameter], magnet_size[iCylinderDimension_Height]+0.1],
+          magnetCrushDepth = cupBase_settings[iCupBase_MagnetCrushDepth],
+          magnetChamfer = cupBase_settings[iCupBase_MagnetChamfer]
+        );
     }
   }
  

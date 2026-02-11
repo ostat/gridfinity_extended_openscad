@@ -1,4 +1,5 @@
 include <module_utility.scad>
+
 // Creates a slot with a small chamfer for easy insertertion
 //#slotCutout(100,20,40);
 //width = width of slot
@@ -94,7 +95,13 @@ module chamferedHalfCylinder(h, r, circleFn, chamfer=0.5) {
   }
 }
 
-module chamferedCylinder(h, r, circleFn, chamfer=0, topChamfer = 0.5, bottomChamfer = 0) {
+module chamferedCylinder(
+    h, 
+    r, 
+    circleFn, 
+    chamfer=0, 
+    topChamfer = 0, 
+    bottomChamfer = 0) {
   topChamfer = min(h, chamfer > 0 ? chamfer : topChamfer);
   bottomChamfer = min(h, chamfer > 0 ? chamfer : bottomChamfer);
   
