@@ -159,6 +159,10 @@ wallpattern_depth = 0; // 0.1
 wallpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
 wallpattern_pattern_voronoi_noise = 0.75; //0.01
+//voronoi fill border cells to prevent overhangs
+wallpattern_pattern_voronoi_fill_border = false;
+//voronoi border margin (auto if -1)
+wallpattern_pattern_voronoi_border_margin = -1; //0.1
 //brick pattern center weight
 wallpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
@@ -191,6 +195,10 @@ floorpattern_depth = 0; // 0.1
 floorpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
 floorpattern_pattern_voronoi_noise = 0.75; //0.01
+//voronoi fill border cells to prevent overhangs
+floorpattern_pattern_voronoi_fill_border = false;
+//voronoi border margin (auto if -1)
+floorpattern_pattern_voronoi_border_margin = -1; //0.1
 //brick pattern center weight
 floorpattern_pattern_brick_weight = 5;
 //$fs for floor pattern, min size face.
@@ -421,7 +429,9 @@ module silverware_pockets(defs, md=magnet_size[1], sd=screw_size[1]) {
       patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
       patternBrickWeight = wallpattern_pattern_brick_weight,
       patternFs = wallpattern_pattern_quality,
-      patternColored = wallpattern_colored), 
+      patternColored = wallpattern_colored,
+      patternVoronoiFillBorder = wallpattern_pattern_voronoi_fill_border,
+      patternVoronoiBorderMargin = wallpattern_pattern_voronoi_border_margin), 
     floor_pattern_settings = PatternSettings(
       patternEnabled = floorpattern_enabled, 
       patternStyle = floorpattern_style, 
@@ -436,7 +446,9 @@ module silverware_pockets(defs, md=magnet_size[1], sd=screw_size[1]) {
       patternGridChamfer = floorpattern_pattern_grid_chamfer,
       patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
       patternBrickWeight = floorpattern_pattern_brick_weight,
-      patternFs = floorpattern_pattern_quality), 
+      patternFs = floorpattern_pattern_quality,
+      patternVoronoiFillBorder = floorpattern_pattern_voronoi_fill_border,
+      patternVoronoiBorderMargin = floorpattern_pattern_voronoi_border_margin), 
     wallcutout_vertical_settings = WallCutoutSettings(),
     wallcutout_horizontal_settings = WallCutoutSettings(
       type = wallcutout_horizontal, 
