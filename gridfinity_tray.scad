@@ -3,6 +3,7 @@ use <modules/module_gridfinity_block.scad>
 include <modules/gridfinity_constants.scad>
 include <modules/functions_general.scad>
 include <modules/module_gridfinity_cup_base.scad>
+include <modules/module_wallplacard.scad>
 
 /*<!!start gridfinity_tray!!>*/
 /* [Tray] */
@@ -190,6 +191,20 @@ wallcutout_horizontal_angle=70;
 //default will be binHeight
 wallcutout_horizontal_height=0;
 wallcutout_horizontal_corner_radius=5;
+
+/* [Wall Placard] */
+// A wall placard is a filled-in area or a slot on the outside of a wall for placing a label.
+wallplacard_style ="disabled"; //[disabled, rectangle, slot, ellipse]
+// wall to enable on, front, back, left, right. 0: disabled; 1: enabled
+wallplacard_walls=[1,0,0,0];
+// Width, Height, Depth. All in mm. Depth of 0 uses wall thickness. For label slot, the size of the cutout.
+wallplacard_size = [67.5,24.5,1.25]; // 0.01
+// Corner radius in mm.
+wallplacard_corner_radius = 3; // 0.01
+// Offsets from wall center: horizontal, vertical, depth. For label slot, the depth offset is from the wall exterior surface. Negative depth moves toward the interior.
+wallplacard_offset = [0,0,0]; // 0.01
+// The label slot makes an open-top frame to hold a label. Top edge reveal, side/bottom coverage, frame width, frame depth (all in mm). Will overlap the label by coverage. Frame will be width wide and depth deep. If the corner radius is larger, it will override width. Depth is in addition to the wall placard depth value.
+wallplacard_slot_frame = [4, 2, 3, 1.5];  // 0.01
 
 /* [Extendable] */
 extension_x_enabled = "disabled"; //[disabled, front, back]
@@ -431,6 +446,13 @@ module gridfinity_tray(
     angle = wallcutout_horizontal_angle,
     height = wallcutout_horizontal_height, 
     corner_radius = wallcutout_horizontal_corner_radius),
+  wallplacard_settings = WallplacardSettings(
+    walls = wallplacard_walls,
+    style = wallplacard_style,
+    size = wallplacard_size,
+    offset = wallplacard_offset,
+    slot_frame = wallplacard_slot_frame,
+    corner_radius = wallplacard_corner_radius),
   extendable_Settings = ExtendableSettings(
     extendablexEnabled = extension_x_enabled, 
     extendablexPosition = extension_x_position, 
@@ -469,6 +491,7 @@ module gridfinity_tray(
       wall_pattern_settings = wall_pattern_settings, 
       wallcutout_vertical_settings = wallcutout_vertical_settings,
       wallcutout_horizontal_settings = wallcutout_horizontal_settings,
+      wallplacard_settings = wallplacard_settings,
       extendable_Settings = ExtendableSettings(
         extendablexEnabled = extension_x_enabled, 
         extendablexPosition = extension_x_position, 

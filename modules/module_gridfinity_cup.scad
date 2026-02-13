@@ -152,6 +152,14 @@ default_wallcutout_horizontal_angle=70;
 default_wallcutout_horizontal_height=0;
 default_wallcutout_horizontal_corner_radius=5;
 
+/* [Wall Placard] */
+default_wallplacard_style ="disabled";
+default_wallplacard_walls=[1,0,0,0];
+default_wallplacard_size = [67.5,24.5,1.25];
+default_wallplacard_corner_radius = 3;
+default_wallplacard_offset = [0,0,0];
+default_wallplacard_slot_frame = [4,2,3,1.5];
+
 /* [Wall Pattern] */
 default_wallpattern_enabled=false; 
 default_wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
@@ -320,6 +328,13 @@ module gridfinity_cup(
     angle = default_wallcutout_horizontal_angle,
     height = default_wallcutout_horizontal_height, 
     corner_radius = default_wallcutout_horizontal_corner_radius),
+  wallplacard_settings = WallplacardSettings(
+    walls = default_wallplacard_walls,
+    style = default_wallplacard_style,
+    size = default_wallplacard_size,
+    offset = default_wallplacard_offset,
+    slot_frame = default_wallplacard_slot_frame,
+    corner_radius = default_wallplacard_corner_radius),
   extendable_Settings = ExtendableSettings(
     extendablexEnabled = default_extension_x_enabled, 
     extendablexPosition = default_extension_x_position, 
@@ -425,6 +440,14 @@ module gridfinity_cup(
   if(env_generate_filter_enabled("cup"))
   debug_cut()
   union(){
+    wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
+    bin_placards(
+      num_x = num_x,
+      num_y = num_y,
+      wall_thickness = wall_thickness,
+      wall_height = wallTop,
+      wallplacard_settings = wallplacard_settings);
+
     difference() {
 
         border = 0; //Believe this to be no longer needed
@@ -452,7 +475,6 @@ module gridfinity_cup(
            
         cutoutclearance_divider = env_corner_radius()/2;
 
-        wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
 
         tapered_setback = tapered_setback < 0 ? env_corner_radius() : tapered_setback;
         tapered_corner_size =
@@ -1063,6 +1085,52 @@ module bin_cutouts(
           width = tapered_corner_size + tapered_setback);
       }
     }
+  }
+}
+
+module bin_placards(
+  num_x,  // gridfinity units
+  num_y,  // gridfinity units
+  wall_thickness,  // unit mm
+  wall_height,  // unit mm
+  wallplacard_settings
+) {
+    wall_width_fb = gf_pitch*num_x;
+    wall_width_lr = gf_pitch*num_y;
+    slot_frame = wallplacard_settings[iwallplacardconfig_slot_frame];
+    placards = calculateWallplacards(
+      wall_width_fb = wall_width_fb,
+      wall_width_lr = wall_width_lr,
+      wall_height = wall_height,  // paying no attention to unusable stacking area at the bottom
+      wall_thickness = wall_thickness,
+      wallplacard_settings = wallplacard_settings
+    );
+    for(pdex = [0:len(placards)-1]) {
+      placard = placards[pdex];
+      //TODO: would this rotation and translation be better in the calculation function?
+      // 0==front, 1==back, 2==left, 3==right
+      rotation = (pdex == 0) ? 0 : (pdex == 1) ? 180 : (pdex == 2) ? 270 : 90;
+      // relative origin is at bottom left of front face, shift XY after the rotation
+      trans_x = (pdex == 0) ? 0 : (pdex == 1) ? wall_width_fb : (pdex == 2) ? 0             : wall_width_fb;
+      trans_y = (pdex == 0) ? 0 : (pdex == 1) ? wall_width_lr : (pdex == 2) ? wall_width_lr : 0;
+      //color = (pdex == 0) ? "blue" : (pdex == 1) ? "red" : (pdex == 2) ? "white" : "pink";
+      is_enabled = placard[0];
+      wp_style = placard[1];
+      if(wp_style != "disabled" && is_enabled) {
+        translate([trans_x, trans_y, 0])
+          rotate(a=rotation, v=[0,0,1])
+            Wallplacard(
+              style = wp_style,
+              width  = placard[2],
+              height = placard[3],
+              depth  = placard[4],
+              corner_radius = placard[5],
+              off_horiz = placard[6],
+              off_vert  = placard[7],
+              off_depth = placard[8],
+              slot_frame = slot_frame
+            );
+      }
   }
 }
 
