@@ -155,7 +155,7 @@ default_wallcutout_horizontal_corner_radius=5;
 /* [Wall Placard] */
 default_wallplacard_style ="disabled";
 default_wallplacard_walls=[1,0,0,0];
-default_wallplacard_size = [67.5,24.5,1.25];
+default_wallplacard_size = [67.5,24.5,0];
 default_wallplacard_corner_radius = 3;
 default_wallplacard_offset = [0,0,0];
 default_wallplacard_slot_frame = [4,2,3,1.5];

@@ -198,7 +198,7 @@ wallplacard_style ="disabled"; //[disabled, rectangle, slot, ellipse]
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled
 wallplacard_walls=[1,0,0,0];
 // Width, Height, Depth. All in mm. Depth of 0 uses wall thickness. For label slot, the size of the cutout.
-wallplacard_size = [67.5,24.5,1.25]; // 0.01
+wallplacard_size = [67.5,24.5,0]; // 0.01
 // Corner radius in mm.
 wallplacard_corner_radius = 3; // 0.01
 // Offsets from wall center: horizontal, vertical, depth. For label slot, the depth offset is from the wall exterior surface. Negative depth moves toward the interior.
