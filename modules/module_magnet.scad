@@ -1,4 +1,4 @@
-use <module_utility.scad>
+use <utility/utilities.scad>
 
 MagnetEasyRelease_off = "off";
 MagnetEasyRelease_auto = "auto";
@@ -32,7 +32,9 @@ module MagnetAndScrewRecess(
   magnetCaptiveHeight = 0,
   easyReleaseRotation = 0,
   magnetRotation = 0,
-  magnetCaptiveSideAccessSize = [0,0,0]){
+  magnetCaptiveSideAccessSize = [0,0,0],
+  magnetCrushDepth=0.2,
+  magnetChamfer = 1){
   fudgeFactor = 0.01;
     union(){
       SequentialBridgingDoubleHole(
@@ -42,7 +44,20 @@ module MagnetAndScrewRecess(
         innerHoleDepth = screwDepth > 0 ? screwDepth+fudgeFactor : 0,
         overhangBridgeCount = overhangFixLayers,
         overhangBridgeThickness = overhangFixDepth,
-        magnetCaptiveHeight = magnetCaptiveHeight);
+        magnetCaptiveHeight = magnetCaptiveHeight)
+        union(){
+          cylinder_wavy(
+            r=magnetDiameter/2, 
+            h=$outer_height,
+            amplitude=magnetCrushDepth,
+            frequency = 8);
+          chamferedCylinder(
+            r=magnetDiameter/2-magnetCrushDepth*2, 
+            h=$outer_height,
+            bottomChamfer = magnetChamfer);
+        }    
+        
+
 
       if(enableSideAccess){
         translate([0,0,magnetCaptiveHeight])
@@ -51,7 +66,7 @@ module MagnetAndScrewRecess(
         cube(magnetCaptiveSideAccessSize);
       }
       rotate(enableSideAccess ? [0,0,45+180] : [0,0,easyReleaseRotation])
-      magnet_easy_release(
+      magnet_release(
         magnetDiameter = magnetDiameter,
         magnetThickness = magnetThickness+magnetCaptiveHeight,
         easyMagnetRelease = easyMagnetRelease
@@ -59,7 +74,7 @@ module MagnetAndScrewRecess(
   }
 }
 
-module magnet_easy_release(
+module magnet_release(
   magnetDiameter = 10,
   magnetThickness = 2,
   easyMagnetRelease = true,
@@ -81,14 +96,14 @@ module magnet_easy_release(
         translate([magnetDiameter/2+releaseLength,0,0])  
           cylinder(d=releaseWidth, h=magnetThickness);
       }
-      champherRadius = min(magnetThickness, releaseLength+releaseWidth/2);
+      chamferRadius = min(magnetThickness, releaseLength+releaseWidth/2);
       
       totalReleaseLength = magnetDiameter/2+releaseLength+releaseWidth/2;
       
       translate([totalReleaseLength,-releaseWidth/2-fudgeFactor,magnetThickness])
       rotate([270,0,90])
       roundedCorner(
-        radius = champherRadius, 
+        radius = chamferRadius,
         length = releaseWidth+2*fudgeFactor, 
         height = totalReleaseLength);
     }

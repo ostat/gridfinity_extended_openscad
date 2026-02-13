@@ -98,7 +98,7 @@ center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
-box_corner_attachments_only = true;
+box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1

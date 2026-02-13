@@ -1,7 +1,7 @@
 include <thirdparty/ub_hexgrid.scad>
 include <functions_general.scad>
 include <functions_environment.scad>
-include <module_chamfered_shapes.scad>
+include <utility/chamfered_shapes.scad>
 
 griditemholder_demo = false;
 

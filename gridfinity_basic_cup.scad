@@ -83,6 +83,10 @@ magnet_easy_release = "auto";//["off","auto","inner","outer"]
 magnet_side_access = false;
 // raise the magnet void inside the part for print-in-magnets
 magnet_captive_height = 0; // .1
+// add a wavy pattern to the magnet hole
+magnet_crush_depth = 0; //0.1
+// add a chamfer to the magent hole
+magnet_chamfer = 0; //0.1
 //size of screw, diameter and height. Zack's original used 3 and 6
 screw_size = [3, 6]; // .1
 //size of center magnet, diameter and height. 
@@ -90,7 +94,7 @@ center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
-box_corner_attachments_only = true;
+box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
@@ -336,6 +340,8 @@ gridfinity_cup(
     magnetEasyRelease = magnet_easy_release, 
     magnetSideAccess = magnet_side_access,
     magnetCaptiveHeight = magnet_captive_height,
+    magnetCrushDepth = magnet_crush_depth,
+    magnetChamfer = magnet_chamfer,
     centerMagnetSize = center_magnet_size, 
     screwSize = enable_screws?screw_size:[0,0],
     holeOverhangRemedy = hole_overhang_remedy, 
