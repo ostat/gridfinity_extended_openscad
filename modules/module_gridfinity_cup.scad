@@ -1105,14 +1105,25 @@ module bin_placards(
       wall_thickness = wall_thickness,
       wallplacard_settings = wallplacard_settings
     );
+    clear_x = env_clearance().x / 2;
+    clear_y = env_clearance().y / 2;
     for(pdex = [0:len(placards)-1]) {
       placard = placards[pdex];
       //TODO: would this rotation and translation be better in the calculation function?
-      // 0==front, 1==back, 2==left, 3==right
-      rotation = (pdex == 0) ? 0 : (pdex == 1) ? 180 : (pdex == 2) ? 270 : 90;
       // relative origin is at bottom left of front face, shift XY after the rotation
-      trans_x = (pdex == 0) ? 0 : (pdex == 1) ? wall_width_fb : (pdex == 2) ? 0             : wall_width_fb;
-      trans_y = (pdex == 0) ? 0 : (pdex == 1) ? wall_width_lr : (pdex == 2) ? wall_width_lr : 0;
+      // 0==front, 1==back, 2==left, 3==right
+      rotation = (pdex == 0) ? 0
+               : (pdex == 1) ? 180
+               : (pdex == 2) ? 270
+               : 90;
+      trans_x  = (pdex == 0) ? 0
+               : (pdex == 1) ? wall_width_fb
+               : (pdex == 2) ? clear_x
+               : wall_width_fb-clear_x;
+      trans_y  = (pdex == 0) ? clear_y
+               : (pdex == 1) ? wall_width_lr-clear_y
+               : (pdex == 2) ? wall_width_lr
+               : 0;
       //color = (pdex == 0) ? "blue" : (pdex == 1) ? "red" : (pdex == 2) ? "white" : "pink";
       is_enabled = placard[0];
       wp_style = placard[1];

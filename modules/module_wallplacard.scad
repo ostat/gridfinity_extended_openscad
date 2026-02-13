@@ -90,7 +90,7 @@ function calculateWallplacard(
         off_horiz = raw_off_horiz + (wall_width / 2),
         off_vert  = raw_off_vert  + (wall_height / 2),
         off_depth = raw_off_depth +
-            ((wp_style == "slot") ? -0.25 : -(wall_thickness + 0.25)),  // TODO: why do I need that extra -0.25 to get flush?
+            ((wp_style == "slot") ? 0 : -wall_thickness),
 
         wp_corner_radius = wallplacard_settings[iwallplacardconfig_corner_radius],
         is_enabled = (wall_wall != 0),
@@ -112,6 +112,8 @@ module Wallplacard(
   off_depth,
   slot_frame) {
  
+  echo("PITCH", env_pitch());
+  echo("CLEAR", env_clearance());
   rotate([90,0,0])
   translate([off_horiz, off_vert, off_depth])
     if (style == "rectangle") {
