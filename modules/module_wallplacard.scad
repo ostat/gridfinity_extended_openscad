@@ -112,8 +112,6 @@ module Wallplacard(
   off_depth,
   slot_frame) {
  
-  echo("PITCH", env_pitch());
-  echo("CLEAR", env_clearance());
   rotate([90,0,0])
   translate([off_horiz, off_vert, off_depth])
     if (style == "rectangle") {
