@@ -20,6 +20,8 @@ jobs:
       - name: Download OpenSCAD
         shell: pwsh
         run: |
+          write-host $host
+
           $scadversion = 'OpenSCAD-2026.02.13-x86-64'
           $zipUrl = "https://files.openscad.org/snapshots/$($scadversion).zip"
           $zipPath = "$env:RUNNER_TEMP\openscad.zip"
