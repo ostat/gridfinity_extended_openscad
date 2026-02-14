@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-11 22:09
-//Content hash 591F4E5A595485B377F222063D8C98981706F6128E8492AAB65D0FC891C7449A
+//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-15 09:08
+//Content hash FD272EEBE0A1EC6C7C132967710E821FA6987A0C5F06545B70D9197A09C7A5B4
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -10150,9 +10150,9 @@ Pivot(messpunkt=messpunkt,p0=translate,active=[1,1,1,1,norm(translate)]);
 /*<!!end gridfinity_basic_cup!!>*/
 
 //Some online generators do not like direct setting of fa,fs,fn
-$fa = fa; 
-$fs = fs; 
-$fn = fn;  
+$fa = fa;
+$fs = fs;
+$fn = fn;
 
 set_environment(
   width = width,

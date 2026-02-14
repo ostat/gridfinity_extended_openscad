@@ -1,0 +1,30 @@
+name: PR OpenSCAD Test
+
+# Trigger workflow on any pull request
+on:
+  pull_request:
+    paths:
+      - "**/*.scad"        # Only run if OpenSCAD files change
+      - "scripts/**"       # Or your scripts change
+
+jobs:
+  test:
+    runs-on: windows-latest   # Use Windows runner for PowerShell
+
+    steps:
+      # Step 1: Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Install OpenSCAD if needed
+      - name: Install OpenSCAD
+        run: choco install openscad -y
+
+      # Step 3: Verify OpenSCAD installation
+      - name: Check OpenSCAD version
+        run: openscad --version
+
+      # Step 4: Run your PowerShell test script
+      - name: Run OpenSCAD tests
+        shell: pwsh
+        run: pwsh ./scripts/test-render.ps1
