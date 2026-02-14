@@ -16,15 +16,28 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Install OpenSCAD if needed
-      - name: Install OpenSCAD
-        run: choco install openscad -y
+      # Step 2: Download OpenSCAD portable zip (nightly or stable)
+      - name: Download OpenSCAD
+        shell: pwsh
+        run: |
+          $zipUrl = "https://files.openscad.org/snapshots/OpenSCAD-2026.02.13-x86-64.zip"
+          $zipPath = "$env:RUNNER_TEMP\openscad.zip"
+          Invoke-WebRequest -Uri $zipUrl -OutFile $zipPath
 
-      # Step 3: Verify OpenSCAD installation
-      - name: Check OpenSCAD version
-        run: openscad --version
+          $extractPath = "$env:RUNNER_TEMP\openscad"
+          Expand-Archive -LiteralPath $zipPath -DestinationPath $extractPath -Force
+
+          # Save path to exe as environment variable for later steps
+          $exePath = Join-Path $extractPath "OpenSCAD.exe"
+          Write-Host "OPENSCAD_PATH=$exePath" >> $env:GITHUB_ENV
+
+      # Step 3: Verify OpenSCAD is available
+      - name: Verify OpenSCAD
+        shell: pwsh
+        run: |
+          & "$env:OPENSCAD_PATH" --version
 
       # Step 4: Run your PowerShell test script
       - name: Run OpenSCAD tests
         shell: pwsh
-        run: pwsh ./scripts/test-render.ps1
+        run: pwsh ./scripts/test-render.ps1  -OpenScadPath $env:OPENSCAD_PATH
