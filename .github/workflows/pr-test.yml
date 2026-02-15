@@ -12,16 +12,25 @@ jobs:
     runs-on: windows-latest   # Use Windows runner for PowerShell
 
     steps:
-      # Step 1: Checkout the repo
+      # Checkout the repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Download OpenSCAD portable zip (nightly or stable)
+      - name: Dump PowerShell host info
+        shell: pwsh
+        run: |
+          Write-Host "=== PowerShell Host Info ==="
+          Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
+          Write-Host "Host version: $($Host.Version)"
+          Write-Host "Edition: $($PSVersionTable.PSEdition)"
+          Write-Host "OS: $($PSVersionTable.OS)"
+          Write-Host "Architecture: $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)"
+          Write-Host "============================"
+          
+      # Download OpenSCAD portable zip (nightly or stable)
       - name: Download OpenSCAD
         shell: pwsh
         run: |
-          write-host $host
-
           $scadversion = 'OpenSCAD-2026.02.13-x86-64'
           $zipUrl = "https://files.openscad.org/snapshots/$($scadversion).zip"
           $zipPath = "$env:RUNNER_TEMP\openscad.zip"
@@ -30,20 +39,20 @@ jobs:
 
           $extractPath = "$env:RUNNER_TEMP\openscad"
           write-host "Extracting souce:'$($zipPath)' to destination: '$($extractPath)'"
-          Expand-Archive -LiteralPath $zipPath -OutputPath $extractPath -Force
+          Expand-Archive -LiteralPath $zipPath -DestinationPath $extractPath -Force
 
           # Save path to exe as environment variable for later steps
           $exePath = Join-Path $extractPath "$($scadversion)\OpenSCAD.exe"
           write-host "Setting env path:'$($exePath )'"
           Write-Host "OPENSCAD_PATH=$exePath" >> $env:GITHUB_ENV
 
-      # Step 3: Verify OpenSCAD is available
+      # Verify OpenSCAD is available
       - name: Verify OpenSCAD
         shell: pwsh
         run: |
           & "$env:OPENSCAD_PATH" --version
 
-      # Step 4: Run your PowerShell test script
+      # Run your PowerShell test script
       - name: Run OpenSCAD tests
         shell: pwsh
         run: pwsh ./scripts/test-render.ps1  -OpenScadPath $env:OPENSCAD_PATH
