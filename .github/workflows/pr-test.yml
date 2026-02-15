@@ -32,6 +32,7 @@ jobs:
         id: download_openscad
         shell: pwsh
         run: |
+          #hard coding the version, as there is not 'latest' link
           $scadversion = 'OpenSCAD-2026.02.13-x86-64'
           $zipUrl = "https://files.openscad.org/snapshots/$($scadversion).zip"
           $zipPath = "$env:RUNNER_TEMP\openscad.zip"
@@ -46,19 +47,14 @@ jobs:
           $exePath = Join-Path $extractPath "$($scadversion)\OpenSCAD.exe"
           write-host "Setting env path:'$($exePath)'"
           "OPENSCAD_PATH=$exePath" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          Write-Host "OPENSCAD_PATH_ENV=$exePath" >> $env:GITHUB_ENV
-
+      
       # Verify OpenSCAD is available
       - name: Verify OpenSCAD
         shell: pwsh
         env: 
           OPENSCAD_PATH: ${{ steps.download_openscad.outputs.OPENSCAD_PATH }}
         run: |
-          Write-Host "OPENSCAD_PATH_ENV: path:'$env:OPENSCAD_PATH_ENV'"
-          Write-Host "OPENSCAD_PATH: path:'$env:OPENSCAD_PATH'"
-
           write-host "Executing openscad path:'$($env:OPENSCAD_PATH)'"
-
           & "$env:OPENSCAD_PATH" --version
 
       # Run your PowerShell test script
