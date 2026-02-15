@@ -43,16 +43,21 @@ jobs:
 
           # Save path to exe as environment variable for later steps
           $exePath = Join-Path $extractPath "$($scadversion)\OpenSCAD.exe"
-          write-host "Setting env path:'$($exePath )'"
-          Write-Host "OPENSCAD_PATH=$exePath" >> $env:GITHUB_ENV
+          write-host "Setting env path:'$($exePath)'"
+          "OPENSCAD_PATH=$exePath" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       # Verify OpenSCAD is available
       - name: Verify OpenSCAD
         shell: pwsh
+        env: 
+          OPENSCAD_PATH: ${{ steps.calculate_values.outputs.OPENSCAD_PATH }}
         run: |
+          write-host "Executing openscad path:'$($env:OPENSCAD_PATH)'"
           & "$env:OPENSCAD_PATH" --version
 
       # Run your PowerShell test script
       - name: Run OpenSCAD tests
         shell: pwsh
+        env: 
+          OPENSCAD_PATH: ${{ steps.calculate_values.outputs.OPENSCAD_PATH }}
         run: pwsh ./scripts/test-render.ps1  -OpenScadPath $env:OPENSCAD_PATH
