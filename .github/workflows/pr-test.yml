@@ -29,6 +29,7 @@ jobs:
           
       # Download OpenSCAD portable zip (nightly or stable)
       - name: Download OpenSCAD
+        id: download_openscad
         shell: pwsh
         run: |
           $scadversion = 'OpenSCAD-2026.02.13-x86-64'
@@ -51,11 +52,11 @@ jobs:
       - name: Verify OpenSCAD
         shell: pwsh
         env: 
-          OPENSCAD_PATH: ${{ steps.calculate_values.outputs.OPENSCAD_PATH }}
+          OPENSCAD_PATH: ${{ steps.download_openscad.outputs.OPENSCAD_PATH }}
         run: |
           Write-Host "OPENSCAD_PATH_ENV: path:'$env:OPENSCAD_PATH_ENV'"
           Write-Host "OPENSCAD_PATH: path:'$env:OPENSCAD_PATH'"
-          
+
           write-host "Executing openscad path:'$($env:OPENSCAD_PATH)'"
 
           & "$env:OPENSCAD_PATH" --version
@@ -64,5 +65,5 @@ jobs:
       - name: Run OpenSCAD tests
         shell: pwsh
         env: 
-          OPENSCAD_PATH: ${{ steps.calculate_values.outputs.OPENSCAD_PATH }}
+          OPENSCAD_PATH: ${{ steps.download_openscad.outputs.OPENSCAD_PATH }}
         run: pwsh ./scripts/test-render.ps1  -OpenScadPath $env:OPENSCAD_PATH
