@@ -78,8 +78,8 @@ screw_depth = 6;
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to chest corners (prints faster).
 chest_corner_attachments_only = true;
-// Enable to subdivide bottom pads to allow sub-cell offsets
-sub_pitch = 1; //[1,2,3,4]
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off";
 

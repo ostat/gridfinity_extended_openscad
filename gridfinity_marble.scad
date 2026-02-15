@@ -90,8 +90,8 @@ lip_clip_position = "disabled"; //[disabled, intersection]
 /* [Base] */
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 1.5;
-// Enable to subdivide bottom pads to allow sub-cell offsets
-sub_pitch = 1; //[1,2,3,4]
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 
 /* [debug] */
 //Slice the bin

@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_item_holder.scad'. Generated 2026-02-11 22:09
-//Content hash C5C882F0FC5E70B47AB17F30E54D21F02C328DC71D65818B4A2527EE8D23C8BF
+//Combined version of 'gridfinity_item_holder.scad'. Generated 2026-02-15 12:24
+//Content hash 78EEB858B814DA1D3BFD8D7B5F8CFA1E770B0BA57C649549D2B3BDF6FF53A77E
 ///////////////////////////////////////
 
 /*<!!start gridfinity_itemholder!!>*/
@@ -140,14 +140,14 @@ center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
-box_corner_attachments_only = true;
+box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth]
-// Enable to subdivide bottom pads to allow sub-cell offsets
-sub_pitch = 1; //[1,2,3,4]
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off";
 // Remove floor to create a vertical spacer
@@ -2353,6 +2353,7 @@ module SequentialBridgingDoubleHole(
 
 
 
+
 utility_demo = false;
 
 if(utility_demo && $preview){
@@ -3635,6 +3636,162 @@ module WallCutout(
 }
 
 //CombinedEnd from path wallcutout.scad
+//Combined from path module_wallplacard.scad
+
+
+iwallplacardconfig_walls = 0;
+iwallplacardconfig_style = 1;
+iwallplacardconfig_size = 2;
+iwallplacardconfig_offset = 3;
+iwallplacardconfig_slot_frame = 4;
+iwallplacardconfig_corner_radius = 5;
+
+iwallplacardconfig_size_width = 0;
+iwallplacardconfig_size_height = 1;
+iwallplacardconfig_size_depth = 2;
+
+iwallplacardconfig_offset_horiz = 0;
+iwallplacardconfig_offset_vert = 1;
+iwallplacardconfig_offset_depth = 2;
+
+iwallplacardconfig_slot_frame_reveal = 0;
+iwallplacardconfig_slot_frame_coverage = 1;
+iwallplacardconfig_slot_frame_width = 2;
+iwallplacardconfig_slot_frame_depth = 3;
+
+function WallplacardSettings(
+    walls,
+    style, 
+    size, 
+    offset,
+    slot_frame,
+    corner_radius) = 
+  let(
+    result = [
+      walls,
+      style,
+      size,
+      offset,
+      slot_frame,
+      corner_radius],
+    validatedResult = ValidateWallplacardSettings(result)
+  ) validatedResult;
+
+function ValidateWallplacardSettings(settings) =
+  assert(is_list(settings), "Wall placard settings must be a list")
+  assert(len(settings)==6, "Wall placard settings must have length 6")
+  assert(is_string(settings[iwallplacardconfig_style]), "Wall placard style must be a string")
+  assert(is_list(settings[iwallplacardconfig_walls]), "Wall placard walls must be a list")
+  assert(is_list(settings[iwallplacardconfig_size]), "Wall placard size must be a list")
+  assert(is_list(settings[iwallplacardconfig_offset]), "Wall placard offset must be a list")
+  assert(is_list(settings[iwallplacardconfig_slot_frame]), "Wall placard slot frame must be a list")
+  assert(is_num(settings[iwallplacardconfig_corner_radius]), "Wall placard corner radius must be a number")
+  [
+    settings[iwallplacardconfig_walls],
+    settings[iwallplacardconfig_style],
+    settings[iwallplacardconfig_size],
+    settings[iwallplacardconfig_offset],
+    settings[iwallplacardconfig_slot_frame],
+    settings[iwallplacardconfig_corner_radius]
+  ];
+
+function calculateWallplacards(
+  wall_width_fb,
+  wall_width_lr,
+  wall_height,
+  wall_thickness,
+  wallplacard_settings) =
+    let(wallplacard_walls = wallplacard_settings[iwallplacardconfig_walls],
+        wallplacard_style = wallplacard_settings[iwallplacardconfig_style])
+    [for (i = [0:len(wallplacard_walls)-1])
+      calculateWallplacard(
+        wall_width = (i==0 || i==1) ? wall_width_fb : wall_width_lr,
+        wall_height = wall_height,
+        wall_thickness = wall_thickness,
+        wall_wall = wallplacard_walls[i],
+        wallplacard_settings = wallplacard_settings)];
+
+function calculateWallplacard(
+  wall_width,
+  wall_height,
+  wall_thickness,
+  wall_wall,
+  wallplacard_settings) =
+     let(
+        wp_style = wallplacard_settings[iwallplacardconfig_style],
+
+        wp_width  = wallplacard_settings[iwallplacardconfig_size][iwallplacardconfig_size_width],
+        wp_height = wallplacard_settings[iwallplacardconfig_size][iwallplacardconfig_size_height],
+        wp_depth  = wallplacard_settings[iwallplacardconfig_size][iwallplacardconfig_size_depth],
+
+        raw_off_horiz = wallplacard_settings[iwallplacardconfig_offset][iwallplacardconfig_offset_horiz],
+        raw_off_vert  = wallplacard_settings[iwallplacardconfig_offset][iwallplacardconfig_offset_vert],
+        raw_off_depth = wallplacard_settings[iwallplacardconfig_offset][iwallplacardconfig_offset_depth],
+
+        off_horiz = raw_off_horiz + (wall_width / 2),
+        off_vert  = raw_off_vert  + (wall_height / 2),
+        off_depth = raw_off_depth +
+            ((wp_style == "slot") ? 0 : -wall_thickness),
+
+        wp_corner_radius = wallplacard_settings[iwallplacardconfig_corner_radius],
+        is_enabled = (wall_wall != 0),
+
+        height = min(wp_height, wall_height),
+        width = min(wp_width, wall_width),
+        depth = wp_depth==0 ? wall_thickness : wp_depth,
+        )
+      [is_enabled, wp_style, width, height, depth, wp_corner_radius, off_horiz, off_vert, off_depth];
+
+module Wallplacard(
+  style,
+  width,
+  height,
+  depth,
+  corner_radius,
+  off_horiz,
+  off_vert,
+  off_depth,
+  slot_frame) {
+ 
+  rotate([90,0,0])
+  translate([off_horiz, off_vert, off_depth])
+    if (style == "rectangle") {
+      roundedCube(centerxy=true, x=width, y=height, z=depth, sideRadius=corner_radius);
+
+    } else if (style == "ellipse") {
+      linear_extrude(height=depth)
+        resize([width, height])
+          circle(r=1);
+
+    } else if (style == "slot") {
+      sf_reveal   = slot_frame[iwallplacardconfig_slot_frame_reveal];
+      sf_coverage = slot_frame[iwallplacardconfig_slot_frame_coverage];
+      sf_width    = slot_frame[iwallplacardconfig_slot_frame_width];
+      sf_depth    = slot_frame[iwallplacardconfig_slot_frame_depth];
+      ls_wider = max(sf_width, corner_radius);
+      ls_taller = max(sf_width, corner_radius);
+      ls_deeper = sf_depth;
+
+      // the backer for the slot (blended into the wall)
+      translate([0,0,-depth])
+          roundedCube(centerxy=true, x=width+ls_wider, y=height+ls_taller, z=depth, sideRadius=corner_radius);
+      difference() {
+        intersection() {  // flatten the top edge
+          // roundedCube is centered on X and Y but not on Z; cube is centered on all 3
+          roundedCube(centerxy=true,
+            x=width+ls_wider, y=height+ls_taller, z=depth+ls_deeper,
+            sideRadius=corner_radius, topRadius=corner_radius);
+          translate([0, -sf_reveal, (depth+ls_deeper)/2])
+            cube(size=[width+ls_wider, height+ls_taller, depth+ls_deeper], true);
+        }
+        translate([0,0,depth/2])
+          cube(size=[width, height, depth], true);  // the slot
+        translate([0,0,(depth+ls_deeper)/2])
+          cube(size=[width-sf_coverage, height-sf_coverage, depth+ls_deeper], true);  // framed slot
+      }
+    }
+}
+//CombinedEnd from path module_wallplacard.scad
 //Combined from path chamfered_shapes.scad
 
 
@@ -4103,6 +4260,14 @@ default_wallcutout_horizontal_angle=70;
 default_wallcutout_horizontal_height=0;
 default_wallcutout_horizontal_corner_radius=5;
 
+/* Wall Placard */
+default_wallplacard_style ="disabled";
+default_wallplacard_walls=[1,0,0,0];
+default_wallplacard_size = [67.5,24.5,0];
+default_wallplacard_corner_radius = 3;
+default_wallplacard_offset = [0,0,0];
+default_wallplacard_slot_frame = [4,2,3,1.5];
+
 /* Wall Pattern */
 default_wallpattern_enabled=false; 
 default_wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
@@ -4271,6 +4436,13 @@ module gridfinity_cup(
     angle = default_wallcutout_horizontal_angle,
     height = default_wallcutout_horizontal_height, 
     corner_radius = default_wallcutout_horizontal_corner_radius),
+  wallplacard_settings = WallplacardSettings(
+    walls = default_wallplacard_walls,
+    style = default_wallplacard_style,
+    size = default_wallplacard_size,
+    offset = default_wallplacard_offset,
+    slot_frame = default_wallplacard_slot_frame,
+    corner_radius = default_wallplacard_corner_radius),
   extendable_Settings = ExtendableSettings(
     extendablexEnabled = default_extension_x_enabled, 
     extendablexPosition = default_extension_x_position, 
@@ -4376,6 +4548,14 @@ module gridfinity_cup(
   if(env_generate_filter_enabled("cup"))
   debug_cut()
   union(){
+    wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
+    bin_placards(
+      num_x = num_x,
+      num_y = num_y,
+      wall_thickness = wall_thickness,
+      wall_height = wallTop,
+      wallplacard_settings = wallplacard_settings);
+
     difference() {
 
         border = 0; //Believe this to be no longer needed
@@ -4403,7 +4583,6 @@ module gridfinity_cup(
            
         cutoutclearance_divider = env_corner_radius()/2;
 
-        wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
 
         tapered_setback = tapered_setback < 0 ? env_corner_radius() : tapered_setback;
         tapered_corner_size =
@@ -5014,6 +5193,63 @@ module bin_cutouts(
           width = tapered_corner_size + tapered_setback);
       }
     }
+  }
+}
+
+module bin_placards(
+  num_x,  // gridfinity units
+  num_y,  // gridfinity units
+  wall_thickness,  // unit mm
+  wall_height,  // unit mm
+  wallplacard_settings
+) {
+    wall_width_fb = gf_pitch*num_x;
+    wall_width_lr = gf_pitch*num_y;
+    slot_frame = wallplacard_settings[iwallplacardconfig_slot_frame];
+    placards = calculateWallplacards(
+      wall_width_fb = wall_width_fb,
+      wall_width_lr = wall_width_lr,
+      wall_height = wall_height,  // paying no attention to unusable stacking area at the bottom
+      wall_thickness = wall_thickness,
+      wallplacard_settings = wallplacard_settings
+    );
+    clear_x = env_clearance().x / 2;
+    clear_y = env_clearance().y / 2;
+    for(pdex = [0:len(placards)-1]) {
+      placard = placards[pdex];
+      //TODO: would this rotation and translation be better in the calculation function?
+      // relative origin is at bottom left of front face, shift XY after the rotation
+      // 0==front, 1==back, 2==left, 3==right
+      rotation = (pdex == 0) ? 0
+               : (pdex == 1) ? 180
+               : (pdex == 2) ? 270
+               : 90;
+      trans_x  = (pdex == 0) ? 0
+               : (pdex == 1) ? wall_width_fb
+               : (pdex == 2) ? clear_x
+               : wall_width_fb-clear_x;
+      trans_y  = (pdex == 0) ? clear_y
+               : (pdex == 1) ? wall_width_lr-clear_y
+               : (pdex == 2) ? wall_width_lr
+               : 0;
+      //color = (pdex == 0) ? "blue" : (pdex == 1) ? "red" : (pdex == 2) ? "white" : "pink";
+      is_enabled = placard[0];
+      wp_style = placard[1];
+      if(wp_style != "disabled" && is_enabled) {
+        translate([trans_x, trans_y, 0])
+          rotate(a=rotation, v=[0,0,1])
+            Wallplacard(
+              style = wp_style,
+              width  = placard[2],
+              height = placard[3],
+              depth  = placard[4],
+              corner_radius = placard[5],
+              off_horiz = placard[6],
+              off_vert  = placard[7],
+              off_depth = placard[8],
+              slot_frame = slot_frame
+            );
+      }
   }
 }
 
