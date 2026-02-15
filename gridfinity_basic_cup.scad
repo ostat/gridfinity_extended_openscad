@@ -303,9 +303,9 @@ module end_of_customizer_opts() {}
 /*<!!end gridfinity_basic_cup!!>*/
 
 //Some online generators do not like direct setting of fa,fs,fn
-$fa = fa; 
-$fs = fs; 
-$fn = fn;  
+$fa = fa;
+$fs = fs;
+$fn = fn;
 
 set_environment(
   width = width,
