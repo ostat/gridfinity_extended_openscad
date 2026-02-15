@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_socket_holder.scad'. Generated 2026-02-15 12:24
-//Content hash 029B6BF654C2435E34B82D43113E02271F1DF00390F006B8C9EB93EF4C95611A
+//Combined version of 'gridfinity_socket_holder.scad'. Generated 2026-02-15 16:30
+//Content hash 5B8F33F70F40C231FA879D38FC16F8A7C3C0495FF08C2053D4D694FE3290E23B
 ///////////////////////////////////////
 
 part = 5; //[1: "METRIC", 2: "IMPERIAL", 3: "Imperial < 1/2\"", 4: "Imperial >= 1/2\"", 5: "Metric >=7mm", 6: "Metric <7mm"]
@@ -3055,7 +3055,10 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
   ) str(current, strNext!=""?str(sep, strNext):"");
 
 module assert_openscad_version(){
-  assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+  assert(
+      version()[0]>2022 //OpenSCAD version 
+      || version()[0]<1000 //For non OpenSCAD like PythonSCAD
+      ,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
 // Gets one value base on another.

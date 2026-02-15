@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate_flsun_q5.scad'. Generated 2026-02-15 12:24
-//Content hash 58EDA2763E7D465D8C8B693A51F766DB20B70AB74EC8F316EA5A7C50CB8E4EB2
+//Combined version of 'gridfinity_baseplate_flsun_q5.scad'. Generated 2026-02-15 16:29
+//Content hash 8EC473C60745B83BEE4B6494250F56A3EFD2D5A260016B9D50EF1399C41C8BCC
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -2737,7 +2737,10 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
   ) str(current, strNext!=""?str(sep, strNext):"");
 
 module assert_openscad_version(){
-  assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+  assert(
+      version()[0]>2022 //OpenSCAD version 
+      || version()[0]<1000 //For non OpenSCAD like PythonSCAD
+      ,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
 // Gets one value base on another.

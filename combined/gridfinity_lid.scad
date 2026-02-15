@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_lid.scad'. Generated 2026-02-15 12:24
-//Content hash 02B920B43F4610B4DBDEFC4E6766C0B884501F0CCCCB214CEB117A811F90C4BD
+//Combined version of 'gridfinity_lid.scad'. Generated 2026-02-15 16:29
+//Content hash 9563F60AAEFF7BCF11E4159B4CC49FB8D91FA13F55522F63D5F5017890F162C4
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -3195,7 +3195,10 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
   ) str(current, strNext!=""?str(sep, strNext):"");
 
 module assert_openscad_version(){
-  assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+  assert(
+      version()[0]>2022 //OpenSCAD version 
+      || version()[0]<1000 //For non OpenSCAD like PythonSCAD
+      ,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
 // Gets one value base on another.

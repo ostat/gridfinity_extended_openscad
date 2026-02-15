@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate.scad'. Generated 2026-02-15 12:24
-//Content hash 3026285FA1B50058C838AFF28A41931CF931ACFA9B06FC4F35AB5359BDE6699C
+//Combined version of 'gridfinity_baseplate.scad'. Generated 2026-02-15 16:29
+//Content hash 995EA700569B6655C78F82F8136DB69A2E3FE8BCCAB3E5A9799514321DD934C9
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -3256,7 +3256,10 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
   ) str(current, strNext!=""?str(sep, strNext):"");
 
 module assert_openscad_version(){
-  assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+  assert(
+      version()[0]>2022 //OpenSCAD version 
+      || version()[0]<1000 //For non OpenSCAD like PythonSCAD
+      ,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
 // Gets one value base on another.

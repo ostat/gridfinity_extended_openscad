@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-15 12:24
-//Content hash 86BA788133820E50253998FD344581373145AC9951DFBE0E04E1242F24639C77
+//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-15 16:29
+//Content hash F7FD0F9482A27E329297E9BA3F188F4EAF28D3CF9295BE9A095F97AAEBD22C21
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -2003,7 +2003,10 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
   ) str(current, strNext!=""?str(sep, strNext):"");
 
 module assert_openscad_version(){
-  assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+  assert(
+      version()[0]>2022 //OpenSCAD version 
+      || version()[0]<1000 //For non OpenSCAD like PythonSCAD
+      ,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
 // Gets one value base on another.

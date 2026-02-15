@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-15 12:24
-//Content hash 9D55495D1B7199D18070EABEE0902E268FE1CAFA2912BD7E82760B6D65BB2B1F
+//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-15 16:29
+//Content hash 4857CA590F2477878C6FD36FA7BB9644F2A719A6BD4115A8785AEEF07887CB30
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -2989,7 +2989,10 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
   ) str(current, strNext!=""?str(sep, strNext):"");
 
 module assert_openscad_version(){
-  assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+  assert(
+      version()[0]>2022 //OpenSCAD version 
+      || version()[0]<1000 //For non OpenSCAD like PythonSCAD
+      ,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
 // Gets one value base on another.

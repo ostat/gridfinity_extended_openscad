@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_glue_stick.scad'. Generated 2026-02-15 12:24
-//Content hash 5B4C22925D68219FA073CB787A1C78AF8BB39C4E0FDA3376850ADD0854B7DF49
+//Combined version of 'gridfinity_glue_stick.scad'. Generated 2026-02-15 16:29
+//Content hash DF6419926C9093A6D4804F2DE6C2964789D366E7513C242C1E139DC614F3E703
 ///////////////////////////////////////
 
 cup_height = 5;
@@ -3058,7 +3058,10 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
   ) str(current, strNext!=""?str(sep, strNext):"");
 
 module assert_openscad_version(){
-  assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+  assert(
+      version()[0]>2022 //OpenSCAD version 
+      || version()[0]<1000 //For non OpenSCAD like PythonSCAD
+      ,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
 // Gets one value base on another.
