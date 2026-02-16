@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_sliding_lid.scad'. Generated 2026-02-15 16:30
-//Content hash 11006C0A4C1C019F1D0D9F7D32710E401CFD19F47FCEEC2B8A6EA915A087AB9E
+//Combined version of 'gridfinity_sliding_lid.scad'. Generated 2026-02-16 23:25
+//Content hash 561154B713C3CD472FEA510446EEF404AD1F8409A28224365273496682C677B7
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -14,20 +14,21 @@
 
 /* [Sliding Lid] */
 // select what to render
-render_choice = "both";//[both, lid, cup]
+render_choice = "both";//[both, lid, cup, both connected]
 sliding_lid_enabled = true;
 // 0 = wall thickness *2
 sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
-sliding_min_wall_thickness = 0;//0.1
+sliding_lid_min_wallThickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
-sliding_min_support = 0;//0.1
-sliding_lid_lip_enabled = true;
-sliding_clearance = 0.1;//0.1
+sliding_lid_min_support = 0;//0.1
+sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
+sliding_lid_clearance = 0.1;//0.1
 sliding_lid_cutout_enabled = false; //
 sliding_lid_cutout_size = [-2,-2]; //0.1
 sliding_lid_cutout_radius = -4; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
+sliding_lid_nub_size = 0.5; //
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -376,53 +377,97 @@ color_lid = "MediumAquamarine";
 
 
 
-iSlidingLidEnabled=0;
-iSlidingLidThickness=1;
-iSlidingLidMinWallThickness=2;
-iSlidingLidMinSupport=3;
-iSlidingClearance=4;
-slidingLidLipEnabled=5;
+SlidingLid_debug = false;
 
-function DisabledSlidingLidSettings() = SlidingLidSettings(
-  slidingLidEnabled = false,
-  slidingLidThickness = 0,
-  slidingMinWallThickness = 0,
-  slidingMinSupport = 0,
-  slidingClearance = 0,
-  wallThickness = 0,
-  slidingLidLipEnabled = false);
-  
+if(SlidingLid_debug && $preview){
+  $fn = 64;
+  SlidingLid(  
+    num_x = 2, 
+    num_y = 1,
+    wall_thickness = .8,
+    headroom = 0.8,
+    clearance = 0.1,
+    lidThickness = 1.6,
+    lidMinSupport = 0.8,
+    lidMinWallThickness = 0.4,
+    pull_style = SlidingLidPullStyle_finger,
+    limitHeight = true, 
+    lip_notches = true, 
+    cutoutSize = [-2,-2],
+    cutoutRadius = 5,
+    cutoutPosition = [0,0],
+    nub_size = 0.5);
+}
+
+SlidingLidPullStyle_disabled = "disabled";
+SlidingLidPullStyle_lip = "lip";
+SlidingLidPullStyle_finger = "finger";
+SlidingLidPullStyle_values = [SlidingLidPullStyle_disabled, SlidingLidPullStyle_lip, SlidingLidPullStyle_finger];
+function validateSlidingLidPullStyle(value, name = "SlidingLidPullStyle") = 
+  assert(list_contains(SlidingLidPullStyle_values, value), typeerror(name, value))
+  value;
+
+
+iSlidingLid_Enabled=0;
+iSlidingLid_Thickness=1;
+iSlidingLid_MinWallThickness=2;
+iSlidingLid_MinSupport=3;
+iSlidingLid_Clearance=4;
+iSlidingLid_PullStyle=5;
+iSlidingLid_NubSize=6;
+
 function SlidingLidSettings(
-  slidingLidEnabled,
-  slidingLidThickness,
-  slidingMinWallThickness,
-  slidingMinSupport,
-  slidingClearance,
-  wallThickness,
-  slidingLidLipEnabled = false) = 
+  enabled,
+  thickness,
+  min_wall_thickness,
+  min_support,
+  clearance,
+  pull_style = SlidingLidPullStyle_disabled,
+  nub_size = 0
+  ) = 
+  [enabled, 
+  thickness,
+  min_wall_thickness,
+  min_support,
+  clearance,
+  pull_style,
+  nub_size
+  ];
+
+function ValidateSlidingLidSettings(settings, wallThickness) = 
+  assert(is_list(settings), "SlidingLid Settings must be a list")
+  assert(len(settings)==7, "SlidingLid Settings must length 6")
+  assert(is_num(wallThickness) && wallThickness > 0, "SlidingLidSettings: wallThickness must be a number greater than 0")
+  assert(is_bool(settings[iSlidingLid_Enabled]), "SlidingLidSettings: slidingLidEnabled must be a boolean")
+  assert(is_num(settings[iSlidingLid_Thickness]) && settings[iSlidingLid_Thickness] >= 0, "SlidingLidSettings: slidingLidThickness must be a number greater than or equal to 0")
+  assert(is_num(settings[iSlidingLid_MinWallThickness]) && settings[iSlidingLid_MinWallThickness] >= 0, str("SlidingLidSettings: slidingMinWallThickness must be a number greater than or equal to 0 is:", settings[iSlidingLid_MinWallThickness]))
+  assert(is_num(settings[iSlidingLid_MinSupport]) && settings[iSlidingLid_MinSupport] >= 0, "SlidingLidSettings: slidingMinSupport must be a number greater than or equal to 0")
+  assert(is_num(settings[iSlidingLid_Clearance]) && settings[iSlidingLid_Clearance] >= 0, "SlidingLidSettings: slidingClearance must be a number greater than or equal to 0")
+  assert(is_string(settings[iSlidingLid_PullStyle]), "SlidingLidSettings: slidingLidPullStyle must be a string")
+  assert(is_num(settings[iSlidingLid_NubSize]) && settings[iSlidingLid_NubSize] >= 0, "SlidingLidSettings: slidingNubSize must be a number greater than or equal to 0")
   let(
-    thickness = slidingLidThickness > 0 ? slidingLidThickness : wallThickness*2,
-    minWallThickness = slidingMinWallThickness > 0 ? slidingMinWallThickness : wallThickness/2,
-    minSupport = slidingMinSupport > 0 ? slidingMinSupport : thickness/2
+    thickness = settings[iSlidingLid_Thickness] > 0 ? settings[iSlidingLid_Thickness] : wallThickness*2,
+    minWallThickness = settings[iSlidingLid_MinWallThickness] > 0 ? settings[iSlidingLid_MinWallThickness] : wallThickness/2,
+    minSupport = settings[iSlidingLid_MinSupport] > 0 ? settings[iSlidingLid_MinSupport] : thickness/2
   ) [
-  slidingLidEnabled, 
+  settings[iSlidingLid_Enabled], 
   thickness,
   minWallThickness,
   minSupport,
-  slidingClearance,
-  slidingLidLipEnabled];
+  settings[iSlidingLid_Clearance],
+  validateSlidingLidPullStyle(settings[iSlidingLid_PullStyle]),
+  settings[iSlidingLid_NubSize]];
 
 module AssertSlidingLidSettings(settings){
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==6, "SlidingLid Settings must length 5");
+  assert(len(settings)==7, "SlidingLid Settings must length 7");
 } 
-
-//SlidingLid(4,3,.8,0.1,1.6,0.8,0.4,true, true, [-2,-2],5,[0,0]);
 
 module SlidingLid(
   num_x, 
   num_y,
   wall_thickness,
+  headroom = 0.8,
   clearance = 0,
   lidThickness,
   lidMinSupport,
@@ -431,11 +476,13 @@ module SlidingLid(
   lipStyle = "normal",
   lip_notches = true,
   lip_top_relief_height = -1, 
-  addLiptoLid = true,
+  pull_style = SlidingLidPullStyle_disabled,
   cutoutEnabled = false,
   cutoutSize = [0,0],
   cutoutRadius = 0,
-  cutoutPosition = [0,0]
+  cutoutPosition = [0,0],
+  nub_size = 0,
+  lip_height = 3.75, //this is a constant, but should be adjustable
 ){
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -448,11 +495,12 @@ module SlidingLid(
   assert(is_string(lipStyle));
   assert(is_bool(lip_notches));
   assert(is_num(lip_top_relief_height));
-  assert(is_bool(addLiptoLid));
+  assert(is_string(pull_style));
   assert(is_bool(cutoutEnabled));
   assert(is_list(cutoutSize));
   assert(is_num(cutoutRadius));
   assert(is_list(cutoutPosition));
+  assert(is_num(nub_size));
   
   innerWallRadius = env_corner_radius()-wall_thickness-clearance;
 
@@ -460,29 +508,21 @@ module SlidingLid(
     env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
     env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
   
-  lidSize = [num_x*env_pitch().x-lidMinWallThickness, num_y*env_pitch().y-lidMinWallThickness];
+  lid_size = [
+    num_x*env_pitch().x - env_clearance().x - clearance*2 - lidMinWallThickness*2, 
+    num_y*env_pitch().y - env_clearance().y - clearance*2 - lidMinWallThickness*2, 
+    lidThickness];
+  lid_size1 = [inner_corner_center.x - (innerWallRadius + lidMinWallThickness),
+  inner_corner_center.y - (innerWallRadius + lidMinWallThickness)];
   
   lidLowerRadius = innerWallRadius+lidMinWallThickness;
   lidUpperRadius = limitHeight ? lidLowerRadius-lidThickness/2 : fudgeFactor;
   height = limitHeight ? lidThickness : innerWallRadius+lidMinWallThickness-fudgeFactor;
+  
   difference()
   {
     union(){
-      if(addLiptoLid)
-      color(env_colour(color_topcavity, isLip = true))
-      difference(){
-        translate([0,0,lidThickness-fudgeFactor*3])
-        cupLip(
-          num_x = num_x, 
-          num_y = num_y, 
-          lipStyle = lipStyle,
-          lip_notches = lip_notches,
-          lip_top_relief_height = lip_top_relief_height,
-          wall_thickness = 1.2);
-        translate([0,lidLowerRadius,lidThickness-fudgeFactor*4])
-          cube([num_x*env_pitch().x,num_y*env_pitch().y,4+fudgeFactor*2]);
-      }
-
+      //Main lid body
       color(env_colour(color_lid))
       union(){
         hull() 
@@ -494,18 +534,62 @@ module SlidingLid(
               h=limitHeight ? lidThickness/2 : innerWallRadius+lidMinWallThickness-fudgeFactor);
             cylinder(r=lidLowerRadius, h=lidThickness/2);
         }
-        if(addLiptoLid)
-        difference(){
-          hull()
-            cornercopy(inner_corner_center, num_x, num_y){
-              cylinder(r=env_corner_radius(), h=lidThickness);
-          }         
-          translate([-fudgeFactor,lidLowerRadius,-fudgeFactor])
-            cube([num_x*env_pitch().x+fudgeFactor*2,num_y*env_pitch().y+fudgeFactor,lidThickness+fudgeFactor*2]);
+      }
+
+      //Lid Lip
+      if(pull_style == SlidingLidPullStyle_lip)
+      color(env_colour(color_topcavity, isLip = true))
+      difference(){
+        translate([0,0,0])
+        cupLip(
+          num_x = num_x, 
+          num_y = num_y, 
+          lipHeight = lip_height,
+          lipStyle = lipStyle,
+          lip_notches = lip_notches,
+          lip_top_relief_height = lip_top_relief_height,
+          lip_remove_inner_grid = false,
+          raise_lip = lidThickness,//headroom+lidThickness,
+          wall_thickness = 1.2);
+        translate([0,lidLowerRadius,-fudgeFactor])
+        union(){
+          taper_size =lip_height+headroom;
+          translate([0,taper_size,0])
+          cube([num_x*env_pitch().x,num_y*env_pitch().y-taper_size,taper_size+lidThickness+fudgeFactor*3]);
+    
+          translate([0,0,lidThickness-fudgeFactor])
+          hull(){
+            translate([0,taper_size,0])
+            cube([num_x*env_pitch().x,num_y*env_pitch().y-taper_size,headroom + fudgeFactor]);
+            translate([0,0,taper_size])
+            cube([num_x*env_pitch().x,num_y*env_pitch().y,fudgeFactor*4]);
+          }
         }
       }
     }
-  
+
+    //Lid nubs
+    if(nub_size > 0){
+      translate([env_clearance().x/2 + clearance + lidMinWallThickness, lid_size.y-lidLowerRadius*2,-fudgeFactor])
+      for(nub_post = [
+        [-nub_size,0,0],
+        [lid_size.x+nub_size,0,0]]){
+          translate(nub_post)
+          cylinder(r=nub_size*2, h=lidThickness+fudgeFactor*2);
+        }
+    }
+    
+    if(pull_style == SlidingLidPullStyle_finger){
+      translate([env_clearance().x/2 + clearance + lidMinWallThickness + lid_size.x/2, lidLowerRadius*2,lidThickness/2])
+      hull(){
+        finger_base_size = 3;
+        for(posy = [[0,0,0],[0,+finger_base_size*2,lidThickness/2]])
+        for(posx = [-finger_base_size,+finger_base_size])
+          translate([posx,posy.y,posy.z])
+          cylinder(r=finger_base_size,h=lidThickness);
+      }
+    }
+      
     if(cutoutEnabled){
       if(env_help_enabled("debug")) echo("SlidingLid", cutoutEnabled=cutoutEnabled, cutoutSize=cutoutSize, cutoutRadius=cutoutRadius );
     
@@ -513,7 +597,7 @@ module SlidingLid(
         cutoutSize = cutoutSize,
         cutoutRadius = cutoutRadius,
         cutoutPosition = cutoutPosition,
-        lidSize = lidSize,
+        lid_size = lid_size,
         lidThickness = lidThickness);
     }
     
@@ -526,15 +610,15 @@ module sliding_lid_cutout(
   cutoutSize = [0,0],
   cutoutRadius = 0,
   cutoutPosition = [0,0],
-  lidSize = [0,0],
+  lid_size = [0,0],
   lidThickness = 0
 ){
   fudgeFactor = 0.01;
 
   if(cutoutSize.x != 0 && cutoutSize.y != 0){
     cSize = [
-      get_related_value(cutoutSize.x, lidSize.x, 0),
-      get_related_value(cutoutSize.y, lidSize.y, 0)
+      get_related_value(cutoutSize.x, lid_size.x, 0),
+      get_related_value(cutoutSize.y, lid_size.y, 0)
     ];
 
     minSize = min(cSize.x, cSize.y);
@@ -549,8 +633,8 @@ module sliding_lid_cutout(
 
     translate([cutoutPosition.x,cutoutPosition.y,0])
     translate([
-      lidSize.x/2,
-      lidSize.y/2,
+      lid_size.x/2,
+      lid_size.y/2,
       -fudgeFactor])
       hull(){
         for(i=[0:len(positions)-1]){
@@ -573,12 +657,12 @@ module SlidingLidSupportMaterial(
     env_pitch().x/2-env_corner_radius()-env_clearance().x/2, 
     env_pitch().y/2-env_corner_radius()-env_clearance().y/2];
     
-  aboveLipHeight = sliding_lid_settings[iSlidingLidThickness];
-  belowLedgeHeight = sliding_lid_settings[iSlidingLidThickness]/4;
-  belowRampHeight = sliding_lid_settings[iSlidingLidMinSupport];
+  aboveLipHeight = sliding_lid_settings[iSlidingLid_Thickness];
+  belowLedgeHeight = sliding_lid_settings[iSlidingLid_Thickness]/4;
+  belowRampHeight = sliding_lid_settings[iSlidingLid_MinSupport];
 
   belowLipHeight = belowLedgeHeight+belowRampHeight;
-  slidingLidEdge = env_corner_radius()-sliding_lid_settings[iSlidingLidMinWallThickness]; 
+  slidingLidEdge = env_corner_radius()-sliding_lid_settings[iSlidingLid_MinWallThickness]; 
    
   //Sliding lid lower support lip
   tz(zpoint-belowLipHeight) 
@@ -590,11 +674,11 @@ module SlidingLidSupportMaterial(
         union(){
         hull() cornercopy(inner_corner_center, num_x, num_y)
           tz(belowRampHeight-fudgeFactor)
-          cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowLedgeHeight+fudgeFactor*2);
+          cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLid_MinSupport], h=belowLedgeHeight+fudgeFactor*2);
           
         hull() cornercopy(inner_corner_center, num_x, num_y)
         tz(-fudgeFactor)
-        cylinder(r1=slidingLidEdge, r2=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=belowRampHeight+fudgeFactor);
+        cylinder(r1=slidingLidEdge, r2=slidingLidEdge-sliding_lid_settings[iSlidingLid_MinSupport], h=belowRampHeight+fudgeFactor);
      }
    }
 
@@ -609,16 +693,7 @@ module SlidingLidSupportMaterial(
     hull() 
       cornercopy(inner_corner_center, num_x, num_y)
       tz(fudgeFactor) 
-      cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLidMinSupport], h=aboveLipHeight+fudgeFactor); 
-      
-    *SlidingLid(
-      num_x=num_x, 
-      num_y=num_y,
-      wall_thickness,
-      clearance = 0,
-      slidingLidThickness=sliding_lid_settings[iSlidingLidThickness],
-      slidingLidMinSupport=sliding_lid_settings[iSlidingLidMinSupport],
-      slidingLidMinWallThickness=sliding_lid_settings[iSlidingLidMinWallThickness]);
+      cylinder(r=slidingLidEdge-sliding_lid_settings[iSlidingLid_MinSupport], h=aboveLipHeight+fudgeFactor); 
     }
   }
 }
@@ -628,33 +703,41 @@ module SlidingLidCavity(
   num_y,
   wall_thickness,
   sliding_lid_settings,
-  aboveLidHeight
+  aboveLidHeight,
+  headroom = 0.8,
+  lip_height = 3.75, //this is a constant, but should be adjustable
 ){
   SlidingLid(
     num_x=num_x, 
     num_y=num_y,
+    headroom=headroom,
     wall_thickness,
     clearance = 0,
-    lidThickness=sliding_lid_settings[iSlidingLidThickness],
-    lidMinSupport=sliding_lid_settings[iSlidingLidMinSupport],
-    lidMinWallThickness=sliding_lid_settings[iSlidingLidMinWallThickness],
-    limitHeight = false);
-  
-  if(sliding_lid_settings[slidingLidLipEnabled])
+    pull_style = SlidingLidPullStyle_disabled,  
+    lidThickness=sliding_lid_settings[iSlidingLid_Thickness],
+    lidMinSupport=sliding_lid_settings[iSlidingLid_MinSupport],
+    lidMinWallThickness=sliding_lid_settings[iSlidingLid_MinWallThickness],
+    limitHeight = false,
+    lip_height = lip_height,
+    nub_size = sliding_lid_settings[iSlidingLid_NubSize]);
+
+   //the value of this is not right, I need to find where it should come from. perhaps headroom?
+   extra_height = 1.4;
+
+  if(sliding_lid_settings[iSlidingLid_PullStyle] == SlidingLidPullStyle_lip)
   {
+    taper_setback = lip_height + headroom + 0.5 + sliding_lid_settings[iSlidingLid_Clearance];
     translate([0,0,0])
-      cube([num_x*env_pitch().x,env_corner_radius(),aboveLidHeight+fudgeFactor*3]);
+      cube([num_x*env_pitch().x,env_corner_radius()+taper_setback,aboveLidHeight + extra_height + fudgeFactor*3]);
   } else {
-    //translate([-env_pitch().x/2,-env_pitch().y/2,zpoint]) 
-    //cube([num_x*env_pitch().x,env_corner_radius(),headroom+gf_Lip_Height]);
-    //innerWallRadius = env_corner_radius()-wall_thickness;
-    translate([0,env_corner_radius(),aboveLidHeight]) 
+    //Where there is no lip on the sliding lid a chamfer is added to the box lip
+    translate([0,env_corner_radius(),aboveLidHeight+extra_height]) 
     rotate([270,0,0])
     chamferedCorner(
       cornerRadius = aboveLidHeight/4,
       chamferLength = aboveLidHeight,
       length=num_x*env_pitch().x, 
-      height = aboveLidHeight,
+      height = aboveLidHeight+extra_height,
       width = env_corner_radius());
   }
 }
@@ -4047,7 +4130,7 @@ module set_environment(
 function env_numx() = is_undef($num_x) || !is_num($num_x) ? 0 : $num_x;
 function env_numy() = is_undef($num_y) || !is_num($num_y) ? 0 : $num_y;
 function env_numz() = is_undef($num_z) || !is_num($num_z) ? 0 : $num_z;
-function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0,0,0] : $clearance;
+function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0.5, 0.5, 0] : $clearance;
 function env_generate_filter() = (is_undef($generate_filter) || !is_string($generate_filter)) ? "" : $generate_filter;
 
 function env_pitch() =  is_undef($pitch) || !is_list($pitch) ? [gf_pitch, gf_pitch, gf_zpitch] : $pitch; 
@@ -4588,6 +4671,25 @@ module magnet_release(
 
 
 
+cupLip_debug = false;
+
+if(cupLip_debug){
+  $fn = 64;
+  cupLip(  num_x = 2, 
+  num_y = 3, 
+  lipStyle = LipStyle_normal, 
+  wall_thickness = 1.2,
+  lip_notches = true,
+  lip_top_relief_height = -1,
+  lip_top_relief_width = -1,
+  lip_clip_position = LipClipPosition_disabled,
+  lip_non_blocking = true,
+  lip_remove_inner_grid = false,
+  raise_lip = 0,
+  align_grid = [ "near", "near"]);
+}
+
+
 //Lip object configuration
 iLipStyle=0;
 iLipSideReliefTrigger=1;
@@ -4653,12 +4755,15 @@ module cupLip(
   num_x = 2, 
   num_y = 3, 
   lipStyle = LipStyle_normal, 
+  lipHeight = 3.75,
   wall_thickness = 1.2,
   lip_notches = true,
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
-  lip_non_blocking = false,
+  lip_non_blocking = false, //prevents the walls for blocking bins on a partial cell.
+  lip_remove_inner_grid = true,
+  raise_lip = 0,
   align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
@@ -4670,6 +4775,7 @@ module cupLip(
   assert(is_bool(lip_notches));
   assert(is_string(lip_clip_position));
   assert(is_bool(lip_non_blocking));
+  assert(is_bool(lip_remove_inner_grid));
 
   connectorsEnabled = lip_clip_position != LipClipPosition_disabled;
   $allowConnectors = connectorsEnabled ? [1,1,1,1] : [0,0,0,0];
@@ -4690,17 +4796,18 @@ module cupLip(
 
   innerLipRadius = env_corner_radius()-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
   innerWallRadius = env_corner_radius()-wall_thickness;
+  echo("cupLip",  innerLipRadius=innerLipRadius, env_corner_radius=env_corner_radius(), env_clearance=env_clearance() );
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
   // around the top inside edge.
   q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
-  lipHeight = 3.75;
+
   
   outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
  
-  coloredLipHeight=min(2,lipHeight);
+  coloredLipHeight=3.75;
   
   if(lipStyle != "none")
     color(env_colour(color_topcavity, isLip = true))
@@ -4711,8 +4818,9 @@ module cupLip(
       tz(fudgeFactor*2)
       hull() 
         cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=env_corner_radius(), h=lipHeight+fudgeFactor);
+        cylinder(r=env_corner_radius(), h=raise_lip + lipHeight + fudgeFactor);
     
+      tz(raise_lip)
       cupLip_cavity(
         num_x = num_x, 
         num_y = num_y, 
@@ -4723,6 +4831,8 @@ module cupLip(
         lip_top_relief_width = lip_top_relief_width,
         lip_clip_position = lip_clip_position,
         lip_non_blocking = lip_non_blocking,
+        lip_remove_inner_grid = lip_remove_inner_grid,
+        raise_lip= raise_lip,
         align_grid = align_grid);
     }
 }
@@ -4737,6 +4847,8 @@ module cupLip_cavity(
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
   lip_non_blocking = false,
+  lip_remove_inner_grid = true,
+  raise_lip = 0,
   align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
@@ -4748,7 +4860,8 @@ module cupLip_cavity(
   assert(is_bool(lip_notches));
   assert(is_string(lip_clip_position));
   assert(is_bool(lip_non_blocking));
-
+  assert(is_num(raise_lip));
+  
   connectorsEnabled = lip_clip_position != LipClipPosition_disabled;
   $allowConnectors = connectorsEnabled ? [1,1,1,1] : [0,0,0,0];
   $frameBaseHeight = 0; //$num_z * env_pitch().z;
@@ -4782,7 +4895,6 @@ module cupLip_cavity(
       
   pitch=env_pitch();
   // remove top so XxY can fit on top
-  //pad_oversize(num_x, num_y, 1);
   union(){
     //Top cavity, with lip relief
     frame_cavity(
@@ -4791,11 +4903,12 @@ module cupLip_cavity(
       position_fill_grid_x = align_grid.x,
       position_fill_grid_y = align_grid.y,
       render_top = lip_notches,
-      render_bottom = false,
+      render_bottom = !lip_remove_inner_grid,
       frameLipHeight = 4,
       cornerRadius = env_corner_radius(),
       reducedWallHeight = lip_top_relief_height,
       reducedWallWidth = lip_top_relief_width,
+      extra_down = raise_lip,
       reducedWallOuterEdgesOnly=true){
         echo("donothign");
         frame_connector_cavities(
@@ -4806,22 +4919,24 @@ module cupLip_cavity(
             connectorClipEnabled = connectorsEnabled));
       }
 
-    //lower cavity
-    frame_cavity(
-      num_x = 1, 
-      num_y = 1, 
-      position_fill_grid_x = "far",
-      position_fill_grid_y = "far",
-      render_top = !lip_notches,
-      render_bottom = true,
-      frameLipHeight = 4,
-      cornerRadius = env_corner_radius(),
-      reducedWallHeight = -1, 
-      reducedWallWidth = -1,
-      $pitch=[
-        pitch.x*(lip_non_blocking ? ceil(num_x) : num_x),
-        pitch.y*(lip_non_blocking ? ceil(num_y) : num_y),
-        pitch.z]);
+    if(lip_remove_inner_grid){
+      //lower cavity
+      frame_cavity(
+        num_x = 1, 
+        num_y = 1, 
+        position_fill_grid_x = "far",
+        position_fill_grid_y = "far",
+        render_top = !lip_notches,
+        render_bottom = true,
+        frameLipHeight = 4,
+        cornerRadius = env_corner_radius(),
+        reducedWallHeight = -1, 
+        reducedWallWidth = -1,
+        $pitch=[
+          pitch.x*(lip_non_blocking ? ceil(num_x) : num_x),
+          pitch.y*(lip_non_blocking ? ceil(num_y) : num_y),
+          pitch.z]);
+      }
   }
  
   if (lipStyle == "minimum" || lipStyle == "none") {
@@ -5735,11 +5850,11 @@ default_sliding_lid_enabled = false;
 // 0 = wall thickness *2
 default_sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
-default_sliding_min_wallThickness = 0;//0.1
+default_sliding_min_wall_thickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
 default_sliding_min_support = 0;//0.1
 default_sliding_clearance = 0.1;//0.1
-default_sliding_lid_lip_enabled = false;
+default_sliding_lid_pull_style = "disabled";
 
 /* Finger Slide */
 // Include larger corner fillet
@@ -6016,12 +6131,13 @@ module gridfinity_cup(
     extendableyPosition = default_extension_y_position, 
     extendableTabsEnabled = default_extension_tabs_enabled, 
     extendableTabSize = default_extension_tab_size),
-  sliding_lid_enabled = default_sliding_lid_enabled,
-  sliding_lid_thickness = default_sliding_lid_thickness,
-  sliding_lid_lip_enabled=default_sliding_lid_lip_enabled,
-  sliding_min_wall_thickness = default_sliding_min_wallThickness, 
-  sliding_min_support = default_sliding_min_support, 
-  sliding_clearance = default_sliding_clearance,
+  sliding_lid_settings= SlidingLidSettings(
+    enabled = default_sliding_lid_enabled,
+    thickness = default_sliding_lid_thickness,
+    min_wall_thickness = default_sliding_min_wall_thickness,
+    min_support = default_sliding_min_support,
+    clearance = default_sliding_clearance,
+    pull_style = default_sliding_lid_pull_style),
   cupBaseTextSettings = CupBaseTextSettings(
     baseTextLine1Enabled = default_text_1,
     baseTextLine2Enabled = default_text_2,
@@ -6031,14 +6147,9 @@ module gridfinity_cup(
     baseTextDepth = default_text_depth,
     baseTextOffset = default_text_offset)) {
   
-  //num_x = is_undef($num_x) ? calcDimensionWidth(width, true) : $num_x;
-  //num_y = is_undef($num_y) ? calcDimensionDepth(depth, true) : $num_y;
-  //num_z = is_undef($num_z) ? calcDimensionHeight(height, true) : $num_z;
-  
   num_x = is_undef(width) ?  $num_x : calcDimensionWidth(width, true);
   num_y = is_undef(depth) ? $num_y : calcDimensionDepth(depth, true);
   num_z = is_undef(height) ? $num_z : calcDimensionHeight(height, true);
-
 
   //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
   wall_thickness = wallThickness(wall_thickness, num_z);
@@ -6049,17 +6160,9 @@ module gridfinity_cup(
   cupBase_settings = ValidateCupBaseSettings(cupBase_settings);
   floor_pattern_settings = ValidatePatternSettings(floor_pattern_settings);
   wall_pattern_settings = ValidatePatternSettings(wall_pattern_settings);
+  slidingLidSettings = ValidateSlidingLidSettings(sliding_lid_settings, wall_thickness);
   
-  slidingLidSettings= SlidingLidSettings(
-          sliding_lid_enabled, 
-          sliding_lid_thickness, 
-          sliding_min_wall_thickness, 
-          sliding_min_support,
-          sliding_clearance,
-          wall_thickness,
-          sliding_lid_lip_enabled);
-          
-  headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
+  headroom = headroom + (slidingLidSettings[iSlidingLid_Enabled] ? slidingLidSettings[iSlidingLid_Thickness] : 0);
   
   filledInZ = env_pitch().z*num_z;
   zpoint = filledInZ-headroom;
@@ -6975,7 +7078,7 @@ module basic_cavity(num_x, num_y, num_z,
 
   
   if(env_help_enabled("trace")) echo("basic_cavity", gf_cup_corner_radius=env_corner_radius(),wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
-  aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
+  aboveLidHeight =  sliding_lid_settings[iSlidingLid_Thickness] + lipHeight;
   
   //cavityHeight= max(lipBottomZ-floorht,0);
   cavityHeight= max(lipBottomZ-floorht,0);
@@ -7033,7 +7136,7 @@ module basic_cavity(num_x, num_y, num_z,
             roundedr2=0);
     } //union of main cavity
 
-    if(sliding_lid_settings[iSlidingLidEnabled])
+    if(sliding_lid_settings[iSlidingLid_Enabled])
       SlidingLidSupportMaterial(
         num_x = num_x, 
         num_y = num_y,
@@ -7102,7 +7205,7 @@ module basic_cavity(num_x, num_y, num_z,
     }  // difference removals from main body.
     
     //Sliding lid rebate.
-    if(sliding_lid_settings[iSlidingLidEnabled])
+    if(sliding_lid_settings[iSlidingLid_Enabled])
       tz(zpoint)
       SlidingLidCavity(
         num_x = num_x,
@@ -10367,6 +10470,15 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
 
+sliding_lid_settings = SlidingLidSettings(
+  enabled = sliding_lid_enabled, 
+  thickness = sliding_lid_thickness, 
+  min_wall_thickness = sliding_lid_min_wallThickness, 
+  min_support = sliding_lid_min_support,
+  clearance = sliding_lid_clearance,
+  pull_style = sliding_lid_pull_style,
+  nub_size = sliding_lid_nub_size);
+
 set_environment(
   width = width,
   depth = depth,
@@ -10378,7 +10490,7 @@ set_environment(
   randomSeed = random_seed,
   force_render = force_render)
   union(){
-  if(render_choice == "both" || render_choice == "cup")
+  if(render_choice == "both" || render_choice == "cup" || render_choice == "both connected")
   {
     gridfinity_cup(
       width=width, depth=depth, height=height,
@@ -10493,12 +10605,7 @@ set_environment(
         extendableyPosition = extension_y_position, 
         extendableTabsEnabled = extension_tabs_enabled, 
         extendableTabSize = extension_tab_size),
-      sliding_lid_enabled = sliding_lid_enabled, 
-      sliding_lid_thickness = sliding_lid_thickness, 
-      sliding_min_wall_thickness = sliding_min_wall_thickness, 
-      sliding_min_support = sliding_min_support, 
-      sliding_clearance = sliding_clearance,
-      sliding_lid_lip_enabled=sliding_lid_lip_enabled,
+      sliding_lid_settings= sliding_lid_settings,
       cupBaseTextSettings = CupBaseTextSettings(
         baseTextLine1Enabled = text_1,
         baseTextLine2Enabled = text_2,
@@ -10509,23 +10616,16 @@ set_environment(
         baseTextOffset = text_offset));
   }
 
-  if(render_choice == "both" || render_choice == "lid")
+  if(render_choice == "both" || render_choice == "lid" || render_choice == "both connected")
   {
     num_x = calcDimensionWidth(width);
     num_y = calcDimensionDepth(depth);
     num_z = calcDimensionHeight(height);
-    wall_thickness = wallThickness(wall_thickness, num_z);
     
-    slidingLidSettings= SlidingLidSettings(
-      sliding_lid_enabled, 
-      sliding_lid_thickness, 
-      sliding_min_wall_thickness, 
-      sliding_min_support,
-      sliding_clearance,
-      wall_thickness,
-      sliding_lid_lip_enabled);
+    wall_thickness = wallThickness(wall_thickness, num_z);
+    slidingLidSettings = ValidateSlidingLidSettings(sliding_lid_settings, wall_thickness);
         
-    headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
+    headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLid_Thickness] : 0);
     
     filledInZ = env_pitch().z*num_z;
     zpoint = filledInZ-headroom;
@@ -10534,25 +10634,24 @@ set_environment(
       render_choice == "both" && !$preview 
       ? [(num_x+0.5)*env_pitch().x, 0, 0] 
       : [0, 0, render_choice == "lid" ? 0 : zpoint])
-    difference()
-    {
       SlidingLid(
         num_x=num_x, 
         num_y=num_y,
         wall_thickness,
-        clearance = slidingLidSettings[iSlidingClearance],
-        lidThickness=slidingLidSettings[iSlidingLidThickness],
-        lidMinSupport=slidingLidSettings[iSlidingLidMinSupport],
-        lidMinWallThickness=slidingLidSettings[iSlidingLidMinWallThickness],
+        clearance = slidingLidSettings[iSlidingLid_Clearance],
+        lidThickness=slidingLidSettings[iSlidingLid_Thickness],
+        lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
+        lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
+        headroom = headroom,
         lipStyle = lip_style,
         lip_notches = lip_top_notches,
         lip_top_relief_height = lip_top_relief_height, 
-        addLiptoLid = sliding_lid_lip_enabled,
+        pull_style = slidingLidSettings[iSlidingLid_PullStyle],
         limitHeight=true,
         cutoutEnabled = sliding_lid_cutout_enabled,
         cutoutSize = sliding_lid_cutout_size,
         cutoutRadius = sliding_lid_cutout_radius,
-        cutoutPosition = sliding_lid_cutout_position);
-    }
+        cutoutPosition = sliding_lid_cutout_position,
+        nub_size = slidingLidSettings[iSlidingLid_NubSize]);
   }
 }

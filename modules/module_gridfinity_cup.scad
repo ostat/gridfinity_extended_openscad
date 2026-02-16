@@ -61,11 +61,11 @@ default_sliding_lid_enabled = false;
 // 0 = wall thickness *2
 default_sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
-default_sliding_min_wallThickness = 0;//0.1
+default_sliding_min_wall_thickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
 default_sliding_min_support = 0;//0.1
 default_sliding_clearance = 0.1;//0.1
-default_sliding_lid_lip_enabled = false;
+default_sliding_lid_pull_style = "disabled";
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -342,12 +342,13 @@ module gridfinity_cup(
     extendableyPosition = default_extension_y_position, 
     extendableTabsEnabled = default_extension_tabs_enabled, 
     extendableTabSize = default_extension_tab_size),
-  sliding_lid_enabled = default_sliding_lid_enabled,
-  sliding_lid_thickness = default_sliding_lid_thickness,
-  sliding_lid_lip_enabled=default_sliding_lid_lip_enabled,
-  sliding_min_wall_thickness = default_sliding_min_wallThickness, 
-  sliding_min_support = default_sliding_min_support, 
-  sliding_clearance = default_sliding_clearance,
+  sliding_lid_settings= SlidingLidSettings(
+    enabled = default_sliding_lid_enabled,
+    thickness = default_sliding_lid_thickness,
+    min_wall_thickness = default_sliding_min_wall_thickness,
+    min_support = default_sliding_min_support,
+    clearance = default_sliding_clearance,
+    pull_style = default_sliding_lid_pull_style),
   cupBaseTextSettings = CupBaseTextSettings(
     baseTextLine1Enabled = default_text_1,
     baseTextLine2Enabled = default_text_2,
@@ -357,14 +358,9 @@ module gridfinity_cup(
     baseTextDepth = default_text_depth,
     baseTextOffset = default_text_offset)) {
   
-  //num_x = is_undef($num_x) ? calcDimensionWidth(width, true) : $num_x;
-  //num_y = is_undef($num_y) ? calcDimensionDepth(depth, true) : $num_y;
-  //num_z = is_undef($num_z) ? calcDimensionHeight(height, true) : $num_z;
-  
   num_x = is_undef(width) ?  $num_x : calcDimensionWidth(width, true);
   num_y = is_undef(depth) ? $num_y : calcDimensionDepth(depth, true);
   num_z = is_undef(height) ? $num_z : calcDimensionHeight(height, true);
-
 
   //wall_thickness default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
   wall_thickness = wallThickness(wall_thickness, num_z);
@@ -375,17 +371,9 @@ module gridfinity_cup(
   cupBase_settings = ValidateCupBaseSettings(cupBase_settings);
   floor_pattern_settings = ValidatePatternSettings(floor_pattern_settings);
   wall_pattern_settings = ValidatePatternSettings(wall_pattern_settings);
+  slidingLidSettings = ValidateSlidingLidSettings(sliding_lid_settings, wall_thickness);
   
-  slidingLidSettings= SlidingLidSettings(
-          sliding_lid_enabled, 
-          sliding_lid_thickness, 
-          sliding_min_wall_thickness, 
-          sliding_min_support,
-          sliding_clearance,
-          wall_thickness,
-          sliding_lid_lip_enabled);
-          
-  headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
+  headroom = headroom + (slidingLidSettings[iSlidingLid_Enabled] ? slidingLidSettings[iSlidingLid_Thickness] : 0);
   
   filledInZ = env_pitch().z*num_z;
   zpoint = filledInZ-headroom;
@@ -1301,7 +1289,7 @@ module basic_cavity(num_x, num_y, num_z,
 
   
   if(env_help_enabled("trace")) echo("basic_cavity", gf_cup_corner_radius=env_corner_radius(),wall_thickness=wall_thickness, env_clearance=env_clearance(), inner_corner_center=inner_corner_center, innerWallRadius=innerWallRadius, innerLipRadius=innerLipRadius);
-  aboveLidHeight =  sliding_lid_settings[iSlidingLidThickness] + lipHeight;
+  aboveLidHeight =  sliding_lid_settings[iSlidingLid_Thickness] + lipHeight;
   
   //cavityHeight= max(lipBottomZ-floorht,0);
   cavityHeight= max(lipBottomZ-floorht,0);
@@ -1359,7 +1347,7 @@ module basic_cavity(num_x, num_y, num_z,
             roundedr2=0);
     } //union of main cavity
 
-    if(sliding_lid_settings[iSlidingLidEnabled])
+    if(sliding_lid_settings[iSlidingLid_Enabled])
       SlidingLidSupportMaterial(
         num_x = num_x, 
         num_y = num_y,
@@ -1428,7 +1416,7 @@ module basic_cavity(num_x, num_y, num_z,
     }  // difference removals from main body.
     
     //Sliding lid rebate.
-    if(sliding_lid_settings[iSlidingLidEnabled])
+    if(sliding_lid_settings[iSlidingLid_Enabled])
       tz(zpoint)
       SlidingLidCavity(
         num_x = num_x,

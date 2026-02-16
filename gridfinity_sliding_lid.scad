@@ -19,15 +19,16 @@ sliding_lid_enabled = true;
 // 0 = wall thickness *2
 sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
-sliding_min_wall_thickness = 0;//0.1
+sliding_lid_min_wallThickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
-sliding_min_support = 0;//0.1
-sliding_lid_lip_enabled = true;
-sliding_clearance = 0.1;//0.1
+sliding_lid_min_support = 0;//0.1
+sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
+sliding_lid_clearance = 0.1;//0.1
 sliding_lid_cutout_enabled = false; //
 sliding_lid_cutout_size = [-2,-2]; //0.1
 sliding_lid_cutout_radius = -4; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
+sliding_lid_nub_size = 0.5; //
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -281,6 +282,15 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
 
+sliding_lid_settings = SlidingLidSettings(
+  enabled = sliding_lid_enabled, 
+  thickness = sliding_lid_thickness, 
+  min_wall_thickness = sliding_lid_min_wallThickness, 
+  min_support = sliding_lid_min_support,
+  clearance = sliding_lid_clearance,
+  pull_style = sliding_lid_pull_style,
+  nub_size = sliding_lid_nub_size);
+
 set_environment(
   width = width,
   depth = depth,
@@ -294,7 +304,6 @@ set_environment(
   union(){
   if(render_choice == "both" || render_choice == "cup" || render_choice == "both connected")
   {
-  color("red")
     gridfinity_cup(
       width=width, depth=depth, height=height,
       filled_in=filled_in,
@@ -408,12 +417,7 @@ set_environment(
         extendableyPosition = extension_y_position, 
         extendableTabsEnabled = extension_tabs_enabled, 
         extendableTabSize = extension_tab_size),
-      sliding_lid_enabled = sliding_lid_enabled, 
-      sliding_lid_thickness = sliding_lid_thickness, 
-      sliding_min_wall_thickness = sliding_min_wall_thickness, 
-      sliding_min_support = sliding_min_support, 
-      sliding_clearance = sliding_clearance,
-      sliding_lid_lip_enabled=sliding_lid_lip_enabled,
+      sliding_lid_settings= sliding_lid_settings,
       cupBaseTextSettings = CupBaseTextSettings(
         baseTextLine1Enabled = text_1,
         baseTextLine2Enabled = text_2,
@@ -429,18 +433,11 @@ set_environment(
     num_x = calcDimensionWidth(width);
     num_y = calcDimensionDepth(depth);
     num_z = calcDimensionHeight(height);
-    wall_thickness = wallThickness(wall_thickness, num_z);
     
-    slidingLidSettings= SlidingLidSettings(
-      sliding_lid_enabled, 
-      sliding_lid_thickness, 
-      sliding_min_wall_thickness, 
-      sliding_min_support,
-      sliding_clearance,
-      wall_thickness,
-      sliding_lid_lip_enabled);
+    wall_thickness = wallThickness(wall_thickness, num_z);
+    slidingLidSettings = ValidateSlidingLidSettings(sliding_lid_settings, wall_thickness);
         
-    headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
+    headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLid_Thickness] : 0);
     
     filledInZ = env_pitch().z*num_z;
     zpoint = filledInZ-headroom;
@@ -449,25 +446,24 @@ set_environment(
       render_choice == "both" && !$preview 
       ? [(num_x+0.5)*env_pitch().x, 0, 0] 
       : [0, 0, render_choice == "lid" ? 0 : zpoint])
-    difference()
-    {
       SlidingLid(
         num_x=num_x, 
         num_y=num_y,
         wall_thickness,
-        clearance = slidingLidSettings[iSlidingClearance],
-        lidThickness=slidingLidSettings[iSlidingLidThickness],
-        lidMinSupport=slidingLidSettings[iSlidingLidMinSupport],
-        lidMinWallThickness=slidingLidSettings[iSlidingLidMinWallThickness],
+        clearance = slidingLidSettings[iSlidingLid_Clearance],
+        lidThickness=slidingLidSettings[iSlidingLid_Thickness],
+        lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
+        lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
+        headroom = headroom,
         lipStyle = lip_style,
         lip_notches = lip_top_notches,
         lip_top_relief_height = lip_top_relief_height, 
-        addLiptoLid = sliding_lid_lip_enabled,
+        pull_style = slidingLidSettings[iSlidingLid_PullStyle],
         limitHeight=true,
         cutoutEnabled = sliding_lid_cutout_enabled,
         cutoutSize = sliding_lid_cutout_size,
         cutoutRadius = sliding_lid_cutout_radius,
-        cutoutPosition = sliding_lid_cutout_position);
-    }
+        cutoutPosition = sliding_lid_cutout_position,
+        nub_size = slidingLidSettings[iSlidingLid_NubSize]);
   }
 }
