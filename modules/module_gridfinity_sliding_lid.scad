@@ -64,7 +64,7 @@ function SlidingLidSettings(
 
 module AssertSlidingLidSettings(settings){
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==12, "SlidingLid Settings must length 12");
+  assert(len(settings)==12, "SlidingLid Settings must have length 12");
 } 
 
 //SlidingLid(4,3,.8,0.1,1.6,0.8,0.4,true, true, [-2,-2],5,[0,0]);
@@ -183,15 +183,14 @@ module SlidingLid(
     
     // Add text to lid surface
     if(textEnabled && textContent != "" && textDepth > 0) {
-      maxTextWidth = lidSize.x * 0.8; // Use 80% of available width
+      availableTextWidth = lidSize.x * 0.8; // Use 80% of available width
       maxTextSize = 12;
       
       // Calculate text size - use simple estimation if textmetrics not available
       estimatedCharWidth = 0.6; // Rough estimation: character width is ~60% of font size
-      estimatedTextWidth = len(textContent) * textSize * estimatedCharWidth;
       
       actualTextSize = textSize > 0 ? textSize : 
-        min(maxTextWidth / (len(textContent) * estimatedCharWidth), maxTextSize);
+        min(availableTextWidth / (len(textContent) * estimatedCharWidth), maxTextSize);
       
       // Calculate text position
       actualEstimatedTextWidth = len(textContent) * actualTextSize * estimatedCharWidth;
