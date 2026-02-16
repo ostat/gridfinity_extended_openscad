@@ -82,7 +82,7 @@ module SlidingLid(
   labelWalls = labelSettings[iLabelSettings_walls];
   labelPosition = labelSettings[iLabelSettings_position];
   rawLabelWidth = labelSize.x;
-  labelWidth = (rawLabelWidth == 0) ? num_x*env_pitch().x : rawLabelWidth;
+  labelWidth = (rawLabelWidth == 0) ? num_x*env_pitch().x : rawLabelWidth*env_pitch().x;
   labelDepth = labelSize.y;
   labelOnBackWall = (labelWalls[1] != 0);
 
