@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_marble.scad'. Generated 2026-02-16 23:25
-//Content hash 3142EF63DA8EA9AD01CFB9CE254C1BC934CADAFDF3C1C0A22530EC3083B6AAD2
+//Combined version of 'gridfinity_marble.scad'. Generated 2026-02-17 08:07
+//Content hash B25FD85E05FCD196497257DEAEADBCA70A632E8BEF676C6C1785A9EE8EAF3DBD
 ///////////////////////////////////////
 
 
@@ -6518,6 +6518,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
+  sliding_lid_gap_from_bin = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,

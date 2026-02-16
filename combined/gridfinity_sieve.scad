@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_sieve.scad'. Generated 2026-02-16 23:25
-//Content hash 6CCA630960A6A579AA60FC8B58193D0D829256AA11B0C63A89B5878E3D426314
+//Combined version of 'gridfinity_sieve.scad'. Generated 2026-02-17 08:07
+//Content hash CE7BE55006628027833F54ECBAC8F47472358B59AC54F8FC4F72DA2185DF7E71
 ///////////////////////////////////////
 
 /*<!!start gridfinity_sieve!!>*/
@@ -6491,6 +6491,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
+  sliding_lid_gap_from_bin = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,

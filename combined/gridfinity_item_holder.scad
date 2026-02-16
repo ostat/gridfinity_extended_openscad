@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_item_holder.scad'. Generated 2026-02-16 23:25
-//Content hash AC5F80AB32B84078B82879EFF4DDBB488F51A1050D82EAE509712D952303844C
+//Combined version of 'gridfinity_item_holder.scad'. Generated 2026-02-17 08:07
+//Content hash F0441715CCCE568DB9F23EC833DF2DCEAA9AA8520A080B7DCCB8E43DC5B97D96
 ///////////////////////////////////////
 
 /*<!!start gridfinity_itemholder!!>*/
@@ -6882,6 +6882,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
+  sliding_lid_gap_from_bin = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,

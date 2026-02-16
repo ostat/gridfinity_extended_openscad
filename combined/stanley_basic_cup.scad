@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'stanley_basic_cup.scad'. Generated 2026-02-16 23:26
-//Content hash D9D73FAC1837FE95650CDEC1989A800FD74D69A5BEEB141E4ACE130C327ECD10
+//Combined version of 'stanley_basic_cup.scad'. Generated 2026-02-17 08:07
+//Content hash 170E36F8D14A90C1698C142E333D39F9914721BCD8AD7104FCDB238ACFFCC09F
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -6692,6 +6692,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
+  sliding_lid_gap_from_bin = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,

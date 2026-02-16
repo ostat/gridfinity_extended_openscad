@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-16 23:25
-//Content hash C1B6946BA895866E6758CB596998841430FEB5CA96CB52DE3BA89C1CBF0F405F
+//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-17 08:07
+//Content hash D0625DE6A1C0AA905BBB9E70C09AAF058227E5F741A4C756D08FFFB35C8AF894
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -7161,6 +7161,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
+  sliding_lid_gap_from_bin = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,

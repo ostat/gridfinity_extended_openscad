@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_drawers.scad'. Generated 2026-02-16 23:25
-//Content hash 300C1081B260E2DDC10E712A1CC198F99A79AE86FCA12AB064274EE23C43C178
+//Combined version of 'gridfinity_drawers.scad'. Generated 2026-02-17 08:07
+//Content hash BCFA1C1F4F4D22A8092D86AABE48C0F13587BCC5A9208E07620B117D83BDF027
 ///////////////////////////////////////
 // Gridfinity drawer system.
 // Intended for Gridfinity bins to sit in the drawers, meaning the outer chest will not fit neatly on to a gridfinity grid.
@@ -6528,6 +6528,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
+  sliding_lid_gap_from_bin = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,

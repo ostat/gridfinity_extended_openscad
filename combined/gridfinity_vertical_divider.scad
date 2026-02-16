@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_vertical_divider.scad'. Generated 2026-02-16 23:25
-//Content hash 75A6F242CD8397A9BEF1E7CE331316A88811DA90604AB57B4B6819779F8AA2C5
+//Combined version of 'gridfinity_vertical_divider.scad'. Generated 2026-02-17 08:07
+//Content hash C484B9BD9B840F9424C4EE6353ED73BF56A95BC3BC6B65DAEA95241EF23C43A7
 ///////////////////////////////////////
 
 /* [Divider] */
@@ -6520,6 +6520,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
+  sliding_lid_gap_from_bin = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,

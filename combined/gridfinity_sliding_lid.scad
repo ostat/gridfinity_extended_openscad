@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_sliding_lid.scad'. Generated 2026-02-16 23:25
-//Content hash 561154B713C3CD472FEA510446EEF404AD1F8409A28224365273496682C677B7
+//Combined version of 'gridfinity_sliding_lid.scad'. Generated 2026-02-17 08:07
+//Content hash BC9CDB2F8F81A5FD4120479FECF983591F035296C8D77625B2AF7245F7BBEA72
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -24,6 +24,7 @@ sliding_lid_min_wallThickness = 0;//0.1
 sliding_lid_min_support = 0;//0.1
 sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
 sliding_lid_clearance = 0.1;//0.1
+sliding_lid_gap_from_bin = 0.1;//0.1
 sliding_lid_cutout_enabled = false; //
 sliding_lid_cutout_size = [-2,-2]; //0.1
 sliding_lid_cutout_radius = -4; //0.1
@@ -469,6 +470,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
+  sliding_lid_gap_from_bin = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,
@@ -10639,6 +10641,7 @@ set_environment(
         num_y=num_y,
         wall_thickness,
         clearance = slidingLidSettings[iSlidingLid_Clearance],
+        sliding_lid_gap_from_bin = sliding_lid_gap_from_bin,
         lidThickness=slidingLidSettings[iSlidingLid_Thickness],
         lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
         lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
