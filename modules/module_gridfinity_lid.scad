@@ -54,7 +54,9 @@ module gridfinity_lid(
         reducedWallHeight=reducedWallHeight,
         lidIncludeMagnets = lidIncludeMagnets, 
         lidEfficientFloorThickness = lidEfficientFloorThickness, 
-        lidEfficientBaseHeight = lidEfficientBaseHeight);
+        lidEfficientBaseHeight = lidEfficientBaseHeight,
+        position_fill_grid_x = center_fill_grid_x ? "center" : "near",
+        position_fill_grid_y = center_fill_grid_y ? "center" : "near");
     }
   }  
 }

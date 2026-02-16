@@ -2,7 +2,7 @@ include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity_cup.scad>
 use <modules/module_gridfinity_block.scad>
 
-use <modules/thridparty/dotscad/ring_extrude.scad>;
+use <modules/thirdparty/dotscad/ring_extrude.scad>;
 
 /*<!!start gridfinity_marble!!>*/
 /* [marbleRun] */
@@ -90,14 +90,12 @@ lip_clip_position = "disabled"; //[disabled, intersection]
 /* [Base] */
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 1.5;
-// Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = true;
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 
 /* [debug] */
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+//Slice the bin
+cut = [0,0,0]; 
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -208,11 +206,11 @@ module gridfinity_marble(
   width=width, depth=depth, height=height,
   position = render_position,
   floor_thickness = floor_thickness,
-  half_pitch = half_pitch,
+  sub_pitch = sub_pitch,
   wall_thickness=wall_thickness) {
   
   lip_style = marble_style == "ramp" ? "none" : lip_style;
-  halfPitch=marble_style == "cup" ? false : half_pitch;
+  subPitch = marble_style == "cup" ? 1 : sub_pitch;
   
   difference() {
     num_x = calcDimensionWidth(width);
@@ -228,7 +226,7 @@ module gridfinity_marble(
         centerMagnetSize = [0,0], 
         screwSize = [0,0], 
         cavityFloorRadius = -1,
-        halfPitch=halfPitch,
+        subPitch=subPitch,
         flatBase=false,
         spacer=false),
       wall_thickness=wall_thickness,
@@ -919,7 +917,7 @@ set_environment(
   render_position = render_position,
   help = enable_help,
   //pitch = pitch,
-  cut = [cutx, cuty, height],
+  cut = cut,
   setColour = set_colour,
   randomSeed = random_seed) 
 gridfinity_marble();

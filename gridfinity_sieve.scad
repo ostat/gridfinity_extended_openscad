@@ -5,15 +5,17 @@ use <modules/module_gridfinity_block.scad>
 /*<!!start gridfinity_sieve!!>*/
 /* [Sieve] */
 // Should the grid be square or hex
-sieve_grid_style = "hexgrid"; //[grid, gridrotated, hexgrid, hexgridrotated]
-//Spacing around the holes
-sieve_hole_spacing = 3; //0.1
+sieve_grid_style = "hexgrid"; //[grid, hexgrid]
+// Spacing around the holes
+sieve_strength = 3; //0.1
+// rotate the grid
+sieve_rotate_grid = false;
 // 45 deg chamfer added to the top of the hole (mm)
 sieve_hole_chamfer = 0; //0.5
 // The number of sides for the hole, when custom is selected
 sieve_hole_sides = 6; 
 // The size the hole, when custom is selected
-sieve_hole_size = [10, 10]; //0.1
+sieve_cell_size = [10, 10]; //0.1
 // Spacing around the compartments
 sieve_compartment_clearance= 7; //0.1
 sieve_compartment_fill = "none"; //["none", "space", "crop"]
@@ -64,10 +66,8 @@ label_relief = [0,0,0,0.6]; // 0.1
 label_walls=[0,1,0,0];  //[0:1:1]
 
 /* [debug] */
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+//Slice the bin
+cut = [0,0,0]; //0.1
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -105,8 +105,9 @@ module gridfinity_sieve(
   //sieve settings
   sieve_grid_style = sieve_grid_style,
   sieve_hole_sides = sieve_hole_sides,
-  sieve_hole_size = sieve_hole_size,
-  sieve_hole_spacing = sieve_hole_spacing,
+  sieve_rotate_grid = sieve_rotate_grid,
+  sieve_cell_size = sieve_cell_size,
+  sieve_strength = sieve_strength,
   sieve_hole_chamfer = sieve_hole_chamfer,
   sieve_compartment_clearance = sieve_compartment_clearance,
   sieve_compartment_fill  = sieve_compartment_fill,
@@ -127,7 +128,7 @@ module gridfinity_sieve(
     floorThickness = floor_thickness,
     cavityFloorRadius = cavity_floor_radius,
     efficientFloor=efficient_floor,
-    halfPitch=false,
+    subPitch=1,
     flatBase=flat_base,
     spacer=false),
   wall_thickness=wall_thickness,
@@ -142,7 +143,7 @@ module gridfinity_sieve(
     num_y = calcDimensionDepth(depth);
     num_z = calcDimensionHeight(height);
     
-    holeSize = is_list(sieve_hole_size) ? sieve_hole_size : [sieve_hole_size,sieve_hole_size];
+    cellSize = is_list(sieve_cell_size) ? sieve_cell_size : [sieve_cell_size, sieve_cell_size];
     /*<!!start gridfinity_basic_cup!!>*/
     gridfinity_cup(
       width=width, depth=depth, height=height,
@@ -153,14 +154,15 @@ module gridfinity_sieve(
       lip_settings=lip_settings,
       headroom=headroom,
         floor_pattern_settings = PatternSettings(
-        patternEnabled = true, 
-        patternStyle = sieve_grid_style, 
-        patternFill = sieve_compartment_fill,
-        patternBorder = sieve_compartment_clearance, 
-        patternHoleSize = holeSize, 
-        patternHoleSides = 6,
-        patternHoleSpacing = sieve_hole_spacing,
-        patternGridChamfer=sieve_hole_chamfer));
+          patternEnabled = true, 
+          patternStyle = sieve_grid_style, 
+          patternFill = sieve_compartment_fill,
+          patternBorder = sieve_compartment_clearance, 
+          patternCellSize = cellSize, 
+          patternStrength = sieve_strength,
+          patternHoleSides = 6,
+          patternRotate = sieve_rotate_grid,
+          patternGridChamfer = sieve_hole_chamfer));
     /*<!!end gridfinity_basic_cup!!>*/
   }
 }
@@ -171,5 +173,5 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, height])
+  cut = cut)
 gridfinity_sieve();

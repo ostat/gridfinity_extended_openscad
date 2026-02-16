@@ -72,7 +72,8 @@ module cupLip(
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
-  lip_non_blocking = false){
+  lip_non_blocking = false,
+  align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
@@ -114,7 +115,6 @@ module cupLip(
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
  
   coloredLipHeight=min(2,lipHeight);
-  echo(inner_corner_center=inner_corner_center, innerLipRadius=innerLipRadius, innerWallRadius=innerWallRadius);
   
   if(lipStyle != "none")
     color(env_colour(color_topcavity, isLip = true))
@@ -136,7 +136,8 @@ module cupLip(
         lip_top_relief_height = lip_top_relief_height,
         lip_top_relief_width = lip_top_relief_width,
         lip_clip_position = lip_clip_position,
-        lip_non_blocking = lip_non_blocking);
+        lip_non_blocking = lip_non_blocking,
+        align_grid = align_grid);
     }
 }
 
@@ -149,7 +150,8 @@ module cupLip_cavity(
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
-  lip_non_blocking = false){
+  lip_non_blocking = false,
+  align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
   assert(is_num(num_y) && num_y > 0, "num_y must be a number greater than 0");
@@ -191,7 +193,6 @@ module cupLip_cavity(
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
  
   coloredLipHeight=min(2,lipHeight);
-  echo(inner_corner_center=inner_corner_center, innerLipRadius=innerLipRadius, innerWallRadius=innerWallRadius);
       
   pitch=env_pitch();
   // remove top so XxY can fit on top
@@ -201,8 +202,8 @@ module cupLip_cavity(
     frame_cavity(
       num_x = lip_non_blocking ? ceil(num_x) : num_x, 
       num_y = lip_non_blocking ? ceil(num_y) : num_y, 
-      position_fill_grid_x = "far",
-      position_fill_grid_y = "far",
+      position_fill_grid_x = align_grid.x,
+      position_fill_grid_y = align_grid.y,
       render_top = lip_notches,
       render_bottom = false,
       frameLipHeight = 4,
@@ -211,12 +212,13 @@ module cupLip_cavity(
       reducedWallWidth = lip_top_relief_width,
       reducedWallOuterEdgesOnly=true){
         echo("donothign");
-        frame_connectors(
+        frame_connector_cavities(
           width = num_x, 
           depth = num_y,
-          connectorPosition = lip_clip_position,
-          connectorClipEnabled = connectorsEnabled);
-      };
+           frameConnectorSettings = FrameConnectorSettings(
+            connectorPosition = lip_clip_position, 
+            connectorClipEnabled = connectorsEnabled));
+      }
 
     //lower cavity
     frame_cavity(

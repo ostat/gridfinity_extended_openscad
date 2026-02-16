@@ -11,6 +11,7 @@ use <modules/module_gridfinity_baseplate.scad>
 include <modules/gridfinity_constants.scad>
 include <modules/polyround.scad>
 use <modules/module_item_holder.scad>
+include <modules/module_patterns.scad>
 
 /* [Render] */
 // select what to render
@@ -34,7 +35,7 @@ drawer_clearance = [0.25,0.25,0.25];
 //Add clearance inside the chest for the drawer. width, depth and height. Default is 0.25
 chest_clearance = [0.25,0.25,0.25];
 //Wall thickness of the chest.
-chest_wall_thickness = 2;
+chest_wall_thickness = 2; // 0.1
 //Thickness of drawer slides in mm. 0 is uses wall thickness.
 chest_drawer_slide_thickness = 0;
 //Width of drawer slies in mm. 0 is full chest width.
@@ -44,8 +45,9 @@ chest_drawer_slide_width = 10;
 // Handle size width, depth, height, and radius. Height, less than 0 drawerHeight/abs(height). radius, -1 = depth/2. 
 handle_size = [4, 10, -1, -1];
 handle_vertical_center = false;
+handle_cut_factor=0.5;
 handle_rotate = false;
-drawer_wall_thickness = 2;
+drawer_wall_thickness = 2; // 0.1
 drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and floor]
 drawer_enable_magnet = true;
 drawer_magnet_size = [6.5, 2.4];  // .1
@@ -76,29 +78,47 @@ screw_depth = 6;
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to chest corners (prints faster).
 chest_corner_attachments_only = true;
-// Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = false;
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off";
 
 /* [Chest Wall Pattern] */
-// Grid wall patter
-wallpattern_enabled=false;
 // wall pattern border width. -1 defaults to chest_wall_thickness. less than 0 chest_wall_thickness/abs(wallpattern_border_width)
 wallpattern_border_width = -1;
 efficient_back = true;
+// Grid wall patter
+wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[grid, gridrotated, hexgrid,hexgridrotated, voronoi,voronoigrid,voronoihexgrid]
+wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
 // Spacing between pattern
-wallpattern_hole_spacing = 2; //0.1
-//Number of sides of the hole op
-wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
+wallpattern_strength = 2; //0.1
+// wall to enable on, front, back, left, right.
+wallpattern_walls=[1,1,1,1];  //[0:1:1]
+// rotate the grid
+wallpattern_rotate_grid=false;
 //Size of the hole
-wallpattern_hole_size = 8; //0.1
+wallpattern_cell_size = [10,10]; //0.1
+// Add the pattern to the dividers
+wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
+//Number of sides of the hole op
+wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
+//Radius of corners
+wallpattern_hole_radius = 0.5;
 // pattern fill mode
-wallpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
-wallpattern_voronoi_noise = 0.75;
-wallpattern_voronoi_radius = 0.5;
+wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+// border around the wall pattern, default is wall thickness
+wallpattern_border = 0;
+// depth of imprint in mm, 0 = is wall width.
+wallpattern_depth = 0; // 0.1
+//grid pattern hole taper
+wallpattern_pattern_grid_chamfer = 0; //0.1
+//voronoi pattern noise, 
+wallpattern_pattern_voronoi_noise = 0.75; //0.01
+//brick pattern center weight
+wallpattern_pattern_brick_weight = 5;
+//$fs for floor pattern, min size face.
+wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 
 /* [model detail] */
 // minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
@@ -128,11 +148,6 @@ function drawerPosition(
   drawersTotal = (index<1 ? 0 : sum(partial(outerSizes,0,index-1)).z),
   clearanceTotal = clearance.z*2*(index),
   sliderThickness = sliderThickness*index) drawersTotal + clearanceTotal + sliderThickness;
-  
-function sum(list, c = 0) = 
-  c < len(list) - 1 
-    ? list[c] + sum(list, c + 1) 
-    : list[c];
 
 //Drawer modules
 module drawers(
@@ -254,26 +269,37 @@ module drawer(
   }
 }
 
-module drawerPull(width, depth, height, radius){
-  radius = min(radius == -1 ? depth/2 : radius, height/2,depth);
-  depth = depth - radius;
-  translate([-width/2,-depth,-height/2])
-  hull(){
-    cube([width, depth, height]);
-    
-    if(radius>0){
-      for(i=[0:1]){
-      translate(i == 0 ? [0,0,radius] : [0,0,height-radius])
-      rotate([0,90,0])
-        difference(){
-          cylinder(h=width, r=radius);
-          //Remove inner half so we don't get error when r<roundedr*2
-          translate([-radius,0,-fudgeFactor])
-          cube([radius*2,radius*2,width+fudgeFactor*2]);
-        }
-      }
-    }
+module drawerPull(width, depth, height, radius) {
+  difference() {
+      basicDrawerPull(width, depth, height, radius);
+      basicDrawerPull(width*1.5,
+        depth-(1-handle_cut_factor)*height/2,
+        height*handle_cut_factor,
+        // radius*handle_cut_factor);
+        radius-(1-handle_cut_factor)*height/2);
   }
+}
+module basicDrawerPull(width, depth, height, radius){
+  radius = min(radius < 0 ? depth/2 : radius, height/2,depth);
+    translate([-width/2,-depth, -height/2])
+    if (radius == 0){ cube([width, depth, height]); }
+    else {
+        hull(){
+            translate([0,radius,0])
+            cube([width, depth-radius, height]);
+
+            // i = 0 is for the top one and 1 for the bottom
+            for (i = [0:1])
+            {
+              translate(i == 0 ? [0, radius, height-radius] : 
+                [0, radius, radius])
+              rotate(i == 0 ? [180, 0, 0] : [-90,0,0])
+              rotate([0,90,0])
+              color(i == 0 ? "yellow" : "blue")
+              PartialCylinder(width,radius,90);
+            }
+        }
+    }
 }
 
 //Chest modules
@@ -292,7 +318,7 @@ module chest(
   bottomScrewDepth,
   bottomHoleOverhangRemedy,
   bottomCornerAttachmentsOnly,
-  bottomHalfPitch,
+  bottomSubPitch,
   bottomFlatBase,
   drawerCount,
   drawerInnerUnitSize,
@@ -331,7 +357,7 @@ module chest(
             screwSize=[4,bottomScrewDepth],
             holeOverhangRemedy=bottomHoleOverhangRemedy,
             cornerAttachmentsOnly=bottomCornerAttachmentsOnly,
-            halfPitch = bottomHalfPitch,
+            subPitch = bottomSubPitch,
             flatBase = bottomFlatBase));
             //echo(x=drawerInnerUnitSize.x, y=drawerInnerUnitSize.y);
          if(bottomGrid == "lugs") feet(drawerInnerUnitSize.x, drawerInnerUnitSize.y, outerChest.x);
@@ -372,19 +398,15 @@ module chestCutouts(
   efficientBack,
   topWallPatternStyle,
   bottomWallpatternStyle,
-  wallPatternBorderWidth,
-  wallPatternEnabled,
-  wallpatternStyle,
-  wallPatternWtyle,
-  wallPatternHoleSpacing,
-  wallPatternHoleSides,
-  wallPatternHoleSize,
-  wallPatternFill,
-  wallPatternVoronoiNoise,
-  wallPatternVoronoiRadius
+  bottomWallpatternStyle,
+  wall_pattern_settings
 ){
-  wallPattern_thickness = chestWallThickness+fudgeFactor*2;
+  efficientBackThickness= chestWallThickness+fudgeFactor*2;
+  
+  partial_depth_pattern = wall_pattern_settings[iPatternDepth] != 0;
+  wallPattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], chestWallThickness)+fudgeFactor*2;
 
+   
   for(iDrawer = [0 : drawerCount-1]){
     innerchest = [
       drawerOuterSizes[iDrawer].x + clearance.x*2,
@@ -394,21 +416,21 @@ module chestCutouts(
     //positions for wall cutouts
     back = [
       [innerchest.z-ridgeDepth*2,innerchest.x-ridgeDepth*2], //size
-      [innerchest.x/2+chestWallThickness, innerchest.y+chestWallThickness/2-wallPattern_thickness/2, innerchest.z/2], //location
-      [0,90,90]]; //rotation 
+      [innerchest.x/2+chestWallThickness, innerchest.y+chestWallThickness/2-efficientBackThickness/2, innerchest.z/2], //location
+      [0,90,90], [0,0,0]]; //rotation , mirror
     left = [
       [innerchest.z-ridgeDepth*2,innerchest.y-ridgeDepth*2],    //size
-      [+chestWallThickness/2-wallPattern_thickness/2, (innerchest.y+chestWallThickness)/2, innerchest.z/2], //location
-      [0,90,0]];//rotation
+      [+chestWallThickness/2, (innerchest.y+chestWallThickness)/2, innerchest.z/2], //location
+      [0,90,0], [0,0,1]];//rotation, mirror
     right = [
       [innerchest.z-ridgeDepth*2,innerchest.y-ridgeDepth*2],//size
-      [innerchest.x+chestWallThickness*1.5-wallPattern_thickness/2, (innerchest.y+chestWallThickness)/2, innerchest.z/2],//location
-      [0,90,0]];//rotation
-
-    locations = [back, left, right];
+      [innerchest.x+chestWallThickness*2-wallPattern_thickness/2+fudgeFactor, (innerchest.y+chestWallThickness)/2, innerchest.z/2],//location
+      [0,90,0], [0,0,0]];//rotation, mirror
   
     vpos = startH + drawerPosition(iDrawer, drawerOuterSizes, clearance, drawerSlideThickness);
-    echo(startH=startH, vpos=vpos );
+    
+    locations = [back, left, right];
+    
     color(colour_chest) 
     translate([chestWallThickness, -fudgeFactor, vpos]) 
       cube([innerchest.x, innerchest.y+fudgeFactor, innerchest.z]);
@@ -416,28 +438,82 @@ module chestCutouts(
     if(efficientBack) 
       translate(back[1])
       translate([-back[0][1]/2, 0, vpos-back[0][0]/2])
-      cube([back[0][1], wallPattern_thickness, back[0][0]]);
+      cube([back[0][1], efficientBackThickness, back[0][0]]);
     
-    if(wallPatternEnabled)
+    if(!partial_depth_pattern && wall_pattern_settings[iPatternEnabled])
       translate([0, 0, vpos]) 
       for(iSide = [efficientBack ? 1 : 0:1:len(locations)-1])
         translate(locations[iSide][1])
         rotate(locations[iSide][2])
+        mirror(locations[iSide][3])
         render() //Render on chest pattern because detailed patters can be slow
         cutout_pattern(
-          patternStyle = wallpatternStyle,
+          patternStyle = wall_pattern_settings[iPatternStyle],
           canvasSize = locations[iSide][0],
+          border = wall_pattern_settings[iPatternBorder],
           customShape = false,
-          circleFn = wallPatternHoleSides,
-          holeSize = [wallPatternHoleSize, wallPatternHoleSize],
-          holeSpacing = [wallPatternHoleSpacing, wallPatternHoleSpacing],
+          circleFn = wall_pattern_settings[iPatternHoleSides],
+          cellSize = wall_pattern_settings[iPatternCellSize],
+          strength = wall_pattern_settings[iPatternStrength],
           holeHeight = wallPattern_thickness,
           center=true,
-          fill=wallPatternFill, //"none", "space", "crop"
-          patternGridChamfer = 0,
-          patternVoronoiNoise = wallPatternVoronoiNoise,
-          patternBrickWeight = 0,
-          holeRadius = wallPatternVoronoiRadius);
+          centerz = true,
+          fill = wall_pattern_settings[iPatternFill], //"none", "space", "crop"
+          patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
+          patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
+          patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+          partialDepth = wall_pattern_settings[iPatternDepth] != 0,
+          holeRadius = wall_pattern_settings[iPatternHoleRadius],
+          source = "chestCutouts",
+          rotateGrid = wall_pattern_settings[iPatternRotate],
+          patternFs = wall_pattern_settings[iPatternFs]);
+  }
+  
+  if(partial_depth_pattern) {
+    //positions for wall cutouts
+    back = [
+      [outerChest.z-ridgeDepth*2,outerChest.x-ridgeDepth*2], //size
+      [outerChest.x/2, outerChest.y+chestWallThickness/2-efficientBackThickness/2, outerChest.z/2], //location
+      [0,90,90], [0,0,0]]; //rotation , mirror
+    left = [
+      [outerChest.z-ridgeDepth*2,outerChest.y-ridgeDepth*2],    //size
+      [+chestWallThickness/2-wallPattern_thickness/2, outerChest.y/2, outerChest.z/2], //location
+      [0,90,0], [0,0,1]];//rotation, mirror
+    right = [
+      [outerChest.z-ridgeDepth*2,outerChest.y-ridgeDepth*2],//size
+      [outerChest.x-wallPattern_thickness/2+fudgeFactor, outerChest.y/2, outerChest.z/2],//location
+      [0,90,0], [0,0,0]];//rotation, mirror
+
+    locations = [back, left, right];
+
+    if(wall_pattern_settings[iPatternEnabled])
+      translate([0, 0, 0]) 
+      for(iSide = [efficientBack ? 1 : 0:1:len(locations)-1])
+        translate(locations[iSide][1])
+        rotate(locations[iSide][2])
+        mirror(locations[iSide][3])
+        render() //Render on chest pattern because detailed patters can be slow
+        cutout_pattern(
+          patternStyle = wall_pattern_settings[iPatternStyle],
+          canvasSize = locations[iSide][0],
+          border = wall_pattern_settings[iPatternBorder],
+          customShape = false,
+          circleFn = wall_pattern_settings[iPatternHoleSides],
+          cellSize = wall_pattern_settings[iPatternCellSize],
+          strength = wall_pattern_settings[iPatternStrength],
+          holeHeight = wallPattern_thickness,
+          center=true,
+          centerz = true,
+          fill = wall_pattern_settings[iPatternFill], //"none", "space", "crop"
+          patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
+          patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
+          patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+          partialDepth = wall_pattern_settings[iPatternDepth] != 0,
+          holeRadius = wall_pattern_settings[iPatternHoleRadius],
+          source = "chestCutouts",
+          rotateGrid = wall_pattern_settings[iPatternRotate],
+          patternFs = wall_pattern_settings[iPatternFs]);
+                            
   }
   
   top = [
@@ -515,18 +591,25 @@ module gridfinity_drawer(
     bottomScrewDepth = screw_depth,
     bottomHoleOverhangRemedy = hole_overhang_remedy,
     bottomCornerAttachmentsOnly = chest_corner_attachments_only,
-    bottomHalfPitch = half_pitch,
+    bottomSubPitch = sub_pitch,
     bottomFlatBase = flat_base,
-    wallPatternBorderWidth = wallpattern_border_width,
+    wallPatternBorderWidth=wallpattern_border_width,
     efficientBack = efficient_back,
-    wallPatternEnabled = wallpattern_enabled,
-    wallpatternStyle = wallpattern_style,
-    wallPatternHoleSpacing = wallpattern_hole_spacing,
-    wallPatternHoleSides = wallpattern_hole_sides,
-    wallPatternHoleSize = wallpattern_hole_size,
-    wallPatternFill = wallpattern_fill,
-    wallPatternVoronoiNoise = wallpattern_voronoi_noise,
-    wallPatternVoronoiRadius = wallpattern_voronoi_radius,
+    wall_pattern_settings = PatternSettings(
+      patternEnabled = wallpattern_enabled, 
+      patternStyle = wallpattern_style, 
+      patternRotate = wallpattern_rotate_grid,
+      patternFill = wallpattern_fill,
+      patternBorder = wallpattern_border, 
+      patternDepth = wallpattern_depth,
+      patternCellSize = wallpattern_cell_size, 
+      patternHoleSides = wallpattern_hole_sides,
+      patternStrength = wallpattern_strength, 
+      patternHoleRadius = wallpattern_hole_radius,
+      patternGridChamfer = wallpattern_pattern_grid_chamfer,
+      patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+      patternBrickWeight = wallpattern_pattern_brick_weight,
+      patternFs = wallpattern_pattern_quality), 
     chestLegClearance = chest_leg_clearance){
 
   // Apply defaults
@@ -576,7 +659,7 @@ module gridfinity_drawer(
       bottomScrewDepth=bottomScrewDepth,
       bottomHoleOverhangRemedy=bottomHoleOverhangRemedy,
       bottomCornerAttachmentsOnly=bottomCornerAttachmentsOnly,
-      bottomHalfPitch=bottomHalfPitch,
+      bottomSubPitch=bottomSubPitch,
       bottomFlatBase=bottomFlatBase,
       drawerCount=drawerCount,
       drawerInnerUnitSize=drawerInnerUnitSize,
@@ -599,15 +682,7 @@ module gridfinity_drawer(
         efficientBack=efficientBack,
         topWallPatternStyle=chestTopWallPatternStyle,
         bottomWallpatternStyle = bottomWallpatternStyle,
-        wallPatternBorderWidth=wallPatternBorderWidth,
-        wallPatternEnabled=wallPatternEnabled,
-        wallpatternStyle=wallpatternStyle,
-        wallPatternHoleSpacing=wallPatternHoleSpacing,
-        wallPatternHoleSides=wallPatternHoleSides,
-        wallPatternHoleSize=wallPatternHoleSize,
-        wallPatternFill=wallPatternFill,
-        wallPatternVoronoiNoise=wallPatternVoronoiNoise,
-        wallPatternVoronoiRadius=wallPatternVoronoiNoise);
+        wall_pattern_settings = wall_pattern_settings);
   if(render_choice == "drawers" || render_choice == "everything")
     translate(render_choice == "everything" && !$preview 
       ? [(drawerInnerUnitSize.x+0.5)*env_pitch().x,0,0]

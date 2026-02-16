@@ -9,13 +9,12 @@
 
 include <modules/gridfinity_constants.scad>
 include <modules/module_gridfinity_sliding_lid.scad>
-include <modules/module_gridfinity_dividers_removable.scad>
 use <modules/module_gridfinity_cup.scad>
 use <modules/module_gridfinity_block.scad>
 
 /* [Sliding Lid] */
 // select what to render
-render_choice = "both";//[both, lid, cup]
+render_choice = "both";//[both, lid, cup, both connected]
 sliding_lid_enabled = true;
 // 0 = wall thickness *2
 sliding_lid_thickness = 0; //0.1
@@ -26,8 +25,8 @@ sliding_min_support = 0;//0.1
 sliding_lid_lip_enabled = true;
 sliding_clearance = 0.1;//0.1
 sliding_lid_cutout_enabled = false; //
-sliding_lid_cutout_size = [0,0]; //0.1
-sliding_lid_cutout_radius = 10; //0.1
+sliding_lid_cutout_size = [-2,-2]; //0.1
+sliding_lid_cutout_radius = -4; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
 
 /* [Sliding Lid Text] */
@@ -93,25 +92,6 @@ horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 horizontal_separator_config = "10.5|21|42|50|60";
 
-/* [Removable Divider Walls] */
-divider_walls_enabled = false;
-// Wall to enable on, x direction, y direction
-divider_walls = [1,1]; //[0:1:1]
-// Thickness of the divider walls.
-divider_walls_thickness = 2.5;  //0.1
-// Spacing between the divider walls (0=divider_walls_thickness*2).
-divider_walls_spacing = 0; //0.1
-// Thickness of the support walls (0=walls_thickness*2).
-divider_walls_support_thickness = 2;
-// Size of the slot in the divider walls. width(0=divider_walls_thickness), depth(0=divider_walls_support_thickness)
-divider_wall_slot_size = [0,0];
-// Clearance between the divider walls top
-divider_headroom = 0.1;
-// Clearance subtracted from the removable divider wall. Width, Length
-divider_clearance = [0.3, 0.2];
-// Number of slot spanning divider to generate.
-divider_slot_spanning = 2;
-
 /* [Base] */
 // Enable magnets
 enable_magnets = true;
@@ -128,14 +108,14 @@ center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
-box_corner_attachments_only = true;
+box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth]
-// Enable to subdivide bottom pads to allow half-cell offsets
-half_pitch = false;
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off"; // [off, gridfinity:gridfinity stackable, rounded]
 // Remove floor to create a vertical spacer
@@ -163,7 +143,7 @@ label_walls=[0,1,0,0];  //[0:1:1]
 // Include larger corner fillet
 fingerslide = "none"; //[none, rounded, chamfered]
 // Radius of the corner fillet
-fingerslide_radius = 8;
+fingerslide_radius = -3;
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 fingerslide_walls=[1,0,0,0];  //[0:1:1]
 //Align the fingerslide with the lip
@@ -179,21 +159,27 @@ tapered_setback = -1;//gridfinity_corner_radius/2;
 // Grid wall patter
 wallpattern_enabled=false;
 // Style of the pattern
-wallpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+wallpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
 // Spacing between pattern
-wallpattern_hole_spacing = 2; //0.1
+wallpattern_strength = 2; //0.1
 // wall to enable on, front, back, left, right.
 wallpattern_walls=[1,1,1,1];  //[0:1:1]
+// rotate the grid
+wallpattern_rotate_grid=false;
+//Size of the hole
+wallpattern_cell_size = [10,10]; //0.1
 // Add the pattern to the dividers
 wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
 //Number of sides of the hole op
-wallpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
-//Size of the hole
-wallpattern_hole_size = [5,5]; //0.1
+wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
 //Radius of corners
 wallpattern_hole_radius = 0.5;
 // pattern fill mode
 wallpattern_fill = "none"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+// border around the wall pattern, default is wall thickness
+wallpattern_border = 0;
+// depth of imprint in mm, 0 = is wall width.
+wallpattern_depth = 0; // 0.1
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
@@ -207,16 +193,23 @@ wallpattern_pattern_quality = 0.4;//0.1:0.1:2
 // enable Grid floor patter
 floorpattern_enabled=false;
 // Style of the pattern
-floorpattern_style = "hexgrid"; //[hexgrid, hexgridrotated, grid, gridrotated, voronoi, voronoigrid, voronoihexgrid, brick, brickrotated, brickoffset, brickoffsetrotated]
+floorpattern_style = "hexgrid"; //[hexgrid, grid, voronoi, voronoigrid, voronoihexgrid, brick, brickoffset]
 // Spacing between pattern
-floorpattern_hole_spacing = 2; //0.1
-//Number of sides of the hole op
-floorpattern_hole_sides = 6; //[4:square, 6:Hex, 64:circle]
+floorpattern_strength = 2; //0.1
+// rotate the grid
+floorpattern_rotate_grid = false;
 //Size of the hole
-floorpattern_hole_size = [5,5]; //0.1
+floorpattern_cell_size = [10,10]; //0.1
+//Number of sides of the hole op
+floorpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
+//Radius of corners
 floorpattern_hole_radius = 0.5;
 // pattern fill mode
 floorpattern_fill = "crop"; //[none, space, crop, crophorizontal, cropvertical, crophorizontal_spacevertical, cropvertical_spacehorizontal, spacevertical, spacehorizontal]
+// border around the wall pattern, default is wall thickness
+floorpattern_border = 0;
+// depth of imprint in mm, 0 = is wall width.
+floorpattern_depth = 0; // 0.1
 //grid pattern hole taper
 floorpattern_pattern_grid_chamfer = 0; //0.1
 //voronoi pattern noise, 
@@ -262,6 +255,8 @@ text_1 = false;
 text_size = 0; // 0.1
 // Depth of text, in mm
 text_depth = 0.3; // 0.01
+// Offset of text , in mm
+text_offset = [0, 0]; // 0.1
 // Font to use
 text_font = "Aldo";  // [Aldo, B612, "Open Sans", Ubuntu]
 // Add free-form text line to bin bottom (printing date, serial, etc)
@@ -270,10 +265,8 @@ text_2 = false;
 text_2_text = "Gridfinity Extended";
 
 /* [debug] */
-//Slice along the x axis
-cutx = 0; //0.1
-//Slice along the y axis
-cuty = 0; //0.1
+// Debug slice
+cut = [0,0,0]; //0.1
 // enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -308,13 +301,14 @@ set_environment(
   height = height,
   render_position = render_position,
   help = enable_help,
-  cut = [cutx, cuty, height],
+  cut = cut,
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)
   union(){
-  if(render_choice == "both" || render_choice == "cup")
+  if(render_choice == "both" || render_choice == "cup" || render_choice == "both connected")
   {
+  color("red")
     gridfinity_cup(
       width=width, depth=depth, height=height,
       filled_in=filled_in,
@@ -324,10 +318,11 @@ set_environment(
         labelSize=label_size,
         labelRelief=label_relief,
         labelWalls=label_walls),
-      fingerslide=fingerslide,
-      fingerslide_radius=fingerslide_radius,
-      fingerslide_walls=fingerslide_walls,
-      fingerslide_lip_aligned=fingerslide_lip_aligned,
+      finger_slide_settings = FingerSlideSettings(
+        type = fingerslide,
+        radius = fingerslide_radius,
+        walls = fingerslide_walls,
+        lip_aligned = fingerslide_lip_aligned),
       cupBase_settings = CupBaseSettings(
         magnetSize = enable_magnets ? magnet_size : [0,0], 
         magnetEasyRelease = magnet_easy_release, 
@@ -338,39 +333,33 @@ set_environment(
         floorThickness = floor_thickness,
         cavityFloorRadius = cavity_floor_radius,
         efficientFloor=efficient_floor,
-        halfPitch=half_pitch,
+        subPitch=sub_pitch,
         flatBase=flat_base,
         spacer=spacer,
         minimumPrintablePadSize=minimum_printable_pad_size,
         flatBaseRoundedRadius = flat_base_rounded_radius,
         flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
       wall_thickness=wall_thickness,
-      chamber_wall_thickness=chamber_wall_thickness,
-      chamber_wall_headroom=chamber_wall_headroom,
-      divider_wall_removable_settings = DividerRemovableSettings(
-        enabled=divider_walls_enabled,
-        walls=divider_walls,
-        headroom=divider_headroom,
-        support_thickness=divider_walls_support_thickness,
-        slot_size=divider_wall_slot_size,
-        divider_spacing=divider_walls_spacing,
-        divider_thickness=divider_walls_thickness,
-        divider_clearance=divider_clearance,
-        divider_slot_spanning=divider_slot_spanning),
-      vertical_chambers = vertical_chambers,
-      vertical_separator_bend_position=vertical_separator_bend_position,
-      vertical_separator_bend_angle=vertical_separator_bend_angle,
-      vertical_separator_bend_separation=vertical_separator_bend_separation,
-      vertical_separator_cut_depth=vertical_separator_cut_depth,
-      vertical_irregular_subdivisions=vertical_irregular_subdivisions,
-      vertical_separator_config=vertical_separator_config,
-      horizontal_chambers=horizontal_chambers,
-      horizontal_separator_bend_position=horizontal_separator_bend_position,
-      horizontal_separator_bend_angle=horizontal_separator_bend_angle,
-      horizontal_separator_bend_separation=horizontal_separator_bend_separation,
-      horizontal_separator_cut_depth=horizontal_separator_cut_depth,
-      horizontal_irregular_subdivisions=horizontal_irregular_subdivisions,
-      horizontal_separator_config=horizontal_separator_config, 
+      vertical_chambers = ChamberSettings(
+        chambers_count = vertical_chambers,
+        chamber_wall_thickness = chamber_wall_thickness,
+        chamber_wall_headroom = chamber_wall_headroom,
+        separator_bend_position = vertical_separator_bend_position,
+        separator_bend_angle = vertical_separator_bend_angle,
+        separator_bend_separation = vertical_separator_bend_separation,
+        separator_cut_depth = vertical_separator_cut_depth,
+        irregular_subdivisions = vertical_irregular_subdivisions,
+        separator_config = vertical_separator_config),
+      horizontal_chambers = ChamberSettings(
+        chambers_count = horizontal_chambers,
+        chamber_wall_thickness = chamber_wall_thickness,
+        chamber_wall_headroom = chamber_wall_headroom,
+        separator_bend_position = horizontal_separator_bend_position,
+        separator_bend_angle = horizontal_separator_bend_angle,
+        separator_bend_separation = horizontal_separator_bend_separation,
+        separator_cut_depth = horizontal_separator_cut_depth,
+        irregular_subdivisions = horizontal_irregular_subdivisions,
+        separator_config = horizontal_separator_config),
       lip_settings = LipSettings(
         lipStyle=lip_style, 
         lipSideReliefTrigger=lip_side_relief_trigger, 
@@ -385,41 +374,47 @@ set_environment(
       wall_pattern_settings = PatternSettings(
         patternEnabled = wallpattern_enabled, 
         patternStyle = wallpattern_style, 
+        patternRotate = wallpattern_rotate_grid,
         patternFill = wallpattern_fill,
-        patternBorder = wallpattern_hole_spacing, 
-        patternHoleSize = wallpattern_hole_size, 
+        patternBorder = wallpattern_border, 
+        patternDepth = wallpattern_depth,
+        patternCellSize = wallpattern_cell_size, 
         patternHoleSides = wallpattern_hole_sides,
-        patternHoleSpacing = wallpattern_hole_spacing, 
+        patternStrength = wallpattern_strength, 
         patternHoleRadius = wallpattern_hole_radius,
-        patternGridChamfer=wallpattern_pattern_grid_chamfer,
-        patternVoronoiNoise=wallpattern_pattern_voronoi_noise,
-        patternBrickWeight=wallpattern_pattern_brick_weight,
+        patternGridChamfer = wallpattern_pattern_grid_chamfer,
+        patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+        patternBrickWeight = wallpattern_pattern_brick_weight,
         patternFs = wallpattern_pattern_quality), 
       floor_pattern_settings = PatternSettings(
         patternEnabled = floorpattern_enabled, 
         patternStyle = floorpattern_style, 
+        patternRotate = floorpattern_rotate_grid,
         patternFill = floorpattern_fill,
-        patternBorder = floorpattern_hole_spacing, 
-        patternHoleSize = floorpattern_hole_size, 
+        patternBorder = floorpattern_border, 
+        patternDepth = floorpattern_depth,
+        patternCellSize = floorpattern_cell_size, 
         patternHoleSides = floorpattern_hole_sides,
-        patternHoleSpacing = floorpattern_hole_spacing, 
+        patternStrength = floorpattern_strength, 
         patternHoleRadius = floorpattern_hole_radius,
         patternGridChamfer = floorpattern_pattern_grid_chamfer,
         patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
         patternBrickWeight = floorpattern_pattern_brick_weight,
         patternFs = floorpattern_pattern_quality), 
-      wallcutout_vertical=wallcutout_vertical,
-      wallcutout_vertical_position=wallcutout_vertical_position,
-      wallcutout_vertical_width=wallcutout_vertical_width,
-      wallcutout_vertical_angle=wallcutout_vertical_angle,
-      wallcutout_vertical_height=wallcutout_vertical_height,
-      wallcutout_vertical_corner_radius=wallcutout_vertical_corner_radius,
-      wallcutout_horizontal=wallcutout_horizontal,
-      wallcutout_horizontal_position=wallcutout_horizontal_position,
-      wallcutout_horizontal_width=wallcutout_horizontal_width,
-      wallcutout_horizontal_angle=wallcutout_horizontal_angle,
-      wallcutout_horizontal_height=wallcutout_horizontal_height,
-      wallcutout_horizontal_corner_radius=wallcutout_horizontal_corner_radius,
+      wallcutout_vertical_settings = WallCutoutSettings(
+        type = wallcutout_vertical, 
+        position = wallcutout_vertical_position, 
+        width = wallcutout_vertical_width,
+        angle = wallcutout_vertical_angle,
+        height = wallcutout_vertical_height, 
+        corner_radius = wallcutout_vertical_corner_radius),
+      wallcutout_horizontal_settings = WallCutoutSettings(
+        type = wallcutout_horizontal, 
+        position = wallcutout_horizontal_position, 
+        width = wallcutout_horizontal_width,
+        angle = wallcutout_horizontal_angle,
+        height = wallcutout_horizontal_height, 
+        corner_radius = wallcutout_horizontal_corner_radius),
       extendable_Settings = ExtendableSettings(
         extendablexEnabled = extension_x_enabled, 
         extendablexPosition = extension_x_position, 
@@ -439,10 +434,11 @@ set_environment(
         baseTextLine2Value = text_2_text,
         baseTextFontSize = text_size,
         baseTextFont = text_font,
-        baseTextDepth = text_depth));
+        baseTextDepth = text_depth,
+        baseTextOffset = text_offset));
   }
 
-  if(render_choice == "both" || render_choice == "lid")
+  if(render_choice == "both" || render_choice == "lid" || render_choice == "both connected")
   {
     num_x = calcDimensionWidth(width);
     num_y = calcDimensionDepth(depth);
@@ -472,7 +468,7 @@ set_environment(
       SlidingLid(
         num_x=num_x, 
         num_y=num_y,
-        wall_thickness=wall_thickness,
+        wall_thickness,
         clearance = slidingLidSettings[iSlidingClearance],
         lidThickness=slidingLidSettings[iSlidingLidThickness],
         lidMinSupport=slidingLidSettings[iSlidingLidMinSupport],
@@ -482,7 +478,7 @@ set_environment(
         lip_top_relief_height = lip_top_relief_height, 
         addLiptoLid = sliding_lid_lip_enabled,
         limitHeight=true,
-        cutoutEnabled = true,
+        cutoutEnabled = sliding_lid_cutout_enabled,
         cutoutSize = sliding_lid_cutout_size,
         cutoutRadius = sliding_lid_cutout_radius,
         cutoutPosition = sliding_lid_cutout_position,

@@ -1,6 +1,7 @@
-include <thridparty/ub_hexgrid.scad>
+include <thirdparty/ub_hexgrid.scad>
 include <functions_general.scad>
 include <functions_environment.scad>
+include <utility/chamfered_shapes.scad>
 
 griditemholder_demo = false;
 
@@ -51,8 +52,16 @@ module GridItemHolder(
   assert(is_string(fill), "fill must be a string");
   assert(is_bool(rotateGrid), "rotateGrid must be bool");  
 
-  holeChamfer = let(chamfer = is_num(holeChamfer) ? [0, holeChamfer] : holeChamfer) [min(chamfer.x,holeHeight/2),min(chamfer.y,holeHeight/2)];
-  
+  //holeChamfer = let(chamfer = is_num(holeChamfer) ? [0, holeChamfer] : holeChamfer) [min(chamfer.x,holeHeight/2),min(chamfer.y,holeHeight/2)];
+
+  function calculate_chamfer(chamfer, thickness) = 
+    let(
+      _chamfer = is_num(chamfer) ? [0, chamfer] : chamfer,
+      dual_chamfer = (_chamfer[0] != 0 && _chamfer[1] != 0) ? 2 : 1)
+      [get_related_value(_chamfer.x, thickness/dual_chamfer, 0),get_related_value(_chamfer.y, thickness/dual_chamfer, 0)];
+
+  holeChamfer= calculate_chamfer(chamfer=holeChamfer,thickness=holeHeight);
+
   assert(is_list(holeChamfer), "holeChamfer must be list");  
   
   fudgeFactor = 0.01;
@@ -275,105 +284,5 @@ module multiCard(longCenter, smallCenter, side, chamfer = 1, alternate = false){
         chamfered_cube([side[iitemx], side[iitemy], side[idepthneeded]+fudgeFactor], chamfer);
       }
     }
-  }
-}
-
-// Creates a slot with a small champer for easy insertertion
-//#slotCutout(100,20,40);
-//width = width of slot
-//depth = depth of slot
-//height = height of slot
-//chamfer = chamfer size
-module chamfered_cube(size, chamfer = 1, cornerRadius = 0)
-{
-  assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
-
-  fudgeFactor = 0.01;
-  chamfer = min(size.z, chamfer);
-  union(){
-    if(cornerRadius > 0){
-        hull(){
-          translate([cornerRadius,cornerRadius,0])
-          cylinder(h = size.z, r=cornerRadius);
-          translate([size.x-cornerRadius,cornerRadius,0])
-          cylinder(h = size.z, r=cornerRadius);
-          translate([cornerRadius,size.y-cornerRadius,0])
-          cylinder(h = size.z, r=cornerRadius);
-          translate([size.x-cornerRadius,size.y-cornerRadius,0])
-          cylinder(h = size.z, r=cornerRadius);
-        }
-    } else {
-      translate([0,0,0])
-        cube([size.x, size.y, size.z]);
-    }
-    
-    if(chamfer > 0)
-       translate([0,0,size.z+fudgeFactor-chamfer-cornerRadius])
-       chamferedRectangleTop(size=size, chamfer=chamfer, cornerRadius=cornerRadius);
-  }
-}
-
-module chamferedRectangleTop(size, chamfer, cornerRadius){
-  fudgeFactor = 0.01;
-  
-  chamferFn = cornerRadius > 0 ? $fn : 4;
-
-  champherExtention = cornerRadius > 0 ? 0 
-    : (min(size.x,size.y,size.z)-chamfer)/4;
-    
-  //when the chamferFn value is 4 we need to chan the formula as the radius is corner to corner not edge to edge.
-  conesizeTop = chamfer+cornerRadius+champherExtention;
-  conesizeBottom = conesizeTop>size.z ? conesizeTop-size.z: 0;
-  
-  if(env_help_enabled("trace")) echo("chamferedRectangleTop", size=size, chamfer=chamfer, cornerRadius=cornerRadius, conesizeTop=conesizeTop, conesizeBottom=conesizeBottom);
-  //if cornerRadius = 0, we can further increase the height of the 'cone' so we can extend inside the shape
-  hull(){
-    translate([cornerRadius+champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
-      rotate([0,0,45])
-      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
-    translate([size.x-cornerRadius-champherExtention/2,cornerRadius+champherExtention/2,conesizeBottom-champherExtention])
-    rotate([0,0,45])
-      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
-    translate([cornerRadius+champherExtention/2,size.y-cornerRadius-champherExtention/2,conesizeBottom-champherExtention])
-    rotate([0,0,45])
-      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);
-    translate([size.x-cornerRadius-champherExtention/2,size.y-cornerRadius-champherExtention/2,conesizeBottom-champherExtention])
-    rotate([0,0,45])
-      cylinder(h=conesizeTop-conesizeBottom,r2=conesizeTop,r1=conesizeBottom,$fn=chamferFn);          
-  }
-}
-
-module chamferedHalfCylinder(h, r, circleFn, chamfer=0.5) {
-  fudgeFactor = 0.01;
-  
-  chamfer = min(h, chamfer);
-  translate([0,-h/2,r])
-  union(){
-    rotate([-90,0,0])
-    difference(){
-      cylinder(h=h, r=r, $fn = circleFn);
-      translate([-r-fudgeFactor,-r,-fudgeFactor])
-      cube([(r+fudgeFactor)*2,r,h+fudgeFactor*2]);
-    }
-    
-    if(r>0)
-      translate([-r, 0, -chamfer+fudgeFactor]) 
-      chamferedRectangleTop(size=[r*2,h,r], chamfer=chamfer, cornerRadius=0);
-  }
-}
-
-module chamferedCylinder(h, r, circleFn, chamfer=0, topChamfer = 0.5, bottomChamfer = 0) {
-  topChamfer = min(h, chamfer > 0 ? chamfer : topChamfer);
-  bottomChamfer = min(h, chamfer > 0 ? chamfer : bottomChamfer);
-  
-  union(){
-    cylinder(h=h, r=r, $fn = circleFn);
-    
-    if(topChamfer >0)
-      translate([0, 0, h-topChamfer]) 
-      cylinder(h=topChamfer, r1=r, r2=r+topChamfer,$fn = circleFn);
-
-    if(bottomChamfer >0)
-      cylinder(h=bottomChamfer, r1=r+bottomChamfer, r2=r,$fn = circleFn);
   }
 }

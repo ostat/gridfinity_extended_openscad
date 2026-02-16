@@ -1,9 +1,55 @@
 // include instead of use, so we get the pitch
 include <gridfinity_constants.scad>
+include <utility/utilities.scad>
 use <module_gridfinity_block.scad>
+include <module_magnet.scad>
 
 iBaseplateTypeSettings_SupportsMagnets = true;
+
+debug_baseplate_cavities = false;
+if(debug_baseplate_cavities){
+  echo("debug_baseplate_cavities is enabled");
+  $fn = 64;
   
+  translate([-50,0,0])
+  frame_plain(
+    grid_num_x = 1, 
+    grid_num_y = 2);
+    
+  translate([-100,0,0])
+  frame_plain(
+    grid_num_x = 1, 
+    grid_num_y = 2,
+    remove_bottom_taper = true);
+
+  baseplate_cavities(1,1,10);
+  
+  translate([50,0,0])
+  baseplate_cavities(1,1,10, magnetSize=[0,0]);
+  translate([100,0,0])
+  baseplate_cavities(1,1,10, centerScrewEnabled=true);
+  translate([150,0,0])
+  baseplate_cavities(1,1,10, magnetSize=[0,0], centerScrewEnabled=true);
+
+  translate([0,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true);
+  translate([50,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true, magnetSize=[0,0]);
+  translate([100,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true, centerScrewEnabled=true);
+  translate([150,50,0])
+  baseplate_cavities(1,1,10, weightHolder=true, magnetSize=[0,0], centerScrewEnabled=true);
+
+  translate([0,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true);
+  translate([50,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true, magnetSize=[0,0]);
+  translate([100,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true, centerScrewEnabled=true);
+  translate([150,100,0])
+  baseplate_cavities(1,1,10, cornerScrewEnabled=true, magnetSize=[0,0], centerScrewEnabled=true);
+}
+
 function lookupKey(dictionary, key, default=undef) = let(results = [
   for (record = dictionary)
   if (record[0] == key)
@@ -56,7 +102,13 @@ module frame_plain(
     cornerRadius = gf_cup_corner_radius,
     reducedWallHeight = -1,
     roundedCorners = 15,
+    reduceWallTaper = false,
+    secondaryCornerRadius = -1,
+    cornerRoles = [1,1,1,1],
+    remove_bottom_taper = false,
     reduceWallTaper = false) {
+  
+  secondaryCornerRadius = secondaryCornerRadius == -1 ? cornerRadius : secondaryCornerRadius;
   frameLipHeight = extra_down > 0 ? height -0.6 : height;
   frameWallReduction = reducedWallHeight > 0 ? max(0, frameLipHeight-reducedWallHeight) : 0;
 
@@ -94,6 +146,8 @@ module frame_plain(
             ? outer_height 
             : reducedWallHeight >= 0 ? extra_down+reducedWallHeight : extra_down+frameLipHeight,
           cornerRadius = cornerRadius,
+          secondaryCornerRadius = secondaryCornerRadius,
+          cornerRoles = cornerRoles,
           roundedCorners = roundedCorners);
         
         //padded outer upper
@@ -104,6 +158,8 @@ module frame_plain(
           trim=trim, 
           height=extra_down + (reducedWallHeight >= 0 ? reducedWallHeight : frameLipHeight),
           cornerRadius = cornerRadius,
+          secondaryCornerRadius = secondaryCornerRadius,
+          cornerRoles = cornerRoles,
           roundedCorners = roundedCorners);
       }
     
@@ -115,7 +171,23 @@ module frame_plain(
         trim=trim, 
         height=extra_down+frameLipHeight,
         cornerRadius = cornerRadius,
+        secondaryCornerRadius = secondaryCornerRadius,
+        cornerRoles = cornerRoles,
         roundedCorners = roundedCorners);
+        
+      translate(centerGridPosition)
+      frame_additives(
+        num_x=grid_num_x, 
+        num_y=grid_num_y, 
+        position_fill_grid_x = position_fill_grid_x,
+        position_fill_grid_y = position_fill_grid_y,
+        extra_down = extra_down, 
+        frameLipHeight = frameLipHeight,
+        cornerRadius = gf_cup_corner_radius,
+        reducedWallHeight = reducedWallHeight){
+          //wall addatives
+          if($children >=3) children(2);
+        }
     }
     
     //Wall reduction
@@ -128,8 +200,11 @@ module frame_plain(
       extra_down = extra_down, 
       frameLipHeight = frameLipHeight,
       cornerRadius = env_corner_radius(),
+      remove_bottom_taper = remove_bottom_taper,
       reducedWallHeight = reducedWallHeight){
+        //cell cavities
         if($children >=1) children(0); 
+        //wall cavities
         if($children >=2) children(1);
       }
   }
@@ -142,6 +217,7 @@ module baseplate_cavities(
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
   magnetZOffset = 0,
   magnetTopCover = 0,
+  magnetReleaseMethod = "none",
   magnetSouround = true,
   centerScrewEnabled = false,
   cornerScrewEnabled = false,
@@ -154,13 +230,25 @@ module baseplate_cavities(
   assert(is_num(num_y) && num_y >= 0 && num_y <=1, "num_y must be a number between 0 and 1");
   assert(is_num(baseCavityHeight), "baseCavityHeight must be a number");
   
+  fudgeFactor = 0.01;
+
+  magnet_position = baseCavityHeight-magnetSize.y-magnetTopCover-fudgeFactor;
+  // 1. Determine if we use the SLOT style
+  use_slot = (magnetReleaseMethod == "slot");
+  // 2. Determine if we use the HOLE style
+  use_hole = (magnetReleaseMethod == "hole");
+  magnet_easy_release = (use_slot) ? MagnetEasyRelease_outer : MagnetEasyRelease_off;
+      
   if(env_help_enabled("debug")) echo("baseplate_cavities", baseCavityHeight=baseCavityHeight, magnetSize=magnetSize, magnetZOffset=magnetZOffset, magnetTopCover=magnetTopCover);
    
   counterSinkDepth = 2.5;
   screwOuterChamfer = 8.5;
   weightDepth = 4;
 
-  magnet_position = calculateAttachmentPositions(magnetSize[0]);
+  magnet_screw_size = max(
+        cornerScrewEnabled ? 8.5 : 0,
+        magnetSize[0]);
+  magnet_screw_position = calculateAttachmentPositions(magnet_screw_size);
   magnetborder = 5;
   
   _centerScrewEnabled = centerScrewEnabled && num_x >= 1 && num_y >=1;
@@ -170,10 +258,42 @@ module baseplate_cavities(
     (reverseAlignment.x ? (-1/2+num_x) : 1/2)*env_pitch().x,
     (reverseAlignment.y ? (-1/2+num_y) : 1/2)*env_pitch().y, 0])
   union(){
-    gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
-      translate([0, 0, baseCavityHeight-magnetSize.y-magnetTopCover]) 
-      cylinder(d=magnetSize[0], h=magnetSize.y);
-
+    gridcopycorners(r=magnet_screw_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
+      //Magnets
+        rdeg =
+          $gcci[2] == [ 1, 1] ? 90 :
+          $gcci[2] == [-1, 1] ? 180 :
+          $gcci[2] == [-1,-1] ? -90 :
+          $gcci[2] == [ 1,-1] ? 0 : 0;
+        rotate([0,0,rdeg-45+(magnet_easy_release==MagnetEasyRelease_outer ? 0 : 180)])
+      translate([0, 0, magnetSize.y/2+magnet_position])
+      mirror(magnet_position <= 0 ? [0,0,0] : [0,0,1])
+      magnet_release(
+        magnetDiameter=magnetSize[0], 
+        magnetThickness=magnetSize.y+fudgeFactor, 
+        easyMagnetRelease=magnet_easy_release != MagnetEasyRelease_off,
+        center = true);
+      //cylinder(d=magnetSize[0], h=magnetSize.y);
+	  // Drill straight hole if screws are off (for thin tabs)
+      if (!cornerScrewEnabled && magnetSize[0] > 0) {
+          translate([0, 0, magnet_position])
+          cylinder(d=magnetSize[0], h=magnetSize.y + fudgeFactor);
+      }
+      
+      // If method is "hole", drill a smaller cylinder from the bottom up to the magnet
+      if (use_hole && magnetSize[0] > 0) {
+      
+        if(magnetZOffset > 0){
+            // Center the cylinder. Cut from Z=0 up to magnet_position.
+            translate([0, 0, -fudgeFactor])
+            cylinder(d=magnetSize[0]/2, h=magnet_position + fudgeFactor*2);
+          }
+          if(magnetTopCover > 0){
+            translate([0, 0, magnet_position+magnetSize[1]-fudgeFactor])
+            cylinder(d=magnetSize[0]/2, h=magnetTopCover + fudgeFactor*2);
+          }
+      }
+      
       // counter-sunk holes in the bottom
       if(cornerScrewEnabled){
         cylinder(d=3.5, h=baseCavityHeight);
@@ -209,16 +329,14 @@ module baseplate_cavities(
     
     //rounded souround for the magnet
     if(magnetSouround && !_centerScrewEnabled && !_weightHolder){
-      supportDiameter = max(
-        cornerScrewEnabled ? 8.5 : 0,
-        magnetSize[0]) + magnetborder;
+      supportDiameter = magnet_screw_size + magnetborder;
 
       difference(){
         translate([-env_pitch().x/2,-env_pitch().y/2,0])
           cube([env_pitch().x,env_pitch().y,baseCavityHeight]);
         if((cornerScrewEnabled || magnetSize[0]> 0))
         translate([0, 0, -fudgeFactor*2]) 
-        gridcopycorners(r=magnet_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
+        gridcopycorners(r=magnet_screw_position, num_x=num_x, num_y=num_y, center= true, reverseAlignment = reverseAlignment) {
           rdeg =
             $gcci[2] == [ 1, 1] ? 90 :
             $gcci[2] == [-1, 1] ? 180 :
@@ -250,6 +368,8 @@ module outer_baseplate(
   extendedDepth = 0,
   trim=0, 
   cornerRadius = gf_cup_corner_radius,
+  secondaryCornerRadius = -1,
+  cornerRoles = [1,1,1,1],
   roundedCorners = 15){
     
   assert(is_num(num_x), "num_x must be a number");
@@ -261,15 +381,20 @@ module outer_baseplate(
   assert(is_num(cornerRadius), "cornerRadius must be a number");
   assert(is_num(roundedCorners), "roundedCorners must be a number");
   
+  secondaryCornerRadius = secondaryCornerRadius == -1 ? cornerRadius : secondaryCornerRadius;
+  
     fudgeFactor = 0.01;
-  corner_position = [env_pitch().x/2-cornerRadius-trim, env_pitch().y/2-cornerRadius-trim];
+    //Use 0 as reference for positioning to simplify variable radius logic
+    ref_radius = 0; 
+    corner_position = [env_pitch().x/2-ref_radius-trim, env_pitch().y/2-ref_radius-trim];
  //full outer material to build from
   hull() 
     cornercopy(corner_position, num_x, num_y) {
-      radius = max(bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? cornerRadius : 0.01, 0.01);// 0.01 is almost zero to get a square edge....
+      target_radius = cornerRoles[$idx[0]*2 + $idx[1]] == 1 ? cornerRadius : secondaryCornerRadius;
+      radius = max(bitwise_and(roundedCorners, decimaltobitwise($idx[0],$idx[1])) > 0 ? target_radius : 0.01, 0.01);// 0.01 is almost zero to get a square edge....
       ctrn = [
-        ($idx[0] == 0 ? -1 : 1)*(cornerRadius-radius), 
-        ($idx[1] == 0 ? -1 : 1)*(cornerRadius-radius), -extendedDepth];
+        ($idx[0] == 0 ? -1 : 1)*(ref_radius-radius), 
+        ($idx[1] == 0 ? -1 : 1)*(ref_radius-radius), -extendedDepth];
       translate(ctrn)
       union(){
         translate([0, 0, baseTaper])
