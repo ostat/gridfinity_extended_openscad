@@ -51,6 +51,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
+  sliding_lid_gap_from_bin = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,
@@ -92,7 +93,6 @@ module SlidingLid(
   lidLowerRadius = innerWallRadius+lidMinWallThickness;
   lidUpperRadius = limitHeight ? lidLowerRadius-lidThickness/2 : fudgeFactor;
   height = limitHeight ? lidThickness : innerWallRadius+lidMinWallThickness-fudgeFactor;
-  echo("lip_style XXXXXXXX", lipStyle);
   difference()
   {
     union(){
@@ -107,7 +107,7 @@ module SlidingLid(
           lip_notches = lip_notches,
           lip_top_relief_height = lip_top_relief_height,
           wall_thickness = 1.2);
-        translate([0,lidLowerRadius,lidThickness-fudgeFactor*4])
+        translate([0,env_corner_radius()-sliding_lid_gap_from_bin,lidThickness-fudgeFactor*4])
           cube([num_x*env_pitch().x,num_y*env_pitch().y,headroom + 4+fudgeFactor*2]);
       }
 
@@ -127,9 +127,15 @@ module SlidingLid(
           hull()
             cornercopy(inner_corner_center, num_x, num_y){
               cylinder(r=env_corner_radius(), h=headroom+lidThickness);
-          }         
-          translate([-fudgeFactor,lidLowerRadius,-fudgeFactor])
-            cube([num_x*env_pitch().x+fudgeFactor*2,num_y*env_pitch().y+fudgeFactor,lidThickness+headroom+fudgeFactor*2]);
+          }
+          union(){
+              translate([-fudgeFactor,env_corner_radius()-sliding_lid_gap_from_bin,-fudgeFactor])
+              cube([num_x*env_pitch().x+fudgeFactor*2,num_y*env_pitch().y+fudgeFactor,lidThickness+headroom+fudgeFactor*2]);
+              // hull()
+              // #cornercopy(inner_corner_center+[0.1,0,0], num_x, num_y, pitch = env_pitch(), center = false)
+              // cylinder(r=lidLowerRadius-2.06, h=5);
+
+          }
         }
       }
     }
@@ -278,7 +284,7 @@ module SlidingLidCavity(
     //innerWallRadius = env_corner_radius()-wall_thickness;
     translate([0,env_corner_radius(),aboveLidHeight]) 
     rotate([270,0,0])
-    #chamferedCorner(
+    chamferedCorner(
       cornerRadius = aboveLidHeight/4 + 1,
       chamferLength = aboveLidHeight,
       length=num_x*env_pitch().x, 
