@@ -8,6 +8,12 @@ iSlidingLidMinWallThickness=2;
 iSlidingLidMinSupport=3;
 iSlidingClearance=4;
 slidingLidLipEnabled=5;
+iSlidingLidTextEnabled=6;
+iSlidingLidTextContent=7;
+iSlidingLidTextSize=8;
+iSlidingLidTextDepth=9;
+iSlidingLidTextFont=10;
+iSlidingLidTextPosition=11;
 
 function DisabledSlidingLidSettings() = SlidingLidSettings(
   slidingLidEnabled = false,
@@ -16,7 +22,13 @@ function DisabledSlidingLidSettings() = SlidingLidSettings(
   slidingMinSupport = 0,
   slidingClearance = 0,
   wallThickness = 0,
-  slidingLidLipEnabled = false);
+  slidingLidLipEnabled = false,
+  textEnabled = false,
+  textContent = "",
+  textSize = 0,
+  textDepth = 0,
+  textFont = "Aldo",
+  textPosition = "center");
   
 function SlidingLidSettings(
   slidingLidEnabled,
@@ -25,7 +37,13 @@ function SlidingLidSettings(
   slidingMinSupport,
   slidingClearance,
   wallThickness,
-  slidingLidLipEnabled = false) = 
+  slidingLidLipEnabled = false,
+  textEnabled = false,
+  textContent = "Gridfinity",
+  textSize = 0,
+  textDepth = 0.3,
+  textFont = "Aldo",
+  textPosition = "center") = 
   let(
     thickness = slidingLidThickness > 0 ? slidingLidThickness : wallThickness*2,
     minWallThickness = slidingMinWallThickness > 0 ? slidingMinWallThickness : wallThickness/2,
@@ -36,11 +54,17 @@ function SlidingLidSettings(
   minWallThickness,
   minSupport,
   slidingClearance,
-  slidingLidLipEnabled];
+  slidingLidLipEnabled,
+  textEnabled,
+  textContent,
+  textSize,
+  textDepth,
+  textFont,
+  textPosition];
 
 module AssertSlidingLidSettings(settings){
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==6, "SlidingLid Settings must length 5");
+  assert(len(settings)==12, "SlidingLid Settings must length 12");
 } 
 
 //SlidingLid(4,3,.8,0.1,1.6,0.8,0.4,true, true, [-2,-2],5,[0,0]);
@@ -157,6 +181,38 @@ module SlidingLid(
         lidThickness = lidThickness);
     }
     
+    // Add text to lid surface
+    if(textEnabled && textContent != "" && textDepth > 0) {
+      maxTextWidth = lidSize.x * 0.8; // Use 80% of available width
+      maxTextSize = 12;
+      
+      // Calculate text size - use simple estimation if textmetrics not available
+      estimatedCharWidth = 0.6; // Rough estimation: character width is ~60% of font size
+      estimatedTextWidth = len(textContent) * textSize * estimatedCharWidth;
+      
+      actualTextSize = textSize > 0 ? textSize : 
+        min(maxTextWidth / (len(textContent) * estimatedCharWidth), maxTextSize);
+      
+      // Calculate text position
+      actualEstimatedTextWidth = len(textContent) * actualTextSize * estimatedCharWidth;
+      textX = textPosition == "left" ? lidSize.x * 0.1 :
+              textPosition == "right" ? lidSize.x * 0.9 - actualEstimatedTextWidth :
+              lidSize.x / 2 - actualEstimatedTextWidth / 2;
+      textY = lidSize.y / 2 - actualTextSize / 2;
+      
+      // Render text as negative space (engraved)
+      translate([textX - lidSize.x/2 + env_pitch().x/2, textY - lidSize.y/2 + env_pitch().y/2, lidThickness - textDepth])
+      linear_extrude(height = textDepth + fudgeFactor) {
+        text(
+          text = textContent,
+          size = actualTextSize,
+          font = textFont,
+          halign = "left",
+          valign = "bottom"
+        );
+      }
+    }
+    
     if(env_help_enabled("debug")) echo("SlidingLid", num_x=num_x, num_y=num_y, wall_thickness=wall_thickness, clearance=clearance, lidThickness=lidThickness, lidMinSupport=lidMinSupport, lidMinWallThickness=lidMinWallThickness);
     if(env_help_enabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius, cutoutPosition=cutoutPosition);
   }
@@ -199,40 +255,6 @@ module sliding_lid_cutout(
         }
       }
     }
-    
-    // Add text to lid surface
-    if(textEnabled && textContent != "" && textDepth > 0) {
-      lidSize = [num_x*env_pitch().x-lidMinWallThickness, num_y*env_pitch().y-lidMinWallThickness];
-      maxTextWidth = lidSize.x * 0.8; // Use 80% of available width
-      maxTextSize = 12;
-      
-      // Calculate text size - use simple estimation if textmetrics not available
-      estimatedCharWidth = 0.6; // Rough estimation: character width is ~60% of font size
-      estimatedTextWidth = len(textContent) * textSize * estimatedCharWidth;
-      
-      actualTextSize = textSize > 0 ? textSize : 
-        min(maxTextWidth / (len(textContent) * estimatedCharWidth), maxTextSize);
-      
-      // Calculate text position
-      actualEstimatedTextWidth = len(textContent) * actualTextSize * estimatedCharWidth;
-      textX = textPosition == "left" ? lidSize.x * 0.1 :
-              textPosition == "right" ? lidSize.x * 0.9 - actualEstimatedTextWidth :
-              lidSize.x / 2 - actualEstimatedTextWidth / 2;
-      textY = lidSize.y / 2 - actualTextSize / 2;
-      
-      // Render text as negative space (engraved)
-      translate([textX - lidSize.x/2 + env_pitch().x/2, textY - lidSize.y/2 + env_pitch().y/2, lidThickness - textDepth])
-      linear_extrude(height = textDepth + fudgeFactor) {
-        text(
-          text = textContent,
-          size = actualTextSize,
-          font = textFont,
-          halign = "left",
-          valign = "bottom"
-        );
-      }
-    }
-  }
 }
 
 module SlidingLidSupportMaterial(

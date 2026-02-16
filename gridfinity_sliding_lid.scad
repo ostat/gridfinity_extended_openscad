@@ -452,7 +452,13 @@ set_environment(
       sliding_min_support,
       sliding_clearance,
       wall_thickness,
-      sliding_lid_lip_enabled);
+      sliding_lid_lip_enabled,
+      sliding_lid_text_enabled,
+      sliding_lid_text,
+      sliding_lid_text_size,
+      sliding_lid_text_depth,
+      sliding_lid_text_font,
+      sliding_lid_text_position);
         
     headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
     
@@ -482,12 +488,12 @@ set_environment(
         cutoutSize = sliding_lid_cutout_size,
         cutoutRadius = sliding_lid_cutout_radius,
         cutoutPosition = sliding_lid_cutout_position,
-        textEnabled = sliding_lid_text_enabled,
-        textContent = sliding_lid_text,
-        textSize = sliding_lid_text_size,
-        textDepth = sliding_lid_text_depth,
-        textFont = sliding_lid_text_font,
-        textPosition = sliding_lid_text_position);
+        textEnabled = slidingLidSettings[iSlidingLidTextEnabled],
+        textContent = slidingLidSettings[iSlidingLidTextContent],
+        textSize = slidingLidSettings[iSlidingLidTextSize],
+        textDepth = slidingLidSettings[iSlidingLidTextDepth],
+        textFont = slidingLidSettings[iSlidingLidTextFont],
+        textPosition = slidingLidSettings[iSlidingLidTextPosition]);
     }
   }
 }
