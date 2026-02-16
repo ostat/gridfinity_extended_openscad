@@ -58,6 +58,7 @@ default_label_walls=[0,1,0,0];  //[0:1:1]
     
 /* [Sliding Lid] */
 default_sliding_lid_enabled = false;
+default_sliding_lid_exposes_label = false;
 // 0 = wall thickness *2
 default_sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
@@ -343,6 +344,7 @@ module gridfinity_cup(
     extendableTabsEnabled = default_extension_tabs_enabled, 
     extendableTabSize = default_extension_tab_size),
   sliding_lid_enabled = default_sliding_lid_enabled,
+  sliding_lid_exposes_label = default_sliding_lid_exposes_label,
   sliding_lid_thickness = default_sliding_lid_thickness,
   sliding_lid_lip_enabled=default_sliding_lid_lip_enabled,
   sliding_min_wall_thickness = default_sliding_min_wallThickness, 
@@ -375,7 +377,7 @@ module gridfinity_cup(
   cupBase_settings = ValidateCupBaseSettings(cupBase_settings);
   floor_pattern_settings = ValidatePatternSettings(floor_pattern_settings);
   wall_pattern_settings = ValidatePatternSettings(wall_pattern_settings);
-  
+
   slidingLidSettings= SlidingLidSettings(
           sliding_lid_enabled, 
           sliding_lid_thickness, 
@@ -383,7 +385,9 @@ module gridfinity_cup(
           sliding_min_support,
           sliding_clearance,
           wall_thickness,
-          sliding_lid_lip_enabled);
+          sliding_lid_lip_enabled,
+          slidingLidExposesLabel = sliding_lid_exposes_label,
+          labelSettings = label_settings);
           
   headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
   

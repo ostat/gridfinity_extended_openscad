@@ -1,13 +1,16 @@
 include <gridfinity_constants.scad>
 include <module_gridfinity_block.scad>
+include <module_gridfinity_label.scad>
 include <module_lip.scad>
 
 iSlidingLidEnabled=0;
 iSlidingLidThickness=1;
 iSlidingLidMinWallThickness=2;
 iSlidingLidMinSupport=3;
-iSlidingClearance=4;
-slidingLidLipEnabled=5;
+iSlidingLidClearance=4;
+iSlidingLidLipEnabled=5;
+iSlidingLidExposesLabel=6;
+iSlidingLidLabelSettings=7;
 
 function DisabledSlidingLidSettings() = SlidingLidSettings(
   slidingLidEnabled = false,
@@ -16,7 +19,8 @@ function DisabledSlidingLidSettings() = SlidingLidSettings(
   slidingMinSupport = 0,
   slidingClearance = 0,
   wallThickness = 0,
-  slidingLidLipEnabled = false);
+  slidingLidLipEnabled = false,
+  labelSettings = ["normal", "center", [0, 14, 0, 0.6], [0, 0, 0, 0.6], [0, 1, 0, 0], "disabled"]);
   
 function SlidingLidSettings(
   slidingLidEnabled,
@@ -25,7 +29,9 @@ function SlidingLidSettings(
   slidingMinSupport,
   slidingClearance,
   wallThickness,
-  slidingLidLipEnabled = false) = 
+  slidingLidLipEnabled = false,
+  slidingLidExposesLabel,
+  labelSettings) =
   let(
     thickness = slidingLidThickness > 0 ? slidingLidThickness : wallThickness*2,
     minWallThickness = slidingMinWallThickness > 0 ? slidingMinWallThickness : wallThickness/2,
@@ -36,11 +42,13 @@ function SlidingLidSettings(
   minWallThickness,
   minSupport,
   slidingClearance,
-  slidingLidLipEnabled];
+  slidingLidLipEnabled,
+  slidingLidExposesLabel,
+  labelSettings];
 
 module AssertSlidingLidSettings(settings){
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==6, "SlidingLid Settings must length 5");
+  assert(len(settings)==8, "SlidingLid Settings must be length 8");
 } 
 
 //SlidingLid(4,3,.8,0.1,1.6,0.8,0.4,true, true, [-2,-2],5,[0,0]);
@@ -62,8 +70,26 @@ module SlidingLid(
   cutoutEnabled = false,
   cutoutSize = [0,0],
   cutoutRadius = 0,
-  cutoutPosition = [0,0]
+  cutoutPosition = [0,0],
+  slidingLidSettings
 ){
+  slidingLidEnabled = slidingLidSettings[iSlidingLidEnabled];
+  slidingLidExposesLabel = slidingLidSettings[iSlidingLidExposesLabel];
+  lidThickness = slidingLidSettings[iSlidingLidThickness];
+  lidMinWallThickness = slidingLidSettings[iSlidingLidMinWallThickness];
+  lidMinSupport = slidingLidSettings[iSlidingLidMinSupport];
+  clearance = slidingLidSettings[iSlidingLidClearance];
+  lipEnabled = slidingLidSettings[iSlidingLidLipEnabled];
+  exposesLabel = slidingLidSettings[iSlidingLidExposesLabel];
+  labelSettings = slidingLidSettings[iSlidingLidLabelSettings];
+  labelSize = labelSettings[iLabelSettings_size];
+  labelWalls = labelSettings[iLabelSettings_walls];
+  labelPosition = labelSettings[iLabelSettings_position];
+  rawLabelWidth = labelSize.x;
+  labelWidth = (rawLabelWidth == 0) ? num_x*env_pitch().x : rawLabelWidth;
+  labelDepth = labelSize.y;
+  labelOnBackWall = (labelWalls[1] != 0);
+
   assert(is_num(num_x));
   assert(is_num(num_y));
   assert(is_num(wall_thickness));
@@ -144,7 +170,26 @@ module SlidingLid(
         lidSize = lidSize,
         lidThickness = lidThickness);
     }
-    
+
+    // a cutout that exposes the label (only works for back wall)
+    if(slidingLidExposesLabel && labelOnBackWall) {
+      label_posx = labelPosition == "left"   ? -labelWidth/2
+                 : labelPosition == "right"  ?  labelWidth/2
+                 : labelPosition == "center" ?  0
+                 // not sure what to do about leftchamber/rightchamber/centerchamber
+                 : labelPosition == "leftchamber" ?  0
+                 : labelPosition == "rightchamber" ?  0
+                 : labelPosition == "centerchamber" ?  0
+                 : 0;
+      label_posy = (lidSize.y - labelDepth)/2;
+      sliding_lid_cutout(
+        cutoutSize = [labelWidth,labelDepth],
+        cutoutRadius = 0,
+        cutoutPosition = [label_posx,label_posy],
+        lidSize = lidSize,
+        lidThickness = lidThickness);
+    }
+
     if(env_help_enabled("debug")) echo("SlidingLid", num_x=num_x, num_y=num_y, wall_thickness=wall_thickness, clearance=clearance, lidThickness=lidThickness, lidMinSupport=lidMinSupport, lidMinWallThickness=lidMinWallThickness);
     if(env_help_enabled("debug")) echo("SlidingLid", cutoutSize=cutoutSize, cutoutRadius=cutoutRadius, cutoutPosition=cutoutPosition);
   }
@@ -262,13 +307,10 @@ module SlidingLidCavity(
     num_x=num_x, 
     num_y=num_y,
     wall_thickness,
-    clearance = 0,
-    lidThickness=sliding_lid_settings[iSlidingLidThickness],
-    lidMinSupport=sliding_lid_settings[iSlidingLidMinSupport],
-    lidMinWallThickness=sliding_lid_settings[iSlidingLidMinWallThickness],
-    limitHeight = false);
+    limitHeight = false,
+    slidingLidSettings = sliding_lid_settings);
   
-  if(sliding_lid_settings[slidingLidLipEnabled])
+  if(sliding_lid_settings[iSlidingLidLipEnabled])
   {
     translate([0,0,0])
       cube([num_x*env_pitch().x,env_corner_radius(),aboveLidHeight+fudgeFactor*3 + 10]);

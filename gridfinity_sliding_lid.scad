@@ -23,6 +23,8 @@ sliding_min_wall_thickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
 sliding_min_support = 0;//0.1
 sliding_lid_lip_enabled = true;
+// If selected, an opening will be made in the sliding lid so that a back wall label is visible when the lid is in place. Does not do anything for labels on other walls.
+sliding_lid_exposes_label = false;
 sliding_clearance = 0.1;//0.1
 sliding_lid_cutout_enabled = false; //
 sliding_lid_cutout_size = [-2,-2]; //0.1
@@ -409,6 +411,7 @@ set_environment(
         extendableTabsEnabled = extension_tabs_enabled, 
         extendableTabSize = extension_tab_size),
       sliding_lid_enabled = sliding_lid_enabled, 
+      sliding_lid_exposes_label = sliding_lid_exposes_label,
       sliding_lid_thickness = sliding_lid_thickness, 
       sliding_min_wall_thickness = sliding_min_wall_thickness, 
       sliding_min_support = sliding_min_support, 
@@ -438,7 +441,14 @@ set_environment(
       sliding_min_support,
       sliding_clearance,
       wall_thickness,
-      sliding_lid_lip_enabled);
+      sliding_lid_lip_enabled,
+      slidingLidExposesLabel = sliding_lid_exposes_label,
+      labelSettings = LabelSettings(
+        labelStyle=label_style,
+        labelPosition=label_position,
+        labelSize=label_size,
+        labelRelief=label_relief,
+        labelWalls=label_walls));
         
     headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
     
@@ -455,10 +465,6 @@ set_environment(
         num_x=num_x, 
         num_y=num_y,
         wall_thickness,
-        clearance = slidingLidSettings[iSlidingClearance],
-        lidThickness=slidingLidSettings[iSlidingLidThickness],
-        lidMinSupport=slidingLidSettings[iSlidingLidMinSupport],
-        lidMinWallThickness=slidingLidSettings[iSlidingLidMinWallThickness],
         lipStyle = lip_style,
         lip_notches = lip_top_notches,
         lip_top_relief_height = lip_top_relief_height, 
@@ -467,7 +473,8 @@ set_environment(
         cutoutEnabled = sliding_lid_cutout_enabled,
         cutoutSize = sliding_lid_cutout_size,
         cutoutRadius = sliding_lid_cutout_radius,
-        cutoutPosition = sliding_lid_cutout_position);
+        cutoutPosition = sliding_lid_cutout_position,
+        slidingLidSettings = slidingLidSettings);
     }
   }
 }
