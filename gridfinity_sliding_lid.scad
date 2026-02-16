@@ -24,6 +24,7 @@ sliding_min_wall_thickness = 0;//0.1
 sliding_min_support = 0;//0.1
 sliding_lid_lip_enabled = true;
 sliding_clearance = 0.1;//0.1
+sliding_lid_gap_from_bin = 0.1;//0.1
 sliding_lid_cutout_enabled = false; //
 sliding_lid_cutout_size = [-2,-2]; //0.1
 sliding_lid_cutout_radius = -4; //0.1
@@ -294,7 +295,6 @@ set_environment(
   union(){
   if(render_choice == "both" || render_choice == "cup" || render_choice == "both connected")
   {
-  color("red")
     gridfinity_cup(
       width=width, depth=depth, height=height,
       filled_in=filled_in,
@@ -456,6 +456,7 @@ set_environment(
         num_y=num_y,
         wall_thickness,
         clearance = slidingLidSettings[iSlidingClearance],
+        sliding_lid_gap_from_bin = sliding_lid_gap_from_bin,
         lidThickness=slidingLidSettings[iSlidingLidThickness],
         lidMinSupport=slidingLidSettings[iSlidingLidMinSupport],
         lidMinWallThickness=slidingLidSettings[iSlidingLidMinWallThickness],
