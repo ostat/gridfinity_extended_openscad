@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_sliding_lid.scad'. Generated 2026-02-17 18:06
-//Content hash DA3B87F4460CEEA85CD844557A817BDF795E16DFF12C06AD8BF79C14ED9EAD04
+//Combined version of 'gridfinity_sliding_lid.scad'. Generated 2026-02-18 07:45
+//Content hash 1810B465BDF10AA0E497EDCC74477EB6EE6577CD1664EA1805C6B1E41A51BD30
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -33,6 +33,7 @@ sliding_lid_cutout_size = [-2,-2]; //0.1
 sliding_lid_cutout_radius = -4; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
 
+/* [Sliding Text] */
 // Add text to the sliding lid top
 sliding_lid_text_enabled = false;
 // Text to display on the lid
