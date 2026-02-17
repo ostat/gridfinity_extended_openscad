@@ -24,12 +24,27 @@ sliding_lid_min_wallThickness = 0;//0.1
 sliding_lid_min_support = 0;//0.1
 sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
 sliding_lid_clearance = 0.1;//0.1
-sliding_lid_gap_from_bin = 0.1;//0.1
+sliding_lid_lip_clearance = 0.1;//0.1
+sliding_lid_nub_size = 0.5; //
+
+/* [Sliding Cutout] */
 sliding_lid_cutout_enabled = false; //
 sliding_lid_cutout_size = [-2,-2]; //0.1
 sliding_lid_cutout_radius = -4; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
-sliding_lid_nub_size = 0.5; //
+
+// Add text to the sliding lid top
+sliding_lid_text_enabled = false;
+// Text to display on the lid
+sliding_lid_text = "Gridfinity";
+// Font size for the lid text (0 = auto-size)
+sliding_lid_text_size = 0; // 0.1
+// Depth of text engraving in mm
+sliding_lid_text_depth = 0.3; // 0.01
+// Font for the lid text
+sliding_lid_text_font = "Aldo"; // [Aldo, B612, "Open Sans", Ubuntu]
+// Text position on lid (left, center, right)
+sliding_lid_text_position = "center"; // [left, center, right]
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -51,7 +66,7 @@ headroom = 0.8; // 0.1
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
-// Create a relie
+// Create a relief cut in the lip
 lip_top_relief_height = -1; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = true;
@@ -290,7 +305,19 @@ sliding_lid_settings = SlidingLidSettings(
   min_support = sliding_lid_min_support,
   clearance = sliding_lid_clearance,
   pull_style = sliding_lid_pull_style,
-  nub_size = sliding_lid_nub_size);
+  nub_size = sliding_lid_nub_size,
+  lip_clearance = sliding_lid_lip_clearance,
+  text_enabled = sliding_lid_text_enabled,
+  text_content = sliding_lid_text,
+  text_size = sliding_lid_text_size,
+  text_depth = sliding_lid_text_depth,
+  text_font = sliding_lid_text_font,
+  text_position = sliding_lid_text_position,
+  cutout_enabled = sliding_lid_cutout_enabled,
+  cutout_size = sliding_lid_cutout_size,
+  cutout_radius = sliding_lid_cutout_radius,
+  cutout_position = sliding_lid_cutout_position
+);
 
 set_environment(
   width = width,
@@ -451,21 +478,28 @@ set_environment(
         num_x=num_x, 
         num_y=num_y,
         wall_thickness,
-        clearance = slidingLidSettings[iSlidingLid_Clearance],
-        sliding_lid_gap_from_bin = sliding_lid_gap_from_bin,
-        lidThickness=slidingLidSettings[iSlidingLid_Thickness],
-        lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
-        lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
         headroom = headroom,
         lipStyle = lip_style,
         lip_notches = lip_top_notches,
         lip_top_relief_height = lip_top_relief_height, 
-        pull_style = slidingLidSettings[iSlidingLid_PullStyle],
         limitHeight=true,
-        cutoutEnabled = sliding_lid_cutout_enabled,
-        cutoutSize = sliding_lid_cutout_size,
-        cutoutRadius = sliding_lid_cutout_radius,
-        cutoutPosition = sliding_lid_cutout_position,
-        nub_size = slidingLidSettings[iSlidingLid_NubSize]);
+        clearance = slidingLidSettings[iSlidingLid_Clearance],
+        lip_clearance = slidingLidSettings[iSlidingLid_LipClearance],
+        lidThickness=slidingLidSettings[iSlidingLid_Thickness],
+        lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
+        lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
+        pull_style = slidingLidSettings[iSlidingLid_PullStyle],
+        cutoutEnabled = slidingLidSettings[iSlidingLid_CutoutEnabled],
+        cutoutSize = slidingLidSettings[iSlidingLid_CutoutSize],
+        cutoutRadius = slidingLidSettings[iSlidingLid_CutoutRadius],
+        cutoutPosition = slidingLidSettings[iSlidingLid_CutoutPosition],
+        nub_size = slidingLidSettings[iSlidingLid_NubSize],
+        text_enabled = slidingLidSettings[iSlidingLid_TextEnabled],
+        text_content = slidingLidSettings[iSlidingLid_TextContent],
+        text_size = slidingLidSettings[iSlidingLid_TextSize],
+        text_depth = slidingLidSettings[iSlidingLid_TextDepth],
+        text_font = slidingLidSettings[iSlidingLid_TextFont],
+        text_position = slidingLidSettings[iSlidingLid_TextPosition]
+      );
   }
 }

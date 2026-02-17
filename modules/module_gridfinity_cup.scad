@@ -1231,7 +1231,7 @@ module basic_cavity(num_x, num_y, num_z,
 
   //zpoint = env_pitch().z*num_z-headroom;
   
-  AssertSlidingLidSettings(sliding_lid_settings);
+  sliding_lid_settings = ValidateSlidingLidSettings(sliding_lid_settings);
   
   innerWallRadius = max(0.1, env_corner_radius()-wall_thickness); //prevent radius going negative
   corner_post_adjust = min(0, env_corner_radius()-wall_thickness-innerWallRadius)*-1;

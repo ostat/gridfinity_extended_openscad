@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_sliding_lid.scad'. Generated 2026-02-17 08:07
-//Content hash BC9CDB2F8F81A5FD4120479FECF983591F035296C8D77625B2AF7245F7BBEA72
+//Combined version of 'gridfinity_sliding_lid.scad'. Generated 2026-02-17 18:06
+//Content hash DA3B87F4460CEEA85CD844557A817BDF795E16DFF12C06AD8BF79C14ED9EAD04
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -24,12 +24,27 @@ sliding_lid_min_wallThickness = 0;//0.1
 sliding_lid_min_support = 0;//0.1
 sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
 sliding_lid_clearance = 0.1;//0.1
-sliding_lid_gap_from_bin = 0.1;//0.1
+sliding_lid_lip_clearance = 0.1;//0.1
+sliding_lid_nub_size = 0.5; //
+
+/* [Sliding Cutout] */
 sliding_lid_cutout_enabled = false; //
 sliding_lid_cutout_size = [-2,-2]; //0.1
 sliding_lid_cutout_radius = -4; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
-sliding_lid_nub_size = 0.5; //
+
+// Add text to the sliding lid top
+sliding_lid_text_enabled = false;
+// Text to display on the lid
+sliding_lid_text = "Gridfinity";
+// Font size for the lid text (0 = auto-size)
+sliding_lid_text_size = 0; // 0.1
+// Depth of text engraving in mm
+sliding_lid_text_depth = 0.3; // 0.01
+// Font for the lid text
+sliding_lid_text_font = "Aldo"; // [Aldo, B612, "Open Sans", Ubuntu]
+// Text position on lid (left, center, right)
+sliding_lid_text_position = "center"; // [left, center, right]
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -51,7 +66,7 @@ headroom = 0.8; // 0.1
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
-// Create a relie
+// Create a relief cut in the lip
 lip_top_relief_height = -1; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = true;
@@ -397,7 +412,13 @@ if(SlidingLid_debug && $preview){
     cutoutSize = [-2,-2],
     cutoutRadius = 5,
     cutoutPosition = [0,0],
-    nub_size = 0.5);
+    nub_size = 0.5,
+    text_enabled = true,
+    text_content = "test text",
+    text_size = 12,
+    text_depth = 0.3,
+    text_font = "Aldo",
+    text_position = "center");
 }
 
 SlidingLidPullStyle_disabled = "disabled";
@@ -416,6 +437,17 @@ iSlidingLid_MinSupport=3;
 iSlidingLid_Clearance=4;
 iSlidingLid_PullStyle=5;
 iSlidingLid_NubSize=6;
+iSlidingLid_TextEnabled=7;
+iSlidingLid_TextContent=8;
+iSlidingLid_TextSize=9;
+iSlidingLid_TextDepth=10;
+iSlidingLid_TextFont=11;
+iSlidingLid_TextPosition=12;
+iSlidingLid_LipClearance=13;
+iSlidingLid_CutoutEnabled=14;
+iSlidingLid_CutoutSize=15;
+iSlidingLid_CutoutRadius=16;
+iSlidingLid_CutoutPosition=17;
 
 function SlidingLidSettings(
   enabled,
@@ -424,21 +456,41 @@ function SlidingLidSettings(
   min_support,
   clearance,
   pull_style = SlidingLidPullStyle_disabled,
-  nub_size = 0
-  ) = 
+  nub_size = 0,
+  text_enabled = false,
+  text_content =  "Gridfinity Extended",
+  text_size = 0,
+  text_depth = 0.3,
+  text_font = "Aldo",
+  text_position = "center",
+  lip_clearance = 0.1,
+  cutout_enabled = false,
+  cutout_size = [-2,-2],
+  cutout_radius = -4,
+  cutout_position = [0,0]) = 
   [enabled, 
   thickness,
   min_wall_thickness,
   min_support,
   clearance,
   pull_style,
-  nub_size
+  nub_size,
+  text_enabled,
+  text_content,
+  text_size,
+  text_depth,
+  text_font,
+  text_position,
+  lip_clearance,
+  cutout_enabled,
+  cutout_size,
+  cutout_radius,
+  cutout_position
   ];
 
 function ValidateSlidingLidSettings(settings, wallThickness) = 
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==7, "SlidingLid Settings must length 6")
-  assert(is_num(wallThickness) && wallThickness > 0, "SlidingLidSettings: wallThickness must be a number greater than 0")
+  assert(len(settings)==18, str("SlidingLid Settings must length 18. len:", len(settings)))
   assert(is_bool(settings[iSlidingLid_Enabled]), "SlidingLidSettings: slidingLidEnabled must be a boolean")
   assert(is_num(settings[iSlidingLid_Thickness]) && settings[iSlidingLid_Thickness] >= 0, "SlidingLidSettings: slidingLidThickness must be a number greater than or equal to 0")
   assert(is_num(settings[iSlidingLid_MinWallThickness]) && settings[iSlidingLid_MinWallThickness] >= 0, str("SlidingLidSettings: slidingMinWallThickness must be a number greater than or equal to 0 is:", settings[iSlidingLid_MinWallThickness]))
@@ -446,9 +498,24 @@ function ValidateSlidingLidSettings(settings, wallThickness) =
   assert(is_num(settings[iSlidingLid_Clearance]) && settings[iSlidingLid_Clearance] >= 0, "SlidingLidSettings: slidingClearance must be a number greater than or equal to 0")
   assert(is_string(settings[iSlidingLid_PullStyle]), "SlidingLidSettings: slidingLidPullStyle must be a string")
   assert(is_num(settings[iSlidingLid_NubSize]) && settings[iSlidingLid_NubSize] >= 0, "SlidingLidSettings: slidingNubSize must be a number greater than or equal to 0")
+  assert(is_bool(settings[iSlidingLid_TextEnabled]), "SlidingLidSettings: slidingLidTextEnabled must be a boolean")
+  assert(is_string(settings[iSlidingLid_TextContent]), "SlidingLidSettings: slidingLidTextContent must be a string")
+  assert(is_num(settings[iSlidingLid_TextSize]) && settings[iSlidingLid_TextSize] >= 0, "SlidingLidSettings: slidingLidTextSize must be a number greater than or equal to 0")
+  assert(is_num(settings[iSlidingLid_TextDepth]) && settings[iSlidingLid_TextDepth] >= 0, "SlidingLidSettings: slidingLidTextDepth must be a number greater than or equal to 0")
+  assert(is_string(settings[iSlidingLid_TextFont]), "SlidingLidSettings: slidingLidTextFont must be a string")
+  assert(is_string(settings[iSlidingLid_TextPosition]), "SlidingLidSettings: slidingLidTextPosition must be a string")
+  assert(is_num(settings[iSlidingLid_LipClearance]) && settings[iSlidingLid_LipClearance] >= 0, "SlidingLidSettings: slidingLidLipClearance must be a number greater than or equal to 0")
+  assert(is_bool(settings[iSlidingLid_CutoutEnabled]), "SlidingLidSettings: slidingLidCutoutEnabled must be a boolean")
+  assert(is_list(settings[iSlidingLid_CutoutSize]) && len(settings[iSlidingLid_CutoutSize]) == 2, "SlidingLidSettings: slidingLidCutoutSize must be a list of 2 numbers")
+  assert(is_num(settings[iSlidingLid_CutoutRadius]), "SlidingLidSettings: slidingLidCutoutRadius must be a number")
+  assert(is_list(settings[iSlidingLid_CutoutPosition]) && len(settings[iSlidingLid_CutoutPosition]) == 2, "SlidingLidSettings: slidingLidCutoutPosition must be a list of 2 numbers")
   let(
-    thickness = settings[iSlidingLid_Thickness] > 0 ? settings[iSlidingLid_Thickness] : wallThickness*2,
-    minWallThickness = settings[iSlidingLid_MinWallThickness] > 0 ? settings[iSlidingLid_MinWallThickness] : wallThickness/2,
+    thickness = settings[iSlidingLid_Thickness] > 0 ? settings[iSlidingLid_Thickness] : 
+      assert(is_num(wallThickness) && wallThickness > 0, "SlidingLidSettings: wallThickness must be a number greater than 0")
+      wallThickness*2,
+    minWallThickness = settings[iSlidingLid_MinWallThickness] > 0 ? settings[iSlidingLid_MinWallThickness] : 
+      assert(is_num(wallThickness) && wallThickness > 0, "SlidingLidSettings: wallThickness must be a number greater than 0")
+      wallThickness/2,
     minSupport = settings[iSlidingLid_MinSupport] > 0 ? settings[iSlidingLid_MinSupport] : thickness/2
   ) [
   settings[iSlidingLid_Enabled], 
@@ -457,11 +524,23 @@ function ValidateSlidingLidSettings(settings, wallThickness) =
   minSupport,
   settings[iSlidingLid_Clearance],
   validateSlidingLidPullStyle(settings[iSlidingLid_PullStyle]),
-  settings[iSlidingLid_NubSize]];
+  settings[iSlidingLid_NubSize],
+  settings[iSlidingLid_TextEnabled],
+  settings[iSlidingLid_TextContent],
+  settings[iSlidingLid_TextSize],
+  settings[iSlidingLid_TextDepth],
+  settings[iSlidingLid_TextFont],
+  settings[iSlidingLid_TextPosition],
+  settings[iSlidingLid_LipClearance],
+  settings[iSlidingLid_CutoutEnabled],
+  settings[iSlidingLid_CutoutSize],
+  settings[iSlidingLid_CutoutRadius],
+  settings[iSlidingLid_CutoutPosition]
+  ];
 
 module AssertSlidingLidSettings(settings){
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==7, "SlidingLid Settings must length 7");
+  assert(len(settings)==17, "SlidingLid Settings must length 17");
 } 
 
 module SlidingLid(
@@ -470,7 +549,7 @@ module SlidingLid(
   wall_thickness,
   headroom = 0.8,
   clearance = 0,
-  sliding_lid_gap_from_bin = 0,
+  lip_clearance = 0,
   lidThickness,
   lidMinSupport,
   lidMinWallThickness,
@@ -485,6 +564,12 @@ module SlidingLid(
   cutoutPosition = [0,0],
   nub_size = 0,
   lip_height = 3.75, //this is a constant, but should be adjustable
+  text_enabled = false,
+  text_content = "Text",
+  text_size = 0,
+  text_depth = 0.3,
+  text_font = "Aldo",
+  text_position = "center"
 ){
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -503,7 +588,14 @@ module SlidingLid(
   assert(is_num(cutoutRadius));
   assert(is_list(cutoutPosition));
   assert(is_num(nub_size));
-  
+  assert(is_bool(text_enabled));
+  assert(is_string(text_content));
+  assert(is_num(text_size));
+  assert(is_num(text_depth));
+  assert(is_string(text_font));
+  assert(is_string(text_position));
+  assert(is_num(lip_clearance));
+
   innerWallRadius = env_corner_radius()-wall_thickness-clearance;
 
   inner_corner_center = [
@@ -553,7 +645,7 @@ module SlidingLid(
           lip_remove_inner_grid = false,
           raise_lip = lidThickness,//headroom+lidThickness,
           wall_thickness = 1.2);
-        translate([0,lidLowerRadius,-fudgeFactor])
+        translate([0,lidLowerRadius+lip_clearance,-fudgeFactor])
         union(){
           taper_size =lip_height+headroom;
           translate([0,taper_size,0])
@@ -601,6 +693,35 @@ module SlidingLid(
         cutoutPosition = cutoutPosition,
         lid_size = lid_size,
         lidThickness = lidThickness);
+    }
+
+    // Add text to lid surface
+    if(text_enabled && text_content != "" && text_depth > 0) {
+      availableTextWidth = lid_size.x * 0.8; // Use 80% of available width
+      maxTextSize = 12;
+      
+      estimatedCharWidth = 0.6; // 60%, replace to use textmetrics
+      actualTextSize = text_size > 0 ? text_size : 
+        min(availableTextWidth / (len(text_content) * estimatedCharWidth), maxTextSize);
+      
+      // Calculate text position
+      actualEstimatedTextWidth = len(text_content) * actualTextSize * estimatedCharWidth;
+      textX = text_position == "left" ? lid_size.x * 0.1 :
+              text_position == "right" ? lid_size.x * 0.9 :
+              lid_size.x/2;
+      textY = lid_size.y/2;
+      
+      // Render text as negative space (engraved)
+      translate([textX, textY, lidThickness - text_depth])
+      linear_extrude(height = text_depth + fudgeFactor) {
+        text(
+          text = text_content,
+          size = actualTextSize,
+          font = text_font,
+          halign = text_position,
+          valign = "bottom"
+        );
+      }
     }
     
     if(env_help_enabled("debug")) echo("SlidingLid", num_x=num_x, num_y=num_y, wall_thickness=wall_thickness, clearance=clearance, lidThickness=lidThickness, lidMinSupport=lidMinSupport, lidMinWallThickness=lidMinWallThickness);
@@ -721,7 +842,14 @@ module SlidingLidCavity(
     lidMinWallThickness=sliding_lid_settings[iSlidingLid_MinWallThickness],
     limitHeight = false,
     lip_height = lip_height,
-    nub_size = sliding_lid_settings[iSlidingLid_NubSize]);
+    nub_size = sliding_lid_settings[iSlidingLid_NubSize],
+    text_enabled = sliding_lid_settings[iSlidingLid_TextEnabled],
+    text_content = sliding_lid_settings[iSlidingLid_TextContent],
+    text_size = sliding_lid_settings[iSlidingLid_TextSize],
+    text_depth = sliding_lid_settings[iSlidingLid_TextDepth],
+    text_font = sliding_lid_settings[iSlidingLid_TextFont],
+    text_position = sliding_lid_settings[iSlidingLid_TextPosition],
+    lip_clearance = sliding_lid_settings[iSlidingLid_LipClearance]);
 
    //the value of this is not right, I need to find where it should come from. perhaps headroom?
    extra_height = 1.4;
@@ -7022,7 +7150,7 @@ module basic_cavity(num_x, num_y, num_z,
 
   //zpoint = env_pitch().z*num_z-headroom;
   
-  AssertSlidingLidSettings(sliding_lid_settings);
+  sliding_lid_settings = ValidateSlidingLidSettings(sliding_lid_settings);
   
   innerWallRadius = max(0.1, env_corner_radius()-wall_thickness); //prevent radius going negative
   corner_post_adjust = min(0, env_corner_radius()-wall_thickness-innerWallRadius)*-1;
@@ -10479,7 +10607,19 @@ sliding_lid_settings = SlidingLidSettings(
   min_support = sliding_lid_min_support,
   clearance = sliding_lid_clearance,
   pull_style = sliding_lid_pull_style,
-  nub_size = sliding_lid_nub_size);
+  nub_size = sliding_lid_nub_size,
+  lip_clearance = sliding_lid_lip_clearance,
+  text_enabled = sliding_lid_text_enabled,
+  text_content = sliding_lid_text,
+  text_size = sliding_lid_text_size,
+  text_depth = sliding_lid_text_depth,
+  text_font = sliding_lid_text_font,
+  text_position = sliding_lid_text_position,
+  cutout_enabled = sliding_lid_cutout_enabled,
+  cutout_size = sliding_lid_cutout_size,
+  cutout_radius = sliding_lid_cutout_radius,
+  cutout_position = sliding_lid_cutout_position
+);
 
 set_environment(
   width = width,
@@ -10640,21 +10780,28 @@ set_environment(
         num_x=num_x, 
         num_y=num_y,
         wall_thickness,
-        clearance = slidingLidSettings[iSlidingLid_Clearance],
-        sliding_lid_gap_from_bin = sliding_lid_gap_from_bin,
-        lidThickness=slidingLidSettings[iSlidingLid_Thickness],
-        lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
-        lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
         headroom = headroom,
         lipStyle = lip_style,
         lip_notches = lip_top_notches,
         lip_top_relief_height = lip_top_relief_height, 
-        pull_style = slidingLidSettings[iSlidingLid_PullStyle],
         limitHeight=true,
-        cutoutEnabled = sliding_lid_cutout_enabled,
-        cutoutSize = sliding_lid_cutout_size,
-        cutoutRadius = sliding_lid_cutout_radius,
-        cutoutPosition = sliding_lid_cutout_position,
-        nub_size = slidingLidSettings[iSlidingLid_NubSize]);
+        clearance = slidingLidSettings[iSlidingLid_Clearance],
+        lip_clearance = slidingLidSettings[iSlidingLid_LipClearance],
+        lidThickness=slidingLidSettings[iSlidingLid_Thickness],
+        lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
+        lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
+        pull_style = slidingLidSettings[iSlidingLid_PullStyle],
+        cutoutEnabled = slidingLidSettings[iSlidingLid_CutoutEnabled],
+        cutoutSize = slidingLidSettings[iSlidingLid_CutoutSize],
+        cutoutRadius = slidingLidSettings[iSlidingLid_CutoutRadius],
+        cutoutPosition = slidingLidSettings[iSlidingLid_CutoutPosition],
+        nub_size = slidingLidSettings[iSlidingLid_NubSize],
+        text_enabled = slidingLidSettings[iSlidingLid_TextEnabled],
+        text_content = slidingLidSettings[iSlidingLid_TextContent],
+        text_size = slidingLidSettings[iSlidingLid_TextSize],
+        text_depth = slidingLidSettings[iSlidingLid_TextDepth],
+        text_font = slidingLidSettings[iSlidingLid_TextFont],
+        text_position = slidingLidSettings[iSlidingLid_TextPosition]
+      );
   }
 }
