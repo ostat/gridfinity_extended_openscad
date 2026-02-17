@@ -58,7 +58,6 @@ default_label_walls=[0,1,0,0];  //[0:1:1]
     
 /* [Sliding Lid] */
 default_sliding_lid_enabled = false;
-default_sliding_lid_exposes_label = false;
 // 0 = wall thickness *2
 default_sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
@@ -67,6 +66,7 @@ default_sliding_min_wall_thickness = 0;//0.1
 default_sliding_min_support = 0;//0.1
 default_sliding_clearance = 0.1;//0.1
 default_sliding_lid_pull_style = "disabled";
+default_sliding_lid_exposes_label = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -349,7 +349,8 @@ module gridfinity_cup(
     min_wall_thickness = default_sliding_min_wall_thickness,
     min_support = default_sliding_min_support,
     clearance = default_sliding_clearance,
-    pull_style = default_sliding_lid_pull_style),
+    pull_style = default_sliding_lid_pull_style,
+    exposes_label = default_sliding_lid_exposes_label),
   cupBaseTextSettings = CupBaseTextSettings(
     baseTextLine1Enabled = default_text_1,
     baseTextLine2Enabled = default_text_2,

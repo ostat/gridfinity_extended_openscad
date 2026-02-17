@@ -58,6 +58,7 @@ iSlidingLid_CutoutEnabled=14;
 iSlidingLid_CutoutSize=15;
 iSlidingLid_CutoutRadius=16;
 iSlidingLid_CutoutPosition=17;
+iSlidingLid_ExposesLabel=18;
 
 function SlidingLidSettings(
   enabled,
@@ -77,7 +78,8 @@ function SlidingLidSettings(
   cutout_enabled = false,
   cutout_size = [-2,-2],
   cutout_radius = -4,
-  cutout_position = [0,0]) = 
+  cutout_position = [0,0],
+  exposes_label = false) = 
   [enabled, 
   thickness,
   min_wall_thickness,
@@ -95,12 +97,13 @@ function SlidingLidSettings(
   cutout_enabled,
   cutout_size,
   cutout_radius,
-  cutout_position
+  cutout_position,
+  exposes_label
   ];
 
 function ValidateSlidingLidSettings(settings, wallThickness) = 
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==18, str("SlidingLid Settings must length 18. len:", len(settings)))
+  assert(len(settings)==19, str("SlidingLid Settings must length 19. len:", len(settings)))
   assert(is_bool(settings[iSlidingLid_Enabled]), "SlidingLidSettings: slidingLidEnabled must be a boolean")
   assert(is_num(settings[iSlidingLid_Thickness]) && settings[iSlidingLid_Thickness] >= 0, "SlidingLidSettings: slidingLidThickness must be a number greater than or equal to 0")
   assert(is_num(settings[iSlidingLid_MinWallThickness]) && settings[iSlidingLid_MinWallThickness] >= 0, str("SlidingLidSettings: slidingMinWallThickness must be a number greater than or equal to 0 is:", settings[iSlidingLid_MinWallThickness]))
@@ -145,7 +148,8 @@ function ValidateSlidingLidSettings(settings, wallThickness) =
   settings[iSlidingLid_CutoutEnabled],
   settings[iSlidingLid_CutoutSize],
   settings[iSlidingLid_CutoutRadius],
-  settings[iSlidingLid_CutoutPosition]
+  settings[iSlidingLid_CutoutPosition],
+  settings[iSlidingLid_ExposesLabel]
   ];
 
 module AssertSlidingLidSettings(settings){
@@ -179,26 +183,9 @@ module SlidingLid(
   text_size = 0,
   text_depth = 0.3,
   text_font = "Aldo",
-  text_position = "center"
+  text_position = "center",
+  exposes_label = false
 ){
-  slidingLidEnabled = slidingLidSettings[iSlidingLidEnabled];
-  slidingLidExposesLabel = slidingLidSettings[iSlidingLidExposesLabel];
-  lidThickness = slidingLidSettings[iSlidingLidThickness];
-  lidMinWallThickness = slidingLidSettings[iSlidingLidMinWallThickness];
-  lidMinSupport = slidingLidSettings[iSlidingLidMinSupport];
-  clearance = slidingLidSettings[iSlidingLidClearance];
-  lipEnabled = slidingLidSettings[iSlidingLidLipEnabled];
-  exposesLabel = slidingLidSettings[iSlidingLidExposesLabel];
-  if (is_list(labelSettings)) {
-    labelSize = labelSettings[iLabelSettings_size];
-    labelWalls = labelSettings[iLabelSettings_walls];
-    labelPosition = labelSettings[iLabelSettings_position];
-    rawLabelWidth = labelSize.x;
-    labelWidth = (rawLabelWidth == 0) ? num_x*env_pitch().x : rawLabelWidth*env_pitch().x;
-    labelDepth = labelSize.y;
-    labelOnBackWall = (labelWalls[1] != 0);
-  }
-
   assert(is_num(num_x));
   assert(is_num(num_y));
   assert(is_num(wall_thickness));
@@ -223,6 +210,7 @@ module SlidingLid(
   assert(is_string(text_font));
   assert(is_string(text_position));
   assert(is_num(lip_clearance));
+  assert(is_bool(exposes_label));
 
   innerWallRadius = env_corner_radius()-wall_thickness-clearance;
 
@@ -324,8 +312,11 @@ module SlidingLid(
     }
 
     // a cutout that exposes the label (only works for back wall)
-    // this block will be skipped if labelSettings was not passed in since labelOnBackWall will be undef
-    if(slidingLidExposesLabel && labelOnBackWall) {
+    if(exposes_label) {
+      // TODO: temporarily force simple-minded label choices
+      labelPosition = "center";  // TODO: temporary
+      labelDepth = 14;  // TODO: temporary
+      labelWidth = lid_size.x;
       label_posx = labelPosition == "left"   ? -labelWidth/2
                  : labelPosition == "right"  ?  labelWidth/2
                  : labelPosition == "center" ?  0
@@ -334,12 +325,12 @@ module SlidingLid(
                  : labelPosition == "rightchamber" ?  0
                  : labelPosition == "centerchamber" ?  0
                  : 0;
-      label_posy = (lidSize.y - labelDepth)/2;
+      label_posy = (lid_size.y - labelDepth)/2;
       sliding_lid_cutout(
         cutoutSize = [labelWidth,labelDepth],
         cutoutRadius = 0,
         cutoutPosition = [label_posx,label_posy],
-        lidSize = lidSize,
+        lid_size = lid_size,
         lidThickness = lidThickness);
     }
 
@@ -473,7 +464,6 @@ module SlidingLidCavity(
   num_x, 
   num_y,
   wall_thickness,
-  labelSettings,
   sliding_lid_settings,
   aboveLidHeight,
   headroom = 0.8,
@@ -498,7 +488,8 @@ module SlidingLidCavity(
     text_depth = sliding_lid_settings[iSlidingLid_TextDepth],
     text_font = sliding_lid_settings[iSlidingLid_TextFont],
     text_position = sliding_lid_settings[iSlidingLid_TextPosition],
-    lip_clearance = sliding_lid_settings[iSlidingLid_LipClearance]);
+    lip_clearance = sliding_lid_settings[iSlidingLid_LipClearance],
+    exposes_label = sliding_lid_settings[iSlidingLid_ExposesLabel]);
 
    //the value of this is not right, I need to find where it should come from. perhaps headroom?
    extra_height = 1.4;
