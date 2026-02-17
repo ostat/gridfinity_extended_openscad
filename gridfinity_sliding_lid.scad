@@ -442,13 +442,7 @@ set_environment(
       sliding_clearance,
       wall_thickness,
       sliding_lid_lip_enabled,
-      slidingLidExposesLabel = sliding_lid_exposes_label,
-      labelSettings = LabelSettings(
-        labelStyle=label_style,
-        labelPosition=label_position,
-        labelSize=label_size,
-        labelRelief=label_relief,
-        labelWalls=label_walls));
+      slidingLidExposesLabel = sliding_lid_exposes_label);
         
     headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
     
@@ -474,7 +468,13 @@ set_environment(
         cutoutSize = sliding_lid_cutout_size,
         cutoutRadius = sliding_lid_cutout_radius,
         cutoutPosition = sliding_lid_cutout_position,
-        slidingLidSettings = slidingLidSettings);
+        labelSettings = LabelSettings(
+          labelStyle=label_style,
+          labelPosition=label_position,
+          labelSize=label_size,
+          labelRelief=label_relief,
+          labelWalls=label_walls),
+          slidingLidSettings = slidingLidSettings);
     }
   }
 }

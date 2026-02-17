@@ -386,8 +386,7 @@ module gridfinity_cup(
           sliding_clearance,
           wall_thickness,
           sliding_lid_lip_enabled,
-          slidingLidExposesLabel = sliding_lid_exposes_label,
-          labelSettings = label_settings);
+          slidingLidExposesLabel = sliding_lid_exposes_label);
           
   headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
   

@@ -10,7 +10,6 @@ iSlidingLidMinSupport=3;
 iSlidingLidClearance=4;
 iSlidingLidLipEnabled=5;
 iSlidingLidExposesLabel=6;
-iSlidingLidLabelSettings=7;
 
 function DisabledSlidingLidSettings() = SlidingLidSettings(
   slidingLidEnabled = false,
@@ -19,8 +18,8 @@ function DisabledSlidingLidSettings() = SlidingLidSettings(
   slidingMinSupport = 0,
   slidingClearance = 0,
   wallThickness = 0,
-  slidingLidLipEnabled = false,
-  labelSettings = ["normal", "center", [0, 14, 0, 0.6], [0, 0, 0, 0.6], [0, 1, 0, 0], "disabled"]);
+  labelSettings = [],
+  slidingLidLipEnabled = false);
   
 function SlidingLidSettings(
   slidingLidEnabled,
@@ -30,8 +29,7 @@ function SlidingLidSettings(
   slidingClearance,
   wallThickness,
   slidingLidLipEnabled = false,
-  slidingLidExposesLabel,
-  labelSettings) =
+  slidingLidExposesLabel) =
   let(
     thickness = slidingLidThickness > 0 ? slidingLidThickness : wallThickness*2,
     minWallThickness = slidingMinWallThickness > 0 ? slidingMinWallThickness : wallThickness/2,
@@ -43,12 +41,11 @@ function SlidingLidSettings(
   minSupport,
   slidingClearance,
   slidingLidLipEnabled,
-  slidingLidExposesLabel,
-  labelSettings];
+  slidingLidExposesLabel];
 
 module AssertSlidingLidSettings(settings){
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==8, "SlidingLid Settings must be length 8");
+  assert(len(settings)==7, "SlidingLid Settings must be length 7");
 } 
 
 //SlidingLid(4,3,.8,0.1,1.6,0.8,0.4,true, true, [-2,-2],5,[0,0]);
@@ -67,6 +64,7 @@ module SlidingLid(
   cutoutSize = [0,0],
   cutoutRadius = 0,
   cutoutPosition = [0,0],
+  labelSettings,
   slidingLidSettings
 ){
   slidingLidEnabled = slidingLidSettings[iSlidingLidEnabled];
@@ -77,14 +75,15 @@ module SlidingLid(
   clearance = slidingLidSettings[iSlidingLidClearance];
   lipEnabled = slidingLidSettings[iSlidingLidLipEnabled];
   exposesLabel = slidingLidSettings[iSlidingLidExposesLabel];
-  labelSettings = slidingLidSettings[iSlidingLidLabelSettings];
-  labelSize = labelSettings[iLabelSettings_size];
-  labelWalls = labelSettings[iLabelSettings_walls];
-  labelPosition = labelSettings[iLabelSettings_position];
-  rawLabelWidth = labelSize.x;
-  labelWidth = (rawLabelWidth == 0) ? num_x*env_pitch().x : rawLabelWidth*env_pitch().x;
-  labelDepth = labelSize.y;
-  labelOnBackWall = (labelWalls[1] != 0);
+  if (is_list(labelSettings)) {
+    labelSize = labelSettings[iLabelSettings_size];
+    labelWalls = labelSettings[iLabelSettings_walls];
+    labelPosition = labelSettings[iLabelSettings_position];
+    rawLabelWidth = labelSize.x;
+    labelWidth = (rawLabelWidth == 0) ? num_x*env_pitch().x : rawLabelWidth*env_pitch().x;
+    labelDepth = labelSize.y;
+    labelOnBackWall = (labelWalls[1] != 0);
+  }
 
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -168,6 +167,7 @@ module SlidingLid(
     }
 
     // a cutout that exposes the label (only works for back wall)
+    // this block will be skipped if labelSettings was not passed in since labelOnBackWall will be undef
     if(slidingLidExposesLabel && labelOnBackWall) {
       label_posx = labelPosition == "left"   ? -labelWidth/2
                  : labelPosition == "right"  ?  labelWidth/2
@@ -296,6 +296,7 @@ module SlidingLidCavity(
   num_x, 
   num_y,
   wall_thickness,
+  labelSettings,
   sliding_lid_settings,
   aboveLidHeight
 ){
@@ -304,6 +305,7 @@ module SlidingLidCavity(
     num_y=num_y,
     wall_thickness,
     limitHeight = false,
+    labelSettings = labelSettings,
     slidingLidSettings = sliding_lid_settings);
   
   if(sliding_lid_settings[iSlidingLidLipEnabled])
