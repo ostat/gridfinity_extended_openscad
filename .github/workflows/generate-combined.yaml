@@ -35,6 +35,7 @@ jobs:
           Write-Host "============================"
 
       - name: Run OpenSCAD combine script
+        id: check_for_changes
         shell: pwsh
         run: |
           Write-Host "Running OpenSCAD combine script..."
@@ -45,14 +46,17 @@ jobs:
         run: |
           if ((git status --porcelain).Length -eq 0) {
             Write-Host "No changes detected"
-            Write-Host "CHANGED=false" >> $env:GITHUB_ENV
+            "CHANGED=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           }
           else {
             Write-Host "Changes detected"
             Write-Host "CHANGED=true" >> $env:GITHUB_ENV
+            "CHANGED=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           }
 
       - name: Commit combined files
+        env:
+          CHANGED: ${{ steps.check_for_changes.outputs.CHANGED }}
         if: env.CHANGED == 'true'
         shell: pwsh
         run: |
