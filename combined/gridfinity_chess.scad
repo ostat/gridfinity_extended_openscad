@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_chess.scad'. Generated 2026-02-15 16:29
-//Content hash F2318F77B409FB9D9FB4E2A9902E3E71A9C6E3834ABFEB3E24766863A2809ED4
+//Combined version of 'gridfinity_chess.scad'. Generated 2026-02-16 23:25
+//Content hash FEA85CA5EEAC6957A04B33FAD21BC752022FB3ECAA86C0B4AA7276DF176AF2FF
 ///////////////////////////////////////
 
 /* [model] */
@@ -3405,7 +3405,7 @@ module set_environment(
 function env_numx() = is_undef($num_x) || !is_num($num_x) ? 0 : $num_x;
 function env_numy() = is_undef($num_y) || !is_num($num_y) ? 0 : $num_y;
 function env_numz() = is_undef($num_z) || !is_num($num_z) ? 0 : $num_z;
-function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0,0,0] : $clearance;
+function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0.5, 0.5, 0] : $clearance;
 function env_generate_filter() = (is_undef($generate_filter) || !is_string($generate_filter)) ? "" : $generate_filter;
 
 function env_pitch() =  is_undef($pitch) || !is_list($pitch) ? [gf_pitch, gf_pitch, gf_zpitch] : $pitch; 
@@ -4038,6 +4038,25 @@ module magnet_release(
 
 
 
+cupLip_debug = false;
+
+if(cupLip_debug){
+  $fn = 64;
+  cupLip(  num_x = 2, 
+  num_y = 3, 
+  lipStyle = LipStyle_normal, 
+  wall_thickness = 1.2,
+  lip_notches = true,
+  lip_top_relief_height = -1,
+  lip_top_relief_width = -1,
+  lip_clip_position = LipClipPosition_disabled,
+  lip_non_blocking = true,
+  lip_remove_inner_grid = false,
+  raise_lip = 0,
+  align_grid = [ "near", "near"]);
+}
+
+
 //Lip object configuration
 iLipStyle=0;
 iLipSideReliefTrigger=1;
@@ -4103,12 +4122,15 @@ module cupLip(
   num_x = 2, 
   num_y = 3, 
   lipStyle = LipStyle_normal, 
+  lipHeight = 3.75,
   wall_thickness = 1.2,
   lip_notches = true,
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
-  lip_non_blocking = false,
+  lip_non_blocking = false, //prevents the walls for blocking bins on a partial cell.
+  lip_remove_inner_grid = true,
+  raise_lip = 0,
   align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
@@ -4120,6 +4142,7 @@ module cupLip(
   assert(is_bool(lip_notches));
   assert(is_string(lip_clip_position));
   assert(is_bool(lip_non_blocking));
+  assert(is_bool(lip_remove_inner_grid));
 
   connectorsEnabled = lip_clip_position != LipClipPosition_disabled;
   $allowConnectors = connectorsEnabled ? [1,1,1,1] : [0,0,0,0];
@@ -4140,17 +4163,18 @@ module cupLip(
 
   innerLipRadius = env_corner_radius()-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
   innerWallRadius = env_corner_radius()-wall_thickness;
+  echo("cupLip",  innerLipRadius=innerLipRadius, env_corner_radius=env_corner_radius(), env_clearance=env_clearance() );
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
   // around the top inside edge.
   q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
-  lipHeight = 3.75;
+
   
   outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
  
-  coloredLipHeight=min(2,lipHeight);
+  coloredLipHeight=3.75;
   
   if(lipStyle != "none")
     color(env_colour(color_topcavity, isLip = true))
@@ -4161,8 +4185,9 @@ module cupLip(
       tz(fudgeFactor*2)
       hull() 
         cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=env_corner_radius(), h=lipHeight+fudgeFactor);
+        cylinder(r=env_corner_radius(), h=raise_lip + lipHeight + fudgeFactor);
     
+      tz(raise_lip)
       cupLip_cavity(
         num_x = num_x, 
         num_y = num_y, 
@@ -4173,6 +4198,8 @@ module cupLip(
         lip_top_relief_width = lip_top_relief_width,
         lip_clip_position = lip_clip_position,
         lip_non_blocking = lip_non_blocking,
+        lip_remove_inner_grid = lip_remove_inner_grid,
+        raise_lip= raise_lip,
         align_grid = align_grid);
     }
 }
@@ -4187,6 +4214,8 @@ module cupLip_cavity(
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
   lip_non_blocking = false,
+  lip_remove_inner_grid = true,
+  raise_lip = 0,
   align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
@@ -4198,7 +4227,8 @@ module cupLip_cavity(
   assert(is_bool(lip_notches));
   assert(is_string(lip_clip_position));
   assert(is_bool(lip_non_blocking));
-
+  assert(is_num(raise_lip));
+  
   connectorsEnabled = lip_clip_position != LipClipPosition_disabled;
   $allowConnectors = connectorsEnabled ? [1,1,1,1] : [0,0,0,0];
   $frameBaseHeight = 0; //$num_z * env_pitch().z;
@@ -4232,7 +4262,6 @@ module cupLip_cavity(
       
   pitch=env_pitch();
   // remove top so XxY can fit on top
-  //pad_oversize(num_x, num_y, 1);
   union(){
     //Top cavity, with lip relief
     frame_cavity(
@@ -4241,11 +4270,12 @@ module cupLip_cavity(
       position_fill_grid_x = align_grid.x,
       position_fill_grid_y = align_grid.y,
       render_top = lip_notches,
-      render_bottom = false,
+      render_bottom = !lip_remove_inner_grid,
       frameLipHeight = 4,
       cornerRadius = env_corner_radius(),
       reducedWallHeight = lip_top_relief_height,
       reducedWallWidth = lip_top_relief_width,
+      extra_down = raise_lip,
       reducedWallOuterEdgesOnly=true){
         echo("donothign");
         frame_connector_cavities(
@@ -4256,22 +4286,24 @@ module cupLip_cavity(
             connectorClipEnabled = connectorsEnabled));
       }
 
-    //lower cavity
-    frame_cavity(
-      num_x = 1, 
-      num_y = 1, 
-      position_fill_grid_x = "far",
-      position_fill_grid_y = "far",
-      render_top = !lip_notches,
-      render_bottom = true,
-      frameLipHeight = 4,
-      cornerRadius = env_corner_radius(),
-      reducedWallHeight = -1, 
-      reducedWallWidth = -1,
-      $pitch=[
-        pitch.x*(lip_non_blocking ? ceil(num_x) : num_x),
-        pitch.y*(lip_non_blocking ? ceil(num_y) : num_y),
-        pitch.z]);
+    if(lip_remove_inner_grid){
+      //lower cavity
+      frame_cavity(
+        num_x = 1, 
+        num_y = 1, 
+        position_fill_grid_x = "far",
+        position_fill_grid_y = "far",
+        render_top = !lip_notches,
+        render_bottom = true,
+        frameLipHeight = 4,
+        cornerRadius = env_corner_radius(),
+        reducedWallHeight = -1, 
+        reducedWallWidth = -1,
+        $pitch=[
+          pitch.x*(lip_non_blocking ? ceil(num_x) : num_x),
+          pitch.y*(lip_non_blocking ? ceil(num_y) : num_y),
+          pitch.z]);
+      }
   }
  
   if (lipStyle == "minimum" || lipStyle == "none") {

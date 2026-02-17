@@ -19,17 +19,34 @@ sliding_lid_enabled = true;
 // 0 = wall thickness *2
 sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
-sliding_min_wall_thickness = 0;//0.1
+sliding_lid_min_wallThickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
-sliding_min_support = 0;//0.1
-sliding_lid_lip_enabled = true;
+sliding_lid_min_support = 0;//0.1
+sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
+sliding_lid_clearance = 0.1;//0.1
+sliding_lid_lip_clearance = 0.1;//0.1
+sliding_lid_nub_size = 0.5; //
 // If selected, an opening will be made in the sliding lid so that a back wall label is visible when the lid is in place. Does not do anything for labels on other walls.
 sliding_lid_exposes_label = false;
-sliding_clearance = 0.1;//0.1
+
+/* [Sliding Cutout] */
 sliding_lid_cutout_enabled = false; //
 sliding_lid_cutout_size = [-2,-2]; //0.1
 sliding_lid_cutout_radius = -4; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
+
+// Add text to the sliding lid top
+sliding_lid_text_enabled = false;
+// Text to display on the lid
+sliding_lid_text = "Gridfinity";
+// Font size for the lid text (0 = auto-size)
+sliding_lid_text_size = 0; // 0.1
+// Depth of text engraving in mm
+sliding_lid_text_depth = 0.3; // 0.01
+// Font for the lid text
+sliding_lid_text_font = "Aldo"; // [Aldo, B612, "Open Sans", Ubuntu]
+// Text position on lid (left, center, right)
+sliding_lid_text_position = "center"; // [left, center, right]
 
 /*<!!start gridfinity_basic_cup!!>*/
 /* [General Cup] */
@@ -51,7 +68,7 @@ headroom = 0.8; // 0.1
 lip_style = "normal";  // [ normal, reduced, minimum, none:not stackable ]
 // Below this the inside of the lip will be reduced for easier access.
 lip_side_relief_trigger = [1,1]; //0.1
-// Create a relie
+// Create a relief cut in the lip
 lip_top_relief_height = -1; // 0.1
 // add a notch to the lip to prevent sliding.
 lip_top_notches  = true;
@@ -283,6 +300,27 @@ $fa = fa;
 $fs = fs; 
 $fn = fn;  
 
+sliding_lid_settings = SlidingLidSettings(
+  enabled = sliding_lid_enabled, 
+  thickness = sliding_lid_thickness, 
+  min_wall_thickness = sliding_lid_min_wallThickness, 
+  min_support = sliding_lid_min_support,
+  clearance = sliding_lid_clearance,
+  pull_style = sliding_lid_pull_style,
+  nub_size = sliding_lid_nub_size,
+  lip_clearance = sliding_lid_lip_clearance,
+  text_enabled = sliding_lid_text_enabled,
+  text_content = sliding_lid_text,
+  text_size = sliding_lid_text_size,
+  text_depth = sliding_lid_text_depth,
+  text_font = sliding_lid_text_font,
+  text_position = sliding_lid_text_position,
+  cutout_enabled = sliding_lid_cutout_enabled,
+  cutout_size = sliding_lid_cutout_size,
+  cutout_radius = sliding_lid_cutout_radius,
+  cutout_position = sliding_lid_cutout_position
+);
+
 set_environment(
   width = width,
   depth = depth,
@@ -296,7 +334,6 @@ set_environment(
   union(){
   if(render_choice == "both" || render_choice == "cup" || render_choice == "both connected")
   {
-  color("red")
     gridfinity_cup(
       width=width, depth=depth, height=height,
       filled_in=filled_in,
@@ -410,13 +447,7 @@ set_environment(
         extendableyPosition = extension_y_position, 
         extendableTabsEnabled = extension_tabs_enabled, 
         extendableTabSize = extension_tab_size),
-      sliding_lid_enabled = sliding_lid_enabled, 
-      sliding_lid_exposes_label = sliding_lid_exposes_label,
-      sliding_lid_thickness = sliding_lid_thickness, 
-      sliding_min_wall_thickness = sliding_min_wall_thickness, 
-      sliding_min_support = sliding_min_support, 
-      sliding_clearance = sliding_clearance,
-      sliding_lid_lip_enabled=sliding_lid_lip_enabled,
+      sliding_lid_settings= sliding_lid_settings,
       cupBaseTextSettings = CupBaseTextSettings(
         baseTextLine1Enabled = text_1,
         baseTextLine2Enabled = text_2,
@@ -432,19 +463,11 @@ set_environment(
     num_x = calcDimensionWidth(width);
     num_y = calcDimensionDepth(depth);
     num_z = calcDimensionHeight(height);
-    wall_thickness = wallThickness(wall_thickness, num_z);
     
-    slidingLidSettings= SlidingLidSettings(
-      sliding_lid_enabled, 
-      sliding_lid_thickness, 
-      sliding_min_wall_thickness, 
-      sliding_min_support,
-      sliding_clearance,
-      wall_thickness,
-      sliding_lid_lip_enabled,
-      slidingLidExposesLabel = sliding_lid_exposes_label);
+    wall_thickness = wallThickness(wall_thickness, num_z);
+    slidingLidSettings = ValidateSlidingLidSettings(sliding_lid_settings, wall_thickness);
         
-    headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLidThickness] : 0);
+    headroom = headroom + (sliding_lid_enabled ? slidingLidSettings[iSlidingLid_Thickness] : 0);
     
     filledInZ = env_pitch().z*num_z;
     zpoint = filledInZ-headroom;
@@ -453,28 +476,32 @@ set_environment(
       render_choice == "both" && !$preview 
       ? [(num_x+0.5)*env_pitch().x, 0, 0] 
       : [0, 0, render_choice == "lid" ? 0 : zpoint])
-    difference()
-    {
       SlidingLid(
         num_x=num_x, 
         num_y=num_y,
         wall_thickness,
+        headroom = headroom,
         lipStyle = lip_style,
         lip_notches = lip_top_notches,
         lip_top_relief_height = lip_top_relief_height, 
-        addLiptoLid = sliding_lid_lip_enabled,
         limitHeight=true,
-        cutoutEnabled = sliding_lid_cutout_enabled,
-        cutoutSize = sliding_lid_cutout_size,
-        cutoutRadius = sliding_lid_cutout_radius,
-        cutoutPosition = sliding_lid_cutout_position,
-        labelSettings = LabelSettings(
-          labelStyle=label_style,
-          labelPosition=label_position,
-          labelSize=label_size,
-          labelRelief=label_relief,
-          labelWalls=label_walls),
-          slidingLidSettings = slidingLidSettings);
-    }
+        clearance = slidingLidSettings[iSlidingLid_Clearance],
+        lip_clearance = slidingLidSettings[iSlidingLid_LipClearance],
+        lidThickness=slidingLidSettings[iSlidingLid_Thickness],
+        lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
+        lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
+        pull_style = slidingLidSettings[iSlidingLid_PullStyle],
+        cutoutEnabled = slidingLidSettings[iSlidingLid_CutoutEnabled],
+        cutoutSize = slidingLidSettings[iSlidingLid_CutoutSize],
+        cutoutRadius = slidingLidSettings[iSlidingLid_CutoutRadius],
+        cutoutPosition = slidingLidSettings[iSlidingLid_CutoutPosition],
+        nub_size = slidingLidSettings[iSlidingLid_NubSize],
+        text_enabled = slidingLidSettings[iSlidingLid_TextEnabled],
+        text_content = slidingLidSettings[iSlidingLid_TextContent],
+        text_size = slidingLidSettings[iSlidingLid_TextSize],
+        text_depth = slidingLidSettings[iSlidingLid_TextDepth],
+        text_font = slidingLidSettings[iSlidingLid_TextFont],
+        text_position = slidingLidSettings[iSlidingLid_TextPosition]
+      );
   }
 }

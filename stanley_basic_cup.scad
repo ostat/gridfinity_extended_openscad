@@ -95,11 +95,12 @@ sliding_lid_enabled = false;
 // 0 = wall thickness *2
 sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
-sliding_min_wallThickness = 0;//0.1
+sliding_lid_min_wall_thickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
-sliding_min_support = 0;//0.1
-sliding_clearance = 0.1;//0.1
-sliding_lid_lip_enabled = false;
+sliding_lid_min_support = 0;//0.1
+sliding_lid_clearance = 0.1;//0.1
+sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
+sliding_lid_nub_size = 0.5; //
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -439,12 +440,14 @@ gridfinity_cup(
     extendableyPosition = extension_y_position, 
     extendableTabsEnabled = extension_tabs_enabled, 
     extendableTabSize = extension_tab_size),
-  sliding_lid_enabled = sliding_lid_enabled, 
-  sliding_lid_thickness = sliding_lid_thickness, 
-  sliding_min_wall_thickness = sliding_min_wallThickness, 
-  sliding_min_support = sliding_min_support, 
-  sliding_clearance = sliding_clearance,
-  sliding_lid_lip_enabled=sliding_lid_lip_enabled,
+  sliding_lid_settings = SlidingLidSettings(
+    enabled = sliding_lid_enabled, 
+    thickness = sliding_lid_thickness, 
+    min_wall_thickness = sliding_lid_min_wall_thickness, 
+    min_support = sliding_lid_min_support,
+    clearance = sliding_lid_clearance,
+    pull_style = sliding_lid_pull_style,
+    nub_size = sliding_lid_nub_size),
   cupBaseTextSettings = CupBaseTextSettings(
     baseTextLine1Enabled = text_1,
     baseTextLine2Enabled = text_2,
