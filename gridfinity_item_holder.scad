@@ -142,14 +142,14 @@ center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
 //Only add attachments (magnets and screw) to box corners (prints faster).
-box_corner_attachments_only = true;
+box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth]
-// Enable to subdivide bottom pads to allow sub-cell offsets
-sub_pitch = 1; //[1,2,3,4]
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off";
 // Remove floor to create a vertical spacer
@@ -171,11 +171,12 @@ sliding_lid_enabled = false;
 // 0 = wall thickness *2
 sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
-sliding_min_wallThickness = 0;//0.1
+sliding_lid_min_wall_thickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
-sliding_min_support = 0;//0.1
-sliding_clearance = 0.1;//0.1
-sliding_lid_lip_enabled = false;
+sliding_lid_min_support = 0;//0.1
+sliding_lid_clearance = 0.1;//0.1
+sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
+sliding_lid_nub_size = 0.5; //
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -854,12 +855,14 @@ module gridfinity_itemholder(
           extendableyPosition = extension_y_position, 
           extendableTabsEnabled = extension_tabs_enabled, 
           extendableTabSize = extension_tab_size),
-        sliding_lid_enabled = sliding_lid_enabled, 
-        sliding_lid_thickness = sliding_lid_thickness, 
-        sliding_min_wall_thickness = sliding_min_wallThickness, 
-        sliding_min_support = sliding_min_support, 
-        sliding_clearance = sliding_clearance,
-        sliding_lid_lip_enabled=sliding_lid_lip_enabled,
+        sliding_lid_settings = SlidingLidSettings(
+          enabled = sliding_lid_enabled, 
+          thickness = sliding_lid_thickness, 
+          min_wall_thickness = sliding_lid_min_wall_thickness, 
+          min_support = sliding_lid_min_support,
+          clearance = sliding_lid_clearance,
+          pull_style = sliding_lid_pull_style,
+          nub_size = sliding_lid_nub_size),
         cupBaseTextSettings = CupBaseTextSettings(
           baseTextLine1Enabled = text_1,
           baseTextLine2Enabled = text_2,

@@ -79,8 +79,8 @@ floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth]
-// Enable to subdivide bottom pads to allow sub-cell offsets
-sub_pitch = 1; //[1,2,3,4]
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off"; // [off, gridfinity:gridfinity stackable, rounded]
 // Remove floor to create a vertical spacer
@@ -102,17 +102,6 @@ label_size = [0,14,0,0.6]; // 0.01
 label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 label_walls=[0,1,0,0];  //[0:1:1]
-
-/* [Sliding Lid] */
-sliding_lid_enabled = false;
-// 0 = wall thickness *2
-sliding_lid_thickness = 0; //0.1
-// 0 = wall_thickness/2
-sliding_min_wallThickness = 0;//0.1
-// 0 = default_sliding_lid_thickness/2
-sliding_min_support = 0;//0.1
-sliding_clearance = 0.1;//0.1
-sliding_lid_lip_enabled = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -452,12 +441,6 @@ module silverware_pockets(defs, md=magnet_size[1], sd=screw_size[1]) {
       extendableyPosition = extension_y_position, 
       extendableTabsEnabled = extension_tabs_enabled, 
       extendableTabSize = extension_tab_size),
-    sliding_lid_enabled = sliding_lid_enabled, 
-    sliding_lid_thickness = sliding_lid_thickness, 
-    sliding_min_wall_thickness = sliding_min_wallThickness, 
-    sliding_min_support = sliding_min_support, 
-    sliding_clearance = sliding_clearance,
-    sliding_lid_lip_enabled=sliding_lid_lip_enabled,
     cupBaseTextSettings = CupBaseTextSettings(
       baseTextLine1Enabled = text_1,
       baseTextLine2Enabled = text_2,
