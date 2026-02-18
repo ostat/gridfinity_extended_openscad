@@ -3,8 +3,7 @@ name: Auto Combine OpenSCAD Files
 on:
   push:
     branches:
-      #- main
-      - github-actions
+      - main
 
 permissions:
   contents: write
