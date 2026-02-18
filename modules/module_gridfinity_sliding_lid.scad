@@ -311,29 +311,6 @@ module SlidingLid(
         lidThickness = lidThickness);
     }
 
-    // a cutout that exposes the label (only works for back wall)
-    if(exposes_label) {
-      // TODO: temporarily force simple-minded label choices
-      labelPosition = "center";  // TODO: temporary
-      labelDepth = 14;  // TODO: temporary
-      labelWidth = lid_size.x;
-      label_posx = labelPosition == "left"   ? -labelWidth/2
-                 : labelPosition == "right"  ?  labelWidth/2
-                 : labelPosition == "center" ?  0
-                 // not sure what to do about leftchamber/rightchamber/centerchamber
-                 : labelPosition == "leftchamber" ?  0
-                 : labelPosition == "rightchamber" ?  0
-                 : labelPosition == "centerchamber" ?  0
-                 : 0;
-      label_posy = (lid_size.y - labelDepth)/2;
-      sliding_lid_cutout(
-        cutoutSize = [labelWidth,labelDepth],
-        cutoutRadius = 0,
-        cutoutPosition = [label_posx,label_posy],
-        lid_size = lid_size,
-        lidThickness = lidThickness);
-    }
-
     // Add text to lid surface
     if(text_enabled && text_content != "" && text_depth > 0) {
       availableTextWidth = lid_size.x * 0.8; // Use 80% of available width
