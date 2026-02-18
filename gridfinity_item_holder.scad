@@ -35,7 +35,7 @@ itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 // Should the grid be square or hex
 itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard","custom":custom shape - beta feature]
 // The number of sides for a round hole
-itemholder_hole_sides = 4; 
+itemholder_hole_sides = 4;
 // Diameter of, round hole, or corners for square hole
 itemholder_hole_diameter = 5; //0.1
 // Radius of the bottom of the custom shape
@@ -55,7 +55,7 @@ itemholder_hole_gridx = 0; //1
 itemholder_hole_gridy = 0; //0.5
 //Auto set the bin height based on the hole size.
 itemholder_auto_bin_height = "enabled"; //["enabled","enabled_full","disabled"]
-// The number of sides for a round hole 
+// The number of sides for a round hole
 itemholder_compartments = [1,1]; //[1:10]
 // Spacing around the compartments
 itemholder_compartment_spacing = 3; //0.1
@@ -64,10 +64,10 @@ itemholder_compartment_centered = true;
 itemholder_compartment_fill = "none"; //["none", "space", "crop"]
 
 /*
-xpos,ypos,xsize,ysize,radius,depth. 
+xpos,ypos,xsize,ysize,radius,depth.
 dimensions of the tray cutout, a string with comma separated values, and pipe (|) separated trays.
  - xpos, ypos, the x/y position in gridfinity units.
- - xsize, ysize. the x/y size in gridfinity units. 
+ - xsize, ysize. the x/y size in gridfinity units.
  - radius, [optional] corner radius in mm.
  - depth, [optional] depth in mm
  - example "0,0,2,1|2,0,2,1,2,5"
@@ -125,7 +125,7 @@ vertical_separator_config = "10.5|21|42|50|60";
 horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 horizontal_separator_config = "10.5|21|42|50|60";
-      
+
 /* [Base] */
 // Enable magnets
 enable_magnets = true;
@@ -134,7 +134,7 @@ enable_screws = true;
 //size of magnet, diameter and height. Zack's original used 6.5 and 2.4
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
-magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+magnet_easy_release = "auto";//["off","auto","inner","outer"]
 //size of screw, diameter and height. Zack's original used 3 and 6
 screw_size = [3, 6]; // .1
 //size of center magnet, diameter and height.
@@ -148,7 +148,7 @@ floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth]
-// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets
 sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off";
@@ -159,7 +159,7 @@ spacer = false;
 label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
-// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4.
 label_size = [0,14,0,0.6]; // 0.01
 // Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
@@ -208,7 +208,7 @@ wallpattern_rotate_grid=false;
 //Size of the hole
 wallpattern_cell_size = [10,10]; //0.1
 // Add the pattern to the dividers
-wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
+wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both]
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
 //Radius of corners
@@ -221,7 +221,7 @@ wallpattern_border = 0;
 wallpattern_depth = 0; // 0.1
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
-//voronoi pattern noise, 
+//voronoi pattern noise,
 wallpattern_pattern_voronoi_noise = 0.75; //0.01
 //brick pattern center weight
 wallpattern_pattern_brick_weight = 5;
@@ -250,9 +250,9 @@ wallcutout_horizontal_corner_radius=5;
 
 /* [Extendable] */
 extension_x_enabled = "disabled"; //[disabled, front, back]
-extension_x_position = 0.5; 
+extension_x_position = 0.5;
 extension_y_enabled = "disabled"; //[disabled, front, back]
-extension_y_position = 0.5; 
+extension_y_position = 0.5;
 extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 extension_tab_size= [10,0,0,0];
@@ -286,13 +286,13 @@ enable_help = "disabled"; //[info,debug,trace]
 set_colour = "enable"; //[disabled, enable, preview, lip]
 //where to render the model
 render_position = "center"; //[default,center,zero]
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-fa = 6; 
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments
+fa = 6;
 // minimum size of a fragment.  Low is more fragments
-fs = 0.1; 
+fs = 0.1;
 // number of fragments, overrides $fa and $fs
-fn = 0;  
-// set random seed for 
+fn = 0;
+// set random seed for
 random_seed = 0; //0.0001
 /*<!!end gridfinity_basic_cup!!>*/
 
@@ -300,14 +300,14 @@ random_seed = 0; //0.0001
 module end_of_customizer_opts() {}
 
 //Some online generators do not like direct setting of fa,fs,fn
-$fa = fa; 
-$fs = fs; 
-$fn = fn;   
+$fa = fa;
+$fs = fs;
+$fn = fn;
 
 //Function for creating a custom shape.
 //To use this feature you need to define the require shape in the module below.
 //Then configure the options in the customiser, is the item is space appropriately.
-module mycustomshape(){ 
+module mycustomshape(){
   //Example custom shape
   //settings needed
   //item hole depth 30
@@ -320,7 +320,7 @@ module mycustomshape(){
     translate([-2.1,7.55,0])
     chamfered_cube(size=[3,10,30], topChamfer = 1, cornerRadius = 1, bottomRadius=0);
   }
-  
+
   //You can use any shapes but these are some example shapes
   //chamfered_cube(size=[10,10,10], chamfer = 1, cornerRadius = 1,  bottomRadius=0);
   //chamferedRectangleTop(size=[10,10,10], chamfer = 1, cornerRadius = 1);
@@ -334,13 +334,13 @@ function LookupKnown(knowItemCode, customDiameter = [0,0], customSize=0, customD
       knownTool = LookupKnownTool(knowItemCode),
       knownBattery = LookupKnownBattery(knowItemCode),
       knownCellBattery = LookupKnownCellBattery(knowItemCode)
-    ) knownCard[ishape] != "" ? knownCard 
+    ) knownCard[ishape] != "" ? knownCard
       : knownCartridge[ishape] != "" ? knownCartridge
       : knownBattery[ishape] != "" ? knownBattery
       : knownCellBattery[ishape] != "" ? knownCellBattery
       : knownTool[ishape] != "" ? knownTool
       : [customDiameter, customSize.x, customSize.y, customDepth, 0, customShape];
-      
+
 function addClearance(dim, clearance) =
     [dim[iitemDiameter] > 0 ? dim[iitemDiameter]+clearance : 0
     ,dim[iitemx] > 0 ? dim[iitemx]+clearance : 0
@@ -355,7 +355,7 @@ icMcSideItem = 4;
 icMcCompact = 5;
 
 function multiCardCalculations(
-  multiCards = "sd,usba,microsd", 
+  multiCards = "sd,usba,microsd",
   multiCardCompact = 0,
   holeClearance = 0
 ) = let(
@@ -366,8 +366,8 @@ function multiCardCalculations(
       multiCardCompact = multiCardCompact > 0 ? sideItem[iitemx] * (1 - min(multiCardCompact/2 + 0.5 ,1)) : 0,
       _sides = LookupKnownShapes(name="multicard"),
       _holeSize = [
-        max(longCenterItem[iitemx],shortCenterItem[iitemx]), 
-        max(longCenterItem[iitemy], shortCenterItem[iitemy], sideItem[iitemx] - multiCardCompact), 
+        max(longCenterItem[iitemx],shortCenterItem[iitemx]),
+        max(longCenterItem[iitemy], shortCenterItem[iitemy], sideItem[iitemx] - multiCardCompact),
         max(longCenterItem[idepthneeded], shortCenterItem[idepthneeded], sideItem[idepthneeded])]
     ) [_sides,
       _holeSize,
@@ -385,23 +385,23 @@ function itemCalculations(
     _sides = LookupKnownShapes(name=item[ishape], default_sides=sides),
     _depthTemp = holeDepth > 0 ? holeDepth : item[idepthneeded],
     _depth = _depthTemp <= 0 ? 5 : _depthTemp,
-    _holeSize = 
+    _holeSize =
       item[ishape] == "round" || item[ishape] == "hex"
         ? [item[iitemDiameter] + holeClearance, 0, _depth]
-      : item[ishape] == "halfround" 
+      : item[ishape] == "halfround"
         ? [item[iitemx]+holeClearance, item[iitemy]+holeClearance, item[iitemx]/2]
       : [item[iitemx]+holeClearance,item[iitemy]+holeClearance,_depth]
   ) [_sides,
       _holeSize,
-      [],[],[],0];   
-    
+      [],[],[],0];
+
 //TODO for the hose size its not correct due to loss in the number of faces.
 //E.G a 10mm circle cant contain a 10mm hex
 //This also throws off the calculated spacing.
 module itemholder(
   num_x = 1,
   num_y = 2,
-  num_z, 
+  num_z,
   knowItemCode = "custom",
   customHoleBaseShape = "square",
   multiCards = "sd,usba,microsd",
@@ -410,7 +410,7 @@ module itemholder(
   sides = 4,
   holeSize = [10,10],
   holeDiameter = 10,
-  holeDepth = 5, 
+  holeDepth = 5,
   holeChamfer = 1,
   holeClearance = 0.2,
   holeSpacing = 0,
@@ -429,14 +429,14 @@ module itemholder(
   //Non custom components
   item = LookupKnown(
     knowItemCode=knowItemCode,
-    customDiameter=holeDiameter, 
-    customSize=holeSize, 
-    customDepth=holeDepth, 
+    customDiameter=holeDiameter,
+    customSize=holeSize,
+    customDepth=holeDepth,
     customShape=customHoleBaseShape);
-  
+
   itemCalc = item[ishape] == "multicard"
       ? multiCardCalculations(
-          multiCards = multiCards, 
+          multiCards = multiCards,
           multiCardCompact = multiCardCompact,
           holeClearance = holeClearance)
       : itemCalculations(
@@ -444,28 +444,28 @@ module itemholder(
           sides = sides,
           holeDepth = holeDepth,
           holeClearance=holeClearance);
-          
-  gridStyle = item[ishape] == "multicard" || item[ishape] == "square" || item[ishape] == "halfround" 
-    ? "square" : gridStyle;  
-  
+
+  gridStyle = item[ishape] == "multicard" || item[ishape] == "square" || item[ishape] == "halfround"
+    ? "square" : gridStyle;
+
   _sides = itemCalc[icSides];
   _holeSize = itemCalc[icHoleSize];
   _multiCardCompact = itemCalc[icMcCompact];
   _depth = min(itemCalc[icHoleSize].z, floorThickness);
-  
+
   xSize = (num_x*env_pitch().x-(compartments.x+1)*compartment_spacing)/compartments.x;
   xStep = xSize + compartment_spacing;
   ySize = (num_y*env_pitch().y-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
   yStep = ySize + compartment_spacing;
-  
+
   if(env_help_enabled("info")) echo("itemholder", item=item, multiCards=multiCards,longCenter=itemCalc[icMcLongCenterItem],smallCenter=itemCalc[icMcShortCenterItem],side=itemCalc[icMcSideItem], _multiCardCompact=_multiCardCompact, _sides=_sides, _holeSize=_holeSize,_depth=_depth);
   if(env_help_enabled("info")) echo("itemholder", xSize=xSize, xStep=xStep, ySize=ySize, yStep=yStep);
-  
+
   for(x =[0:1:compartments.x-1])
-  { 
+  {
     for(y =[0:1:compartments.y-1])
     {
-      translate(compartment_centered 
+      translate(compartment_centered
         ? [compartment_spacing+x*xStep+xSize/2, compartment_spacing+y*yStep+ySize/2, floorThickness-_depth]
         : [compartment_spacing+x*xStep, compartment_spacing+y*yStep, floorThickness-_depth])
         GridItemHolder(
@@ -483,27 +483,27 @@ module itemholder(
             if(item[ishape]=="multicard")
             {
               multiCard(
-                itemCalc[icMcLongCenterItem], itemCalc[icMcShortCenterItem], itemCalc[icMcSideItem], 
+                itemCalc[icMcLongCenterItem], itemCalc[icMcShortCenterItem], itemCalc[icMcSideItem],
                 chamfer = holeChamfer,
                 alternate = _multiCardCompact > 0 && (($idx.y % 2) != $idx.x % 2));
             } else if(item[ishape] == "square") {
               rotate_around([0,0,holeRotation], [_holeSize.x/2, _holeSize.y/2])
               chamfered_cube(
-                size = [_holeSize.x, _holeSize.y, _depth+fudgeFactor], 
-                topChamfer=holeChamfer, 
+                size = [_holeSize.x, _holeSize.y, _depth+fudgeFactor],
+                topChamfer=holeChamfer,
                 cornerRadius=item[iitemDiameter]/2, bottomRadius=holeBottomRadius);
             } else if(item[ishape] == "halfround") {
               translate([_holeSize.x/2,_holeSize.y/2,0])
                 chamferedHalfCylinder(
-                  r=item[iitemx]/2, 
-                  h=item[iitemy], 
+                  r=item[iitemx]/2,
+                  h=item[iitemy],
                   chamfer=holeChamfer);
           } else if(item[ishape]=="custom") {
             mycustomshape();
           }
     }
   }
-  
+
   HelpTxt("itemholder",[
     "num_x",num_x
     ,"num_y",num_y
@@ -549,7 +549,7 @@ module samplesholder(
   multiCardCompact = 0,
   sides = 4,
   holeSize = [10,10],
-  holeDepth = 5, 
+  holeDepth = 5,
   holeChamfer = 1,
   holeBottomRadius=0,
   holeClearance = 0.2,
@@ -557,19 +557,19 @@ module samplesholder(
   help = false)
 {
   floorThickness=wallThickness;
-  
+
   //Non custom components
   item = LookupKnown(
     knowItemCode=knowItemCode,
-    customDiameter=holeDiameter, 
-    customSize=holeSize, 
-    customDepth=holeDepth, 
+    customDiameter=holeDiameter,
+    customSize=holeSize,
+    customDepth=holeDepth,
     customShape=customHoleBaseShape);
   mc = split(multiCards, ",");
-  
+
   itemCalc = item[ishape] == "multicard"
       ? multiCardCalculations(
-          multiCards = multiCards, 
+          multiCards = multiCards,
           multiCardCompact = multiCardCompact,
           holeClearance = holeClearance)
       : itemCalculations(
@@ -577,7 +577,7 @@ module samplesholder(
           sides = sides,
           holeDepth = holeDepth,
           holeClearance=holeClearance);
-      
+
     _sides = itemCalc[icSides];
     _holeSize = itemCalc[icHoleSize];
     _depth = itemCalc[icHoleSize].z;
@@ -592,7 +592,7 @@ module samplesholder(
         cube(size=[_holeSize.x+wallThickness*2,_holeSize.y+wallThickness*2, _depth+fudgeFactor+wallThickness]);
       translate([-_holeSize.x/2,-_holeSize.y/2-holeChamfer,0])
         multiCard(
-          itemCalc[icMcLongCenterItem], itemCalc[icMcShortCenterItem], itemCalc[icMcSideItem], 
+          itemCalc[icMcLongCenterItem], itemCalc[icMcShortCenterItem], itemCalc[icMcSideItem],
           chamfer = holeChamfer,
           alternate =false);
       }
@@ -617,7 +617,7 @@ module samplesholder(
       chamferedCylinder(h=_depth+fudgeFactor, r=Rc, chamfer=holeChamfer, circleFn = _sides);
     }
   }
-  
+
   HelpTxt("sampleholder",[
     "knowItemCode",knowItemCode
     ,"multiCards",multiCards
@@ -661,19 +661,19 @@ module gridfinity_itemholder(
   itemholder_auto_bin_height = itemholder_auto_bin_height,
   itemholder_multi_cards = itemholder_multi_cards,
   itemholder_multi_card_compact = itemholder_multi_card_compact,
-  itemholder_known_item = 
-        itemholder_known_tools != "custom" ? itemholder_known_tools  
+  itemholder_known_item =
+        itemholder_known_tools != "custom" ? itemholder_known_tools
       : itemholder_known_batteries != "custom"? itemholder_known_batteries
       : itemholder_known_cell_batteries != "custom"? itemholder_known_cell_batteries
       : itemholder_known_cards != "custom"? itemholder_known_cards
-      : itemholder_known_cartridges, 
-      
+      : itemholder_known_cartridges,
+
   //gridfinity settings
   width=width, depth=depth, height=height,
   filled_in=filled_in,
   label_settings=LabelSettings(
-    labelStyle=label_style, 
-    labelPosition=label_position, 
+    labelStyle=label_style,
+    labelPosition=label_position,
     labelSize=label_size,
     labelRelief=label_relief,
     labelWalls=label_walls),
@@ -714,9 +714,9 @@ module gridfinity_itemholder(
     separator_config = horizontal_separator_config),
   sub_pitch=sub_pitch,
   lip_settings = LipSettings(
-    lipStyle=lip_style, 
-    lipSideReliefTrigger=lip_side_relief_trigger, 
-    lipTopReliefHeight=lip_top_relief_height, 
+    lipStyle=lip_style,
+    lipSideReliefTrigger=lip_side_relief_trigger,
+    lipTopReliefHeight=lip_top_relief_height,
     lipNotch=lip_top_notches),
   headroom=headroom,
   box_corner_attachments_only=box_corner_attachments_only,
@@ -725,36 +725,36 @@ module gridfinity_itemholder(
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
-  wallpattern_walls=wallpattern_walls, 
+  wallpattern_walls=wallpattern_walls,
   wallpattern_dividers_enabled=wallpattern_dividers_enabled,
   wall_pattern_settings = PatternSettings(
-    patternEnabled = wallpattern_enabled, 
-    patternStyle = wallpattern_style, 
+    patternEnabled = wallpattern_enabled,
+    patternStyle = wallpattern_style,
     patternRotate = wallpattern_rotate_grid,
     patternFill = wallpattern_fill,
-    patternBorder = wallpattern_border, 
+    patternBorder = wallpattern_border,
     patternDepth = wallpattern_depth,
-    patternCellSize = wallpattern_cell_size, 
+    patternCellSize = wallpattern_cell_size,
     patternHoleSides = wallpattern_hole_sides,
-    patternStrength = wallpattern_strength, 
+    patternStrength = wallpattern_strength,
     patternHoleRadius = wallpattern_hole_radius,
     patternGridChamfer = wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
     patternBrickWeight = wallpattern_pattern_brick_weight,
     patternFs = wallpattern_pattern_quality),
   wallcutout_vertical_settings = WallCutoutSettings(
-    type = wallcutout_vertical, 
-    position = wallcutout_vertical_position, 
+    type = wallcutout_vertical,
+    position = wallcutout_vertical_position,
     width = wallcutout_vertical_width,
     angle = wallcutout_vertical_angle,
-    height = wallcutout_vertical_height, 
+    height = wallcutout_vertical_height,
     corner_radius = wallcutout_vertical_corner_radius),
   wallcutout_horizontal_settings = WallCutoutSettings(
-    type = wallcutout_horizontal, 
-    position = wallcutout_horizontal_position, 
+    type = wallcutout_horizontal,
+    position = wallcutout_horizontal_position,
     width = wallcutout_horizontal_width,
     angle = wallcutout_horizontal_angle,
-    height = wallcutout_horizontal_height, 
+    height = wallcutout_horizontal_height,
     corner_radius = wallcutout_horizontal_corner_radius),
   extension_enabled=[
     [extension_x_enabled,extension_x_position],
@@ -765,21 +765,21 @@ module gridfinity_itemholder(
   cuty=cuty,
   help=enable_help) {
   $showHelp = help;
-  
+
   num_x = calcDimensionWidth(width);
   num_y = calcDimensionDepth(depth);
   num_z = calcDimensionHeight(height);
 
   item = LookupKnown(
       knowItemCode=itemholder_known_item,
-      customDiameter=itemholder_hole_diameter, 
-      customSize=itemholder_hole_size, 
-      customDepth=itemholder_hole_depth, 
+      customDiameter=itemholder_hole_diameter,
+      customSize=itemholder_hole_size,
+      customDepth=itemholder_hole_depth,
       customShape=itemholder_hole_base_shape);
-  
+
   itemCalc = item[ishape] == "multicard"
       ? multiCardCalculations(
-          multiCards = itemholder_multi_cards, 
+          multiCards = itemholder_multi_cards,
           multiCardCompact = itemholder_multi_card_compact,
           holeClearance = itemholder_hole_clearance)
       : itemCalculations(
@@ -792,21 +792,21 @@ module gridfinity_itemholder(
   calculatedItemClearanceHeight = item[iitemHeight];
   // min floor height
   baseClearanceHeight = cupBaseClearanceHeight(magnet_size[1], screw_size[1], center_magnet_thickness);
-  
+
   //calculate the bin height. This math is not right
-  height = 
+  height =
     let(itemheightneeded = itemholder_auto_bin_height == "enabled_full" ? calculatedItemClearanceHeight: calculatedItemDepth)
-    itemholder_auto_bin_height == "disabled" || itemheightneeded <=0 
+    itemholder_auto_bin_height == "disabled" || itemheightneeded <=0
       ? num_z
       : filled_in != "disabled"
         ? (baseClearanceHeight + floor_thickness + itemheightneeded)/env_pitch().z
         : ceil((baseClearanceHeight + floor_thickness + itemheightneeded)/env_pitch().z);
-   
-  // calculate floor thickness
-  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=calculatedItemDepth + floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);  
 
-  
-  if(env_help_enabled("info")) echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedUsableFloorThickness=calculatedUsableFloorThickness, baseClearanceHeight=baseClearanceHeight, height=height); 
+  // calculate floor thickness
+  calculatedUsableFloorThickness = calculateUsableFloorThickness(magnet_depth=magnet_size[1], screw_depth=screw_size[1], floor_thickness=calculatedItemDepth + floor_thickness, num_z=height, filled_in=filled_in,flat_base=flat_base);
+
+
+  if(env_help_enabled("info")) echo("gridfinity_itemholder", height=height, filled_in=filled_in, calculatedItemDepth=calculatedItemDepth, calculatedUsableFloorThickness=calculatedUsableFloorThickness, baseClearanceHeight=baseClearanceHeight, height=height);
 
   if(itemholder_enable_sample == false)
   {
@@ -816,18 +816,18 @@ module gridfinity_itemholder(
         width=width, depth=depth, height=height,
         filled_in=filled_in,
         label_settings=LabelSettings(
-          labelStyle=label_style, 
-          labelPosition=label_position, 
+          labelStyle=label_style,
+          labelPosition=label_position,
           labelSize=label_size,
           labelRelief=label_relief,
           labelWalls=label_walls),
         finger_slide_settings = finger_slide_settings,
         cupBase_settings = CupBaseSettings(
           magnetSize = magnet_size,
-          magnetEasyRelease = magnet_easy_release, 
-          centerMagnetSize = center_magnet_size, 
+          magnetEasyRelease = magnet_easy_release,
+          centerMagnetSize = center_magnet_size,
           screwSize = enable_screws?screw_size:[0,0],
-          holeOverhangRemedy = hole_overhang_remedy, 
+          holeOverhangRemedy = hole_overhang_remedy,
           cornerAttachmentsOnly = box_corner_attachments_only,
           floorThickness = calculatedUsableFloorThickness, //todo this seems like the wrong value
           cavityFloorRadius = cavity_floor_radius,
@@ -845,20 +845,20 @@ module gridfinity_itemholder(
         tapered_setback = tapered_setback,
         wallpattern_walls=wallpattern_walls,
         wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-        wall_pattern_settings = wall_pattern_settings, 
+        wall_pattern_settings = wall_pattern_settings,
         wallcutout_vertical_settings=wallcutout_vertical_settings,
         wallcutout_horizontal_settings=wallcutout_horizontal_settings,
         extendable_Settings = ExtendableSettings(
-          extendablexEnabled = extension_x_enabled, 
-          extendablexPosition = extension_x_position, 
-          extendableyEnabled = extension_y_enabled, 
-          extendableyPosition = extension_y_position, 
-          extendableTabsEnabled = extension_tabs_enabled, 
+          extendablexEnabled = extension_x_enabled,
+          extendablexPosition = extension_x_position,
+          extendableyEnabled = extension_y_enabled,
+          extendableyPosition = extension_y_position,
+          extendableTabsEnabled = extension_tabs_enabled,
           extendableTabSize = extension_tab_size),
         sliding_lid_settings = SlidingLidSettings(
-          enabled = sliding_lid_enabled, 
-          thickness = sliding_lid_thickness, 
-          min_wall_thickness = sliding_lid_min_wall_thickness, 
+          enabled = sliding_lid_enabled,
+          thickness = sliding_lid_thickness,
+          min_wall_thickness = sliding_lid_min_wall_thickness,
           min_support = sliding_lid_min_support,
           clearance = sliding_lid_clearance,
           pull_style = sliding_lid_pull_style,
@@ -874,9 +874,9 @@ module gridfinity_itemholder(
       /*<!!end gridfinity_basic_cup!!>*/
 
       itemholder_z_bottom = max(
-          baseClearanceHeight, 
+          baseClearanceHeight,
           baseClearanceHeight + floor_thickness - calculatedItemDepth);
-      
+
       color(color_extension)
       translate([0, 0, itemholder_z_bottom])
       itemholder(
@@ -890,7 +890,7 @@ module gridfinity_itemholder(
         holeSize = itemholder_hole_size,
         holeDiameter = itemholder_hole_diameter,
         holeSpacing = itemholder_hole_spacing,
-        holeDepth = itemholder_hole_depth, 
+        holeDepth = itemholder_hole_depth,
         holeChamfer = itemholder_hole_chamfer,
         holeGrid  = itemholder_hole_grid,
         holeClearance = itemholder_hole_clearance,
@@ -915,7 +915,7 @@ module gridfinity_itemholder(
       sides = itemholder_hole_sides,
       holeSize = itemholder_hole_size,
       holeDiameter = itemholder_hole_diameter,
-      holeDepth = itemholder_hole_depth, 
+      holeDepth = itemholder_hole_depth,
       holeChamfer = itemholder_hole_chamfer,
       holeClearance = itemholder_hole_clearance,
       holeBottomRadius = itemholder_hole_bottom_radius,

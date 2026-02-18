@@ -27,7 +27,7 @@ function Write-CustomWarning ([string]$message, $pad = " ", $padCount = 0)
 
 function Write-CustomHost ([string]$message, [switch]$Warning, $ForegroundColor, $pad = " ", $padCount = 0)
 {
-    $padding 
+    $padding
     if($padCount -gt 0){
         $padding = "$(-join ($pad * $padCount)) $($padCount): "
     }
@@ -44,12 +44,12 @@ function Write-CustomHost ([string]$message, [switch]$Warning, $ForegroundColor,
 
 function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child, [int]$childCount = 1){
     [string[]]$fileLines = @()
-    
+
     #If its a child file add the file to the linked files like.
     if($Child) {$script:LinkedFiles[$ScadFilePath] = @()}
     $scadFile = Get-Item -LiteralPath $ScadFilePath
     Write-CustomHost "processing $($ScadFilePath) includes:$($script:LinkedFiles.Count) isChild:$($Child)" -ForegroundColor Yellow  -padCount $childCount
-    
+
     #open the current file and read it contence
     Get-Content -LiteralPath $ScadFilePath -Encoding utf8 | ForEach-Object {
         #If the line is an include, process that file
@@ -60,9 +60,9 @@ function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child, [int]$c
                 Write-CustomHost "Path already included" -ForegroundColor Gray -padCount $childCount
             } else {
                 $script:LinkedFiles[$childPath] = (Get-CombinedOpenScadFile -ScadFilePath $childPath -childCount ($childCount+1) -Child)
-                
+
                 # Write-CustomHost "Cleaning child script '$($Matches[2])'" -padCount $childCount
-                 
+
                 #clean child files as needed
                 #by pulling all files in to one, we are essentually treating use like an Include. This can and will break things.
                 #$lines = @()
@@ -89,7 +89,7 @@ function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child, [int]$c
         }
     }
     Write-CustomHost "processing end $($ScadFilePath) linesFound:$($fileLines.Count) isChild:$($Child)" -ForegroundColor Yellow  -padCount $childCount
-  
+
     #If its a child file, return the lines up the chain
     if($Child){
         return $fileLines
@@ -103,7 +103,7 @@ function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child, [int]$c
     $linkedFileKeys | ForEach-Object {
         $key  = $_
         Write-CustomHost "Cleaning LinkedFile '$($key)'" -padCount $childCount
-         
+
         $lines = @()
         $script:LinkedFiles[$key] | ForEach-Object{
             #Manually add a comment to user file so we know what like to remove to prevent the execution
@@ -127,7 +127,7 @@ function Get-CombinedOpenScadFile([string]$ScadFilePath, [switch]$Child, [int]$c
 
     $injected = $false
     $fileLines | ForEach-Object {
-        
+
         if($_ -match '^module\s?.*?\(\)\s?\{\}\s?$' -and $injected -eq $false)
         {
             $injected = $true
@@ -165,7 +165,7 @@ function Test-StringInFile([string]$FilePath, [string]$SearchString) {
     if (-not (Test-Path $FilePath)) {
         return $false
     }
-    
+
     try {
         Get-Content $FilePath -Encoding UTF8 | ForEach-Object {
             if ($_.Contains($SearchString)) {
@@ -182,7 +182,7 @@ function Test-StringInFile([string]$FilePath, [string]$SearchString) {
 function Save-CombinedOpenScadFile([string]$ScadFilePath, [string]$OutputFolder){
     $script:LinkedFiles = [ordered]@{}
 
-    $ScadFile = Get-Item -LiteralPath $ScadFilePath 
+    $ScadFile = Get-Item -LiteralPath $ScadFilePath
     Write-host "Creating combined file for $($ScadFile.Name)" -ForegroundColor Green
     $combinedLines = (Get-CombinedOpenScadFile -ScadFilePath $ScadFilePath)
     $combinedLines = $combinedLines | Where-Object {$_ -ne $null} | ForEach-Object { $_.ToString() }
@@ -192,7 +192,7 @@ function Save-CombinedOpenScadFile([string]$ScadFilePath, [string]$OutputFolder)
     write-host "combinedHash: $combinedHash"
     if(Test-StringInFile -FilePath $output_path -SearchString $combinedHash) {
         Write-Host "Skipping $($ScadFile.Name), no changes detected." -ForegroundColor Yellow
-        return
+        return $false
     }
 
     [string[]]$resultLines = @()
@@ -203,10 +203,11 @@ function Save-CombinedOpenScadFile([string]$ScadFilePath, [string]$OutputFolder)
     $resultLines += $combinedLines
 
     Write-host "found lines $($resultLines.count)"
-    
+
     #$MyRawString = Get-Content -Raw $MyPath
     $Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding($False)
     [System.IO.File]::WriteAllLines($output_path, $resultLines, $Utf8NoBomEncoding)
+    return $true
 }
 
 function Remove-OrphanedFiles {
@@ -238,6 +239,20 @@ Clear-Host
 Remove-OrphanedFiles -Source $script:SourceFolder -Target $OutputFolder
 
 #remove old combined files
+$fileResult = @()
+
 Get-ChildItem $script:SourceFolder -Filter '*.scad' | ForEach-Object {
-    Save-CombinedOpenScadFile -ScadFilePath $_.FullName -OutputFolder $OutputFolder
+    $result = Save-CombinedOpenScadFile -ScadFilePath $_.FullName -OutputFolder $OutputFolder
+    $fileResult += [PSCustomObject]@{
+        FileName = $_.BaseName
+        Updated = $result
+    }
+}
+Write-Host "`r`nProcess files and outcome:"
+$fileResult | ForEach-Object {
+    if ($_.Updated) {
+        Write-Host "$($_.FileName) updated='$($_.Updated)'" -ForegroundColor Green
+    } else {
+        Write-Host "$($_.FileName) unchanged" -ForegroundColor Yellow
+    }
 }
