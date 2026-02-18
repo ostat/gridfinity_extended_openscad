@@ -35,7 +35,8 @@ sliding_lid_cutout_size = [-2,-2]; //0.1
 sliding_lid_cutout_radius = -4; //0.1
 sliding_lid_cutout_position = [0,0]; //0.1
 
-// Add text to the sliding lid tops
+/* [Sliding Text] */
+// Add text to the sliding lid top
 sliding_lid_text_enabled = false;
 // Text to display on the lid
 sliding_lid_text = "Gridfinity";
