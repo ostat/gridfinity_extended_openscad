@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-17 18:06
-//Content hash 5EBC151A266EE9A6D610B6553058479C46022913E1EA559838ABBAD7179EF525
+//Combined version of 'gridfinity_basic_cup.scad'. Generated 2026-02-18 01:16
+//Content hash 3884CBD02F5BCEE13D9D59E9CCFC196B7E91B004B56BF8CBB286C3EADF07B2D8
 ///////////////////////////////////////
 // Gridfinity extended basic cup
 // version 2024-02-17
@@ -79,7 +79,7 @@ enable_screws = false;
 //size of magnet, diameter and height. Zack's original used 6.5 and 2.4
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
-magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+magnet_easy_release = "auto";//["off","auto","inner","outer"]
 // Use with captive magnet for a 'refinded style' magnet
 magnet_side_access = false;
 // raise the magnet void inside the part for print-in-magnets
@@ -90,7 +90,7 @@ magnet_crush_depth = 0; //0.1
 magnet_chamfer = 0; //0.1
 //size of screw, diameter and height. Zack's original used 3 and 6
 screw_size = [3, 6]; // .1
-//size of center magnet, diameter and height. 
+//size of center magnet, diameter and height.
 center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
@@ -101,7 +101,7 @@ floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth]
-// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets
 sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off"; // [off, gridfinity:gridfinity stackable, rounded]
@@ -123,7 +123,7 @@ align_grid_y = "near";//[near, far]
 label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
-// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4.
 // Enable labels on internal divider walls
 label_dividers = "disabled"; //[disabled, horizontal, vertical, both]
 
@@ -176,7 +176,7 @@ wallpattern_rotate_grid=false;
 //Size of the hole
 wallpattern_cell_size = [10,10]; //0.1
 // Add the pattern to the dividers
-wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
+wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both]
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
 //Radius of corners
@@ -189,7 +189,7 @@ wallpattern_border = 0;
 wallpattern_depth = 0; // 0.1
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
-//voronoi pattern noise, 
+//voronoi pattern noise,
 wallpattern_pattern_voronoi_noise = 0.75; //0.01
 //brick pattern center weight
 wallpattern_pattern_brick_weight = 5;
@@ -221,7 +221,7 @@ floorpattern_border = 0;
 floorpattern_depth = 0; // 0.1
 //grid pattern hole taper
 floorpattern_pattern_grid_chamfer = 0; //0.1
-//voronoi pattern noise, 
+//voronoi pattern noise,
 floorpattern_pattern_voronoi_noise = 0.75; //0.01
 //brick pattern center weight
 floorpattern_pattern_brick_weight = 5;
@@ -250,9 +250,9 @@ wallcutout_horizontal_corner_radius=5;
 
 /* [Extendable] */
 extension_x_enabled = "disabled"; //[disabled, front, back]
-extension_x_position = 0.5; 
+extension_x_position = 0.5;
 extension_y_enabled = "disabled"; //[disabled, front, back]
-extension_y_position = 0.5; 
+extension_y_position = 0.5;
 extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 extension_tab_size= [10,0,0,0];
@@ -289,13 +289,13 @@ clearance = [0.5, 0.5, 0];
 set_colour = "enable"; //[disabled, enable, preview, lip]
 // Where to render the model
 render_position = "center"; //[default,center,zero]
-// Minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-fa = 6; 
+// Minimum angle for a fragment (fragments = 360/fa).  Low is more fragments
+fa = 6;
 // minimum size of a fragment.  Low is more fragments
-fs = 0.4; 
+fs = 0.4;
 // number of fragments, overrides $fa and $fs
-fn = 0;  
-// set random seed for 
+fn = 0;
+// set random seed for
 random_seed = 0; //0.0001
 // force render on costly components
 force_render = true;
@@ -10640,14 +10640,14 @@ gridfinity_cup(
     lip_aligned = fingerslide_lip_aligned),
   cupBase_settings = CupBaseSettings(
     magnetSize = enable_magnets?magnet_size:[0,0],
-    magnetEasyRelease = magnet_easy_release, 
+    magnetEasyRelease = magnet_easy_release,
     magnetSideAccess = magnet_side_access,
     magnetCaptiveHeight = magnet_captive_height,
     magnetCrushDepth = magnet_crush_depth,
     magnetChamfer = magnet_chamfer,
-    centerMagnetSize = center_magnet_size, 
+    centerMagnetSize = center_magnet_size,
     screwSize = enable_screws?screw_size:[0,0],
-    holeOverhangRemedy = hole_overhang_remedy, 
+    holeOverhangRemedy = hole_overhang_remedy,
     cornerAttachmentsOnly = box_corner_attachments_only,
     floorThickness = floor_thickness,
     cavityFloorRadius = cavity_floor_radius,
@@ -10684,10 +10684,10 @@ gridfinity_cup(
     irregular_subdivisions = horizontal_irregular_subdivisions,
     separator_config = horizontal_separator_config),
   lip_settings = LipSettings(
-    lipStyle=lip_style, 
-    lipSideReliefTrigger=lip_side_relief_trigger, 
-    lipTopReliefHeight=lip_top_relief_height, 
-    lipTopReliefWidth=lip_top_relief_width, 
+    lipStyle=lip_style,
+    lipSideReliefTrigger=lip_side_relief_trigger,
+    lipTopReliefHeight=lip_top_relief_height,
+    lipTopReliefWidth=lip_top_relief_width,
     lipNotch=lip_top_notches,
     lipClipPosition=lip_clip_position,
     lipNonBlocking=lip_non_blocking),
@@ -10695,64 +10695,64 @@ gridfinity_cup(
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
-  wallpattern_walls=wallpattern_walls, 
+  wallpattern_walls=wallpattern_walls,
   wallpattern_dividers_enabled=wallpattern_dividers_enabled,
   wall_pattern_settings = PatternSettings(
-    patternEnabled = wallpattern_enabled, 
-    patternStyle = wallpattern_style, 
+    patternEnabled = wallpattern_enabled,
+    patternStyle = wallpattern_style,
     patternRotate = wallpattern_rotate_grid,
     patternFill = wallpattern_fill,
-    patternBorder = wallpattern_border, 
+    patternBorder = wallpattern_border,
     patternDepth = wallpattern_depth,
-    patternCellSize = wallpattern_cell_size, 
+    patternCellSize = wallpattern_cell_size,
     patternHoleSides = wallpattern_hole_sides,
-    patternStrength = wallpattern_strength, 
+    patternStrength = wallpattern_strength,
     patternHoleRadius = wallpattern_hole_radius,
     patternGridChamfer = wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
     patternBrickWeight = wallpattern_pattern_brick_weight,
     patternFs = wallpattern_pattern_quality,
-    patternColored = wallpattern_colored), 
+    patternColored = wallpattern_colored),
   floor_pattern_settings = PatternSettings(
-    patternEnabled = floorpattern_enabled, 
-    patternStyle = floorpattern_style, 
+    patternEnabled = floorpattern_enabled,
+    patternStyle = floorpattern_style,
     patternRotate = floorpattern_rotate_grid,
     patternFill = floorpattern_fill,
-    patternBorder = floorpattern_border, 
+    patternBorder = floorpattern_border,
     patternDepth = floorpattern_depth,
-    patternCellSize = floorpattern_cell_size, 
+    patternCellSize = floorpattern_cell_size,
     patternHoleSides = floorpattern_hole_sides,
-    patternStrength = floorpattern_strength, 
+    patternStrength = floorpattern_strength,
     patternHoleRadius = floorpattern_hole_radius,
     patternGridChamfer = floorpattern_pattern_grid_chamfer,
     patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
     patternBrickWeight = floorpattern_pattern_brick_weight,
-    patternFs = floorpattern_pattern_quality), 
+    patternFs = floorpattern_pattern_quality),
   wallcutout_vertical_settings = WallCutoutSettings(
-    type = wallcutout_vertical, 
-    position = wallcutout_vertical_position, 
+    type = wallcutout_vertical,
+    position = wallcutout_vertical_position,
     width = wallcutout_vertical_width,
     angle = wallcutout_vertical_angle,
-    height = wallcutout_vertical_height, 
+    height = wallcutout_vertical_height,
     corner_radius = wallcutout_vertical_corner_radius),
   wallcutout_horizontal_settings = WallCutoutSettings(
-    type = wallcutout_horizontal, 
-    position = wallcutout_horizontal_position, 
+    type = wallcutout_horizontal,
+    position = wallcutout_horizontal_position,
     width = wallcutout_horizontal_width,
     angle = wallcutout_horizontal_angle,
-    height = wallcutout_horizontal_height, 
+    height = wallcutout_horizontal_height,
     corner_radius = wallcutout_horizontal_corner_radius),
   extendable_Settings = ExtendableSettings(
-    extendablexEnabled = extension_x_enabled, 
-    extendablexPosition = extension_x_position, 
-    extendableyEnabled = extension_y_enabled, 
-    extendableyPosition = extension_y_position, 
-    extendableTabsEnabled = extension_tabs_enabled, 
+    extendablexEnabled = extension_x_enabled,
+    extendablexPosition = extension_x_position,
+    extendableyEnabled = extension_y_enabled,
+    extendableyPosition = extension_y_position,
+    extendableTabsEnabled = extension_tabs_enabled,
     extendableTabSize = extension_tab_size),
   sliding_lid_settings = SlidingLidSettings(
-    enabled = sliding_lid_enabled, 
-    thickness = sliding_lid_thickness, 
-    min_wall_thickness = sliding_lid_min_wall_thickness, 
+    enabled = sliding_lid_enabled,
+    thickness = sliding_lid_thickness,
+    min_wall_thickness = sliding_lid_min_wall_thickness,
     min_support = sliding_lid_min_support,
     clearance = sliding_lid_clearance,
     pull_style = sliding_lid_pull_style,
