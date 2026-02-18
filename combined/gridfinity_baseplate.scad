@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate.scad'. Generated 2026-02-16 23:25
-//Content hash C7D9E4952E9DA4AE4E774BB2DB5993AE1C2AB90627F41E4B911D1B8A2433A87C
+//Combined version of 'gridfinity_baseplate.scad'. Generated 2026-02-18 01:16
+//Content hash 264FE7D2F1F101C9730BEF491C15DEA4B424F2E6DF3B7403907E2BEA497957AB
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -23,7 +23,7 @@ position_grid_in_outer_x = "center";//[near, center, far]
 position_grid_in_outer_y = "center";//[near, center, far]
 //Reduce the frame wall size to this value
 Reduced_Wall_Height = -1; //0.1
-Reduced_Wall_Taper = false; 
+Reduced_Wall_Taper = false;
 plate_corner_radius = 3.75; //0.01
 //Corner radius for the inner corners (Works well with build_plate_enabled)
 secondary_corner_radius = 3.75; //0.01
@@ -32,13 +32,13 @@ secondary_corner_radius = 3.75; //0.01
 build_plate_enabled = "disabled";//[disabled, enabled, unique]
 //spread out the plates, use if last row is small.
 average_plate_sizes = false;
-//Will split the plate in to the 
+//Will split the plate in to the
 build_plate_size = [200,250];
 
 /* [Base Plate Options] */
 // Enable magnets in the bin corner
 Enable_Magnets = false;
-//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+//size of magnet, diameter and height. Zacks original used 6.5 and 2.4
 Magnet_Size = [6.5, 2.4];  // .1
 //raises the magnet, and creates a floor (for gluing)
 Magnet_Z_Offset = 0;  // .1
@@ -64,18 +64,18 @@ Connector_Clip_Enabled = false;
 Connector_Clip_Size = 10;
 Connector_Clip_Tolerance = 0.1;
 
-//This feature is not yet finalised, or working properly. 
+//This feature is not yet finalised, or working properly.
 Connector_Butterfly_Enabled = false;
 Connector_Butterfly_Size = [5,4,1.5];
 Connector_Butterfly_Radius = 0.1;
 Connector_Butterfly_Tolerance = 0.1;
 
-//This feature is not yet finalised, or working properly. 
+//This feature is not yet finalised, or working properly.
 Connector_Filament_Enabled = false;
 Connector_Filament_Diameter = 2;
 Connector_Filament_Length = 8;
 
-//This feature is not yet finalised, or working properly. 
+//This feature is not yet finalised, or working properly.
 Connector_Snaps_Enabled = "disabled"; //["disabled","larger","smaller"]
 Connector_Snaps_Clearance = 0.2;
 
@@ -100,12 +100,12 @@ xpos7 = [0,0,0,0,0,0,0];
 /* [Model detail] */
 //Work in progress,  Modify the default grid size. Will break compatibility
 pitch = [42,42,7];  //[0:1:9999]
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-fa = 6; 
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments
+fa = 6;
 // minimum size of a fragment.  Low is more fragments
-fs = 0.1; 
+fs = 0.1;
 // number of fragments, overrides $fa and $fs
-fn = 0;  
+fn = 0;
 
 /* [debug] */
 Render_Position = "center"; //[default,center,zero]
@@ -6096,11 +6096,11 @@ module cnclaser_baseplate_internal(
 //CombinedEnd from path module_gridfinity_baseplate_cnclaser.scad
 
 //Some online generators do not like direct setting of fa,fs,fn
-$fa = fa; 
-$fs = fs; 
-$fn = fn;   
+$fa = fa;
+$fs = fs;
+$fn = fn;
 
-function round_half_down(number, max_allowed) = 
+function round_half_down(number, max_allowed) =
 let (up = ceil(number), down = floor(number),
     result = (number - down <= 0.5 || up > max_allowed) ? down : up)
   echo("round_half_down", number=number, up=up, down=down, max_allowed=max_allowed, result=result, lessthan=number - down <= 0.5, upgreater=up > max_allowed)
@@ -6124,13 +6124,13 @@ function split_dimension(
     totalOuterSize = gf_outer_size > gf_size ? gf_outer_size : gf_size,
     outerPadding = max(0, totalOuterSize - gf_size),
 
-    // Calculate offsets based on position, 
+    // Calculate offsets based on position,
     //only used on first plate
     outerPrefix =
-      position_grid_in_outer == "far" ? outerPadding : 
+      position_grid_in_outer == "far" ? outerPadding :
       position_grid_in_outer == "center" ? outerPadding/2 : 0,
     gridPrefix=
-      position_fill_grid == "near" ? gf_size - floor(gf_size) : 
+      position_fill_grid == "near" ? gf_size - floor(gf_size) :
       position_fill_grid == "center" ? (gf_size - floor(gf_size))/2 : 0,
 
     // Calculate the number of plates and average sizes
@@ -6141,11 +6141,11 @@ function split_dimension(
 
     // Calculate the size and outer size for the this plate
     current_grid_size = totalOuterSize <= plate_size
-      ? gf_size 
+      ? gf_size
       : gridPrefix + max(0, round_half_down(min(gf_size, avgOuter-outerPrefix-gridPrefix), max_allowed =plate_size-outerPrefix-gridPrefix)),
     current_outer_size = totalOuterSize <= plate_size
-      ? totalOuterSize 
-      : current_grid_size + outerPrefix, 
+      ? totalOuterSize
+      : current_grid_size + outerPrefix,
 
     // Calculate the remaining size and outer size
     remSize = max(0, gf_size - current_grid_size),
@@ -6180,32 +6180,32 @@ function split_plate(num_x, num_y,
     [for(iy=[0:len(list)-1]) [for(ix=[0:len(list[iy])-1]) let(plate = list[iy][ix]) [plate[0], plate[1], check_plate_duplicate_y(plate, list)]]];
 
 
-function check_plate_duplicate_y(plate, plate_list, y = 0, end) = 
+function check_plate_duplicate_y(plate, plate_list, y = 0, end) =
   assert(is_list(plate), "plate must be a list")
   assert(is_list(plate_list), "plate_list must be a list")
   assert(is_num(y), "y must be a number")
   let(end = is_undef(end) ? len(plate_list) : end)
-    y > len(plate_list) - 1 || y > end ? false 
-    : check_plate_duplicate_x(plate, plate_list[y]) 
+    y > len(plate_list) - 1 || y > end ? false
+    : check_plate_duplicate_x(plate, plate_list[y])
     || check_plate_duplicate_y(plate, plate_list, y = y+1);
-    
-function check_plate_duplicate_x(plate, plate_list_y, x = 0, end) = 
+
+function check_plate_duplicate_x(plate, plate_list_y, x = 0, end) =
   assert(is_list(plate), "plate must be a list")
   assert(is_list(plate_list_y), "plate_list_y must be a list")
   assert(is_num(x), "x must be a number")
   //echo("check_plate_duplicate_x", plate=plate)
   let(end = is_undef(end) ? len(plate_list_y) : end)
-  x > len(plate_list_y) - 1 || x > end ? false 
+  x > len(plate_list_y) - 1 || x > end ? false
   : let(comparePlate = plate_list_y[x],
-    isDupe = (comparePlate[0][0] < plate[0][0] || 
-      (comparePlate[0][0] == plate[0][0] && comparePlate[0][1] < plate[0][1])) && 
-      plate[1][0][iPlate_size] == comparePlate[1][0][iPlate_size] && 
-      (plate[1][0][iPlate_size] == floor(plate[1][0][iPlate_size]) || plate[1][0][iPlate_posGrid] == comparePlate[1][0][iPlate_posGrid]) && 
-      plate[1][0][iPlate_outerSize] == comparePlate[1][0][iPlate_outerSize] && 
+    isDupe = (comparePlate[0][0] < plate[0][0] ||
+      (comparePlate[0][0] == plate[0][0] && comparePlate[0][1] < plate[0][1])) &&
+      plate[1][0][iPlate_size] == comparePlate[1][0][iPlate_size] &&
+      (plate[1][0][iPlate_size] == floor(plate[1][0][iPlate_size]) || plate[1][0][iPlate_posGrid] == comparePlate[1][0][iPlate_posGrid]) &&
+      plate[1][0][iPlate_outerSize] == comparePlate[1][0][iPlate_outerSize] &&
       (plate[1][0][iPlate_outerSize] == 0 || plate[1][0][iPlate_posOuter] == comparePlate[1][0][iPlate_posOuter]) &&
-      plate[1][1][iPlate_size] == comparePlate[1][1][iPlate_size] && 
-      (plate[1][1][iPlate_size] == floor(plate[1][1][iPlate_size]) || plate[1][1][iPlate_posGrid] == comparePlate[1][1][iPlate_posGrid]) && 
-      plate[1][1][iPlate_outerSize] == comparePlate[1][1][iPlate_outerSize] && 
+      plate[1][1][iPlate_size] == comparePlate[1][1][iPlate_size] &&
+      (plate[1][1][iPlate_size] == floor(plate[1][1][iPlate_size]) || plate[1][1][iPlate_posGrid] == comparePlate[1][1][iPlate_posGrid]) &&
+      plate[1][1][iPlate_outerSize] == comparePlate[1][1][iPlate_outerSize] &&
       (plate[1][1][iPlate_outerSize] == 0 || plate[1][1][iPlate_posOuter] == comparePlate[1][1][iPlate_posOuter]))
     isDupe || check_plate_duplicate_x(plate, plate_list_y, x = x+1, end);
 
@@ -6213,28 +6213,28 @@ iPlate_size = 0;
 iPlate_posGrid = 1;
 iPlate_outerSize = 2;
 iPlate_posOuter = 3;
-    
+
 if(Connector_Only)
 {
   if(Connector_Clip_Enabled) {
     ClipConnector(
-      size=Connector_Clip_Size, 
+      size=Connector_Clip_Size,
       clearance = Connector_Clip_Tolerance,
       fullIntersection = true);
 
     translate([0,15,0])
     ClipConnector(
-      size=Connector_Clip_Size, 
+      size=Connector_Clip_Size,
       straightIntersection = true,
       clearance = Connector_Clip_Tolerance);
-    
+
     translate([0,30,0])
     ClipConnector(
-      size=Connector_Clip_Size, 
+      size=Connector_Clip_Size,
       straightWall = true,
       clearance = Connector_Clip_Tolerance);
   }
-  
+
   if(Connector_Butterfly_Enabled)
   translate([20,0,0])
   ButterFlyConnector(
@@ -6244,18 +6244,18 @@ if(Connector_Only)
       Connector_Butterfly_Size.z-Connector_Butterfly_Tolerance],
     r=Connector_Butterfly_Radius);
 }
-else 
+else
 {
   plate_list = let(
-      num_x=calcDimensionWidth(Width), 
+      num_x=calcDimensionWidth(Width),
       num_y=calcDimensionDepth(Depth),
       outer_num_x = calcDimensionWidth(outer_Width),
       outer_num_y = calcDimensionWidth(outer_Depth))
-    (build_plate_enabled == "disabled" || build_plate_size.x <= 0 || build_plate_size.y <= 0) 
-    ? [[[[0,0], [[num_x, position_fill_grid_x, outer_num_x, position_grid_in_outer_x], 
+    (build_plate_enabled == "disabled" || build_plate_size.x <= 0 || build_plate_size.y <= 0)
+    ? [[[[0,0], [[num_x, position_fill_grid_x, outer_num_x, position_grid_in_outer_x],
        [num_y, position_fill_grid_y, outer_num_y, position_grid_in_outer_y]], false]]]
     :split_plate(
-      num_x=num_x, 
+      num_x=num_x,
       num_y=num_y,
       outer_num_x = outer_num_x,
       outer_num_y = outer_num_y,
@@ -6265,7 +6265,7 @@ else
       position_grid_in_outer_y = position_grid_in_outer_y,
       build_plate_size= build_plate_size,
       average_plate_sizes=average_plate_sizes);
-    
+
   for(iy=[0:len(plate_list)-1])
   let(listy = plate_list[iy])
   for(ix=[0:len(listy)-1]) {
@@ -6298,7 +6298,7 @@ else
       plate_corner_radius = plate_corner_radius,
       secondary_corner_radius = secondary_corner_radius,
       corner_roles = let(
-          nx=len(listy), 
+          nx=len(listy),
           ny=len(plate_list)
         ) [
           (ix==0 && iy==0) ? 1 : 0,       // BL (0,0) -> 0
@@ -6310,8 +6310,8 @@ else
       magnetZOffset = Magnet_Z_Offset,
       magnetTopCover=Magnet_Top_Cover,
       magnetReleaseMethod = Magnet_Release_Method,
-      reducedWallHeight = Reduced_Wall_Height, 
-      reduceWallTaper = Reduced_Wall_Taper, 
+      reducedWallHeight = Reduced_Wall_Height,
+      reduceWallTaper = Reduced_Wall_Taper,
       cornerScrewEnabled  = Corner_Screw_Enabled,
       centerScrewEnabled = Center_Screw_Enabled,
       weightedEnable = Enable_Weight,
@@ -6321,11 +6321,11 @@ else
       gridPositions=[xpos1,xpos2,xpos3,xpos4,xpos5,xpos6,xpos7],
       remove_bottom_taper=Remove_Bottom_Taper,
       frameConnectorSettings = FrameConnectorSettings(
-        connectorOnly = Connector_Only, 
-        connectorPosition = Connector_Position, 
+        connectorOnly = Connector_Only,
+        connectorPosition = Connector_Position,
         connectorClipEnabled = Connector_Clip_Enabled,
         connectorClipSize = Connector_Clip_Size,
-        connectorClipTolerance = Connector_Clip_Tolerance, 
+        connectorClipTolerance = Connector_Clip_Tolerance,
         connectorButterflyEnabled = Connector_Butterfly_Enabled,
         connectorButterflySize = Connector_Butterfly_Size,
         connectorButterflyRadius = Connector_Butterfly_Radius,

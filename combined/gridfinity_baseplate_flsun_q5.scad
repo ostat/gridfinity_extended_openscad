@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate_flsun_q5.scad'. Generated 2026-02-16 23:25
-//Content hash 1C960F3915CDA4C8417E2F77C35300D35BC7AE666AAAF5C4153B3E3D5C1EEF0F
+//Combined version of 'gridfinity_baseplate_flsun_q5.scad'. Generated 2026-02-18 01:23
+//Content hash 45030968C2C6025E7796FBBAB04713C97ED74B8ADF205E7F31D2F3A86BF4A999
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -5560,17 +5560,17 @@ from_ends = (ear_hole_x - gf_pitch*4) / 2;
 
 union(){
   frame_plain(4, 1, height = cube_z);
-    
+
   for (i = [0,1]) {
     x = i * ear_hole_x - from_ends-wallThickness;
     difference() {
       hull() {
-        translate([x, ear_hole_y, 0]) 
+        translate([x, ear_hole_y, 0])
           cylinder(h=cube_z, d=M4_d*2, $fn=20);
-        translate([x - from_ends * i, ear_hole_y - M4_d, 0]) 
+        translate([x - from_ends * i, ear_hole_y - M4_d, 0])
           cube([from_ends+wallThickness, M4_d*2, cube_z]);
       }
-        translate([x, ear_hole_y, -0.01]) 
+        translate([x, ear_hole_y, -0.01])
           cylinder(h=cube_z + 0.02, d=M4_d, $fn=20);
     }
   }

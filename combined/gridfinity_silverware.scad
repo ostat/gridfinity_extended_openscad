@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-17 18:06
-//Content hash 9C044B403558544047098C0AD1A1EC94FADFF7FEAB34AB345C81E5E5E8BAE1E6
+//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-18 01:23
+//Content hash 11696414687AC5FD767803A5291457E0DBB422EB4CE03300E4261B747D0E5F64
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -67,10 +67,10 @@ enable_screws = false;
 //size of magnet, diameter and height. Zack's original used 6.5 and 2.4
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
-magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+magnet_easy_release = "auto";//["off","auto","inner","outer"]
 //size of screw, diameter and height. Zack's original used 3 and 6
 screw_size = [3, 6]; // .1
-//size of center magnet, diameter and height. 
+//size of center magnet, diameter and height.
 center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
@@ -81,7 +81,7 @@ floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
 efficient_floor = "off";//[off,on,rounded,smooth]
-// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets
 sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off"; // [off, gridfinity:gridfinity stackable, rounded]
@@ -98,7 +98,7 @@ flat_base_rounded_easyPrint = -1;
 label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
-// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
+// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4.
 label_size = [0,14,0,0.6]; // 0.01
 // Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
@@ -135,7 +135,7 @@ wallpattern_rotate_grid=false;
 //Size of the hole
 wallpattern_cell_size = [10,10]; //0.1
 // Add the pattern to the dividers
-wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
+wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both]
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
 //Radius of corners
@@ -148,7 +148,7 @@ wallpattern_border = 0;
 wallpattern_depth = 0; // 0.1
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
-//voronoi pattern noise, 
+//voronoi pattern noise,
 wallpattern_pattern_voronoi_noise = 0.75; //0.01
 //brick pattern center weight
 wallpattern_pattern_brick_weight = 5;
@@ -180,7 +180,7 @@ floorpattern_border = 0;
 floorpattern_depth = 0; // 0.1
 //grid pattern hole taper
 floorpattern_pattern_grid_chamfer = 0; //0.1
-//voronoi pattern noise, 
+//voronoi pattern noise,
 floorpattern_pattern_voronoi_noise = 0.75; //0.01
 //brick pattern center weight
 floorpattern_pattern_brick_weight = 5;
@@ -200,9 +200,9 @@ wallcutout_horizontal_corner_radius=5;
 
 /* [Extendable] */
 extension_x_enabled = "disabled"; //[disabled, front, back]
-extension_x_position = 0.5; 
+extension_x_position = 0.5;
 extension_y_enabled = "disabled"; //[disabled, front, back]
-extension_y_position = 0.5; 
+extension_y_position = 0.5;
 extension_tabs_enabled = true;
 //Tab size, height, width, thickness, style. width default is height, thickness default is 1.4, style {0,1,2}.
 extension_tab_size= [10,0,0,0];
@@ -234,13 +234,13 @@ pitch = [42,42,7];  //[0:1:9999]
 set_colour = "enable"; //[disabled, enable, preview, lip]
 //where to render the model
 render_position = "center"; //[default,center,zero]
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-fa = 6; 
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments
+fa = 6;
 // minimum size of a fragment.  Low is more fragments
-fs = 0.4; 
+fs = 0.4;
 // number of fragments, overrides $fa and $fs
-fn = 0;  
-// set random seed for 
+fn = 0;
+// set random seed for
 random_seed = 0; //0.0001
 // force render on costly components
 force_render = true;
@@ -10548,7 +10548,7 @@ Pivot(messpunkt=messpunkt,p0=translate,active=[1,1,1,1,norm(translate)]);
 
 }// end Caliper
 //CombinedEnd from path ub_caliper.scad
-silverware_wall_clearance = 5.7; 
+silverware_wall_clearance = 5.7;
 // Maximum utensil definitions
 silver_defs_all = [
   utensil_1,
@@ -10566,27 +10566,27 @@ silver_defs_all = [
   utensil_13,
   utensil_14
 ];
- 
-function get_utensil_def(index, defs_list) = 
+
+function get_utensil_def(index, defs_list) =
   let(
     matchResults = search(index, defs_list, num_returns_per_match=1, index_col_num=3),
     matchIndex = is_list(matchResults) && len(matchResults)==1 && is_num(matchResults[0]) ? matchResults[0]: undef,
     matchValue = is_num(matchIndex) ? silver_defs_all[matchIndex] : undef,
     utensil = is_undef(matchValue) ? [0,0,0] : [matchValue.x, max(matchValue.x, matchValue.y), matchValue.z]
     ) utensil;
-    
+
 // ##### Utility functions
 // tail of a list with at least 2 elements
 function cdr(list) = [ for (i=[1:len(list)-1]) list[i] ];
 // sum of a bunch of values (recursive functional style)
 function vecsum(vals) = len(vals) > 1 ? vals[0] + vecsum(cdr(vals)) : vals[0];
 // total width of a list of utensils
-function totwidth(defs, margin = utensil_margin) = vecsum(pitches(defs)) + 2*margin + 
+function totwidth(defs, margin = utensil_margin) = vecsum(pitches(defs)) + 2*margin +
   max(defs[0][0], defs[0][1])/2 + max(defs[len(defs)-1][0], defs[len(defs)-1][1])/2;
 // maximum length of list of utensils
 function maxlen(defs) = len(defs) > 1 ? max(defs[0][2], maxlen(cdr(defs))) : defs[0][2];
 // convert a list of utensils into a list of center-to-center distances
-function pitches(defs, thickness = chamber_wall_thickness[0], margin = utensil_margin) = [ for (i=[0:len(defs)-2]) thickness + 2*margin + 
+function pitches(defs, thickness = chamber_wall_thickness[0], margin = utensil_margin) = [ for (i=[0:len(defs)-2]) thickness + 2*margin +
   max( defs[i][1]/2 + defs[i+1][0]/2, defs[i][0]/2 + defs[i+1][1]/2) ];
 
 // ##### Derived variables and values
@@ -10601,33 +10601,33 @@ depth = ceil((maxlen(silver_defs)+2*utensil_margin + silverware_wall_clearance)/
 num_z = calcDimensionHeight(height);
 
 
-function sum_(list, c = 0, end) = 
+function sum_(list, c = 0, end) =
   let(end = is_undef(end) ? len(list) : end)
-  c < 0 || end < 0 ? 0 : 
+  c < 0 || end < 0 ? 0 :
   c < len(list) - 1 && c < end
-    ? list[c] + sum(list, c + 1, end=end) 
+    ? list[c] + sum(list, c + 1, end=end)
     : list[c];
 
 // convert a list of utensils into a list of center-to-center distances
-function pitches_(defs, thickness = chamber_wall_thickness[0], margin=utensil_margin) = 
-  [ for (i=[0:len(defs)-2]) 
-    thickness + 2*margin + max( defs[i][1]/2 + defs[i+1][0]/2, defs[i][0]/2 + defs[i+1][1]/2) 
+function pitches_(defs, thickness = chamber_wall_thickness[0], margin=utensil_margin) =
+  [ for (i=[0:len(defs)-2])
+    thickness + 2*margin + max( defs[i][1]/2 + defs[i+1][0]/2, defs[i][0]/2 + defs[i+1][1]/2)
   ];
 
-function calculate_dividers (cells, xtop=0, xbot=0, index=0, inverted=false, thickness=chamber_wall_thickness[0], margin=utensil_margin) = 
+function calculate_dividers (cells, xtop=0, xbot=0, index=0, inverted=false, thickness=chamber_wall_thickness[0], margin=utensil_margin) =
     let(cell = cells[index],
-      
+
       cell_top_w = thickness + margin * 2 + (inverted ? cell[1] : cell[0]),
       cell_bot_w = thickness + margin * 2 + (inverted ? cell[0] : cell[1]),
       cell_middle_pos = max(xtop+cell_top_w/2, xbot+cell_bot_w/2),
       wall_deviation = abs(cell_top_w - cell_bot_w)/2,
       wall_position = cell_middle_pos + max(cell_top_w, cell_bot_w)/2-wall_deviation/2,
-      
+
       next_xtop = cell_middle_pos + cell_top_w/2,
       next_xbot = cell_middle_pos + cell_bot_w/2,
       currentDivider = [wall_position, wall_deviation, vertical_separator_bend_angle * (inverted ? 1 : -1)])
       echo("calculate_dividers", index=str(index, " of ", lenCells=len(cells)), input=cell, cell_size_needed = [cell_top_w,cell_bot_w], cell_middle_pos=cell_middle_pos, wall_position=wall_position, currentDivider)
-      len(cells)-2<=index 
+      len(cells)-2<=index
         ? [currentDivider]
          : concat([currentDivider], calculate_dividers(cells, xtop=next_xtop, xbot=next_xbot, index=index+1, !inverted, thickness=thickness, margin=margin));
 
@@ -10650,8 +10650,8 @@ module silverware_pockets(defs, md=magnet_size[1], sd=screw_size[1]) {
     width=width, depth=depth, height=height,
     filled_in=filled_in,
     label_settings=LabelSettings(
-      labelStyle=label_style, 
-      labelPosition=label_position, 
+      labelStyle=label_style,
+      labelPosition=label_position,
       labelSize=label_size,
       labelRelief=label_relief,
       labelWalls=label_walls),
@@ -10662,10 +10662,10 @@ module silverware_pockets(defs, md=magnet_size[1], sd=screw_size[1]) {
       lip_aligned = fingerslide_lip_aligned),
     cupBase_settings = CupBaseSettings(
       magnetSize = enable_magnets?magnet_size:[0,0],
-      magnetEasyRelease = magnet_easy_release, 
-      centerMagnetSize = center_magnet_size, 
+      magnetEasyRelease = magnet_easy_release,
+      centerMagnetSize = center_magnet_size,
       screwSize = enable_screws?screw_size:[0,0],
-      holeOverhangRemedy = hole_overhang_remedy, 
+      holeOverhangRemedy = hole_overhang_remedy,
       cornerAttachmentsOnly = box_corner_attachments_only,
       floorThickness = floor_thickness,
       cavityFloorRadius = cavity_floor_radius,
@@ -10688,61 +10688,61 @@ module silverware_pockets(defs, md=magnet_size[1], sd=screw_size[1]) {
       separator_config = dividers),
     horizontal_chambers = ChamberSettings(),
     lip_settings = LipSettings(
-      lipStyle=lip_style, 
-      lipSideReliefTrigger=lip_side_relief_trigger, 
-      lipTopReliefHeight=lip_top_relief_height, 
+      lipStyle=lip_style,
+      lipSideReliefTrigger=lip_side_relief_trigger,
+      lipTopReliefHeight=lip_top_relief_height,
       lipNotch=lip_top_notches),
     headroom=headroom,
     tapered_corner=tapered_corner,
     tapered_corner_size = tapered_corner_size,
     tapered_setback = tapered_setback,
-    wallpattern_walls=wallpattern_walls, 
+    wallpattern_walls=wallpattern_walls,
     wallpattern_dividers_enabled=wallpattern_dividers_enabled,
     wall_pattern_settings = PatternSettings(
-      patternEnabled = wallpattern_enabled, 
-      patternStyle = wallpattern_style, 
+      patternEnabled = wallpattern_enabled,
+      patternStyle = wallpattern_style,
       patternRotate = wallpattern_rotate_grid,
       patternFill = wallpattern_fill,
-      patternBorder = wallpattern_border, 
+      patternBorder = wallpattern_border,
       patternDepth = wallpattern_depth,
-      patternCellSize = wallpattern_cell_size, 
+      patternCellSize = wallpattern_cell_size,
       patternHoleSides = wallpattern_hole_sides,
-      patternStrength = wallpattern_strength, 
+      patternStrength = wallpattern_strength,
       patternHoleRadius = wallpattern_hole_radius,
       patternGridChamfer = wallpattern_pattern_grid_chamfer,
       patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
       patternBrickWeight = wallpattern_pattern_brick_weight,
       patternFs = wallpattern_pattern_quality,
-      patternColored = wallpattern_colored), 
+      patternColored = wallpattern_colored),
     floor_pattern_settings = PatternSettings(
-      patternEnabled = floorpattern_enabled, 
-      patternStyle = floorpattern_style, 
+      patternEnabled = floorpattern_enabled,
+      patternStyle = floorpattern_style,
       patternRotate = floorpattern_rotate_grid,
       patternFill = floorpattern_fill,
-      patternBorder = floorpattern_border, 
+      patternBorder = floorpattern_border,
       patternDepth = floorpattern_depth,
-      patternCellSize = floorpattern_cell_size, 
+      patternCellSize = floorpattern_cell_size,
       patternHoleSides = floorpattern_hole_sides,
-      patternStrength = floorpattern_strength, 
+      patternStrength = floorpattern_strength,
       patternHoleRadius = floorpattern_hole_radius,
       patternGridChamfer = floorpattern_pattern_grid_chamfer,
       patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
       patternBrickWeight = floorpattern_pattern_brick_weight,
-      patternFs = floorpattern_pattern_quality), 
+      patternFs = floorpattern_pattern_quality),
     wallcutout_vertical_settings = WallCutoutSettings(),
     wallcutout_horizontal_settings = WallCutoutSettings(
-      type = wallcutout_horizontal, 
-      position = wallcutout_horizontal_position, 
+      type = wallcutout_horizontal,
+      position = wallcutout_horizontal_position,
       width = wallcutout_horizontal_width,
       angle = wallcutout_horizontal_angle,
-      height = wallcutout_horizontal_height, 
+      height = wallcutout_horizontal_height,
       corner_radius = wallcutout_horizontal_corner_radius),
     extendable_Settings = ExtendableSettings(
-      extendablexEnabled = extension_x_enabled, 
-      extendablexPosition = extension_x_position, 
-      extendableyEnabled = extension_y_enabled, 
-      extendableyPosition = extension_y_position, 
-      extendableTabsEnabled = extension_tabs_enabled, 
+      extendablexEnabled = extension_x_enabled,
+      extendablexPosition = extension_x_position,
+      extendableyEnabled = extension_y_enabled,
+      extendableyPosition = extension_y_position,
+      extendableTabsEnabled = extension_tabs_enabled,
       extendableTabSize = extension_tab_size),
     cupBaseTextSettings = CupBaseTextSettings(
       baseTextLine1Enabled = text_1,

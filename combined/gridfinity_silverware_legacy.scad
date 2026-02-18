@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_silverware_legacy.scad'. Generated 2026-02-16 23:25
-//Content hash 99821A242947744A808C2F750FD5B6EFCD1A913A95226C84DB950A3B3E77B0CC
+//Combined version of 'gridfinity_silverware_legacy.scad'. Generated 2026-02-18 01:23
+//Content hash 4F720F6DFF26E7B6DE5ECC19FBF6BB1BAE322E68F20418782C8727715ED5D919
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -40,7 +40,7 @@ enable_screws = false;
 //size of magnet, diameter and height. Zack's original used 6.5 and 2.4
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
-magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+magnet_easy_release = "auto";//["off","auto","inner","outer"]
 //size of screw, diameter and height. Zack's original used 3 and 6
 screw_size = [3, 6]; // .1
 
@@ -5203,12 +5203,12 @@ function cdr(list) = [ for (i=[1:len(list)-1]) list[i] ];
 // sum of a bunch of values (recursive functional style)
 function vecsum(vals) = len(vals) > 1 ? vals[0] + vecsum(cdr(vals)) : vals[0];
 // total width of a list of utensils
-function totwidth(defs) = vecsum(pitches(defs)) + 2*margin + 
+function totwidth(defs) = vecsum(pitches(defs)) + 2*margin +
   max(defs[0][0], defs[0][1])/2 + max(defs[len(defs)-1][0], defs[len(defs)-1][1])/2;
 // maximum length of list of utensils
 function maxlen(defs) = len(defs) > 1 ? max(defs[0][2], maxlen(cdr(defs))) : defs[0][2];
 // convert a list of utensils into a list of center-to-center distances
-function pitches(defs) = [ for (i=[0:len(defs)-2]) separator_wall + 2*margin + 
+function pitches(defs) = [ for (i=[0:len(defs)-2]) separator_wall + 2*margin +
   max( defs[i][1]/2 + defs[i+1][0]/2, defs[i][0]/2 + defs[i+1][1]/2) ];
 
 // ##### Derived variables and values
@@ -5236,7 +5236,7 @@ silverware_pockets(silver_defs);
 module poly_pocket(topw, botw, oal, wall=separator_wall) {
   b2 = botw/2; t2 = topw/2; o2 = oal/2; qd = abs(topw-botw)/4;  // quarter of delta
   f = (topw > botw) ? (1-sqrt(2)/2)*wall/2 : -(1-sqrt(2)/2)*wall/2;
-  polygon([[-b2,-qd+f],[-b2,-o2],[b2,-o2],[b2,-qd+f],[t2,qd+f], 
+  polygon([[-b2,-qd+f],[-b2,-o2],[b2,-o2],[b2,-qd+f],[t2,qd+f],
     [t2,o2],[-t2,o2],[-t2,qd+f]]);
 }
 
@@ -5253,13 +5253,13 @@ module recur_stack_silver(xtop, xbot, silv, inverted) {
   s1 = silv[0];
   topw = 2*margin + (inverted ? s1[1] : s1[0]);
   botw = 2*margin + (inverted ? s1[0] : s1[1]);
-  
+
   topmid = xtop+topw/2;
   botmid = xbot+botw/2;
   mid = max(topmid, botmid);
-  
+
   translate([mid, 0]) poly_pocket(topw, botw, s1[2]+2*margin);
-  
+
   xtop2 = mid + topw/2 + separator_wall;
   xbot2 = mid + botw/2 + separator_wall;
   if (len(silv) > 1) {  // more pieces to stack, call recursively
@@ -5268,8 +5268,8 @@ module recur_stack_silver(xtop, xbot, silv, inverted) {
 }
 
 // top level generator
-module silverware_pockets(defs, 
-    magnet_size=magnet_size, 
+module silverware_pockets(defs,
+    magnet_size=magnet_size,
     screw_size=screw_size,
     magnet_easy_release=magnet_easy_release,
     enable_magnets = enable_magnets,
@@ -5279,17 +5279,17 @@ module silverware_pockets(defs,
   m3_ht = enable_screws ? enable_screws[iCylinderDimension_Height] : 0;
   part_ht = 5;  // height of bottom side groove between gridfinity units
   floorht = max(mag_ht, m3_ht, part_ht) + floor_thickness;
-  
+
   difference() {
     translate(gridfinityRenderPosition("center",width,depth))
-    grid_block(width, depth, height, 
+    grid_block(width, depth, height,
     cupBase_settings = CupBaseSettings(
       magnetSize = enable_magnets?magnet_size:[0,0],
       screwSize = enable_screws?screw_size:[0,0])
       );
-    
-    translate([0, 0, floorht]) 
-      linear_extrude(height=7*height) 
+
+    translate([0, 0, floorht])
+      linear_extrude(height=7*height)
       stack_silver(defs);
   }
 }
