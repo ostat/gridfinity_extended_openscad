@@ -35,13 +35,13 @@ jobs:
           Write-Host "============================"
 
       - name: Run OpenSCAD combine script
-        id: check_for_changes
         shell: pwsh
         run: |
           Write-Host "Running OpenSCAD combine script..."
           pwsh ./scripts/combined-openscad_script.ps1
 
       - name: Check for changes
+        id: check_for_changes
         shell: pwsh
         run: |
           if ((git status --porcelain).Length -eq 0) {

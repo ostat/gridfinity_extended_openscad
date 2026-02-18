@@ -192,7 +192,7 @@ function Save-CombinedOpenScadFile([string]$ScadFilePath, [string]$OutputFolder)
     write-host "combinedHash: $combinedHash"
     if(Test-StringInFile -FilePath $output_path -SearchString $combinedHash) {
         Write-Host "Skipping $($ScadFile.Name), no changes detected." -ForegroundColor Yellow
-        return
+        return $false
     }
 
     [string[]]$resultLines = @()
@@ -239,10 +239,20 @@ Clear-Host
 Remove-OrphanedFiles -Source $script:SourceFolder -Target $OutputFolder
 
 #remove old combined files
-[string[]]$fileResult = @()
+$fileResult = @()
+
 Get-ChildItem $script:SourceFolder -Filter '*.scad' | ForEach-Object {
     $result = Save-CombinedOpenScadFile -ScadFilePath $_.FullName -OutputFolder $OutputFolder
-    $fileResult +="$($_.BaseName) result='$($result)'"
+    $fileResult += [PSCustomObject]@{
+        FileName = $_.BaseName
+        Updated = $result
+    }
 }
-
-$fileResult | Write-Host
+Write-Host "`r`nProcess files and outcome:"
+$fileResult | ForEach-Object {
+    if ($_.Updated) {
+        Write-Host "$($_.FileName) updated='$($_.Updated)'" -ForegroundColor Green
+    } else {
+        Write-Host "$($_.FileName) unchanged" -ForegroundColor Yellow
+    }
+}
