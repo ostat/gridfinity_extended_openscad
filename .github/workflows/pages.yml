@@ -34,6 +34,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy out/ --project-name=gridfinity-extended
+
       - name: Check PR
         uses: 8BitJonny/gh-get-current-pr@4.0.0
         id: pr
