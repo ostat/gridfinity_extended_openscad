@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_vertical_divider.scad'. Generated 2026-02-17 18:06
-//Content hash 69FE6C2FEAA87462A4159D57042C729A1459254B8AC432F2B0FF6CFA090A06D7
+//Combined version of 'gridfinity_vertical_divider.scad'. Generated 2026-02-18 01:23
+//Content hash 68A567911071D6157A857B3EE76E84CAB6B4DF88ED40608324F1761FB653BA39
 ///////////////////////////////////////
 
 /* [Divider] */
@@ -28,7 +28,7 @@ wallpattern_rotate_grid=false;
 //Size of the hole
 wallpattern_cell_size = [10,10]; //0.1
 // Add the pattern to the dividers
-wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both] 
+wallpattern_dividers_enabled="disabled"; //[disabled, horizontal, vertical, both]
 //Number of sides of the hole op
 wallpattern_hole_sides = 6; //[4:square, 6:hex, 8:octo, 64:circle]
 //Radius of corners
@@ -41,7 +41,7 @@ wallpattern_border = 0;
 wallpattern_depth = 0; // 0.1
 //grid pattern hole taper
 wallpattern_pattern_grid_chamfer = 0; //0.1
-//voronoi pattern noise, 
+//voronoi pattern noise,
 wallpattern_pattern_voronoi_noise = 0.75; //0.01
 //brick pattern center weight
 wallpattern_pattern_brick_weight = 5;
@@ -56,7 +56,7 @@ depth = [2, 0]; //0.5
 // Z dimension excluding. grid units (multiples of 7mm) or mm.
 height = [1, 0]; //0.1
 // Fill in solid block (overrides all following options)
-filled_in = false; 
+filled_in = false;
 // Wall thickness of outer walls. default, height < 8 0.95, height < 16 1.2, height > 16 1.6 (Zack's design is 0.95 mm)
 wall_thickness = 0;  // .01
 position = "center"; //[default,center,zero]
@@ -72,13 +72,13 @@ lip_top_relief_height = -1; // 0.1
 lip_top_notches  = false;
 
 /* [Base] */
-//size of magnet, diameter and height. Zack's original used 6.5 and 2.4 
+//size of magnet, diameter and height. Zack's original used 6.5 and 2.4
 magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
-magnet_easy_release = "auto";//["off","auto","inner","outer"] 
+magnet_easy_release = "auto";//["off","auto","inner","outer"]
 //size of screw, diameter and height. Zack's original used 3 and 6
 screw_size = [3, 6]; // .1
-//size of center magnet, diameter and height. 
+//size of center magnet, diameter and height.
 center_magnet_size = [0,0];
 // Sequential Bridging hole overhang remedy is active only when both screws and magnets are nonzero (and this option is selected)
 hole_overhang_remedy = 2;
@@ -88,8 +88,8 @@ box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//[off,on,rounded,smooth] 
-// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets 
+efficient_floor = "off";//[off,on,rounded,smooth]
+// AKA half pitch. Enable to subdivide bottom pads to allow sub-cell offsets
 sub_pitch = 1; //[1:"disabled",2:"half pitch",3:"third pitch",4:"quarter pitch"]
 // Removes the internal grid from base the shape
 flat_base = "off";
@@ -103,17 +103,17 @@ cuty = 0; //0.1
 enable_help = "disabled"; //[info,debug,trace]
 
 /* [Model detail] */
-//assign colours to the bin, will may 
+//assign colours to the bin, will may
 set_colour = "enable"; //[disabled, enable, preview, lip]
 //where to render the model
 render_position = "center"; //[default,center,zero]
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-fa = 6; 
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments
+fa = 6;
 // minimum size of a fragment.  Low is more fragments
-fs = 0.1; 
+fs = 0.1;
 // number of fragments, overrides $fa and $fs
-fn = 0;  
-// set random seed for 
+fn = 0;
+// set random seed for
 random_seed = 0; //0.0001
 
 /* [Hidden] */
@@ -10421,9 +10421,9 @@ Pivot(messpunkt=messpunkt,p0=translate,active=[1,1,1,1,norm(translate)]);
 //CombinedEnd from path ub_caliper.scad
 
 //Some online generators do not like direct setting of fa,fs,fn
-$fa = fa; 
-$fs = fs; 
-$fn = fn;  
+$fa = fa;
+$fs = fs;
+$fn = fn;
 
 set_environment(
   width = width,
@@ -10445,19 +10445,19 @@ module Divider(
   backTopAngle=65
 ){
   _baseHeight = radius > baseHeight ? radius : baseHeight;
-  
+
   _backBottomHeight = max(_baseHeight,height-radius-abs(backTopInset*tan(backTopAngle)));
   _frontBottomHeight = max(_baseHeight,height-radius-abs(frontTopInset*tan(frontTopAngle)));
   if(env_help_enabled("debug")) echo("Gridfinity_Divider", height,radius, abs(backTopInset*tan(backTopAngle)),_backBottomHeight);
   if(env_help_enabled("debug")) echo("Gridfinity_Divider", _baseHeight=_baseHeight, height=height, _backBottomHeight=_backBottomHeight, _frontBottomHeight=_frontBottomHeight);
-  
+
   positions = [
     [radius,_frontBottomHeight],      //front bottom
     [radius+frontTopInset,height-radius],        //front top
     [length-radius-backTopInset,height-radius],  //back top
     [length-radius,_backBottomHeight] //back bottom
   ];
-  
+
   //
   hull(){
     square([length,_baseHeight]);
@@ -10494,7 +10494,7 @@ module PatternedDivider(
     frontTopAngle=frontTopAngle,
     backTopInset=backTopInset,
     backTopAngle=backTopAngle);
-  
+
   if(wallpatternEnabled){
   translate([0,0,-fudgeFactor])
   intersection(){
@@ -10509,7 +10509,7 @@ module PatternedDivider(
       frontTopAngle=frontTopAngle,
       backTopInset=backTopInset,
       backTopAngle=backTopAngle);
-    
+
       children();
       }
     }
@@ -10521,11 +10521,11 @@ module Gridfinity_Divider(
   position=position,
   filled_in=filled_in,
   cupBase_settings = CupBaseSettings(
-    magnetSize = magnet_size, 
-    magnetEasyRelease = magnet_easy_release, 
-    centerMagnetSize = center_magnet_size, 
-    screwSize = screw_size, 
-    holeOverhangRemedy = hole_overhang_remedy, 
+    magnetSize = magnet_size,
+    magnetEasyRelease = magnet_easy_release,
+    centerMagnetSize = center_magnet_size,
+    screwSize = screw_size,
+    holeOverhangRemedy = hole_overhang_remedy,
     cornerAttachmentsOnly = box_corner_attachments_only,
     floorThickness = floor_thickness,
     cavityFloorRadius = cavity_floor_radius,
@@ -10534,9 +10534,9 @@ module Gridfinity_Divider(
     flatBase=flat_base),
   wall_thickness=wall_thickness,
   lip_settings = LipSettings(
-    lipStyle=lip_style, 
-    lipSideReliefTrigger=lip_side_relief_trigger, 
-    lipTopReliefHeight=lip_top_relief_height, 
+    lipStyle=lip_style,
+    lipSideReliefTrigger=lip_side_relief_trigger,
+    lipTopReliefHeight=lip_top_relief_height,
     lipNotch=lip_top_notches),
   dividerCount=divider_count,
   dividerHeight=divider_height,
@@ -10549,15 +10549,15 @@ module Gridfinity_Divider(
   backTopAngle=divider_back_top_angle,
   wallpatternEnabled=wallpattern_enabled,
   pattern_settings = PatternSettings(
-    patternEnabled = wallpattern_enabled, 
-    patternStyle = wallpattern_style, 
+    patternEnabled = wallpattern_enabled,
+    patternStyle = wallpattern_style,
     patternRotate = wallpattern_rotate_grid,
     patternFill = wallpattern_fill,
-    patternBorder = wallpattern_border, 
+    patternBorder = wallpattern_border,
     patternDepth = wallpattern_depth,
-    patternCellSize = wallpattern_cell_size, 
+    patternCellSize = wallpattern_cell_size,
     patternHoleSides = wallpattern_hole_sides,
-    patternStrength = wallpattern_strength, 
+    patternStrength = wallpattern_strength,
     patternHoleRadius = wallpattern_hole_radius,
     patternGridChamfer = wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
@@ -10577,7 +10577,7 @@ module Gridfinity_Divider(
     lip_settings = lip_settings,
     label_settings=LabelSettings(
       labelStyle="disabled"));
-  
+
   for(i = [0 : divider_count-1]){
     canvis = [dividerHeight, num_x*env_pitch().x-env_clearance().x];
     ypos = (num_y*env_pitch().y-env_corner_radius()*2-dividerWidth)/(divider_count-1)*i;
@@ -10615,7 +10615,7 @@ module Gridfinity_Divider(
           patternFs = wallpattern_pattern_quality);*/
         cutout_pattern(
           patternStyle = pattern_settings[iPatternStyle],
-          canvasSize = [canvis.y,canvis.x], 
+          canvasSize = [canvis.y,canvis.x],
           border = (pattern_settings[iPatternBorder] == 0 ? dividerWidth : pattern_settings[iPatternBorder])*2,
           customShape = false,
           circleFn = pattern_settings[iPatternHoleSides],
@@ -10623,7 +10623,7 @@ module Gridfinity_Divider(
           strength = pattern_settings[iPatternStrength],
           holeHeight = dividerWidth*2,
           center = true,
-          fill = pattern_settings[iPatternFill], 
+          fill = pattern_settings[iPatternFill],
           patternGridChamfer = pattern_settings[iPatternGridChamfer],
           patternVoronoiNoise = pattern_settings[iPatternVoronoiNoise],
           patternBrickWeight = pattern_settings[iPatternBrickWeight],

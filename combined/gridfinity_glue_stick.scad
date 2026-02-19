@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_glue_stick.scad'. Generated 2026-02-16 23:25
-//Content hash 2DAC3B0702365783F498A215522058E0FE24820138BFCD7484A54B22141AAF9B
+//Combined version of 'gridfinity_glue_stick.scad'. Generated 2026-02-18 01:23
+//Content hash E19FAFF28F72866141913E06CEFFF6450AA5F686A429A2E9A28B8F58BFFCC621
 ///////////////////////////////////////
 
 cup_height = 5;
@@ -5152,7 +5152,7 @@ glue_stick_cup(blocks_needed, blocks_needed, cup_height);
 
 module glue_stick_cup(num_x=1, num_y=1, num_z=2) {
   difference() {
-    grid_block(num_x, num_y, num_z, 
+    grid_block(num_x, num_y, num_z,
       cupBase_settings = CupBaseSettings());
       translate([num_x*env_pitch().x/2, num_y*env_pitch().y/2, 0])
       glue_stick(num_z, stick_diameter);
@@ -5162,6 +5162,6 @@ module glue_stick_cup(num_x=1, num_y=1, num_z=2) {
 module glue_stick(num_z=5, diam) {
   floor_thickness = blocks_needed > 1 ? 5.5 : 1.2;
   translate([0, 0, floor_thickness]) cylinder(h=num_z*env_pitch().z, d=diam);
-  translate([0, 0, (num_z - easement_z)*env_pitch().z + 1.2]) 
+  translate([0, 0, (num_z - easement_z)*env_pitch().z + 1.2])
     cylinder(h=easement_z*env_pitch().z, d1=diam, d2=diam*1.1);
 }

@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_lid.scad'. Generated 2026-02-16 23:25
-//Content hash DCC05F809157F859B987DFE4CFDB8851D6996CA1B36B1D13704428CE8E706193
+//Combined version of 'gridfinity_lid.scad'. Generated 2026-02-18 01:23
+//Content hash B718C5D409369E072826CDE3B43D1B1B29730EFDAD5E34FE4744EA4E7C62E26B
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -19,7 +19,7 @@ Lid_Options = "default";//[default, flat:Flat Removes the internal grid from bas
 /* [Base Plate Options] */
 // Enable magnets in the bin corner
 Enable_Magnets = true;
-//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+//size of magnet, diameter and height. Zacks original used 6.5 and 2.4
 Magnet_Size = [6.5, 2.4];  // .1
 //Reduce the frame wall size to this value
 Reduced_Wall_Height = -1; //0.1
@@ -44,13 +44,13 @@ enable_help = "disabled"; //[info,debug,trace]
 set_colour = "enable"; //[disabled, enable, preview, lip]
 //where to render the model
 render_position = "center"; //[default,center,zero]
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-fa = 6; 
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments
+fa = 6;
 // minimum size of a fragment.  Low is more fragments
-fs = 0.1; 
+fs = 0.1;
 // number of fragments, overrides $fa and $fs
-fn = 0;  
-// set random seed for 
+fn = 0;
+// set random seed for
 random_seed = 0; //0.0001
 
 /* [Hidden] */
@@ -5763,10 +5763,10 @@ module baseplate_lid(
 //CombinedEnd from path module_gridfinity_baseplate_lid.scad
 
 //Some online generators do not like direct setting of fa,fs,fn
-$fa = fa; 
-$fs = fs; 
-$fn = fn;  
-  
+$fa = fa;
+$fs = fs;
+$fn = fn;
+
 set_environment(
   width = width,
   depth = depth,
@@ -5780,7 +5780,7 @@ gridfinity_lid(
   center_fill_grid_x = center_fill_grid_x,
   center_fill_grid_y = center_fill_grid_y,
   magnetSize = Enable_Magnets ? Magnet_Size : [0,0],
-  reducedWallHeight = Reduced_Wall_Height, 
+  reducedWallHeight = Reduced_Wall_Height,
   lidOptions = Lid_Options,
   lidIncludeMagnets = Lid_Include_Magnets,
   lidEfficientFloorThickness = Lid_Efficient_Floor_Thickness,
