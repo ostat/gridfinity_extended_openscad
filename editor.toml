@@ -6,7 +6,5 @@ mode = "single"
 head-extra = ''
 
 [[model]]
-file = "generated/gridfinity_basic_cup.scad"
+file = "combined/gridfinity_basic_cup.scad"
 description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
-umami-track-render = []
-umami-track-export = []
