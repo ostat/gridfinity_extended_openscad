@@ -72,3 +72,7 @@ description-extra-html = "<br>For detailed documentation, check the <a href='htt
 [[model]]
 file = "gridfinity_socket_holder.scad"
 description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[model.param-metadata.magnet_size]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#base"
+display-condition = {js = "enable_magnets"}
