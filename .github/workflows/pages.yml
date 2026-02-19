@@ -1,0 +1,63 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install Python dependencies
+        run: uv sync --frozen
+
+      - name: Generate OpenSCAD paths
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y just
+          just paths
+
+      - name: Generate site
+        uses: yawkat/web-openscad-editor@main
+        with:
+          config: editor.toml
+          output: out
+
+      - name: Publish
+        uses: cloudflare/wrangler-action@v3
+        id: cf_publish
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy out/ --project-name=gridfinity-extended
+      - name: Check PR
+        uses: 8BitJonny/gh-get-current-pr@4.0.0
+        id: pr
+      - name: Comment on PR
+        if: steps.pr.outputs.pr_found == 'true'
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          comment-tag: deployment
+          message: ":rocket: Preview deployed to ${{ steps.cf_publish.outputs.deployment-url }}"
+          pr-number: "${{steps.pr.outputs.number}}"
