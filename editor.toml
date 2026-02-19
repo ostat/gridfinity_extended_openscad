@@ -2,9 +2,73 @@
 name = "Gridfinity Extended"
 uri = "https://github.com/ostat/gridfinity_extended_openscad"
 export-filename-prefix = "Gridfinity Extended"
-mode = "single"
+mode = "multi"
 head-extra = ''
 
 [[model]]
-file = "combined/gridfinity_basic_cup.scad"
+file = "gridfinity_basic_cup.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_baseplate.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_item_holder.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_drawers.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_lid.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_marble.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_tray.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_vertical_divider.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "stanley_basic_cup.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_baseplate_flsun_q5.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_chess.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_glue_stick.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_sieve.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_silverware_legacy.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_silverware.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_sliding_lid.scad"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_socket_holder.scad"
 description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
