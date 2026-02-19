@@ -21,23 +21,6 @@ jobs:
         with:
           submodules: true
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Setup uv
-        uses: astral-sh/setup-uv@v4
-
-      - name: Install Python dependencies
-        run: uv sync --frozen
-
-      - name: Generate OpenSCAD paths
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y just
-          just paths
-
       - name: Generate site
         uses: yawkat/web-openscad-editor@main
         with:
