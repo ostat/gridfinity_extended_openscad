@@ -8,12 +8,12 @@ Welcome to the Gridfinity Extended OpenSCAD project! This is a recreation of Zac
 - Extension patterns for further personalization and modularity.
 
 ## Getting Started
-**Gridfinity Extended** is a set of OpenSCAD scripts for generating gridfinity related 3d models. There are two main ways to use the scripts. 
-- There is the official online customiser hosted at [makerworld](https://makerworld.com/en/models/481168-gridfinity-extended#profileId-1037829). 
+**Gridfinity Extended** is a set of OpenSCAD scripts for generating gridfinity related 3d models. There are two main ways to use the scripts.
+- There is the official online customiser hosted at [makerworld](https://makerworld.com/en/models/481168-gridfinity-extended#profileId-1037829).
 - Alternatively you can download and run the scripts locally.
 
 ### Option 1: Online customiser
-You can also use the online version of this project hosted on [MakerWorld](https://makerworld.com). This option allows you to quickly experiment with the models without downloading anything. 
+You can also use the online version of this project hosted on [MakerWorld](https://makerworld.com). This option allows you to quickly experiment with the models without downloading anything.
 The scripts uploaded to are fully featured and supported. I keep these updated with the latest version from GitHub.<br>
 - Link: https://makerworld.com/en/models/481168-gridfinity-extended#profileId-1037829
 
@@ -30,13 +30,25 @@ Running locally is how I recommend running the scripts. The scripts run faster a
 
 3. Enable OpenSCAD Features.
    - Open OpenSCAD application
-   - Go to `Menu > Edit > Preferences`. 
+   - Go to `Menu > Edit > Preferences`.
    - In the **Preferences** dialog go to the **Advanced** Tab:
      - Backend: select **manifold** option. Makes OpenSCAD faster.
    - An then go to the **Features** Tab:
      - Check **textmetrics**: Enables text related features for the base text.
 
-4. Open the project files in OpenSCAD. **Note:** You must use the developer version of OpenSCAD for this project. Download it here: [OpenSCAD Developer Version](https://openscad.org/downloads.html#snapshots).
+4. Start Creating Your Own Gridfinity Parts
+   - Open the SCAD library file you want to modify, e.g.: `gridfinity_baseplate.scad`
+   - Make sure the Customizer window is visible:
+      - View → Customizer (if not already open).
+   - Render the model:
+     - Press F5 for a quick preview
+     - Press F6 for a full render
+   - Adjust the parameters in the Customizer:
+       - Parameter	Example Value	Description<BR>
+        Width	2	Number of modules wide<BR>
+        Depth	1	Number of modules deep<BR>
+        Magnets	Enabled	Include magnet holes<BR>
+        The model will update in real-time based on your changes.<BR>
 
 5. Start exploring and customising the Gridfinity bins and extensions!
 
@@ -66,7 +78,7 @@ Script: `gridfinity_item_holder.scad`<br>
 Customisable Grid based item holder. Has built in dimensions of many common Memory card, Cartridges, batteries, and tools.<br>
 [<img src="./Images/gridfinity_item_holder-demo_text.gif" alt="" width="300">](./Images/gridfinity_item_holder-demo_text.gif)
 
-### Gridfinity Extended Tray 
+### Gridfinity Extended Tray
 Script: `gridfinity_tray.scad`<br>
 Catch all tray for holding small items.<br>
 [<img src="./Images/gridfinity_tray-demo_text.gif" alt="" width="300">](./Images/gridfinity_tray-demo_text.gif)
@@ -103,7 +115,7 @@ I welcome contributions to help improve and expand the Gridfinity Extended libra
 
 ## Feedback and Support
 
-Your feedback is invaluable! If you have suggestions, issues, or ideas for improvement, feel free to open an issue or contribute to the project. 
+Your feedback is invaluable! If you have suggestions, issues, or ideas for improvement, feel free to open an issue or contribute to the project.
 
 ---
 
