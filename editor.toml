@@ -11,7 +11,6 @@ description-extra-html = "<br>For detailed documentation, check the <a href='htt
 
 [model.tab-metadata."General Cup"]
 help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#general-cup-settings"
-collapsed = true
 
 [model.tab-metadata."Cup Lip"]
 help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#cuplip"
@@ -57,8 +56,8 @@ display-condition = {js = "sliding_lid_enabled"}
 display-condition = {js = "sliding_lid_enabled"}
 [model.param-metadata.sliding_lid_pull_style]
 display-condition = {js = "sliding_lid_enabled"}
-[model.param-metadata.sliding_lid_pull_style]
-display-condition = {js = "sliding_lid_nub_size"}
+[model.param-metadata.sliding_lid_nub_size]
+display-condition = {js = "sliding_lid_enabled"}
 
 [model.tab-metadata."Finger Slide"]
 help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#fingerslide"
