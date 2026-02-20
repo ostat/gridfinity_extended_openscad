@@ -27,6 +27,9 @@ jobs:
           config: editor.toml
           output: out
 
+      - name: Use custom index page
+        run: cp index.html out/index.html
+
       - name: Publish
         uses: cloudflare/wrangler-action@v3
         id: cf_publish
