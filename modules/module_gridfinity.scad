@@ -173,6 +173,13 @@ module frame_cavity(
   }
 }
 
+module click_groove() {
+  height = 1.5;
+  depth = height/2;
+  gap = 0.1;
+  translate([0, 2.15+env_clearance().x/2, 2.6]) rotate([0, 90, 0]) linear_extrude(30, center=true) polygon([[(1.8-height)/2-gap, -gap], [0.9, depth], [1.8-(1.8-height)/2+gap, -gap]]);
+}
+
 // unit pad slightly oversize at the top to be trimmed or joined with other feet or the rest of the model
 // also useful as cutouts for stacking
 //pad_oversize(margins=1,extend_down=5, $fn=64);
@@ -262,6 +269,13 @@ module pad_oversize(
         //for baseplate patterns
         children();
       }
+    }
+
+    if (!margins) {
+      translate([env_pitch().x/2, 0]) click_groove();
+      translate([env_pitch().x/2, env_pitch().y]) rotate([0, 0, 180]) click_groove();
+      translate([0, env_pitch().y/2]) rotate([0, 0, -90]) click_groove();
+      translate([env_pitch().x, env_pitch().y/2]) rotate([0, 0, 90]) click_groove();
     }
     
     // cut off bottom if we're going to go negative
