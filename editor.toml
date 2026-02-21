@@ -166,7 +166,7 @@ collapsed = true
 description-extra-html = "<br><br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>.<br><br>"
 
 [model-template.bin]
-template = ["section-general-bin"
+template = ["section-general-bin",
     "section-cup-lip",
     "section-subdivisions",
     "section-base",
