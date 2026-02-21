@@ -70,25 +70,6 @@ horizontal_irregular_subdivisions = false;
 // Separator positions are defined in terms of grid units from the left end
 horizontal_separator_config = "10.5|21|42|50|60";
 
-/* [Removable Divider Walls] */
-divider_walls_enabled = false;
-// Wall to enable on, x direction, y direction
-divider_walls = [1,1]; //[0:1:1]
-// Thickness of the divider walls.
-divider_walls_thickness = 2.5;  //0.1
-// Spacing between the divider walls (0=divider_walls_thickness*2).
-divider_walls_spacing = 0; //0.1
-// Thickness of the support walls (0=walls_thickness*2).
-divider_walls_support_thickness = 2;
-// Size of the slot in the divider walls. width(0=divider_walls_thickness), depth(0=divider_walls_support_thickness)
-divider_wall_slot_size = [0,0];
-// Clearance between the divider walls top
-divider_headroom = 0.1;
-// Clearance subtracted from the removable divider wall. Width, Length
-divider_clearance = [0.3, 0.2];
-// Number of slot spanning divider to generate.
-divider_slot_spanning = 2;
-
 /* [Base] */
 // Minimum thickness above cutouts in base (Zack's design is effectively 1.2)
 floor_thickness = 1.2;
@@ -114,11 +95,12 @@ sliding_lid_enabled = false;
 // 0 = wall thickness *2
 sliding_lid_thickness = 0; //0.1
 // 0 = wall_thickness/2
-sliding_min_wallThickness = 0;//0.1
+sliding_lid_min_wall_thickness = 0;//0.1
 // 0 = default_sliding_lid_thickness/2
-sliding_min_support = 0;//0.1
-sliding_clearance = 0.1;//0.1
-sliding_lid_lip_enabled = false;
+sliding_lid_min_support = 0;//0.1
+sliding_lid_clearance = 0.1;//0.1
+sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
+sliding_lid_nub_size = 0.5; //
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -244,10 +226,8 @@ text_2 = false;
 text_2_text = "Gridfinity Extended";
 
 /* [debug] */
-// Slice along the x axis
-cutx = 0; //0.1
-// Slice along the y axis
-cuty = 0; //0.1
+// Slice cup
+cut = [0,0,0]; //0.1
 // Enable loging of help messages during render.
 enable_help = "disabled"; //[info,debug,trace]
 
@@ -341,7 +321,7 @@ set_environment(
   pitch = stanley_model_settings[istanley_model_settings_pitch],
   clearance = clearance,
   corner_radius=stanley_model_settings[istanley_model_corner_radius],
-  cut = [cutx, cuty, height],
+  cut = cut,
   setColour = set_colour,
   randomSeed = random_seed,
   force_render = force_render)
@@ -368,7 +348,7 @@ gridfinity_cup(
     floorThickness = stanley_model_settings[istanley_model_settings_wall],
     cavityFloorRadius = cavity_floor_radius,
     efficientFloor="off",
-    halfPitch=false,
+    subPitch=1,
     flatBase="rounded",
     spacer=false,
     minimumPrintablePadSize=0.2,
@@ -395,16 +375,6 @@ gridfinity_cup(
     separator_cut_depth = horizontal_separator_cut_depth,
     irregular_subdivisions = horizontal_irregular_subdivisions,
     separator_config = horizontal_separator_config),
-  divider_wall_removable_settings = DividerRemovableSettings(
-    enabled=divider_walls_enabled,
-    walls=divider_walls,
-    headroom=divider_headroom,
-    support_thickness=divider_walls_support_thickness,
-    slot_size=divider_wall_slot_size,
-    divider_spacing=divider_walls_spacing,
-    divider_thickness=divider_walls_thickness,
-    divider_clearance=divider_clearance,
-    divider_slot_spanning=divider_slot_spanning),
   lip_settings = LipSettings(
     lipStyle=lip_style, 
     lipSideReliefTrigger=lip_side_relief_trigger, 
@@ -470,12 +440,14 @@ gridfinity_cup(
     extendableyPosition = extension_y_position, 
     extendableTabsEnabled = extension_tabs_enabled, 
     extendableTabSize = extension_tab_size),
-  sliding_lid_enabled = sliding_lid_enabled, 
-  sliding_lid_thickness = sliding_lid_thickness, 
-  sliding_min_wall_thickness = sliding_min_wallThickness, 
-  sliding_min_support = sliding_min_support, 
-  sliding_clearance = sliding_clearance,
-  sliding_lid_lip_enabled=sliding_lid_lip_enabled,
+  sliding_lid_settings = SlidingLidSettings(
+    enabled = sliding_lid_enabled, 
+    thickness = sliding_lid_thickness, 
+    min_wall_thickness = sliding_lid_min_wall_thickness, 
+    min_support = sliding_lid_min_support,
+    clearance = sliding_lid_clearance,
+    pull_style = sliding_lid_pull_style,
+    nub_size = sliding_lid_nub_size),
   cupBaseTextSettings = CupBaseTextSettings(
     baseTextLine1Enabled = text_1,
     baseTextLine2Enabled = text_2,

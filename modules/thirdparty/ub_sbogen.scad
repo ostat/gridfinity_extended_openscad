@@ -118,7 +118,7 @@ if(rand)for(i=[0:endPoint?fn2:fn2 -1])
      cos(rot+(center?grad2/2-90:grad2)+iw*-step2)*(r2 -rand2)+t[1],
     z]
 ]:
-[ // if 2D
+[ // if TwoD
 if(!sek&&!rand&&abs(grad)!=360&&grad||r==0)[0+t[0],0+t[1]], // single points replacement
 if(r&&grad)for(i=[0:endPoint?ifn:ifn-1])
         let(iw=abs(grad)==360?i%ifn:i)
@@ -142,8 +142,8 @@ SBogen() creates an S-shape double counter arc between parallels
 \param center center on x
 \param fn,fs,fa  fraqments
 \param messpunkt show arc center
-\param 2D make 2D
-\param extrude extrude in 2D from x=0
+\param TwoD make TwoD
+\param extrude extrude in TwoD from x=0
 \param grad2 angle endsection
 \param x0 set x axis origin=0
 \param lRef reference for l1 l2 0=center -1/1 lower/upper tangentP -2/2 tangent+grad2 -3/3 radius center
@@ -151,17 +151,17 @@ SBogen() creates an S-shape double counter arc between parallels
 \param lap overlap for 3D
 */
 
-//SBogen(2D=true);
+//SBogen(TwoD=true);
 //SBogen(extrude=10, grad2=[26,-40]*1,r1=2,l1=20,lRef=+3,messpunkt=true);
 
-module SBogen(dist=10,r1=10,r2,grad=45,l1=15,l2,center=1,fn,fs=$fs,fa=$fa,messpunkt=false,2D=0,extrude=false,grad2=0,x0=0,lRef=0,name,help,spiel,lap=0){
+module SBogen(dist=10,r1=10,r2,grad=45,l1=15,l2,center=1,fn,fs=$fs,fa=$fa,messpunkt=false,TwoD=0,extrude=false,grad2=0,x0=0,lRef=0,name,help,spiel,lap=0){
     lap=is_undef(spiel)?lap:spiel;
     center=is_bool(center)?center?1:0:sign(center);
     r2=is_undef(r2)?r1:r2;
     l2=is_undef(l2)?l1:l2;
-    2D=is_parent(needs2D)&&!$children?2D?b(2D,false):
+    TwoD=is_parent(needs2D)&&!$children?TwoD?b(TwoD,false):
                                          1:
-                                      b(2D,false);
+                                      b(TwoD,false);
 // echo(parent_module(1),$parent_modules);
     grad2=is_list(grad2)?grad2:[grad2,grad2];
     extrudeTrue=extrude;
@@ -212,7 +212,7 @@ module SBogen(dist=10,r1=10,r2,grad=45,l1=15,l2,center=1,fn,fs=$fs,fa=$fa,messpu
 
 
  if(grad&&!extrudeTrue)mirror(gradN<0?[1,0]:[0,0])translate(center?[0,0,0]:[dist/2,l1]){
-    translate([dist/2,y/2,0])T(-r2)rotate(grad2[1])T(r2)Bogen(rad=r2,grad=grad+grad2[1],center=false,l1=l2-y/2,l2=l2m,help=0,name=0,messpunkt=messpunkt,2D=2D,fn=fn,fs=fs,d=2D,lap=lap)
+    translate([dist/2,y/2,0])T(-r2)rotate(grad2[1])T(r2)Bogen(rad=r2,grad=grad+grad2[1],center=false,l1=l2-y/2,l2=l2m,help=0,name=0,messpunkt=messpunkt,TwoD=TwoD,fn=fn,fs=fs,d=TwoD,lap=lap)
     if($children){
 
       $idx=is_undef($idx)?0:$idx;
@@ -220,7 +220,7 @@ module SBogen(dist=10,r1=10,r2,grad=45,l1=15,l2,center=1,fn,fs=$fs,fa=$fa,messpu
       children();
     }
     else circle($fn=fn,$fs=fs);
-  T(-dist/2,-y/2) mirror([1,0,0])rotate(180)T(r1)rotate(-grad2[0])T(-r1)Bogen(rad=r1,grad=-grad-grad2[0],center=false,l1=l1-y/2,l2=l2m,help=0,name=0,messpunkt=messpunkt,2D=2D,fn=fn,fs=fs,d=2D,lap=lap)
+  T(-dist/2,-y/2) mirror([1,0,0])rotate(180)T(r1)rotate(-grad2[0])T(-r1)Bogen(rad=r1,grad=-grad-grad2[0],center=false,l1=l1-y/2,l2=l2m,help=0,name=0,messpunkt=messpunkt,TwoD=TwoD,fn=fn,fs=fs,d=TwoD,lap=lap)
     if($children){
       $idx=1;
       children();
@@ -229,10 +229,10 @@ module SBogen(dist=10,r1=10,r2,grad=45,l1=15,l2,center=1,fn,fs=$fs,fa=$fa,messpu
  }
  
  if(!grad&&!extrudeTrue) //0 grad Grade
-     if(!2D)T(0,center?0:l1+l2)R(90)linear_extrude(l1+l2,convexity=5,center=center?true:false)
+     if(!TwoD)T(0,center?0:l1+l2)R(90)linear_extrude(l1+l2,convexity=5,center=center?true:false)
          if($children)children();
          else circle($fn=fn);
- else T(center?0:-2D/2) square([2D,l1+l2],center?true:false);
+ else T(center?0:-TwoD/2) square([TwoD,l1+l2],center?true:false);
      
 
  
@@ -279,8 +279,8 @@ module SBogen(dist=10,r1=10,r2,grad=45,l1=15,l2,center=1,fn,fs=$fs,fa=$fa,messpu
  
 
     //Warnings    
-  Echo(str(name," SBogen has no 2D-Object"),color=Hexstring([1,0.5,0]),size=4,condition=!$children&&!2D&&!extrudeTrue);
-  Echo(str(name," SBogen width is determined by var 2D=",2D,"mm"),color="info",size=4,condition=2D==1&&!extrudeTrue&&(is_undef($idx)||!$idx)&&$info);       
+  Echo(str(name," SBogen has no TwoD-Object"),color=Hexstring([1,0.5,0]),size=4,condition=!$children&&!TwoD&&!extrudeTrue);
+  Echo(str(name," SBogen width is determined by var TwoD=",TwoD,"mm"),color="info",size=4,condition=TwoD==1&&!extrudeTrue&&(is_undef($idx)||!$idx)&&$info);       
    
   Echo(str(name," SBogen r1/r2 to big  middle <0"),condition=l2m<0);
   Echo(str(name," SBogen radius 1 negative"),condition=r1<0);
@@ -288,7 +288,7 @@ module SBogen(dist=10,r1=10,r2,grad=45,l1=15,l2,center=1,fn,fs=$fs,fa=$fa,messpu
   Echo(str(name," SBogen r1/r2 to big or angle or dist to short"),condition=grad!=0&&r1-cos(grad)*r1+r2-cos(grad)*r2>abs(dist));
   Echo(str(name," SBogen angle to small/ l1+l2 to short =",l1-y/2+yRef,"/",l2-y/2-yRef),condition=l1-y/2+yRef<0||l2-y/2-yRef<0);
    //Help    
-  HelpTxt("SBogen",["dist",dist,"r1",r1,"r2",r2,"grad",grad,"l1",l1,"l2",l2,"center",center,"fn",fn,"messpunkt",messpunkt,"2D",2D,"extrude",extrude,"grad2",grad2,"x0",x0, "lRef", lRef, "lap",lap," ,name=",name],help); 
+  HelpTxt("SBogen",["dist",dist,"r1",r1,"r2",r2,"grad",grad,"l1",l1,"l2",l2,"center",center,"fn",fn,"messpunkt",messpunkt,"TwoD",TwoD,"extrude",extrude,"grad2",grad2,"x0",x0, "lRef", lRef, "lap",lap," ,name=",name],help); 
 
 }
 
@@ -304,12 +304,12 @@ Bogen() creates a bended cylinder or children
 \param lap,spiel  overlap
 \param d diameter (if no children)
 \param messpunkt show bend center
-\param 2D  make 2D
+\param TwoD  make TwoD
 */
-//Bogen(2D=1,lap=+0,fn=0);
+//Bogen(TwoD=1,lap=+0,fn=0);
 //Bogen();
 
-module Bogen(grad=90,rad=5,l,l1=10,l2=12,fn=$fn,center=true,tcenter=false,name,d=3,fn2=0,fs=$fs,fa=$fa,lap=minVal,spiel,help,messpunkt=messpunkt,2D=false)
+module Bogen(grad=90,rad=5,l,l1=10,l2=12,fn=$fn,center=true,tcenter=false,name,d=3,fn2=0,fs=$fs,fa=$fa,lap=minVal,spiel,help,messpunkt=messpunkt,TwoD=false)
 {
     $fn=fn;
     $fs=fs;
@@ -320,9 +320,9 @@ module Bogen(grad=90,rad=5,l,l1=10,l2=12,fn=$fn,center=true,tcenter=false,name,d
     ueberlapp=is_num(spiel)?-spiel:lap;
     l1=is_undef(l)?l1+ueberlapp:is_list(l)?l[0]+ueberlapp:l+ueberlapp;
     l2=is_undef(l)?l2+ueberlapp:is_list(l)?l[1]+ueberlapp:l+ueberlapp;
-    2D=is_parent(needs2D)&&!$children?2D?b(2D,false):
+    TwoD=is_parent(needs2D)&&!$children?TwoD?b(TwoD,false):
                                        1:
-                                    b(2D,false);
+                                    b(TwoD,false);
     
     c=sin(abs(grad)/2)*rad*2;//  Sekante 
     w1=abs(grad)/2;          //  Schenkelwinkel
@@ -333,7 +333,7 @@ module Bogen(grad=90,rad=5,l,l1=10,l2=12,fn=$fn,center=true,tcenter=false,name,d
     bl=PI*rad/180*grad;//Bogenlänge
     
     mirror([grad<0?1:0,0,0])rotate(center?0:tcenter?-abs(grad)/2:+0)T(tcenter?grad>180?hSek+hc:-hSek-hc:0)rotate(tcenter?abs(grad)/2:0) T(center?0:tcenter?0:-rad){
-    if(!2D) T(rad)R(+90,+0)Tz(-l1+ueberlapp){
+    if(!TwoD) T(rad)R(+90,+0)Tz(-l1+ueberlapp){
       $idx=0;
       $tab=is_undef($tab)?1:b($tab,false)+1;
       color("green")   linear_extrude(l1,convexity=5)
@@ -343,7 +343,7 @@ module Bogen(grad=90,rad=5,l,l1=10,l2=12,fn=$fn,center=true,tcenter=false,name,d
         }
     else T(rad)R(0,+0)T(0,-ueberlapp)color("green")T(-d/2)square([d,l1]);
  
-    if(grad)if(!2D) rotate_extrude(angle=-abs(grad)-0,$fa = fn?abs(grad)/fn:fa, $fs = $fs,$fn=0,convexity=5)intersection(){
+    if(grad)if(!TwoD) rotate_extrude(angle=-abs(grad)-0,$fa = fn?abs(grad)/fn:fa, $fs = $fs,$fn=0,convexity=5)intersection(){
       $idx=1;
       $fn=fn;
       $fa=fa;
@@ -355,7 +355,7 @@ module Bogen(grad=90,rad=5,l,l1=10,l2=12,fn=$fn,center=true,tcenter=false,name,d
      else  Kreis(rand=d,grad=abs(grad),center=false,r=rad+d/2,fn=fn,fs=fs,name=0,help=0); 
       
         
-     if (!2D)R(z=-abs(grad)-180) T(-rad,-ueberlapp)R(-90,180,0){
+     if (!TwoD)R(z=-abs(grad)-180) T(-rad,-ueberlapp)R(-90,180,0){
        $idx=2;
          color("darkorange")linear_extrude(l2,convexity=5)
             if ($children)mirror([grad<0?1:0,0,0])children();
@@ -377,9 +377,9 @@ module Bogen(grad=90,rad=5,l,l1=10,l2=12,fn=$fn,center=true,tcenter=false,name,d
       
   if(name)echo(str(name," Bogen ",grad,"° Radius=",rad,"mm Sekantenradius= ",hSek,"mm — Tangentenschnittpunkt=",hSek+hc,"mm TsSekhöhe=",hc,"mm Kreisstücklänge=",bl," inkl l=",bl+l1+l2,"mm"));
       
-  if(!$children&&name&&!2D)Echo("Bogen missing Object! using circle",color="warning");
+  if(!$children&&name&&!TwoD)Echo("Bogen missing Object! using circle",color="warning");
   
-  HelpTxt("Bogen",["grad",grad,"rad",rad,"l",l,"l1",l1,"l2",l2,"fn",fn,"center",center,"tcenter",tcenter,"name",name,"d",d,"fn2",fn2,"fs",fs,"lap",lap,"messpunkt",messpunkt,"2D",2D],help);
+  HelpTxt("Bogen",["grad",grad,"rad",rad,"l",l,"l1",l1,"l2",l2,"fn",fn,"center",center,"tcenter",tcenter,"name",name,"d",d,"fn2",fn2,"fs",fs,"lap",lap,"messpunkt",messpunkt,"TwoD",TwoD],help);
     
 }
 

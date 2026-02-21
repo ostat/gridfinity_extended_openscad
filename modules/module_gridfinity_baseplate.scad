@@ -34,6 +34,26 @@ Default_Connector_Filament_Enabled = false;
 Default_Connector_Filament_Diameter = 2;
 Default_Connector_Filament_Length = 8;
 
+Default_Connector_Snaps_Enabled = false;
+Default_Connector_Snaps_Clearance = 0.1;
+
+
+debug_gridfinity_baseplate = false;
+if(debug_gridfinity_baseplate){
+  $fn = 64;
+  echo("debug_gridfinity_baseplate is enabled");
+  translate([-50,0,0])
+  gridfinity_baseplate(
+    num_x = 1,
+    num_y = 2);
+    
+  translate([-100,0,0])
+  baseplate(
+    width = 1, 
+    depth = 2,
+    remove_bottom_taper = true);
+}
+  
 module gridfinity_baseplate(
   num_x = 2,
   num_y = 3,
@@ -45,9 +65,12 @@ module gridfinity_baseplate(
   position_grid_in_outer_x = "center",
   position_grid_in_outer_y = "center",
   plate_corner_radius=gf_cup_corner_radius,
+  secondary_corner_radius = -1,
+  corner_roles = [1,1,1,1],
   magnetSize = Default_Magnet_Size,
   magnetZOffset=0,
   magnetTopCover=0,
+  magnetReleaseMethod="none", 
   reducedWallHeight = -1,
   reduceWallTaper = false,
   cornerScrewEnabled  = false,
@@ -57,17 +80,8 @@ module gridfinity_baseplate(
   plateOptions = Default_Base_Plate_Options,
   customGridEnabled = false,
   gridPositions = [[1]],
-  connectorPosition = Default_Connector_Position,
-  connectorClipEnabled  = Default_Connector_Clip_Enabled,
-  connectorClipSize = Default_Connector_Clip_Size,
-  connectorClipTolerance = Default_Connector_Clip_Tolerance,
-  connectorButterflyEnabled  = Default_Connector_Butterfly_Enabled,
-  connectorButterflySize = Default_Connector_Butterfly_Size,
-  connectorButterflyRadius = Default_Connector_Butterfly_Radius,
-  connectorButterflyTolerance = Default_Connector_Butterfly_Tolerance,
-  connectorFilamentEnabled = Default_Connector_Filament_Enabled,
-  connectorFilamentDiameter = Default_Connector_Filament_Diameter,
-  connectorFilamentLength = Default_Connector_Filament_Length)
+  remove_bottom_taper = false,
+  frameConnectorSettings = FrameConnectorSettings())
 {
   _gridPositions = customGridEnabled ? gridPositions : [[1]];
   
@@ -84,7 +98,7 @@ module gridfinity_baseplate(
     : num_y;
 
     debug_cut()
-    intersection(){
+    intersection() {
       union() {
         for(xi = [0:len(_gridPositions)-1])
           for(yi = [0:len(_gridPositions[xi])-1])
@@ -114,24 +128,18 @@ module gridfinity_baseplate(
                 magnetSize = magnetSize,
                 magnetZOffset=magnetZOffset,
                 magnetTopCover=magnetTopCover,
+                magnetReleaseMethod=magnetReleaseMethod,
                 reducedWallHeight = reducedWallHeight,
                 reduceWallTaper = reduceWallTaper,
                 cornerScrewEnabled = cornerScrewEnabled,
                 centerScrewEnabled = centerScrewEnabled,
                 weightedEnable = weightedEnable,
                 plateOptions= plateOptions,
-                connectorPosition = connectorPosition,
-                connectorClipEnabled = connectorClipEnabled,
-                connectorClipSize = connectorClipSize,
-                connectorClipTolerance = connectorClipTolerance,
-                connectorButterflyEnabled = connectorButterflyEnabled,
-                connectorButterflySize = connectorButterflySize,
-                connectorButterflyRadius = connectorButterflyRadius,
-                connectorButterflyTolerance = connectorButterflyTolerance,
-                connectorFilamentEnabled = connectorFilamentEnabled,
-                connectorFilamentDiameter = connectorFilamentDiameter,
-                connectorFilamentLength = connectorFilamentLength,
+                frameConnectorSettings = frameConnectorSettings,
                 plate_corner_radius = plate_corner_radius,
+                remove_bottom_taper = remove_bottom_taper,
+                secondary_corner_radius = secondary_corner_radius,
+                corner_roles = corner_roles,
                 roundedCorners = gridPosCorners == 1 ? 15 : gridPosCorners - 2);
             }
           }
@@ -154,6 +162,7 @@ module baseplate(
   magnetSize = [gf_baseplate_magnet_od,gf_baseplate_magnet_thickness],
   magnetZOffset=0,
   magnetTopCover=0,
+  magnetReleaseMethod="none",
   reducedWallHeight = -1,
   reduceWallTaper = false,
   cornerScrewEnabled = false,
@@ -161,67 +170,55 @@ module baseplate(
   weightedEnable = false,
   plateOptions = "default",
   plate_corner_radius = gf_cup_corner_radius,
+  secondary_corner_radius = -1,
+  corner_roles = [1,1,1,1],
   roundedCorners = 15,
-  connectorPosition = Default_Connector_Position,
-  connectorClipEnabled  = Default_Connector_Clip_Enabled,
-  connectorClipSize = Default_Connector_Clip_Size,
-  connectorClipTolerance = Default_Connector_Clip_Tolerance,
-  connectorButterflyEnabled  = Default_Connector_Butterfly_Enabled,
-  connectorButterflySize = Default_Connector_Butterfly_Size,
-  connectorButterflyRadius = Default_Connector_Butterfly_Radius,
-  connectorButterflyTolerance = Default_Connector_Butterfly_Tolerance,
-  connectorFilamentEnabled = Default_Connector_Filament_Enabled,
-  connectorFilamentDiameter = Default_Connector_Filament_Diameter,
-  connectorFilamentLength = Default_Connector_Filament_Length)
+  frameConnectorSettings = [],
+  remove_bottom_taper = true)
 {
   assert_openscad_version();
   
-  difference(){
-    union(){
-      if (plateOptions == "cnclaser"){
-        baseplate_cnclaser(
-          num_x=width, 
-          num_y=depth,
-          magnetSize=magnetSize, 
-          magnetZOffset=magnetZOffset,
-          roundedCorners=roundedCorners);
-      }      
-      else {
-        baseplate_regular(
-          grid_num_x = width, 
-          grid_num_y = depth,
-          outer_num_x = outer_width,
-          outer_num_y = outer_depth,
-          outer_height = outer_height,
-          position_fill_grid_x = position_fill_grid_x,
-          position_fill_grid_y = position_fill_grid_y,
-          position_grid_in_outer_x = position_grid_in_outer_x,
-          position_grid_in_outer_y = position_grid_in_outer_y,
-          magnetSize = magnetSize,
-          magnetZOffset=magnetZOffset,
-          magnetTopCover=magnetTopCover,
-          reducedWallHeight=reducedWallHeight,
-          reduceWallTaper=reduceWallTaper,
-          centerScrewEnabled = centerScrewEnabled,
-          cornerScrewEnabled = cornerScrewEnabled,
-          weightHolder = weightedEnable,
-          cornerRadius = plate_corner_radius,
-          roundedCorners=roundedCorners)
-          frame_connectors(
-            width = width, 
-            depth = depth,
-            connectorPosition = connectorPosition,
-            connectorClipEnabled = connectorClipEnabled,
-            connectorClipSize = connectorClipSize,
-            connectorClipTolerance = connectorClipTolerance,
-            connectorButterflyEnabled = connectorButterflyEnabled,
-            connectorButterflySize = connectorButterflySize,
-            connectorButterflyRadius = connectorButterflyRadius,
-            connectorButterflyTolerance = connectorButterflyTolerance,
-            connectorFilamentEnabled = connectorFilamentEnabled,
-            connectorFilamentLength = connectorFilamentLength,
-            connectorFilamentDiameter = connectorFilamentDiameter);
+  if (plateOptions == "cnclaser"){
+    baseplate_cnclaser(
+      num_x=width, 
+      num_y=depth,
+      magnetSize=magnetSize, 
+      magnetZOffset=magnetZOffset,
+      roundedCorners=roundedCorners);
+  }      
+  else {
+    baseplate_regular(
+      grid_num_x = width, 
+      grid_num_y = depth,
+      outer_num_x = outer_width,
+      outer_num_y = outer_depth,
+      outer_height = outer_height,
+      position_fill_grid_x = position_fill_grid_x,
+      position_fill_grid_y = position_fill_grid_y,
+      position_grid_in_outer_x = position_grid_in_outer_x,
+      position_grid_in_outer_y = position_grid_in_outer_y,
+      magnetSize = magnetSize,
+      magnetZOffset=magnetZOffset,
+      magnetTopCover=magnetTopCover,
+      magnetReleaseMethod=magnetReleaseMethod,
+      reducedWallHeight=reducedWallHeight,
+      reduceWallTaper=reduceWallTaper,
+      centerScrewEnabled = centerScrewEnabled,
+      cornerScrewEnabled = cornerScrewEnabled,
+      weightHolder = weightedEnable,
+      cornerRadius = plate_corner_radius,
+          secondaryCornerRadius = secondary_corner_radius,
+          cornerRoles = corner_roles,
+      roundedCorners=roundedCorners,
+      remove_bottom_taper=remove_bottom_taper){
+        frame_connector_cavities(
+          width = width, 
+          depth = depth,
+          frameConnectorSettings = frameConnectorSettings);
+        frame_connectors_additives(
+          width = width, 
+          depth = depth,
+          frameConnectorSettings = frameConnectorSettings);
       }
-    }
   }
 }

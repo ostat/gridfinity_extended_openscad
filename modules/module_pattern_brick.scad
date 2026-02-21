@@ -1,5 +1,5 @@
 include <functions_general.scad>
-include <module_utility.scad>
+include <utility/utilities.scad>
 
 module brick_pattern(
   canvis_size=[31,31],
@@ -58,7 +58,7 @@ module brick_pattern(
           roundedCube(
             size = size, 
             sideRadius = corner_radius,
-            supportReduction_x = [0,1]
+            //supportReduction_x = [0,1]
             //supportReduction_y = [0,0],
             //supportReduction_z = [0,0]
             );

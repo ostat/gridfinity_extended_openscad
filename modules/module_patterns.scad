@@ -64,12 +64,12 @@ function PatternSettings(
     patternCellSize, 
     patternHoleSides,
     patternStrength, 
-    patternHoleRadius,
+    patternHoleRadius=0.5,
     patternFs = 0,
     patternGridChamfer=0,
     patternVoronoiNoise=0,
     patternBrickWeight=0,
-    patternColored=false
+    patternColored="disabled"
     ) = 
   let(
     result = [
@@ -202,6 +202,7 @@ module coloured_wall_pattern(
   border = 0,
   colored_pattern = false,
 ){
+  colored_pattern = is_string(colored_pattern) ? colored_pattern : (colored_pattern ? "enabled" : "disabled");
   fudgeFactor = 0.001;
   wallpattern_thickness = get_related_value(wall_pattern_settings[iPatternDepth], wall_thickness);
   
@@ -222,58 +223,41 @@ module coloured_wall_pattern(
     colored_block(colored_pattern){
       children(0);
 
-      union(){
-        for(i = [0:1:len(locations)-1])
-          if(locations[i][4] > 0)
-            translate(locations[i][1])
-            rotate(locations[i][2])
-            cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
-      }
+      //subtracted block
+      wall_pattern_canvas_negative(locations, colored_pattern);
+
+      //added blockblock
+      wall_pattern_canvas_positive(locations, colored_pattern);
 
       if($children >=3) children(2);
     }
-    /*
-    union(){
-      difference(){
-        // Child 0 is bin block
-        children(0);
-
-        //Subtract the wall pattern block so it can be coloured.
-        color(env_colour(color_cup))
-        union(){
-          for(i = [0:1:len(locations)-1])
-            if(locations[i][4] > 0)
-              translate(locations[i][1])
-              rotate(locations[i][2])
-              cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
-        }
-      }
-
-      color(env_colour(color_wallcutout, isLip=true))
-      render_conditional(true)
-      difference(){
-        union()
-          for(i = [0:1:len(locations)-1])
-            if(locations[i][4] > 0)
-              translate(locations[i][1])
-              rotate(locations[i][2])
-              cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
-
-        // Child 3 is wall pattern
-        color(env_colour(color_wallcutout, isLip=true))
-        if($children >=3) children(2);
-      }
-    }*/
 
     // Child 1 is bin cavities and negatives
     if($children >=2) children(1);
   }
 }
 
+module wall_pattern_canvas_negative(locations, colored_pattern){
+  for(i = [0:1:len(locations)-1])
+    if(locations[i][4] > 0)
+      translate(locations[i][1])
+      rotate(locations[i][2])
+      cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
+}
 
-module colored_block(coloured_pattern = true){
+module wall_pattern_canvas_positive(locations, colored_pattern){
+  for(i = [0:1:len(locations)-1])
+    if(locations[i][4] > 0)
+      translate(locations[i][1])
+      rotate(locations[i][2]) {
+        thickness = locations[i][0].z;
+        cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
+      }
+}
+
+module colored_block(coloured_pattern = "enabled"){
   union(){
-    if(coloured_pattern){
+    if(coloured_pattern == "enabled"){
       difference(){
         // Child 0 is bin block
         children(0);
@@ -284,13 +268,13 @@ module colored_block(coloured_pattern = true){
       }
 
       color(env_colour(color_wallcutout, isLip=true))
-      render_conditional(true)
+      //render_conditional(true)
       difference(){
-        children(1);
+        children(2);
 
         // Child 3 is wall pattern
         color(env_colour(color_wallcutout, isLip=true))
-        children(2);
+        children(3);
       }
     } else {
       difference(){
@@ -299,7 +283,7 @@ module colored_block(coloured_pattern = true){
 
         // Child 3 is wall pattern
         color(env_colour(color_wallcutout, isLip=true))
-        children(2);
+        children(3);
       }
     }
   }
