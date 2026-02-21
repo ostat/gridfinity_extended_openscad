@@ -155,65 +155,49 @@ template = "bin"
 file = "gridfinity_basic_cup.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_baseplate.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_item_holder.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_drawers.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_lid.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_marble.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_tray.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_vertical_divider.scad"
 
 [[model]]
-template = "bin"
 file = "stanley_basic_cup.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_baseplate_flsun_q5.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_chess.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_glue_stick.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_sieve.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_silverware_legacy.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_silverware.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_sliding_lid.scad"
 
 [[model]]
-template = "bin"
 file = "gridfinity_socket_holder.scad"
