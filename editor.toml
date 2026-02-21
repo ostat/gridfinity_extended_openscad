@@ -5,70 +5,232 @@ export-filename-prefix = "Gridfinity Extended"
 mode = "multi"
 head-extra = ''
 
+[model-template.default]
+description-extra-html = "<br><br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>.<br><br>"
+
+[model-template.section-general-bin]
+[model-template.section-general-bin.tab-metadata."General Cup"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#general-cup-settings"
+
+[model-template.section-cup-lip]
+[model-template.section-cup-lip.tab-metadata."Cup Lip"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#cuplip"
+collapsed = true
+
+[model-template.section-subdivisions]
+[model-template.subdivisions.tab-metadata."Subdivisions"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#subdivisions"
+collapsed = true
+
+[model-template.section-base]
+[model-template.section-base.tab-metadata."Base"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#base"
+collapsed = true
+[model-template.section-base.param-metadata.magnet_size]
+display-condition = {js = "enable_magnets"}
+[model-template.section-base.param-metadata.magnet_easy_release]
+display-condition = {js = "enable_magnets"}
+[model-template.section-base.param-metadata.magnet_side_access]
+display-condition = {js = "enable_magnets"}
+[model-template.section-base.param-metadata.magnet_captive_height]
+display-condition = {js = "enable_magnets"}
+[model-template.section-base.param-metadata.magnet_crush_depth]
+display-condition = {js = "enable_magnets"}
+[model-template.section-base.param-metadata.magnet_chamfer]
+display-condition = {js = "enable_magnets"}
+[model-template.section-base.param-metadata.screw_size]
+display-condition = {js = "enable_screws"}
+
+[model-template.section-label]
+[model-template.section-label.tab-metadata."Label"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#label"
+collapsed = true
+
+[model-template.section-sliding-lid]
+[model-template.section-sliding-lid.tab-metadata."Sliding Lid"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#slidinglid"
+collapsed = true
+[model-template.section-sliding-lid.param-metadata.sliding_lid_enabled]
+[model-template.section-sliding-lid.param-metadata.sliding_lid_thickness]
+display-condition = {js = "sliding_lid_enabled"}
+[model-template.section-sliding-lid.param-metadata.sliding_lid_min_wall_thickness]
+display-condition = {js = "sliding_lid_enabled"}
+[model-template.section-sliding-lid.param-metadata.sliding_lid_min_support]
+display-condition = {js = "sliding_lid_enabled"}
+[model-template.section-sliding-lid.param-metadata.sliding_lid_clearance]
+display-condition = {js = "sliding_lid_enabled"}
+[model-template.section-sliding-lid.param-metadata.sliding_lid_pull_style]
+display-condition = {js = "sliding_lid_enabled"}
+[model-template.section-sliding-lid.param-metadata.sliding_lid_nub_size]
+display-condition = {js = "sliding_lid_enabled"}
+
+[model-template.section-finger-slide]
+[model-template.finger-slide.tab-metadata."Finger Slide"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#fingerslide"
+collapsed = true
+
+[model-template.section-tapered-corner]
+[model-template.section-tapered-corner.tab-metadata."Tapered Corner"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#taperedcorner"
+collapsed = true
+
+[model-template.section-wall-pattern]
+[model-template.section-wall-pattern.tab-metadata."Wall Pattern"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#wallpattern"
+collapsed = true
+[model-template.section-wall-pattern.param-metadata.wallpattern_enabled]
+[model-template.section-wall-pattern.param-metadata.wallpattern_style]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_strength]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_walls]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_rotate_grid]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_cell_size]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_dividers_enabled]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_hole_sides]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_hole_radius]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_fill]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_border]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_depth]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_pattern_voronoi_noise]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_pattern_brick_weight]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_pattern_quality]
+display-condition = {js = "wallpattern_enabled"}
+[model-template.section-wall-pattern.param-metadata.wallpattern_colored]
+display-condition = {js = "wallpattern_enabled"}
+
+[model-template.section-floor-pattern]
+[model-template.section-floor-pattern.tab-metadata."Floor Pattern"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#floorpattern"
+collapsed = true
+[model-template.section-floor-pattern.param-metadata.floorpattern_enabled]
+[model-template.section-floor-pattern.param-metadata.floorpattern_style]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_strength]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_rotate_grid]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_cell_size]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_hole_sides]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_hole_radius]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_fill]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_border]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_depth]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_pattern_grid_chamfer]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_pattern_voronoi_noise]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_pattern_brick_weight]
+display-condition = {js = "floorpattern_enabled"}
+[model-template.section-floor-pattern.param-metadata.floorpattern_pattern_quality]
+display-condition = {js = "floorpattern_enabled"}
+
+[model-template.section-wall-cutout]
+[model-template.section-wall-cutout.tab-metadata."Wall Cutout"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#wallcutout"
+collapsed = true
+
+[model-template.section-extendable]
+[model-template.section-extendable.tab-metadata."Extendable"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#extendable"
+collapsed = true
+
+[model-template.section-bottom-text]
+[model-template.section-bottom-text.tab-metadata."Bottom Text"]
+help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#bottomtext"
+collapsed = true
+
+[model-template.section-debug]
+[model-template.section-debug.tab-metadata."debug"]
+collapsed = true
+
+[model-template.section-model-detail]
+[model-template.section-model-detail.tab-metadata."Model detail"]
+collapsed = true
+
+[model-template.bin]
+template = ["section-general-bin",
+    "section-cup-lip",
+    "section-subdivisions",
+    "section-base",
+    "section-label",
+    "section-sliding-lid",
+    "section-finger-slide",
+    "section-tapered-corner",
+    "section-wall-pattern",
+    "section-floor-pattern",
+    "section-wall-cutout",
+    "section-extendable",
+    "section-debug",
+    "section-bottom-text",
+    "section-model-detail"
+]
+
 [[model]]
+template = [ "bin" ]
 file = "gridfinity_basic_cup.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_baseplate.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_item_holder.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_drawers.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_lid.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_marble.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_tray.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_vertical_divider.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "stanley_basic_cup.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_baseplate_flsun_q5.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_chess.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_glue_stick.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_sieve.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_silverware_legacy.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_silverware.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_sliding_lid.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
 
 [[model]]
 file = "gridfinity_socket_holder.scad"
-description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
