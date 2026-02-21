@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_drawers.scad'. Generated 2026-02-18 01:16
-//Content hash 36BE093E453A1506FFAB1A4DD8602038698501FFFA5E21507CB90C68018BE9E9
+//Combined version of 'gridfinity_drawers.scad'. Generated 2026-02-21 23:37
+//Content hash 7C6FDBD1E0D75BC0041E8C6127BE4D4D952D33E09063A59508DFD833FE0AE364
 ///////////////////////////////////////
 // Gridfinity drawer system.
 // Intended for Gridfinity bins to sit in the drawers, meaning the outer chest will not fit neatly on to a gridfinity grid.
@@ -1953,6 +1953,7 @@ csv_parse = function(s) [for (e=split(s, ",")) float(e)];
 
 
 
+
 iPatternEnabled=0;
 iPatternStyle=1;
 iPatternRotate=2;
@@ -1976,10 +1977,12 @@ PatternStyle_voronoigrid = "voronoigrid";
 PatternStyle_voronoihexgrid = "voronoihexgrid";
 PatternStyle_brick = "brick";
 PatternStyle_brickoffset = "brickoffset";
+PatternStyle_slat = "slats";
 
 PatternStyle_values = [
     PatternStyle_grid, PatternStyle_hexgrid,
     PatternStyle_voronoi, PatternStyle_voronoigrid, PatternStyle_voronoihexgrid, 
+    PatternStyle_slat,
     PatternStyle_brick, PatternStyle_brickoffset
     ];
 function validatePatternStyle(value, name = "PatternStyle") = 
@@ -2333,8 +2336,16 @@ module cutout_pattern(
         rotateGrid = true,
         offset_layers = patternStyle == PatternStyle_brickoffset
       );
-    }
-    else {
+    } else if(patternStyle == PatternStyle_slat){
+      slat_pattern(
+        canvis_size=[canvasSize.x,canvasSize.y],
+        thickness = holeHeight,
+        spacing = strength.x,
+        slat_width = cellSize.x,
+        slat_chamfer = chamfer,
+        center = center,
+        rotateGrid = false);
+    } else {
       echo("cutout_pattern: Unknown patternStyle", patternStyle=patternStyle);
     }
   }
@@ -5820,6 +5831,71 @@ module brick_pattern(
   }
 }
 //CombinedEnd from path module_pattern_brick.scad
+//Combined from path module_pattern_slat.scad
+
+
+
+
+
+
+
+
+slat_debug = false;
+
+if(slat_debug && $preview){
+  slat_pattern();
+}
+
+module slat_pattern(
+  canvis_size=[31,31],
+  thickness = 1,
+  spacing = 2,
+  border = 0,
+  slat_width = 5,
+  slat_chamfer = [-2,-2],
+  center = true,
+  rotateGrid = false){
+  
+  assert(is_list(canvis_size) && len(canvis_size) == 2, "canvis_size must be a list of len 2");
+  assert(is_num(thickness), "thickness must be a number");
+  assert(is_num(spacing), "spacing must be a number");
+  assert(is_num(border), "border must be a number");
+  assert(is_num(slat_chamfer) || is_list(slat_chamfer), "slat_chamfer must be a number");
+  assert(is_bool(center), "center must be a bool");
+  assert(is_bool(rotateGrid), "rotateGrid must be a bool");
+
+  chamfer = is_num(slat_chamfer) ? [0, slat_chamfer] : slat_chamfer;
+  
+  assert(is_list(chamfer), "chamfer must be list"); 
+
+  echo("slat_pattern", chamfer=chamfer, slat_chamfer=slat_chamfer);
+  
+  working_canvis_size = 
+    let (cs = rotateGrid ? [canvis_size.y,canvis_size.x] : canvis_size)
+    border > 0 ? [cs.x-border*2,cs.y-border*2] : cs;
+  
+  nx = floor((working_canvis_size.x + spacing) / (slat_width + spacing));
+    
+  if(nx > 0)
+  translate(center ? [0,0,0] : [canvis_size.x/2,canvis_size.y/2,0])
+  rotate(rotateGrid?[0,0,90]:[0,0,0])
+  translate([-working_canvis_size.x/2,-working_canvis_size.y/2])
+  for(ix=[0:nx-1]){
+    let(
+      width = (working_canvis_size.x + spacing)/nx-spacing,
+      size = [width, working_canvis_size.y, thickness])
+    translate([(width+spacing)*ix,0])
+    chamfered_cube(
+      size,
+      topChamfer = chamfer[1],
+      bottomChamfer = chamfer[0]);
+  }
+}
+//CombinedEnd from path module_pattern_slat.scad
+//Combined from path 
+
+
+//CombinedEnd from path 
 //Combined from path module_gridfinity_label.scad
 
 
