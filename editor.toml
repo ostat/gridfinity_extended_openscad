@@ -184,7 +184,7 @@ template = ["section-general-bin"
 ]
 
 [[model]]
-template = "bin"
+template = [ "bin" ]
 file = "gridfinity_basic_cup.scad"
 
 [[model]]
