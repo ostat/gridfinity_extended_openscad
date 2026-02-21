@@ -166,21 +166,22 @@ collapsed = true
 description-extra-html = "<br><br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>.<br><br>"
 
 [model-template.bin]
-template = "section-general-bin"
-template = "section-cup-lip"
-template = "section-subdivisions"
-template = "section-base"
-template = "section-label"
-template = "section-sliding-lid"
-template = "section-finger-slide"
-template = "section-tapered-corner"
-template = "section-wall-pattern"
-template = "section-floor-pattern"
-template = "section-wall-cutout"
-template = "section-extendable"
-template = "section-debug"
-template = "section-bottom-text"
-template = "section-model-detail"
+template = ["section-general-bin"
+    "section-cup-lip",
+    "section-subdivisions",
+    "section-base",
+    "section-label",
+    "section-sliding-lid",
+    "section-finger-slide",
+    "section-tapered-corner",
+    "section-wall-pattern",
+    "section-floor-pattern",
+    "section-wall-cutout",
+    "section-extendable",
+    "section-debug",
+    "section-bottom-text",
+    "section-model-detail"
+]
 
 [[model]]
 template = "bin"
