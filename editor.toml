@@ -5,6 +5,9 @@ export-filename-prefix = "Gridfinity Extended"
 mode = "multi"
 head-extra = ''
 
+[model-template.default]
+description-extra-html = "<br><br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>.<br><br>"
+
 [model-template.section-general-bin]
 [model-template.section-general-bin.tab-metadata."General Cup"]
 help-link = "https://docs.ostat.com/docs/openscad/gridfinity-extended/basic-cup/#general-cup-settings"
@@ -161,9 +164,6 @@ collapsed = true
 [model-template.section-model-detail]
 [model-template.section-model-detail.tab-metadata."Model detail"]
 collapsed = true
-
-[model-template.default]
-description-extra-html = "<br><br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>.<br><br>"
 
 [model-template.bin]
 template = ["section-general-bin",
