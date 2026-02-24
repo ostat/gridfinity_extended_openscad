@@ -118,6 +118,7 @@ default_cavity_floor_radius = -1;
 default_hole_overhang_remedy = 2;
 // Save material with thinner floor
 default_efficient_floor = "off";//["off","on","rounded","smooth"] 
+default_efficient_floor_limit = -1;
 // Remove floor to create a spacer
 default_spacer = false;
 // Half-pitch base pads for offset stacking
@@ -254,6 +255,7 @@ module gridfinity_cup(
     floorThickness = default_floor_thickness,
     cavityFloorRadius = default_cavity_floor_radius,
     efficientFloor=default_efficient_floor,
+    efficientFloorLimit = default_efficient_floor_limit,
     subPitch=default_sub_pitch,
     flatBase=default_flat_base,
     spacer=default_spacer),
@@ -1378,11 +1380,12 @@ module basic_cavity(num_x, num_y, num_z,
         cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height]);
       hasCornerAttachments = magnet_diameter > 0 || screw_depth > 0;
       efficientFloorGridHeight = max(magnetCoverHeight,gfBaseHeight())+floor_thickness;
+      efficient_floor_limit = cupBase_settings[iCupBase_EfficientFloorLimit];
       if(env_help_enabled("trace")) echo("basic_cavity", efficient_floor=cupBase_settings[iCupBase_EfficientFloor], efficientFloorGridHeight=efficientFloorGridHeight,  floor_thickness=floor_thickness);
       difference(){
         tz(-fudgeFactor)
           cube([num_x*env_pitch().x, num_y*env_pitch().y, efficientFloorGridHeight]);
-        
+
         difference(){
           efficient_floor_grid(
             num_x, num_y,
@@ -1393,10 +1396,11 @@ module basic_cavity(num_x, num_y, num_z,
             efficientFloorGridHeight=efficientFloorGridHeight,
             align_grid = cupBase_settings[iCupBase_AlignGrid],
             margins=q);
-           
-           //Screw and magnet covers required for efficient floor
-           if(hasCornerAttachments)
-             gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only)
+
+          //Screw magnet covers and Limit required for efficient floor
+          union(){
+            if(hasCornerAttachments)
+              gridcopycorners(num_x, num_y, magnetPosition, box_corner_attachments_only)
                 let(magnet_size=cupBase_settings[iCupBase_MagnetSize])
                 EfficientFloorAttachmentCaps(
                   grid_copy_corner_index = $gcci,
@@ -1407,9 +1411,18 @@ module basic_cavity(num_x, num_y, num_z,
                   //if magnet is captive, 
                   wall_thickness = 
                     ((cupBase_settings[iCupBase_NormalisedMagnetEasyRelease] == MagnetEasyRelease_inner && cupBase_settings[iCupBase_MagnetCaptiveHeight] == 0)
-                    || (cupBase_settings[iCupBase_MagnetEasyRelease] != MagnetEasyRelease_off && cupBase_settings[iCupBase_MagnetSideAccess]))
-                      ? wall_thickness*2
-                      : wall_thickness );
+                     || (cupBase_settings[iCupBase_MagnetEasyRelease] != MagnetEasyRelease_off && cupBase_settings[iCupBase_MagnetSideAccess]))
+                    ? wall_thickness*2
+                    : wall_thickness );
+
+              if(efficient_floor_limit != -1)
+                {
+                    efficient_floor_limit_height = efficient_floor_limit == -2 ? magnetCoverHeight + floor_thickness + 0.01 : efficient_floor_limit;
+                    cube([num_x*env_pitch().x,num_y*env_pitch().y, efficient_floor_limit_height]);
+
+
+                }
+           }
           }
         }
       }
