@@ -39,11 +39,12 @@ if(show_gridfinity_demo){
   }  
 }
 
-module click_groove() {
+// add a click groove running along the x axis, centered on the y axis.
+module click_groove(length) {
   height = 1.5;
   depth = height/2;
   gap = 0.1;
-  translate([0, 2.15+env_clearance().x/2, 2.6]) rotate([0, 90, 0]) linear_extrude(30, center=true) polygon([[(1.8-height)/2-gap, -gap], [0.9, depth], [1.8-(1.8-height)/2+gap, -gap]]);
+  translate([0, 2.15+env_clearance().x/2, 2.6]) rotate([0, 90, 0]) linear_extrude(length, center=true) polygon([[(1.8-height)/2-gap, -gap], [0.9, depth], [1.8-(1.8-height)/2+gap, -gap]]);
 }
 
 // basic block with cutout in top to be stackable, optional holes in bottom
@@ -213,10 +214,18 @@ module grid_block(
 
     
     if (cupBase_settings[iCupBase_ClickGroove]) for (ix = [0:num_x-1], iy = [0:num_y-1]) translate([env_pitch().x*ix, env_pitch().x*iy]) {
-      translate([env_pitch().x/2, 0]) click_groove();
-      translate([env_pitch().x/2, env_pitch().y]) rotate([0, 0, 180]) click_groove();
-      translate([0, env_pitch().y/2]) rotate([0, 0, -90]) click_groove();
-      translate([env_pitch().x, env_pitch().y/2]) rotate([0, 0, 90]) click_groove();
+      // For full pitch, we can use a normal groove that ends just before the corners. But with sub pitch, we need to handle the case where 
+      // the bin is offset one subcell, and the center of the baseplate cell is actually at the edge of the bin. To avoid interference here,
+      // cut the groove along the entire length of the block.
+      length = env_pitch() * (sub_pitch == 1 ? 0.7 : 1);
+      for (sy = [0:sub_pitch-1]) {
+        translate([env_pitch().x/2, env_pitch().y*sy/sub_pitch]) click_groove(length.x);
+        translate([env_pitch().x/2, env_pitch().y*(sy+1)/sub_pitch]) rotate([0, 0, 180]) click_groove(length.x);
+      }
+      for (sx = [0:sub_pitch-1]) {
+        translate([env_pitch().x*sx/sub_pitch, env_pitch().y/2]) rotate([0, 0, -90]) click_groove(length.y);
+        translate([env_pitch().x*(sx+1)/sub_pitch, env_pitch().y/2]) rotate([0, 0, 90]) click_groove(length.y);
+      }
     }
   }
  
