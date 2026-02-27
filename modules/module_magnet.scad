@@ -1,22 +1,35 @@
 use <utility/utilities.scad>
 
+magnetSideAccess_disabled = "disabled";
+magnetSideAccess_left = "left";
+magnetSideAccess_right = "right";
+
+magnetSideAccess_values = [magnetSideAccess_disabled, magnetSideAccess_left, magnetSideAccess_right];
+  function validateMagnetSideAccess(value) =
+    //Convert boolean to list value
+    let(value = is_bool(value)
+      ? value ? magnetSideAccess_right : magnetSideAccess_disabled
+      : value)
+    assert(list_contains(magnetSideAccess_values, value), typeerror("MagnetSideAccess", value))
+    value;
+
 MagnetEasyRelease_off = "off";
 MagnetEasyRelease_auto = "auto";
-MagnetEasyRelease_inner = "inner"; 
-MagnetEasyRelease_outer = "outer"; 
+MagnetEasyRelease_inner = "inner";
+MagnetEasyRelease_outer = "outer";
 MagnetEasyRelease_values = [MagnetEasyRelease_off, MagnetEasyRelease_auto, MagnetEasyRelease_inner, MagnetEasyRelease_outer];
-function validateMagnetEasyRelease(value) = 
+function validateMagnetEasyRelease(value) =
   //Convert boolean to list value
   let(validatedValue = is_bool(value) ? value ? MagnetEasyRelease_auto : MagnetEasyRelease_off : value)
   assert(list_contains(MagnetEasyRelease_values, validatedValue), typeerror("MagnetEasyRelease", validatedValue))
   validatedValue;
 
 //Convert the Magnet auto to the normalised value
-function NormaliseAutoMagnetEasyRelease(value, efficientFloorValue) = 
+function NormaliseAutoMagnetEasyRelease(value, efficientFloorValue) =
   //Convert boolean to list value
-  let(normalisedValue = value == MagnetEasyRelease_auto 
-        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer 
-        : value) 
+  let(normalisedValue = value == MagnetEasyRelease_auto
+        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer
+        : value)
   assert(list_contains(MagnetEasyRelease_values, normalisedValue), typeerror("MagnetEasyRelease", normalisedValue))
   normalisedValue;
 
@@ -28,7 +41,7 @@ module MagnetAndScrewRecess(
   overhangFixLayers = 3,
   overhangFixDepth = 0.2,
   easyMagnetRelease = true,
-  enableSideAccess = true,  
+  enableSideAccess = magnetSideAccess_disabled,
   magnetCaptiveHeight = 0,
   easyReleaseRotation = 0,
   magnetRotation = 0,
@@ -47,25 +60,28 @@ module MagnetAndScrewRecess(
         magnetCaptiveHeight = magnetCaptiveHeight)
         union(){
           cylinder_wavy(
-            r=magnetDiameter/2, 
+            r=magnetDiameter/2,
             h=$outer_height,
             amplitude=magnetCrushDepth,
             frequency = 8);
           chamferedCylinder(
-            r=magnetDiameter/2-magnetCrushDepth*2, 
+            r=magnetDiameter/2-magnetCrushDepth*2,
             h=$outer_height,
             bottomChamfer = magnetChamfer);
-        }    
-        
+        }
 
 
-      if(enableSideAccess){
+
+      if(enableSideAccess != magnetSideAccess_disabled){
         translate([0,0,magnetCaptiveHeight])
-        rotate([0,0,45])
+        rotate(enableSideAccess == magnetSideAccess_left ? [0,0,45-90] :  [0,0,45])
         translate([0,-magnetDiameter/2,0])
         cube(magnetCaptiveSideAccessSize);
       }
-      rotate(enableSideAccess ? [0,0,45+180] : [0,0,easyReleaseRotation])
+      rotate(
+          enableSideAccess == magnetSideAccess_right ? [0,0,45+180]
+          : enableSideAccess == magnetSideAccess_left ? [0,0,45+90]
+          : [0,0,easyReleaseRotation])
       magnet_release(
         magnetDiameter = magnetDiameter,
         magnetThickness = magnetThickness+magnetCaptiveHeight,
@@ -81,7 +97,7 @@ module magnet_release(
   center = false
 ){
   fudgeFactor = 0.01;
-  
+
   releaseWidth = 2;
   releaseLength = 1.5;
   outerPlusBridgeHeight = magnetThickness;
@@ -91,20 +107,20 @@ module magnet_release(
     difference(){
       hull(){
         blockSize = magnetDiameter*2/3;
-        translate([magnetDiameter/2-blockSize,-releaseWidth/2,0])  
+        translate([magnetDiameter/2-blockSize,-releaseWidth/2,0])
           cube([blockSize+releaseLength,releaseWidth,magnetThickness]);
-        translate([magnetDiameter/2+releaseLength,0,0])  
+        translate([magnetDiameter/2+releaseLength,0,0])
           cylinder(d=releaseWidth, h=magnetThickness);
       }
       chamferRadius = min(magnetThickness, releaseLength+releaseWidth/2);
-      
+
       totalReleaseLength = magnetDiameter/2+releaseLength+releaseWidth/2;
-      
+
       translate([totalReleaseLength,-releaseWidth/2-fudgeFactor,magnetThickness])
       rotate([270,0,90])
       roundedCorner(
         radius = chamferRadius,
-        length = releaseWidth+2*fudgeFactor, 
+        length = releaseWidth+2*fudgeFactor,
         height = totalReleaseLength);
     }
   }

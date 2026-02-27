@@ -80,7 +80,7 @@ magnet_size = [6.5, 2.4];  // .1
 //create relief for magnet removal
 magnet_easy_release = "auto";//["off","auto","inner","outer"]
 // Use with captive magnet for a 'refinded style' magnet
-magnet_side_access = false;
+magnet_side_access = "disabled";//[disabled,left:"↰ left",right:"⬑ right"]
 // raise the magnet void inside the part for print-in-magnets
 magnet_captive_height = 0; // .1
 // add a wavy pattern to the magnet hole

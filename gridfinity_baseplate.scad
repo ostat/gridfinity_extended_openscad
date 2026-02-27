@@ -11,16 +11,16 @@ Width = [3, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
 Depth = [2, 0]; //0.1
 oversize_method = "fill"; //[crop, fill]
-position_fill_grid_x = "near";//[near, center, far]
-position_fill_grid_y = "near";//[near, center, far]
+position_fill_grid_x = "near";//[near:"← left", center:"↔ center", far:"→ right"]
+position_fill_grid_y = "near";//[far:"↑ up", center:"↕ center", near:"↓ bottom"]
 // X outer dimension. grid units (multiples of 42mm) or mm.
 outer_Width = [0, 0]; //0.1
 // Y outer dimension. grid units (multiples of 42mm) or mm.
 outer_Depth = [0, 0]; //0.1
 // z outer dimension. mm.
 outer_Height = 0; //0.1
-position_grid_in_outer_x = "center";//[near, center, far]
-position_grid_in_outer_y = "center";//[near, center, far]
+position_grid_in_outer_x = "center";//[near:"← left", center:"↔ center", far:"→ right"]
+position_grid_in_outer_y = "center";//[far:"↑ up", center:"↕ center", near:"↓ bottom"]
 //Reduce the frame wall size to this value
 Reduced_Wall_Height = -1; //0.1
 Reduced_Wall_Taper = false;

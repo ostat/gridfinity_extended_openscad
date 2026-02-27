@@ -1,6 +1,6 @@
 include <functions_general.scad>
-include <module_utility.scad>
-include <module_chamfered_shapes.scad>
+include <utility/module_utility.scad>
+include <utility/chamfered_shapes.scad>
 
 slat_debug = false;
 
