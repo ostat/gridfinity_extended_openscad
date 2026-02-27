@@ -2,10 +2,10 @@ include <gridfinity_constants.scad>
 include <module_magnet.scad>
 
 /* [Base]
-// (Zack's design uses magnet diameter of 6.5) 
+// (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
-//create relief for magnet removal 
-magnet_easy_release  = "auto";//["off","auto","inner","outer"] 
+//create relief for magnet removal
+magnet_easy_release  = "auto";//["off","auto","inner","outer"]
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
@@ -18,7 +18,7 @@ box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//[off,on,rounded,smooth] 
+efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 sub_pitch = 1;
 // Removes the internal grid from base the shape
@@ -58,11 +58,11 @@ CornerAttachments_enabled = "enabled";
 CornerAttachments_aligned = "aligned";
 
 CornerAttachments_values = [CornerAttachments_disabled, CornerAttachments_enabled, CornerAttachments_aligned];
-  function validateCornerAttachments(value) = 
+  function validateCornerAttachments(value) =
     //Convert boolean to list value
     let(value = is_bool(value) ? value ? CornerAttachments_enabled : CornerAttachments_disabled : value)
     assert(list_contains(CornerAttachments_values, value), typeerror("CornerAttachments", value))
-    value;  
+    value;
 
 
 EfficientFloor_off = "off";
@@ -71,29 +71,29 @@ EfficientFloor_rounded = "rounded";
 EfficientFloor_smooth = "smooth";
 
 EfficientFloor_values = [EfficientFloor_off, EfficientFloor_on, EfficientFloor_rounded, EfficientFloor_smooth];
-  function validateEfficientFloor(value) = 
+  function validateEfficientFloor(value) =
     //Convert boolean to list value
     let(value = is_bool(value) ? value ? EfficientFloor_on : EfficientFloor_off : value)
     assert(list_contains(EfficientFloor_values, value), typeerror("EfficientFloor", value))
-    value;  
+    value;
 
 FlatBase_off = "off";
 FlatBase_gridfinity = "gridfinity";
 FlatBase_rounded = "rounded";
 
 FlatBase_values = [FlatBase_off, FlatBase_gridfinity, FlatBase_rounded];
-  function validateFlatBase(value) = 
+  function validateFlatBase(value) =
     //Convert boolean to list value
     let(value = is_bool(value) ? value ? FlatBase_gridfinity : FlatBase_off : value)
     assert(list_contains(FlatBase_values, value), typeerror("FlatBase", value))
-    value;  
-    
+    value;
+
 function CupBaseSettings(
-    magnetSize = [0,0], 
-    magnetEasyRelease = MagnetEasyRelease_auto, 
-    centerMagnetSize = [0,0], 
-    screwSize = [0,0], 
-    holeOverhangRemedy = 2, 
+    magnetSize = [0,0],
+    magnetEasyRelease = MagnetEasyRelease_auto,
+    centerMagnetSize = [0,0],
+    screwSize = [0,0],
+    holeOverhangRemedy = 2,
     cornerAttachmentsOnly = true,
     floorThickness = gf_cup_floor_thickness,
     cavityFloorRadius = -1,
@@ -113,28 +113,31 @@ function CupBaseSettings(
     clickGroove = false
     ) = 
   let(
-    magnetSize = 
-      is_num(magnetSize) 
+    magnetSize =
+      is_num(magnetSize)
         ? [magnetSize, gf_magnet_thickness]
         : magnetSize,
-    screwSize = 
-      is_num(screwSize) 
+    screwSize =
+      is_num(screwSize)
         ? [gf_cupbase_screw_diameter, screwSize]
         : screwSize,
     cornerAttachmentsOnly = is_bool(cornerAttachmentsOnly)
       ? cornerAttachmentsOnly ? CornerAttachments_enabled : CornerAttachments_disabled
       : cornerAttachmentsOnly,
+    magnetSideAccess  = is_bool(magnetSideAccess)
+      ? magnetSideAccess ? magnetSideAccess_right : magnetSideAccess_disabled
+      : magnetSideAccess,
     efficientFloor = validateEfficientFloor(efficientFloor),
     magnetEasyRelease = validateMagnetEasyRelease(magnetEasyRelease),
     centerMagnetSize = efficientFloor != EfficientFloor_off ? [0, 0] : centerMagnetSize,
     cavityFloorRadius = efficientFloor != EfficientFloor_off ? 0 : cavityFloorRadius,
     result = [
-      magnetSize[0] == 0 || magnetSize[1] == 0 ? [0,0] : magnetSize, 
-      magnetEasyRelease, 
+      magnetSize[0] == 0 || magnetSize[1] == 0 ? [0,0] : magnetSize,
+      magnetEasyRelease,
       NormaliseAutoMagnetEasyRelease(magnetEasyRelease, efficientFloor),
       centerMagnetSize[0] == 0 || centerMagnetSize[1] == 0 ? [0,0] : centerMagnetSize,
-      screwSize[0] == 0 || screwSize[1] == 0 ? [0,0] : screwSize, 
-      holeOverhangRemedy, 
+      screwSize[0] == 0 || screwSize[1] == 0 ? [0,0] : screwSize,
+      holeOverhangRemedy,
       validateCornerAttachments(cornerAttachmentsOnly),
       floorThickness,
       cavityFloorRadius,
@@ -147,14 +150,14 @@ function CupBaseSettings(
       flatBaseRoundedEasyPrint,
       magnetCaptiveHeight,
       alignGrid,
-      magnetSideAccess,
+      validateMagnetSideAccess(magnetSideAccess),
       magnetCrushDepth,
       magnetChamfer,
       clickGroove
       ],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
-  
+
 function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_list(settings) && len(settings) == 22, typeerror_list("CupBase Settings", settings, 22))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
@@ -170,7 +173,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
   assert(is_num(settings[iCupBase_MagnetCaptiveHeight]), "CupBase Magnet Captive height setting must a number")
   assert(is_list(settings[iCupBase_AlignGrid]) && len(settings[iCupBase_AlignGrid])==2, "CupBase AlignGrid Setting must be a list of length 2")
-  assert(is_bool(settings[iCupBase_MagnetSideAccess]), "CupBase MagnetSideAccess Settings must be a boolean")
+  assert(is_string(settings[iCupBase_MagnetSideAccess]), "CupBase MagnetSideAccess Settings must be a string")
   assert(is_bool(settings[iCupBase_ClickGroove]), "CupBase ClickGroove Setting must be a boolean")
   [
       settings[iCupBase_MagnetSize],
