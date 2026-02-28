@@ -212,19 +212,16 @@ module grid_block(
         );
     }
 
-    
-    if (cupBase_settings[iCupBase_ClickGroove]) for (ix = [0:num_x-1], iy = [0:num_y-1]) translate([env_pitch().x*ix, env_pitch().x*iy]) {
+    if (cupBase_settings[iCupBase_ClickGroove]) {
       // For full pitch, we can use a normal groove that ends just before the corners. But with sub pitch, we need to handle the case where 
       // the bin is offset one subcell, and the center of the baseplate cell is actually at the edge of the bin. To avoid interference here,
       // cut the groove along the entire length of the block.
       length = env_pitch() * (sub_pitch == 1 ? 0.7 : 1);
-      for (sy = [0:sub_pitch-1]) {
-        translate([env_pitch().x/2, env_pitch().y*sy/sub_pitch]) click_groove(length.x);
-        translate([env_pitch().x/2, env_pitch().y*(sy+1)/sub_pitch]) rotate([0, 0, 180]) click_groove(length.x);
-      }
-      for (sx = [0:sub_pitch-1]) {
-        translate([env_pitch().x*sx/sub_pitch, env_pitch().y/2]) rotate([0, 0, -90]) click_groove(length.y);
-        translate([env_pitch().x*(sx+1)/sub_pitch, env_pitch().y/2]) rotate([0, 0, 90]) click_groove(length.y);
+      for (ix = [0:(num_x * sub_pitch)-1], iy = [0:(num_y * sub_pitch)-1]) translate([env_pitch().x/sub_pitch*ix, env_pitch().x/sub_pitch*iy]) {
+        translate([env_pitch().x/2, 0]) click_groove(length.x);
+        translate([env_pitch().x/2, env_pitch().y/sub_pitch]) rotate([0, 0, 180]) click_groove(length.x);
+        translate([0, env_pitch().y/2]) rotate([0, 0, -90]) click_groove(length.y);
+        translate([env_pitch().x/sub_pitch, env_pitch().y/2]) rotate([0, 0, 90]) click_groove(length.y);
       }
     }
   }
