@@ -16,6 +16,8 @@ divider_front_top_inset=20;
 divider_front_top_angle=45;
 divider_back_top_inset=20;
 divider_back_top_angle=45;
+// Tilt angle of each divider in degrees. 0 = upright. Positive leans the top toward +Y (back).
+divider_angle = 0;
 
 /* [Wall Pattern] */
 // Grid wall patter
@@ -249,6 +251,7 @@ module Gridfinity_Divider(
   frontTopAngle=divider_front_top_angle,
   backTopInset=divider_back_top_inset,
   backTopAngle=divider_back_top_angle,
+  dividerAngle=divider_angle,
   wallpatternEnabled=wallpattern_enabled,
   pattern_settings = PatternSettings(
     patternEnabled = wallpattern_enabled,
@@ -284,6 +287,9 @@ module Gridfinity_Divider(
     canvis = [dividerHeight, num_x*env_pitch().x-env_clearance().x];
     ypos = (num_y*env_pitch().y-env_corner_radius()*2-dividerWidth)/(divider_count-1)*i;
     translate([env_clearance().x/2,env_corner_radius()+dividerWidth+ypos,floorHeight])
+    // Clip anything that would extend below the cup floor when tilted
+    difference(){
+    rotate([dividerAngle,0,0])
     PatternedDivider(
       height = canvis.x,
       length = canvis.y,
@@ -335,5 +341,9 @@ module Gridfinity_Divider(
           rotateGrid = pattern_settings[iPatternRotate],
           patternFs = pattern_settings[iPatternFs]);
         }
+      // Subtract the half-space below the cup floor (local z < 0)
+      translate([-fudgeFactor, -num_y*env_pitch().y, -num_y*env_pitch().y])
+        cube([num_x*env_pitch().x+fudgeFactor*2, num_y*env_pitch().y*2, num_y*env_pitch().y]);
+    }
     }
 }
