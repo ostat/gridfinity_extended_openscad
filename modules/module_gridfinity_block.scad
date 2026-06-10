@@ -200,6 +200,7 @@ module grid_block(
           enableSideAccess = cupBase_settings[iCupBase_MagnetSideAccess],
           magnetCaptiveSideAccessSize = [magnetCaptiveSideAccessSize, magnet_size[iCylinderDimension_Diameter], magnet_size[iCylinderDimension_Height]+0.1],
           magnetCrushDepth = cupBase_settings[iCupBase_MagnetCrushDepth],
+          magnetCrushRibCount = cupBase_settings[iCupBase_MagnetCrushRibCount],
           magnetChamfer = cupBase_settings[iCupBase_MagnetChamfer]
         );
     }
