@@ -505,7 +505,7 @@ module labelSockets(
     else if(label_style == LabelStyle_pred){
       predSize=[
         abs(label_num_x)-fullLipWidth*2-binClearance,
-        abs(labelPoints[0][0]-labelPoints[1][0])-fullLipWidth,
+        label_relief.y == 0 ? 12 : label_relief.y,
         (label_relief.z == 0 ? 1 : label_relief.z) + fudgeFactor];
       translate([-labelCornerRadius+binClearance/2+fullLipWidth,-.3+labelPoints[0][0]+max(labelCornerRadius,label_relief.y+0.5),fudgeFactor-label_relief.z])
       label_pred_socket(size=predSize);
