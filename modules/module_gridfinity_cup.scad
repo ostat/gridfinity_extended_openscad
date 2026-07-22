@@ -66,6 +66,7 @@ default_sliding_min_wall_thickness = 0;//0.1
 default_sliding_min_support = 0;//0.1
 default_sliding_clearance = 0.1;//0.1
 default_sliding_lid_pull_style = "disabled";
+default_sliding_lid_exposes_label = false;
 
 /* [Finger Slide] */
 // Include larger corner fillet
@@ -348,7 +349,8 @@ module gridfinity_cup(
     min_wall_thickness = default_sliding_min_wall_thickness,
     min_support = default_sliding_min_support,
     clearance = default_sliding_clearance,
-    pull_style = default_sliding_lid_pull_style),
+    pull_style = default_sliding_lid_pull_style,
+    exposes_label = default_sliding_lid_exposes_label),
   cupBaseTextSettings = CupBaseTextSettings(
     baseTextLine1Enabled = default_text_1,
     baseTextLine2Enabled = default_text_2,
@@ -356,8 +358,15 @@ module gridfinity_cup(
     baseTextFontSize = default_text_size,
     baseTextFont = default_text_font,
     baseTextDepth = default_text_depth,
-    baseTextOffset = default_text_offset)) {
-  
+    baseTextOffset = default_text_offset),
+  // There are some pretty gnarly calculations in here on the way to
+  // figuring out the label stuff, and we need that label stuff to
+  // make cutouts from the sliding lid. So, this module does double
+  // duty, depending on the value of label_shapes_only. If true
+  // then just the label shapes themselves are constructed. If false
+  // everything (including the label shapes) is constructed.
+  label_shapes_only = false) {
+
   num_x = is_undef(width) ?  $num_x : calcDimensionWidth(width, true);
   num_y = is_undef(depth) ? $num_y : calcDimensionDepth(depth, true);
   num_z = is_undef(height) ? $num_z : calcDimensionHeight(height, true);
@@ -427,6 +436,17 @@ module gridfinity_cup(
   
   if(env_generate_filter_enabled("cup"))
   debug_cut()
+  if(label_shapes_only && label_settings[iLabelSettings_style] != LabelStyle_disabled){
+    gridfinity_label(
+      num_x = num_x,
+      num_y = num_y,
+      zpoint = zpoint,
+      vertical_separator_positions = calculated_vertical_separator_positions,
+      horizontal_separator_positions = calculated_horizontal_separator_positions,
+      label_settings=label_settings,
+      render_option = "labelwithsocket");
+  }
+  else {
   union(){
     wallTop = calculateWallTop(num_z, lip_settings[iLipStyle]);
     bin_placards(
@@ -436,7 +456,7 @@ module gridfinity_cup(
       wall_height = wallTop,
       wallplacard_settings = wallplacard_settings);
 
-    difference() {
+      difference() {
 
         border = 0; //Believe this to be no longer needed
        
@@ -485,7 +505,7 @@ module gridfinity_cup(
 
         //coloured_wall_pattern child 1 bin cavities and negative volumes
         union(){
-          //primary cavity
+          //primary cavity (has its own consideration of label_shapes_only)
           if(filled_in == FilledIn_disabled) 
           partitioned_cavity(
             num_x, num_y, num_z,
@@ -523,7 +543,7 @@ module gridfinity_cup(
             fudgeFactor = fudgeFactor,
             cutoutclearance_divider = cutoutclearance_divider);
     
-        bin_wall_pattern(
+          bin_wall_pattern(
             num_x = num_x,
             num_y = num_y,
             num_z = num_z,
@@ -685,6 +705,7 @@ module gridfinity_cup(
     ,"extendable_Settings",extendable_Settings
     ]
     ,env_help_enabled("info"));  
+  }
 }
 
 module bin_wall_pattern(
@@ -1143,7 +1164,7 @@ module partitioned_cavity(num_x, num_y, num_z,
     lip_settings=[], 
     headroom=default_headroom, 
     sliding_lid_settings=[]) {
-  
+
   //Legacy variables
   flat_base=cupBase_settings[iCupBase_FlatBase];
   cavity_floor_radius=cupBase_settings[iCupBase_CavityFloorRadius];
@@ -1153,6 +1174,7 @@ module partitioned_cavity(num_x, num_y, num_z,
   screw_depth=cupBase_settings[iCupBase_ScrewSize][iCylinderDimension_Height];
   floor_thickness=cupBase_settings[iCupBase_FloorThickness];  
   zpoint = env_pitch().z*num_z-headroom;
+
 
   floorHeight = calculateFloorHeight(
     magnet_depth=cupBase_settings[iCupBase_MagnetSize][iCylinderDimension_Height], 
@@ -1197,6 +1219,7 @@ module partitioned_cavity(num_x, num_y, num_z,
       separator_orientation = "horizontal",
       source = "partitioned_cavity");
       
+    // always do this, regardless of label_shapes_only
     if(label_settings[iLabelSettings_style] != LabelStyle_disabled){
       gridfinity_label(
         num_x = num_x,

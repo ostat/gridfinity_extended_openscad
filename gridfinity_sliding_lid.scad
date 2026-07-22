@@ -25,7 +25,9 @@ sliding_lid_min_support = 0;//0.1
 sliding_lid_pull_style = "disabled"; //[disabled, lip, finger]
 sliding_lid_clearance = 0.1;//0.1
 sliding_lid_lip_clearance = 0.1;//0.1
-sliding_lid_nub_size = 0.5; //
+sliding_lid_nub_size = 0.5;
+// If selected, an opening will be made in the sliding lid so that a back wall label is visible when the lid is in place. Does not do anything for labels on other walls.
+sliding_lid_exposes_label = false;
 
 /* [Sliding Cutout] */
 sliding_lid_cutout_enabled = false; //
@@ -317,8 +319,162 @@ sliding_lid_settings = SlidingLidSettings(
   cutout_enabled = sliding_lid_cutout_enabled,
   cutout_size = sliding_lid_cutout_size,
   cutout_radius = sliding_lid_cutout_radius,
-  cutout_position = sliding_lid_cutout_position
+  cutout_position = sliding_lid_cutout_position,
+  exposes_label = sliding_lid_exposes_label
 );
+
+    label_settings_reuse=LabelSettings(
+      labelStyle=label_style, 
+      labelPosition=label_position, 
+      labelSize=label_size,
+      labelRelief=label_relief,
+      labelWalls=label_walls);
+
+    finger_slide_settings_reuse = FingerSlideSettings(
+      type = fingerslide,
+      radius = fingerslide_radius,
+      walls = fingerslide_walls,
+      lip_aligned = fingerslide_lip_aligned);
+
+    cupBase_settings_reuse = CupBaseSettings(
+      magnetSize = enable_magnets ? magnet_size : [0,0], 
+      magnetEasyRelease = magnet_easy_release, 
+      centerMagnetSize = center_magnet_size, 
+      screwSize = enable_screws ? screw_size : [0,0], 
+      holeOverhangRemedy = hole_overhang_remedy, 
+      cornerAttachmentsOnly = box_corner_attachments_only,
+      floorThickness = floor_thickness,
+      cavityFloorRadius = cavity_floor_radius,
+      efficientFloor=efficient_floor,
+      subPitch=sub_pitch,
+      flatBase=flat_base,
+      spacer=spacer,
+      minimumPrintablePadSize=minimum_printable_pad_size,
+      flatBaseRoundedRadius = flat_base_rounded_radius,
+      flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint);
+
+    vertical_chambers_reuse = ChamberSettings(
+      chambers_count = vertical_chambers,
+      chamber_wall_thickness = chamber_wall_thickness,
+      chamber_wall_headroom = chamber_wall_headroom,
+      separator_bend_position = vertical_separator_bend_position,
+      separator_bend_angle = vertical_separator_bend_angle,
+      separator_bend_separation = vertical_separator_bend_separation,
+      separator_cut_depth = vertical_separator_cut_depth,
+      irregular_subdivisions = vertical_irregular_subdivisions,
+      separator_config = vertical_separator_config);
+
+    horizontal_chambers_reuse = ChamberSettings(
+      chambers_count = horizontal_chambers,
+      chamber_wall_thickness = chamber_wall_thickness,
+      chamber_wall_headroom = chamber_wall_headroom,
+      separator_bend_position = horizontal_separator_bend_position,
+      separator_bend_angle = horizontal_separator_bend_angle,
+      separator_bend_separation = horizontal_separator_bend_separation,
+      separator_cut_depth = horizontal_separator_cut_depth,
+      irregular_subdivisions = horizontal_irregular_subdivisions,
+      separator_config = horizontal_separator_config);
+
+    lip_settings_reuse = LipSettings(
+      lipStyle=lip_style, 
+      lipSideReliefTrigger=lip_side_relief_trigger, 
+      lipTopReliefHeight=lip_top_relief_height, 
+      lipNotch=lip_top_notches);
+
+    wall_pattern_settings_reuse = PatternSettings(
+      patternEnabled = wallpattern_enabled, 
+      patternStyle = wallpattern_style, 
+      patternRotate = wallpattern_rotate_grid,
+      patternFill = wallpattern_fill,
+      patternBorder = wallpattern_border, 
+      patternDepth = wallpattern_depth,
+      patternCellSize = wallpattern_cell_size, 
+      patternHoleSides = wallpattern_hole_sides,
+      patternStrength = wallpattern_strength, 
+      patternHoleRadius = wallpattern_hole_radius,
+      patternGridChamfer = wallpattern_pattern_grid_chamfer,
+      patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
+      patternBrickWeight = wallpattern_pattern_brick_weight,
+      patternFs = wallpattern_pattern_quality);
+
+    floor_pattern_settings_reuse = PatternSettings(
+      patternEnabled = floorpattern_enabled, 
+      patternStyle = floorpattern_style, 
+      patternRotate = floorpattern_rotate_grid,
+      patternFill = floorpattern_fill,
+      patternBorder = floorpattern_border, 
+      patternDepth = floorpattern_depth,
+      patternCellSize = floorpattern_cell_size, 
+      patternHoleSides = floorpattern_hole_sides,
+      patternStrength = floorpattern_strength, 
+      patternHoleRadius = floorpattern_hole_radius,
+      patternGridChamfer = floorpattern_pattern_grid_chamfer,
+      patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
+      patternBrickWeight = floorpattern_pattern_brick_weight,
+      patternFs = floorpattern_pattern_quality);
+
+    wallcutout_vertical_settings_reuse = WallCutoutSettings(
+      type = wallcutout_vertical, 
+      position = wallcutout_vertical_position, 
+      width = wallcutout_vertical_width,
+      angle = wallcutout_vertical_angle,
+      height = wallcutout_vertical_height, 
+      corner_radius = wallcutout_vertical_corner_radius);
+
+    wallcutout_horizontal_settings_reuse = WallCutoutSettings(
+      type = wallcutout_horizontal, 
+      position = wallcutout_horizontal_position, 
+      width = wallcutout_horizontal_width,
+      angle = wallcutout_horizontal_angle,
+      height = wallcutout_horizontal_height, 
+      corner_radius = wallcutout_horizontal_corner_radius);
+
+    extendable_Settings_reuse = ExtendableSettings(
+      extendablexEnabled = extension_x_enabled, 
+      extendablexPosition = extension_x_position, 
+      extendableyEnabled = extension_y_enabled, 
+      extendableyPosition = extension_y_position, 
+      extendableTabsEnabled = extension_tabs_enabled, 
+      extendableTabSize = extension_tab_size);
+
+    cupBaseTextSettings_reuse = CupBaseTextSettings(
+      baseTextLine1Enabled = text_1,
+      baseTextLine2Enabled = text_2,
+      baseTextLine2Value = text_2_text,
+      baseTextFontSize = text_size,
+      baseTextFont = text_font,
+      baseTextDepth = text_depth,
+      baseTextOffset = text_offset);
+
+// This is only here to reduce redundant code, so don't use it
+// elsewhere. If we were inside a module, it would be scoped,
+// but we're at top level, so using the "_" prefix as a hint.
+module _cup_wrapper(label_shapes_only) {
+    gridfinity_cup(  // see similar call later in this file
+      width=width, depth=depth, height=height,
+      filled_in=filled_in,
+      label_settings = label_settings_reuse,
+      finger_slide_settings = finger_slide_settings_reuse,
+      cupBase_settings = cupBase_settings_reuse,
+      wall_thickness=wall_thickness,
+      vertical_chambers = vertical_chambers_reuse,
+      horizontal_chambers = horizontal_chambers_reuse,
+      lip_settings = lip_settings_reuse,
+      headroom=headroom,
+      tapered_corner=tapered_corner,
+      tapered_corner_size = tapered_corner_size,
+      tapered_setback = tapered_setback,
+      wallpattern_walls=wallpattern_walls, 
+      wallpattern_dividers_enabled=wallpattern_dividers_enabled,
+      wall_pattern_settings = wall_pattern_settings_reuse,
+      floor_pattern_settings = floor_pattern_settings_reuse,
+      wallcutout_vertical_settings = wallcutout_vertical_settings_reuse,
+      wallcutout_horizontal_settings = wallcutout_horizontal_settings_reuse,
+      extendable_Settings = extendable_Settings_reuse,
+      sliding_lid_settings= sliding_lid_settings,
+      cupBaseTextSettings = cupBaseTextSettings_reuse,
+      label_shapes_only = label_shapes_only);
+}
 
 set_environment(
   width = width,
@@ -331,130 +487,10 @@ set_environment(
   randomSeed = random_seed,
   force_render = force_render)
   union(){
+
   if(render_choice == "both" || render_choice == "cup" || render_choice == "both connected")
   {
-    gridfinity_cup(
-      width=width, depth=depth, height=height,
-      filled_in=filled_in,
-      label_settings=LabelSettings(
-        labelStyle=label_style,
-        labelPosition=label_position,
-        labelSize=label_size,
-        labelRelief=label_relief,
-        labelWalls=label_walls),
-      finger_slide_settings = FingerSlideSettings(
-        type = fingerslide,
-        radius = fingerslide_radius,
-        walls = fingerslide_walls,
-        lip_aligned = fingerslide_lip_aligned),
-      cupBase_settings = CupBaseSettings(
-        magnetSize = enable_magnets ? magnet_size : [0,0],
-        magnetEasyRelease = magnet_easy_release,
-        centerMagnetSize = center_magnet_size,
-        screwSize = enable_screws ? screw_size : [0,0],
-        holeOverhangRemedy = hole_overhang_remedy,
-        cornerAttachmentsOnly = box_corner_attachments_only,
-        floorThickness = floor_thickness,
-        cavityFloorRadius = cavity_floor_radius,
-        efficientFloor=efficient_floor,
-        subPitch=sub_pitch,
-        flatBase=flat_base,
-        spacer=spacer,
-        minimumPrintablePadSize=minimum_printable_pad_size,
-        flatBaseRoundedRadius = flat_base_rounded_radius,
-        flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint),
-      wall_thickness=wall_thickness,
-      vertical_chambers = ChamberSettings(
-        chambers_count = vertical_chambers,
-        chamber_wall_thickness = chamber_wall_thickness,
-        chamber_wall_headroom = chamber_wall_headroom,
-        separator_bend_position = vertical_separator_bend_position,
-        separator_bend_angle = vertical_separator_bend_angle,
-        separator_bend_separation = vertical_separator_bend_separation,
-        separator_cut_depth = vertical_separator_cut_depth,
-        irregular_subdivisions = vertical_irregular_subdivisions,
-        separator_config = vertical_separator_config),
-      horizontal_chambers = ChamberSettings(
-        chambers_count = horizontal_chambers,
-        chamber_wall_thickness = chamber_wall_thickness,
-        chamber_wall_headroom = chamber_wall_headroom,
-        separator_bend_position = horizontal_separator_bend_position,
-        separator_bend_angle = horizontal_separator_bend_angle,
-        separator_bend_separation = horizontal_separator_bend_separation,
-        separator_cut_depth = horizontal_separator_cut_depth,
-        irregular_subdivisions = horizontal_irregular_subdivisions,
-        separator_config = horizontal_separator_config),
-      lip_settings = LipSettings(
-        lipStyle=lip_style,
-        lipSideReliefTrigger=lip_side_relief_trigger,
-        lipTopReliefHeight=lip_top_relief_height,
-        lipNotch=lip_top_notches),
-      headroom=headroom,
-      tapered_corner=tapered_corner,
-      tapered_corner_size = tapered_corner_size,
-      tapered_setback = tapered_setback,
-      wallpattern_walls=wallpattern_walls,
-      wallpattern_dividers_enabled=wallpattern_dividers_enabled,
-      wall_pattern_settings = PatternSettings(
-        patternEnabled = wallpattern_enabled,
-        patternStyle = wallpattern_style,
-        patternRotate = wallpattern_rotate_grid,
-        patternFill = wallpattern_fill,
-        patternBorder = wallpattern_border,
-        patternDepth = wallpattern_depth,
-        patternCellSize = wallpattern_cell_size,
-        patternHoleSides = wallpattern_hole_sides,
-        patternStrength = wallpattern_strength,
-        patternHoleRadius = wallpattern_hole_radius,
-        patternGridChamfer = wallpattern_pattern_grid_chamfer,
-        patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
-        patternBrickWeight = wallpattern_pattern_brick_weight,
-        patternFs = wallpattern_pattern_quality),
-      floor_pattern_settings = PatternSettings(
-        patternEnabled = floorpattern_enabled,
-        patternStyle = floorpattern_style,
-        patternRotate = floorpattern_rotate_grid,
-        patternFill = floorpattern_fill,
-        patternBorder = floorpattern_border,
-        patternDepth = floorpattern_depth,
-        patternCellSize = floorpattern_cell_size,
-        patternHoleSides = floorpattern_hole_sides,
-        patternStrength = floorpattern_strength,
-        patternHoleRadius = floorpattern_hole_radius,
-        patternGridChamfer = floorpattern_pattern_grid_chamfer,
-        patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
-        patternBrickWeight = floorpattern_pattern_brick_weight,
-        patternFs = floorpattern_pattern_quality),
-      wallcutout_vertical_settings = WallCutoutSettings(
-        type = wallcutout_vertical,
-        position = wallcutout_vertical_position,
-        width = wallcutout_vertical_width,
-        angle = wallcutout_vertical_angle,
-        height = wallcutout_vertical_height,
-        corner_radius = wallcutout_vertical_corner_radius),
-      wallcutout_horizontal_settings = WallCutoutSettings(
-        type = wallcutout_horizontal,
-        position = wallcutout_horizontal_position,
-        width = wallcutout_horizontal_width,
-        angle = wallcutout_horizontal_angle,
-        height = wallcutout_horizontal_height,
-        corner_radius = wallcutout_horizontal_corner_radius),
-      extendable_Settings = ExtendableSettings(
-        extendablexEnabled = extension_x_enabled,
-        extendablexPosition = extension_x_position,
-        extendableyEnabled = extension_y_enabled,
-        extendableyPosition = extension_y_position,
-        extendableTabsEnabled = extension_tabs_enabled,
-        extendableTabSize = extension_tab_size),
-      sliding_lid_settings= sliding_lid_settings,
-      cupBaseTextSettings = CupBaseTextSettings(
-        baseTextLine1Enabled = text_1,
-        baseTextLine2Enabled = text_2,
-        baseTextLine2Value = text_2_text,
-        baseTextFontSize = text_size,
-        baseTextFont = text_font,
-        baseTextDepth = text_depth,
-        baseTextOffset = text_offset));
+    _cup_wrapper(false);
   }
 
   if(render_choice == "both" || render_choice == "lid" || render_choice == "both connected")
@@ -475,32 +511,68 @@ set_environment(
       render_choice == "both" && !$preview
       ? [(num_x+0.5)*env_pitch().x, 0, 0]
       : [0, 0, render_choice == "lid" ? 0 : zpoint])
-      SlidingLid(
-        num_x=num_x,
-        num_y=num_y,
-        wall_thickness,
-        headroom = headroom,
-        lipStyle = lip_style,
-        lip_notches = lip_top_notches,
-        lip_top_relief_height = lip_top_relief_height,
-        limitHeight=true,
-        clearance = slidingLidSettings[iSlidingLid_Clearance],
-        lip_clearance = slidingLidSettings[iSlidingLid_LipClearance],
-        lidThickness=slidingLidSettings[iSlidingLid_Thickness],
-        lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
-        lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
-        pull_style = slidingLidSettings[iSlidingLid_PullStyle],
-        cutoutEnabled = slidingLidSettings[iSlidingLid_CutoutEnabled],
-        cutoutSize = slidingLidSettings[iSlidingLid_CutoutSize],
-        cutoutRadius = slidingLidSettings[iSlidingLid_CutoutRadius],
-        cutoutPosition = slidingLidSettings[iSlidingLid_CutoutPosition],
-        nub_size = slidingLidSettings[iSlidingLid_NubSize],
-        text_enabled = slidingLidSettings[iSlidingLid_TextEnabled],
-        text_content = slidingLidSettings[iSlidingLid_TextContent],
-        text_size = slidingLidSettings[iSlidingLid_TextSize],
-        text_depth = slidingLidSettings[iSlidingLid_TextDepth],
-        text_font = slidingLidSettings[iSlidingLid_TextFont],
-        text_position = slidingLidSettings[iSlidingLid_TextPosition]
-      );
-  }
+      difference() {
+        SlidingLid(
+          num_x=num_x, 
+          num_y=num_y,
+          wall_thickness,
+          headroom = headroom,
+          lipStyle = lip_style,
+          lip_notches = lip_top_notches,
+          lip_top_relief_height = lip_top_relief_height, 
+          limitHeight=true,
+          clearance = slidingLidSettings[iSlidingLid_Clearance],
+          lip_clearance = slidingLidSettings[iSlidingLid_LipClearance],
+          lidThickness=slidingLidSettings[iSlidingLid_Thickness],
+          lidMinSupport=slidingLidSettings[iSlidingLid_MinSupport],
+          lidMinWallThickness=slidingLidSettings[iSlidingLid_MinWallThickness],
+          pull_style = slidingLidSettings[iSlidingLid_PullStyle],
+          cutoutEnabled = slidingLidSettings[iSlidingLid_CutoutEnabled],
+          cutoutSize = slidingLidSettings[iSlidingLid_CutoutSize],
+          cutoutRadius = slidingLidSettings[iSlidingLid_CutoutRadius],
+          cutoutPosition = slidingLidSettings[iSlidingLid_CutoutPosition],
+          nub_size = slidingLidSettings[iSlidingLid_NubSize],
+          text_enabled = slidingLidSettings[iSlidingLid_TextEnabled],
+          text_content = slidingLidSettings[iSlidingLid_TextContent],
+          text_size = slidingLidSettings[iSlidingLid_TextSize],
+          text_depth = slidingLidSettings[iSlidingLid_TextDepth],
+          text_font = slidingLidSettings[iSlidingLid_TextFont],
+          text_position = slidingLidSettings[iSlidingLid_TextPosition],
+          exposes_label = slidingLidSettings[iSlidingLid_ExposesLabel]
+        );
+        // TODO: this method of removing the labels doesn't adjust the
+        // locking nubs.
+        // 
+        // For the "*chamber" label positions, the chamber partitions
+        // remain in the modified sliding lid because they're not part
+        // of the label projection. That's pretty fragile.  As a
+        // special case, for full-width labels we use a hull() to get
+        // rid of those slivers. That only makes sense for labels on a
+        // single wall.
+        // 
+        // It probably doesn't matter for hull purposes which
+        // label_position is used when using full-width labels, but we
+        // only check for the ones that leave uncovered partition
+        // walls.
+        // 
+        // A more complicated way to go about this would
+        // be to get the footprint of the label shapes separately for
+        // each wall and hull them wall-by-wall. But ... that's more
+        // complicated and only helps on edge cases that are probably
+        // not used often. There are many cases that make no practical
+        // sense.
+        if(slidingLidSettings[iSlidingLid_ExposesLabel]) {
+            use_hull = (label_size.x == 0)
+                     // but these are the only ones that leave slivers
+                     && (   label_position == LabelPosition_leftchamber
+                         || label_position == LabelPosition_centerchamber
+                         || label_position == LabelPosition_rightchamber)
+                     && sum(label_walls) == 1;
+            linear_extrude(height=slidingLidSettings[iSlidingLid_Thickness])
+              projection()
+                hull_conditional(enabled = use_hull)
+                  _cup_wrapper(true);
+        } // if
+    } // difference
+  } // if render_choice
 }
