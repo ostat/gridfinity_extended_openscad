@@ -117,6 +117,8 @@ flat_base_rounded_easyPrint = -1;
 align_grid_x = "near";//[near, far]
 // grid position y
 align_grid_y = "near";//[near, far]
+// Enable click groove that compatible base plates can use to lock the cup in place
+enable_click_groove = false;
 
 /* [Label] */
 label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
@@ -356,7 +358,8 @@ gridfinity_cup(
     minimumPrintablePadSize=minimum_printable_pad_size,
     flatBaseRoundedRadius = flat_base_rounded_radius,
     flatBaseRoundedEasyPrint = flat_base_rounded_easyPrint,
-    alignGrid = [align_grid_x, align_grid_y]
+    alignGrid = [align_grid_x, align_grid_y],
+    clickGroove = enable_click_groove
     ),
   wall_thickness=wall_thickness,
   vertical_chambers = ChamberSettings(
