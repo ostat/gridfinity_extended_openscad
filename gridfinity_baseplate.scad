@@ -128,6 +128,12 @@ let (up = ceil(number), down = floor(number),
   echo("round_half_down", number=number, up=up, down=down, max_allowed=max_allowed, result=result, lessthan=number - down <= 0.5, upgreater=up > max_allowed)
   result;
 
+function normalize_width_dimension(value) =
+  is_num(value) ? value : calcDimensionWidth(value);
+
+function normalize_depth_dimension(value) =
+  is_num(value) ? value : calcDimensionDepth(value);
+
 function split_dimension(
     gf_size,                // The size of the grid (inner dimension of the grid area)
     gf_outer_size,          // The outer bounding size (outer dimension of the grid area)
@@ -152,7 +158,7 @@ function split_dimension(
       position_grid_in_outer == "far" ? outerPadding :
       position_grid_in_outer == "center" ? outerPadding/2 : 0,
     gridPrefix=
-      position_fill_grid == "near" ? gf_size - floor(gf_size) :
+      position_fill_grid == "far" ? gf_size - floor(gf_size) :
       position_fill_grid == "center" ? (gf_size - floor(gf_size))/2 : 0,
 
     // Calculate the number of plates and average sizes
@@ -194,10 +200,14 @@ function split_plate(num_x, num_y,
     build_plate_size,
     average_plate_sizes) =
   let(
+    _num_x = normalize_width_dimension(num_x),
+    _num_y = normalize_depth_dimension(num_y),
+    _outer_num_x = normalize_width_dimension(outer_num_x),
+    _outer_num_y = normalize_depth_dimension(outer_num_y),
     max_x = build_plate_size.x/env_pitch().x,
     max_y = build_plate_size.y/env_pitch().y,
-    list_x = split_dimension(num_x, outer_num_x, max_x, position_fill_grid_x, position_grid_in_outer_x, average_plate_sizes),
-    list_y = split_dimension(num_y, outer_num_y, max_y, position_fill_grid_y, position_grid_in_outer_y, average_plate_sizes),
+    list_x = split_dimension(_num_x, _outer_num_x, max_x, position_fill_grid_x, position_grid_in_outer_x, average_plate_sizes),
+    list_y = split_dimension(_num_y, _outer_num_y, max_y, position_fill_grid_y, position_grid_in_outer_y, average_plate_sizes),
     list = [for(iy=[0:len(list_y)-1]) [for(ix=[0:len(list_x)-1]) [[ix,iy], [list_x[ix],list_y[iy]]]]])
     [for(iy=[0:len(list)-1]) [for(ix=[0:len(list[iy])-1]) let(plate = list[iy][ix]) [plate[0], plate[1], check_plate_duplicate_y(plate, list)]]];
 
@@ -272,7 +282,7 @@ else
       num_x=calcDimensionWidth(Width),
       num_y=calcDimensionDepth(Depth),
       outer_num_x = calcDimensionWidth(outer_Width),
-      outer_num_y = calcDimensionWidth(outer_Depth))
+      outer_num_y = calcDimensionDepth(outer_Depth))
     (build_plate_enabled == "disabled" || build_plate_size.x <= 0 || build_plate_size.y <= 0)
     ? [[[[0,0], [[num_x, position_fill_grid_x, outer_num_x, position_grid_in_outer_x],
        [num_y, position_fill_grid_y, outer_num_y, position_grid_in_outer_y]], false]]]
@@ -293,8 +303,8 @@ else
   for(ix=[0:len(listy)-1]) {
   plate = listy[ix];
   pos = [
-    ix*build_plate_size.x*1.1+ix*5,
-    iy*build_plate_size.y*1.1+iy*5,
+    ix*build_plate_size.x*1.1+ix*2,
+    iy*build_plate_size.y*1.1+iy*2,
     0];
   if(build_plate_enabled == "unique" && !plate[2] || build_plate_enabled != "unique")
   color_conditional(len(plate_list) > 1, plate[2] ? "#404040" : "#006400")
