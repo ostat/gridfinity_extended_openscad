@@ -323,10 +323,10 @@ module frame_connector_cavities(
         
       if(connectorPosition == "center_wall" || connectorPosition == "both")
       PositionCellCenterConnector(
-        left=$gci.x==0&&$gc_size.x==1&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsLeft],
+        left=$gci.x==0&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsLeft],
         right=$gci.x>=$gc_count.x-1&&$gc_size.x==1&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsRight],
-        front=$gci.y==0&&$gc_size.x==1&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsFront],
-        back=$gci.y>=$gc_count.y-1&&$gc_size.x==1&&$gc_size.y==1&& $allowConnectors[iAllowConnectorsBack]) {
+        front=$gci.y==0&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsFront],
+        back=$gci.y>=$gc_count.y-1&&$gc_size.y==1&& $allowConnectors[iAllowConnectorsBack]) {
           if($preview)
             *rotate([0,0,90])
             cylinder_printable(h=10,r=1);
@@ -438,10 +438,10 @@ module frame_connectors_additives(
 
       if(connectorPosition == "center_wall" || connectorPosition == "both")
       PositionCellCenterConnector(
-      left=$gci.x==0&&$gc_size.x==1&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsLeft],
+      left=$gci.x==0&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsLeft],
       right=$gci.x>=$gc_count.x-1&&$gc_size.x==1&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsRight],
-      front=$gci.y==0&&$gc_size.x==1&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsFront],
-      back=$gci.y>=$gc_count.y-1&&$gc_size.x==1&&$gc_size.y==1&& $allowConnectors[iAllowConnectorsBack]) {
+      front=$gci.y==0&&$gc_size.y==1 && $allowConnectors[iAllowConnectorsFront],
+      back=$gci.y>=$gc_count.y-1&&$gc_size.y==1&& $allowConnectors[iAllowConnectorsBack]) {
         
         if(connectorSnapsStyle != ConnectorSnapsStyle_disabled)
           #translate([0,0,-$frameBaseHeight])
