@@ -303,8 +303,8 @@ else
   for(ix=[0:len(listy)-1]) {
   plate = listy[ix];
   pos = [
-    ix*build_plate_size.x*1.1+ix*2,
-    iy*build_plate_size.y*1.1+iy*2,
+    ix*build_plate_size.x*1.1+ix*5,
+    iy*build_plate_size.y*1.1+iy*5,
     0];
   if(build_plate_enabled == "unique" && !plate[2] || build_plate_enabled != "unique")
   color_conditional(len(plate_list) > 1, plate[2] ? "#404040" : "#006400")
