@@ -1,5 +1,6 @@
 include <gridfinity_constants.scad>
 include <module_gridfinity_block.scad>
+include <module_gridfinity_label.scad>
 include <module_lip.scad>
 
 SlidingLid_debug = false;
@@ -57,6 +58,7 @@ iSlidingLid_CutoutEnabled=14;
 iSlidingLid_CutoutSize=15;
 iSlidingLid_CutoutRadius=16;
 iSlidingLid_CutoutPosition=17;
+iSlidingLid_ExposesLabel=18;
 
 function SlidingLidSettings(
   enabled,
@@ -76,7 +78,8 @@ function SlidingLidSettings(
   cutout_enabled = false,
   cutout_size = [-2,-2],
   cutout_radius = -4,
-  cutout_position = [0,0]) = 
+  cutout_position = [0,0],
+  exposes_label = false) = 
   [enabled, 
   thickness,
   min_wall_thickness,
@@ -94,12 +97,13 @@ function SlidingLidSettings(
   cutout_enabled,
   cutout_size,
   cutout_radius,
-  cutout_position
+  cutout_position,
+  exposes_label
   ];
 
 function ValidateSlidingLidSettings(settings, wallThickness) = 
   assert(is_list(settings), "SlidingLid Settings must be a list")
-  assert(len(settings)==18, str("SlidingLid Settings must length 18. len:", len(settings)))
+  assert(len(settings)==19, str("SlidingLid Settings must length 19. len:", len(settings)))
   assert(is_bool(settings[iSlidingLid_Enabled]), "SlidingLidSettings: slidingLidEnabled must be a boolean")
   assert(is_num(settings[iSlidingLid_Thickness]) && settings[iSlidingLid_Thickness] >= 0, "SlidingLidSettings: slidingLidThickness must be a number greater than or equal to 0")
   assert(is_num(settings[iSlidingLid_MinWallThickness]) && settings[iSlidingLid_MinWallThickness] >= 0, str("SlidingLidSettings: slidingMinWallThickness must be a number greater than or equal to 0 is:", settings[iSlidingLid_MinWallThickness]))
@@ -144,7 +148,8 @@ function ValidateSlidingLidSettings(settings, wallThickness) =
   settings[iSlidingLid_CutoutEnabled],
   settings[iSlidingLid_CutoutSize],
   settings[iSlidingLid_CutoutRadius],
-  settings[iSlidingLid_CutoutPosition]
+  settings[iSlidingLid_CutoutPosition],
+  settings[iSlidingLid_ExposesLabel]
   ];
 
 module AssertSlidingLidSettings(settings){
@@ -178,7 +183,8 @@ module SlidingLid(
   text_size = 0,
   text_depth = 0.3,
   text_font = "Aldo",
-  text_position = "center"
+  text_position = "center",
+  exposes_label = false
 ){
   assert(is_num(num_x));
   assert(is_num(num_y));
@@ -204,6 +210,7 @@ module SlidingLid(
   assert(is_string(text_font));
   assert(is_string(text_position));
   assert(is_num(lip_clearance));
+  assert(is_bool(exposes_label));
 
   innerWallRadius = env_corner_radius()-wall_thickness-clearance;
 
@@ -458,7 +465,8 @@ module SlidingLidCavity(
     text_depth = sliding_lid_settings[iSlidingLid_TextDepth],
     text_font = sliding_lid_settings[iSlidingLid_TextFont],
     text_position = sliding_lid_settings[iSlidingLid_TextPosition],
-    lip_clearance = sliding_lid_settings[iSlidingLid_LipClearance]);
+    lip_clearance = sliding_lid_settings[iSlidingLid_LipClearance],
+    exposes_label = sliding_lid_settings[iSlidingLid_ExposesLabel]);
 
    //the value of this is not right, I need to find where it should come from. perhaps headroom?
    extra_height = 1.4;
