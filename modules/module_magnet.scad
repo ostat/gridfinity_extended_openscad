@@ -46,8 +46,9 @@ module MagnetAndScrewRecess(
   easyReleaseRotation = 0,
   magnetRotation = 0,
   magnetCaptiveSideAccessSize = [0,0,0],
-  magnetCrushDepth=0.2,
-  magnetChamfer = 1){
+  magnetCrushDepth = 0,
+  magnetCrushRibCount = 8,
+  magnetChamfer = 0){
   fudgeFactor = 0.01;
     union(){
       SequentialBridgingDoubleHole(
@@ -60,13 +61,13 @@ module MagnetAndScrewRecess(
         magnetCaptiveHeight = magnetCaptiveHeight)
         union(){
           cylinder_wavy(
-            r=magnetDiameter/2,
-            h=$outer_height,
-            amplitude=magnetCrushDepth,
-            frequency = 8);
+            r = magnetDiameter/2 - magnetCrushDepth,
+            h = $outer_height,
+            amplitude = magnetCrushDepth,
+            frequency = magnetCrushRibCount);
           chamferedCylinder(
-            r=magnetDiameter/2-magnetCrushDepth*2,
-            h=$outer_height,
+            r = magnetDiameter/2 - magnetCrushDepth*2,
+            h = $outer_height,
             bottomChamfer = magnetChamfer);
         }
 
