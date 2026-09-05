@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_drawers.scad'. Generated 2026-02-27 21:46
-//Content hash 78A01EB7D8A6A81310EA7A481B385A4D71F9266C5FF7397C74C8BCAE86580B9A
+//Combined version of 'gridfinity_drawers.scad'. Generated 2026-09-06 03:41
+//Content hash CE32750000DB9A4337D8C55631A5E2CEDA4D4A15118A48CD1F8ED05F7B1FC8FD
 ///////////////////////////////////////
 // Gridfinity drawer system.
 // Intended for Gridfinity bins to sit in the drawers, meaning the outer chest will not fit neatly on to a gridfinity grid.
@@ -39,11 +39,19 @@ chest_drawer_slide_thickness = 0;
 chest_drawer_slide_width = 10;
 
 /* [Drawer] */
+// Style of the drawer front pull. 'hole' cuts a finger hole instead of adding a handle.
+handle_style = "handle"; //[handle:Handle, hole:Finger hole, none:None]
 // Handle size width, depth, height, and radius. Height, less than 0 drawerHeight/abs(height). radius, -1 = depth/2.
 handle_size = [4, 10, -1, -1];
 handle_vertical_center = false;
 handle_cut_factor=0.5;
 handle_rotate = false;
+// Finger hole size width, height and depth. Width, less than 0 drawerWidth/abs(width). Height, less than 0 drawerHeight/abs(height). Depth 0 cuts through the drawer front.
+handle_hole_size = [-3, 12, 0];
+// Radius of the finger hole corners. -1 = height/2
+handle_hole_radius = -1;
+// Open the top of the finger hole, cutting a notch in to the top of the drawer front. Removes the overhang so it prints without supports.
+handle_hole_open_top = true;
 drawer_wall_thickness = 2; // 0.1
 drawer_base = "default"; //[grid:Grid only, floor:floor only, default:Grid and floor]
 drawer_enable_magnet = true;
@@ -12115,9 +12123,13 @@ module drawers(
   outerSizes,// = drawerOuterSizes,
   drawerBase, // = drawerbase,
   wallThickness,// = wallthicknessInner,
+  handleStyle,
   handleSize,
   handleVerticalCenter,
   handleRotate,
+  handleHoleSize,
+  handleHoleRadius,
+  handleHoleOpenTop,
   ridgeDepth,
   startH,
   chestClearance,
@@ -12143,9 +12155,13 @@ module drawers(
         innerUnitSize=innerUnitSize,
         drawerBase=drawerBase,// = drawerbase,
         wallThickness=wallThickness,// = wallthicknessInner,
+        handleStyle=handleStyle,
         handleSize=handleSize,
         handleVerticalCenter=handleVerticalCenter,
         handleRotate=handleRotate,
+        handleHoleSize=handleHoleSize,
+        handleHoleRadius=handleHoleRadius,
+        handleHoleOpenTop=handleHoleOpenTop,
         innerSizes=innerSizes,
         outerSizes=outerSizes,
         magnetSize=magnetSize,
@@ -12158,9 +12174,13 @@ module drawer(
   innerUnitSize,
   drawerBase,// = drawerbase,
   wallThickness,// = wallthicknessInner,
+  handleStyle,
   handleSize,
   handleVerticalCenter,
   handleRotate,
+  handleHoleSize,
+  handleHoleRadius,
+  handleHoleOpenTop,
   innerSizes,// = drawerInnerSizes,
   outerSizes,// = drawerOuterSizes,
   magnetSize = [0,0],
@@ -12169,6 +12189,22 @@ module drawer(
   assert(is_list(clearance) && len(clearance) == 3, "clearance must be a list of length 3");
   drawerFloor = (drawerBase == "default" || drawerBase == "floor");
   floorThickness = wallThickness;
+
+  //Finger hole, used instead of a handle when handleStyle is 'hole'
+  fingerHoleWidth = handleHoleSize.x < 0
+    ? outerSizes[drawerIndex].x/abs(handleHoleSize.x) : handleHoleSize.x;
+  fingerHoleHeight = handleHoleSize.y < 0
+    ? outerSizes[drawerIndex].z/abs(handleHoleSize.y) : handleHoleSize.y;
+  //A depth of 0 cuts all the way through the drawer front
+  fingerHoleDepth = handleHoleSize.z <= 0
+    ? wallThickness + fudgeFactor : min(handleHoleSize.z, wallThickness);
+  //An open top notch is measured down from the top of the drawer front
+  fingerHoleZ = handleHoleOpenTop
+    ? outerSizes[drawerIndex].z - fingerHoleHeight/2
+    : handleVerticalCenter
+      ? outerSizes[drawerIndex].z/2
+      : max(outerSizes[drawerIndex].z/2,
+          outerSizes[drawerIndex].z - wallThickness - fingerHoleHeight/2);
 
   union(){
     difference(){
@@ -12195,6 +12231,16 @@ module drawer(
               z=floorThickness+fudgeFactor,
               sideRadius = 4);
         }
+
+        //Finger hole in the drawer front
+        if(handleStyle == "hole")
+          translate([outerSizes[drawerIndex].x/2, -fudgeFactor, fingerHoleZ])
+          drawerFingerHole(
+            width = fingerHoleWidth,
+            height = fingerHoleHeight,
+            depth = fingerHoleDepth + fudgeFactor,
+            radius = handleHoleRadius,
+            openTop = handleHoleOpenTop);
       }
 
       if(drawerBase == "default" || drawerBase == "grid"){
@@ -12215,6 +12261,7 @@ module drawer(
       : handleSize.z <0 ? outerSizes[drawerIndex].z/abs(handleSize.z) : handleSize.z;
 
     //Drawer handle
+    if(handleStyle == "handle")
     color(colour_drawer_pull)
     translate([
         outerSizes[drawerIndex].x/2,
@@ -12225,6 +12272,30 @@ module drawer(
       rotate(handleRotate ? [0,90,0] : [0,0,0])
       drawerPull(handleSize.x, handleSize.y, handelHeight, handleSize[3]);
   }
+}
+
+//A rounded rectangular hole cut through, or in to, the drawer front.
+//Centered on x and z, cut along +y from the origin.
+//openTop squares off and extends the top, leaving a notch with no overhang to print.
+module drawerFingerHole(width, height, depth, radius, openTop = false) {
+  cornerRadius = min(radius < 0 ? height/2 : radius, height/2, width/2);
+  //Cut along +y, the profiles y axis runs up the drawer front
+  rotate([90, 0, 0])
+    translate([0, 0, -depth])
+    linear_extrude(height = depth)
+    union(){
+      if(cornerRadius <= 0) square([width, height], center = true);
+      else hull()
+        for(x = [-1, 1], z = [-1, 1])
+          translate([x*(width/2-cornerRadius), z*(height/2-cornerRadius)])
+          circle(r = cornerRadius);
+
+      //Square off the top half and cut out past the top of the drawer front,
+      //leaving the rounded corners on the bottom of the notch
+      if(openTop)
+        translate([-width/2, 0])
+        square([width, height/2 + fudgeFactor]);
+    }
 }
 
 module drawerPull(width, depth, height, radius) {
@@ -12532,9 +12603,13 @@ module gridfinity_drawer(
     chestWallThickness = chest_wall_thickness,
     chestDrawerSlideThickness = chest_drawer_slide_thickness,
     chestDrawerSlideWidth = chest_drawer_slide_width,
+    handleStyle = handle_style,
     handleSize = handle_size,
     handleVerticalCenter = handle_vertical_center,
     handleRotate = handle_rotate,
+    handleHoleSize = handle_hole_size,
+    handleHoleRadius = handle_hole_radius,
+    handleHoleOpenTop = handle_hole_open_top,
     drawerWallThickness = drawer_wall_thickness,
     drawerBase = drawer_base,
     drawerMagnetSize = drawer_enable_magnet ? drawer_magnet_size : [0,0],
@@ -12652,9 +12727,13 @@ module gridfinity_drawer(
       outerSizes=drawerOuterSizes,
       drawerBase=drawerBase,
       wallThickness=drawerWallThickness,
+      handleStyle=handleStyle,
       handleSize=handleSize,
       handleVerticalCenter=handleVerticalCenter,
       handleRotate=handleRotate,
+      handleHoleSize=handleHoleSize,
+      handleHoleRadius=handleHoleRadius,
+      handleHoleOpenTop=handleHoleOpenTop,
       ridgeDepth=ridgeDepth,
       startH=startH,
       chestClearance=chestClearance,
@@ -12667,9 +12746,13 @@ module gridfinity_drawer(
       innerUnitSize = drawerInnerUnitSize,
       drawerBase = drawerBase,
       wallThickness = drawerWallThickness,
+      handleStyle = handleStyle,
       handleSize = handleSize,
       handleVerticalCenter = handleVerticalCenter,
       handleRotate = handleRotate,
+      handleHoleSize = handleHoleSize,
+      handleHoleRadius = handleHoleRadius,
+      handleHoleOpenTop = handleHoleOpenTop,
       innerSizes = drawerInnerSizes,
       outerSizes = drawerOuterSizes,
       magnetSize = drawerMagnetSize,
