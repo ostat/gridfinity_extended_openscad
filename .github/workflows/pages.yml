@@ -12,9 +12,15 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'live' || 'preview' }}
+      url: ${{ github.ref == 'refs/heads/main' && 'https://gridfinity-extended.ostat.com/' || steps.cf_publish.outputs.deployment-url }}
+
     permissions:
       contents: read
       pull-requests: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6

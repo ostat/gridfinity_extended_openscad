@@ -3,7 +3,7 @@ name = "Gridfinity Extended"
 uri = "https://github.com/ostat/gridfinity_extended_openscad"
 export-filename-prefix = "Gridfinity Extended"
 mode = "multi"
-head-extra = ''
+head-extra = '<script defer src="https://um.ostat.com/script.js" data-website-id="69159224-8fa8-4f25-98b3-0589ce5a5909"></script>'
 
 [[model]]
 file = "gridfinity_basic_cup.scad"

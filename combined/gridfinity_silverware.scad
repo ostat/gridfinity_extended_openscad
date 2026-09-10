@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-21 23:37
-//Content hash 8014A7C848BFBDD541E973BA321751DE12B554993B284583EBE125CE9C6477EB
+//Combined version of 'gridfinity_silverware.scad'. Generated 2026-02-27 21:46
+//Content hash 40DDE89452005D4A106EC45D313B7BBBB6D84B82DB48CB7ADB3BB4B0B0741064
 ///////////////////////////////////////
 
 /* [Utensil count and measurements] */
@@ -3544,10 +3544,10 @@ Stackable_values = [Stackable_enabled,Stackable_disabled,Stackable_filllip];
 
 
 /* [Base]
-// (Zack's design uses magnet diameter of 6.5) 
+// (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
-//create relief for magnet removal 
-magnet_easy_release  = "auto";//["off","auto","inner","outer"] 
+//create relief for magnet removal
+magnet_easy_release  = "auto";//["off","auto","inner","outer"]
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
@@ -3560,7 +3560,7 @@ box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//[off,on,rounded,smooth] 
+efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 sub_pitch = 1;
 // Removes the internal grid from base the shape
@@ -3599,11 +3599,11 @@ CornerAttachments_enabled = "enabled";
 CornerAttachments_aligned = "aligned";
 
 CornerAttachments_values = [CornerAttachments_disabled, CornerAttachments_enabled, CornerAttachments_aligned];
-  function validateCornerAttachments(value) = 
+  function validateCornerAttachments(value) =
     //Convert boolean to list value
     let(value = is_bool(value) ? value ? CornerAttachments_enabled : CornerAttachments_disabled : value)
     assert(list_contains(CornerAttachments_values, value), typeerror("CornerAttachments", value))
-    value;  
+    value;
 
 
 EfficientFloor_off = "off";
@@ -3612,29 +3612,29 @@ EfficientFloor_rounded = "rounded";
 EfficientFloor_smooth = "smooth";
 
 EfficientFloor_values = [EfficientFloor_off, EfficientFloor_on, EfficientFloor_rounded, EfficientFloor_smooth];
-  function validateEfficientFloor(value) = 
+  function validateEfficientFloor(value) =
     //Convert boolean to list value
     let(value = is_bool(value) ? value ? EfficientFloor_on : EfficientFloor_off : value)
     assert(list_contains(EfficientFloor_values, value), typeerror("EfficientFloor", value))
-    value;  
+    value;
 
 FlatBase_off = "off";
 FlatBase_gridfinity = "gridfinity";
 FlatBase_rounded = "rounded";
 
 FlatBase_values = [FlatBase_off, FlatBase_gridfinity, FlatBase_rounded];
-  function validateFlatBase(value) = 
+  function validateFlatBase(value) =
     //Convert boolean to list value
     let(value = is_bool(value) ? value ? FlatBase_gridfinity : FlatBase_off : value)
     assert(list_contains(FlatBase_values, value), typeerror("FlatBase", value))
-    value;  
-    
+    value;
+
 function CupBaseSettings(
-    magnetSize = [0,0], 
-    magnetEasyRelease = MagnetEasyRelease_auto, 
-    centerMagnetSize = [0,0], 
-    screwSize = [0,0], 
-    holeOverhangRemedy = 2, 
+    magnetSize = [0,0],
+    magnetEasyRelease = MagnetEasyRelease_auto,
+    centerMagnetSize = [0,0],
+    screwSize = [0,0],
+    holeOverhangRemedy = 2,
     cornerAttachmentsOnly = true,
     floorThickness = gf_cup_floor_thickness,
     cavityFloorRadius = -1,
@@ -3651,30 +3651,33 @@ function CupBaseSettings(
     magnetChamfer = 0,
     alignGrid = ["near", "near"],
     magnetSideAccess = false
-    ) = 
+    ) =
   let(
-    magnetSize = 
-      is_num(magnetSize) 
+    magnetSize =
+      is_num(magnetSize)
         ? [magnetSize, gf_magnet_thickness]
         : magnetSize,
-    screwSize = 
-      is_num(screwSize) 
+    screwSize =
+      is_num(screwSize)
         ? [gf_cupbase_screw_diameter, screwSize]
         : screwSize,
     cornerAttachmentsOnly = is_bool(cornerAttachmentsOnly)
       ? cornerAttachmentsOnly ? CornerAttachments_enabled : CornerAttachments_disabled
       : cornerAttachmentsOnly,
+    magnetSideAccess  = is_bool(magnetSideAccess)
+      ? magnetSideAccess ? magnetSideAccess_right : magnetSideAccess_disabled
+      : magnetSideAccess,
     efficientFloor = validateEfficientFloor(efficientFloor),
     magnetEasyRelease = validateMagnetEasyRelease(magnetEasyRelease),
     centerMagnetSize = efficientFloor != EfficientFloor_off ? [0, 0] : centerMagnetSize,
     cavityFloorRadius = efficientFloor != EfficientFloor_off ? 0 : cavityFloorRadius,
     result = [
-      magnetSize[0] == 0 || magnetSize[1] == 0 ? [0,0] : magnetSize, 
-      magnetEasyRelease, 
+      magnetSize[0] == 0 || magnetSize[1] == 0 ? [0,0] : magnetSize,
+      magnetEasyRelease,
       NormaliseAutoMagnetEasyRelease(magnetEasyRelease, efficientFloor),
       centerMagnetSize[0] == 0 || centerMagnetSize[1] == 0 ? [0,0] : centerMagnetSize,
-      screwSize[0] == 0 || screwSize[1] == 0 ? [0,0] : screwSize, 
-      holeOverhangRemedy, 
+      screwSize[0] == 0 || screwSize[1] == 0 ? [0,0] : screwSize,
+      holeOverhangRemedy,
       validateCornerAttachments(cornerAttachmentsOnly),
       floorThickness,
       cavityFloorRadius,
@@ -3687,13 +3690,13 @@ function CupBaseSettings(
       flatBaseRoundedEasyPrint,
       magnetCaptiveHeight,
       alignGrid,
-      magnetSideAccess,
+      validateMagnetSideAccess(magnetSideAccess),
       magnetCrushDepth,
       magnetChamfer
       ],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
-  
+
 function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_list(settings) && len(settings) == 21, typeerror_list("CupBase Settings", settings, 19))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
@@ -3709,7 +3712,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
   assert(is_num(settings[iCupBase_MagnetCaptiveHeight]), "CupBase Magnet Captive height setting must a number")
   assert(is_list(settings[iCupBase_AlignGrid]) && len(settings[iCupBase_AlignGrid])==2, "CupBase AlignGrid Setting must be a list of length 2")
-  assert(is_bool(settings[iCupBase_MagnetSideAccess]), "CupBase MagnetSideAccess Settings must be a boolean")
+  assert(is_string(settings[iCupBase_MagnetSideAccess]), "CupBase MagnetSideAccess Settings must be a string")
   [
       settings[iCupBase_MagnetSize],
       validateMagnetEasyRelease(settings[iCupBase_MagnetEasyRelease]),
@@ -3833,23 +3836,36 @@ color_lid = "MediumAquamarine";
 
 
 
+magnetSideAccess_disabled = "disabled";
+magnetSideAccess_left = "left";
+magnetSideAccess_right = "right";
+
+magnetSideAccess_values = [magnetSideAccess_disabled, magnetSideAccess_left, magnetSideAccess_right];
+  function validateMagnetSideAccess(value) =
+    //Convert boolean to list value
+    let(value = is_bool(value)
+      ? value ? magnetSideAccess_right : magnetSideAccess_disabled
+      : value)
+    assert(list_contains(magnetSideAccess_values, value), typeerror("MagnetSideAccess", value))
+    value;
+
 MagnetEasyRelease_off = "off";
 MagnetEasyRelease_auto = "auto";
-MagnetEasyRelease_inner = "inner"; 
-MagnetEasyRelease_outer = "outer"; 
+MagnetEasyRelease_inner = "inner";
+MagnetEasyRelease_outer = "outer";
 MagnetEasyRelease_values = [MagnetEasyRelease_off, MagnetEasyRelease_auto, MagnetEasyRelease_inner, MagnetEasyRelease_outer];
-function validateMagnetEasyRelease(value) = 
+function validateMagnetEasyRelease(value) =
   //Convert boolean to list value
   let(validatedValue = is_bool(value) ? value ? MagnetEasyRelease_auto : MagnetEasyRelease_off : value)
   assert(list_contains(MagnetEasyRelease_values, validatedValue), typeerror("MagnetEasyRelease", validatedValue))
   validatedValue;
 
 //Convert the Magnet auto to the normalised value
-function NormaliseAutoMagnetEasyRelease(value, efficientFloorValue) = 
+function NormaliseAutoMagnetEasyRelease(value, efficientFloorValue) =
   //Convert boolean to list value
-  let(normalisedValue = value == MagnetEasyRelease_auto 
-        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer 
-        : value) 
+  let(normalisedValue = value == MagnetEasyRelease_auto
+        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer
+        : value)
   assert(list_contains(MagnetEasyRelease_values, normalisedValue), typeerror("MagnetEasyRelease", normalisedValue))
   normalisedValue;
 
@@ -3861,7 +3877,7 @@ module MagnetAndScrewRecess(
   overhangFixLayers = 3,
   overhangFixDepth = 0.2,
   easyMagnetRelease = true,
-  enableSideAccess = true,  
+  enableSideAccess = magnetSideAccess_disabled,
   magnetCaptiveHeight = 0,
   easyReleaseRotation = 0,
   magnetRotation = 0,
@@ -3880,25 +3896,28 @@ module MagnetAndScrewRecess(
         magnetCaptiveHeight = magnetCaptiveHeight)
         union(){
           cylinder_wavy(
-            r=magnetDiameter/2, 
+            r=magnetDiameter/2,
             h=$outer_height,
             amplitude=magnetCrushDepth,
             frequency = 8);
           chamferedCylinder(
-            r=magnetDiameter/2-magnetCrushDepth*2, 
+            r=magnetDiameter/2-magnetCrushDepth*2,
             h=$outer_height,
             bottomChamfer = magnetChamfer);
-        }    
-        
+        }
 
 
-      if(enableSideAccess){
+
+      if(enableSideAccess != magnetSideAccess_disabled){
         translate([0,0,magnetCaptiveHeight])
-        rotate([0,0,45])
+        rotate(enableSideAccess == magnetSideAccess_left ? [0,0,45-90] :  [0,0,45])
         translate([0,-magnetDiameter/2,0])
         cube(magnetCaptiveSideAccessSize);
       }
-      rotate(enableSideAccess ? [0,0,45+180] : [0,0,easyReleaseRotation])
+      rotate(
+          enableSideAccess == magnetSideAccess_right ? [0,0,45+180]
+          : enableSideAccess == magnetSideAccess_left ? [0,0,45+90]
+          : [0,0,easyReleaseRotation])
       magnet_release(
         magnetDiameter = magnetDiameter,
         magnetThickness = magnetThickness+magnetCaptiveHeight,
@@ -3914,7 +3933,7 @@ module magnet_release(
   center = false
 ){
   fudgeFactor = 0.01;
-  
+
   releaseWidth = 2;
   releaseLength = 1.5;
   outerPlusBridgeHeight = magnetThickness;
@@ -3924,20 +3943,20 @@ module magnet_release(
     difference(){
       hull(){
         blockSize = magnetDiameter*2/3;
-        translate([magnetDiameter/2-blockSize,-releaseWidth/2,0])  
+        translate([magnetDiameter/2-blockSize,-releaseWidth/2,0])
           cube([blockSize+releaseLength,releaseWidth,magnetThickness]);
-        translate([magnetDiameter/2+releaseLength,0,0])  
+        translate([magnetDiameter/2+releaseLength,0,0])
           cylinder(d=releaseWidth, h=magnetThickness);
       }
       chamferRadius = min(magnetThickness, releaseLength+releaseWidth/2);
-      
+
       totalReleaseLength = magnetDiameter/2+releaseLength+releaseWidth/2;
-      
+
       translate([totalReleaseLength,-releaseWidth/2-fudgeFactor,magnetThickness])
       rotate([270,0,90])
       roundedCorner(
         radius = chamferRadius,
-        length = releaseWidth+2*fudgeFactor, 
+        length = releaseWidth+2*fudgeFactor,
         height = totalReleaseLength);
     }
   }
@@ -6473,6 +6492,7 @@ module brick_pattern(
 
 
 
+
 slat_debug = false;
 
 if(slat_debug && $preview){
@@ -6525,10 +6545,6 @@ module slat_pattern(
   }
 }
 //CombinedEnd from path module_pattern_slat.scad
-//Combined from path 
-
-
-//CombinedEnd from path 
 //Combined from path module_gridfinity_label.scad
 
 
