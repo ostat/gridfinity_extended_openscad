@@ -42,6 +42,7 @@ itemholder_hole_diameter = 5; //0.1
 itemholder_hole_bottom_radius = 0;
 // The size the hole
 itemholder_hole_size = [20, 25]; //0.1
+// Rotation in degrees for square and n-gon holes
 itemholder_hole_rotation = 0;
 
 /* [Item Holder - Item Layout] */
@@ -488,6 +489,7 @@ module itemholder(
           holeGrid = holeGrid,
           holeHeight = _depth+fudgeFactor,
           holeChamfer = holeChamfer,
+          holeRotation = item[ishape] == "ngon" ? holeRotation : 0,
           center=compartment_centered,
           fill=compartment_fill)
             if(item[ishape]=="multicard")

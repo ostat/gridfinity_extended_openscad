@@ -40,6 +40,7 @@ itemholder_hole_diameter = 5; //0.1
 itemholder_hole_bottom_radius = 0;
 // The size the hole
 itemholder_hole_size = [20, 25]; //0.1
+// Rotation in degrees for square and n-gon holes
 itemholder_hole_rotation = 0;
 
 /* [Item Holder - Item Layout] */
@@ -340,6 +341,7 @@ module GridItemHolder(
   holeGrid = [0,0],
   holeHeight = 3,
   holeChamfer = 0,
+  holeRotation = 0,
   border = 0,
   center=false,
   fill="none", //"none", "space", "crop", "crophorizontal", "cropvertical", "crophorizontal_spacevertical", "cropvertical_spacehorizontal", "spacevertical", "spacehorizontal"
@@ -356,6 +358,7 @@ module GridItemHolder(
   assert(is_list(holeSpacing) && len(holeSpacing)==2, "holeSpacing must be list of len 2");
   assert(is_list(holeGrid) && len(holeGrid)==2, "canvasSize must be list of len 2");  
   assert(is_num(holeHeight), "holeHeight must be number");    
+  assert(is_num(holeRotation), "holeRotation must be number");
   assert(is_num(border), "border must be number");    
   assert(is_string(fill), "fill must be a string");
   assert(is_bool(rotateGrid), "rotateGrid must be bool");  
@@ -480,7 +483,8 @@ module GridItemHolder(
             children();
         } else {
           translate(!center ? [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0] : [0,0,0])
-            chamferedCylinder(h=holeHeight, r=Rc, bottomChamfer=holeChamfer[0], topChamfer=holeChamfer[1], circleFn = circleFn);
+            rotate([0,0,holeRotation])
+              chamferedCylinder(h=holeHeight, r=Rc, bottomChamfer=holeChamfer[0], topChamfer=holeChamfer[1], circleFn = circleFn);
         }
     }
     else {
@@ -512,7 +516,8 @@ module GridItemHolder(
           children();
         } else {
           translate(center ? [0,0,0] : [calcHoledimensions[0]/2,calcHoledimensions[1]/2,0])
-            chamferedCylinder(h=holeHeight, r=Rc, bottomChamfer=holeChamfer[0], topChamfer=holeChamfer[1], circleFn = circleFn);
+            rotate([0,0,holeRotation])
+              chamferedCylinder(h=holeHeight, r=Rc, bottomChamfer=holeChamfer[0], topChamfer=holeChamfer[1], circleFn = circleFn);
         }
     }
   }
@@ -11063,6 +11068,7 @@ module itemholder(
           holeGrid = holeGrid,
           holeHeight = _depth+fudgeFactor,
           holeChamfer = holeChamfer,
+          holeRotation = item[ishape] == "ngon" ? holeRotation : 0,
           center=compartment_centered,
           fill=compartment_fill)
             if(item[ishape]=="multicard")
