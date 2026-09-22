@@ -88,6 +88,16 @@ divider_headroom = 0.1;
 divider_clearance = [0.3, 0.2];
 // Number of slot spanning divider to generate.
 divider_slot_spanning = 2;
+// depth of wall cut, -ve relative to height
+divider_wall_cutout_depth = 0; //0.1
+// width of wall cut, -ve relative to length
+divider_wall_cutout_width = 0; //0.1
+// radius of wall cut, -ve relative to cut depth
+divider_wall_cutout_radius = 0; //0.1
+//radius of wall top, -ve relative to thickness
+divider_top_radius = 0; //0.1
+//add label to the divider wall  
+divider_label_size = 0;
 
 /* [Base] */
 // Enable magnets
@@ -387,7 +397,12 @@ gridfinity_cup(
     divider_spacing=divider_walls_spacing,
     divider_thickness=divider_walls_thickness,
     divider_clearance=divider_clearance,
-    divider_slot_spanning=divider_slot_spanning),
+    divider_slot_spanning=divider_slot_spanning,
+    divider_wall_cutout_depth = divider_wall_cutout_depth,
+    divider_wall_cutout_width = divider_wall_cutout_width,
+    divider_wall_cutout_radius = divider_wall_cutout_radius,
+    divider_top_radius = divider_top_radius,
+    divider_label_size = divider_label_size),
   vertical_chambers = ChamberSettings(
     chambers_count = vertical_chambers,
     chamber_wall_thickness = chamber_wall_thickness,
