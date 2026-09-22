@@ -1,0 +1,67 @@
+name: Auto Combine OpenSCAD Files
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  combine:
+    runs-on: windows-latest
+
+    # Prevent infinite loop from bot commits
+    if: github.actor != 'github-actions[bot]'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Dump PowerShell host info
+        shell: pwsh
+        run: |
+          Write-Host "=== PowerShell Host Info ==="
+          Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
+          Write-Host "Host version: $($Host.Version)"
+          Write-Host "Edition: $($PSVersionTable.PSEdition)"
+          Write-Host "OS: $($PSVersionTable.OS)"
+          Write-Host "Architecture: $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)"
+          Write-Host "============================"
+
+      - name: Run OpenSCAD combine script
+        shell: pwsh
+        run: |
+          Write-Host "Running OpenSCAD combine script..."
+          pwsh ./scripts/combined-openscad_script.ps1
+
+      - name: Check for changes
+        id: check_for_changes
+        shell: pwsh
+        run: |
+          if ((git status --porcelain).Length -eq 0) {
+            Write-Host "No changes detected"
+            "CHANGED=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          }
+          else {
+            Write-Host "Changes detected"
+            Write-Host "CHANGED=true" >> $env:GITHUB_ENV
+            "CHANGED=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          }
+
+      - name: Commit combined files
+        env:
+          CHANGED: ${{ steps.check_for_changes.outputs.CHANGED }}
+        if: env.CHANGED == 'true'
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add .
+          git commit -m "Auto-generate combined OpenSCAD files"
+          git push

@@ -16,17 +16,17 @@ from_ends = (ear_hole_x - gf_pitch*4) / 2;
 
 union(){
   frame_plain(4, 1, height = cube_z);
-    
+
   for (i = [0,1]) {
     x = i * ear_hole_x - from_ends-wallThickness;
     difference() {
       hull() {
-        translate([x, ear_hole_y, 0]) 
+        translate([x, ear_hole_y, 0])
           cylinder(h=cube_z, d=M4_d*2, $fn=20);
-        translate([x - from_ends * i, ear_hole_y - M4_d, 0]) 
+        translate([x - from_ends * i, ear_hole_y - M4_d, 0])
           cube([from_ends+wallThickness, M4_d*2, cube_z]);
       }
-        translate([x, ear_hole_y, -0.01]) 
+        translate([x, ear_hole_y, -0.01])
           cylinder(h=cube_z + 0.02, d=M4_d, $fn=20);
     }
   }

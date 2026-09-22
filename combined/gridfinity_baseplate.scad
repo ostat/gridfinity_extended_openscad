@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_baseplate.scad'. Generated 2026-02-11 22:09
-//Content hash D41A4135AC15650ED9C6D596837D90C75FBFD2AF96913CE42532CB9E09315181
+//Combined version of 'gridfinity_baseplate.scad'. Generated 2026-02-27 21:45
+//Content hash A1FDDE76A1BEB87A75378581055E2E4F40EF5630DF61A3C5D649A56245801CFC
 ///////////////////////////////////////
 // include instead of use, so we get the pitch
 
@@ -11,19 +11,19 @@ Width = [3, 0]; //0.1
 // Y dimension. grid units (multiples of 42mm) or mm.
 Depth = [2, 0]; //0.1
 oversize_method = "fill"; //[crop, fill]
-position_fill_grid_x = "near";//[near, center, far]
-position_fill_grid_y = "near";//[near, center, far]
+position_fill_grid_x = "near";//[near:"← left", center:"↔ center", far:"→ right"]
+position_fill_grid_y = "near";//[far:"↑ up", center:"↕ center", near:"↓ bottom"]
 // X outer dimension. grid units (multiples of 42mm) or mm.
 outer_Width = [0, 0]; //0.1
 // Y outer dimension. grid units (multiples of 42mm) or mm.
 outer_Depth = [0, 0]; //0.1
 // z outer dimension. mm.
 outer_Height = 0; //0.1
-position_grid_in_outer_x = "center";//[near, center, far]
-position_grid_in_outer_y = "center";//[near, center, far]
+position_grid_in_outer_x = "center";//[near:"← left", center:"↔ center", far:"→ right"]
+position_grid_in_outer_y = "center";//[far:"↑ up", center:"↕ center", near:"↓ bottom"]
 //Reduce the frame wall size to this value
 Reduced_Wall_Height = -1; //0.1
-Reduced_Wall_Taper = false; 
+Reduced_Wall_Taper = false;
 plate_corner_radius = 3.75; //0.01
 //Corner radius for the inner corners (Works well with build_plate_enabled)
 secondary_corner_radius = 3.75; //0.01
@@ -32,13 +32,13 @@ secondary_corner_radius = 3.75; //0.01
 build_plate_enabled = "disabled";//[disabled, enabled, unique]
 //spread out the plates, use if last row is small.
 average_plate_sizes = false;
-//Will split the plate in to the 
+//Will split the plate in to the
 build_plate_size = [200,250];
 
 /* [Base Plate Options] */
 // Enable magnets in the bin corner
 Enable_Magnets = false;
-//size of magnet, diameter and height. Zacks original used 6.5 and 2.4 
+//size of magnet, diameter and height. Zacks original used 6.5 and 2.4
 Magnet_Size = [6.5, 2.4];  // .1
 //raises the magnet, and creates a floor (for gluing)
 Magnet_Z_Offset = 0;  // .1
@@ -64,18 +64,18 @@ Connector_Clip_Enabled = false;
 Connector_Clip_Size = 10;
 Connector_Clip_Tolerance = 0.1;
 
-//This feature is not yet finalised, or working properly. 
+//This feature is not yet finalised, or working properly.
 Connector_Butterfly_Enabled = false;
 Connector_Butterfly_Size = [5,4,1.5];
 Connector_Butterfly_Radius = 0.1;
 Connector_Butterfly_Tolerance = 0.1;
 
-//This feature is not yet finalised, or working properly. 
+//This feature is not yet finalised, or working properly.
 Connector_Filament_Enabled = false;
 Connector_Filament_Diameter = 2;
 Connector_Filament_Length = 8;
 
-//This feature is not yet finalised, or working properly. 
+//This feature is not yet finalised, or working properly.
 Connector_Snaps_Enabled = "disabled"; //["disabled","larger","smaller"]
 Connector_Snaps_Clearance = 0.2;
 
@@ -100,12 +100,12 @@ xpos7 = [0,0,0,0,0,0,0];
 /* [Model detail] */
 //Work in progress,  Modify the default grid size. Will break compatibility
 pitch = [42,42,7];  //[0:1:9999]
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-fa = 6; 
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments
+fa = 6;
 // minimum size of a fragment.  Low is more fragments
-fs = 0.1; 
+fs = 0.1;
 // number of fragments, overrides $fa and $fs
-fn = 0;  
+fn = 0;
 
 /* [debug] */
 Render_Position = "center"; //[default,center,zero]
@@ -1690,6 +1690,7 @@ module SequentialBridgingDoubleHole(
 
 
 
+
 utility_demo = false;
 
 if(utility_demo && $preview){
@@ -2972,6 +2973,162 @@ module WallCutout(
 }
 
 //CombinedEnd from path wallcutout.scad
+//Combined from path module_wallplacard.scad
+
+
+iwallplacardconfig_walls = 0;
+iwallplacardconfig_style = 1;
+iwallplacardconfig_size = 2;
+iwallplacardconfig_offset = 3;
+iwallplacardconfig_slot_frame = 4;
+iwallplacardconfig_corner_radius = 5;
+
+iwallplacardconfig_size_width = 0;
+iwallplacardconfig_size_height = 1;
+iwallplacardconfig_size_depth = 2;
+
+iwallplacardconfig_offset_horiz = 0;
+iwallplacardconfig_offset_vert = 1;
+iwallplacardconfig_offset_depth = 2;
+
+iwallplacardconfig_slot_frame_reveal = 0;
+iwallplacardconfig_slot_frame_coverage = 1;
+iwallplacardconfig_slot_frame_width = 2;
+iwallplacardconfig_slot_frame_depth = 3;
+
+function WallplacardSettings(
+    walls,
+    style, 
+    size, 
+    offset,
+    slot_frame,
+    corner_radius) = 
+  let(
+    result = [
+      walls,
+      style,
+      size,
+      offset,
+      slot_frame,
+      corner_radius],
+    validatedResult = ValidateWallplacardSettings(result)
+  ) validatedResult;
+
+function ValidateWallplacardSettings(settings) =
+  assert(is_list(settings), "Wall placard settings must be a list")
+  assert(len(settings)==6, "Wall placard settings must have length 6")
+  assert(is_string(settings[iwallplacardconfig_style]), "Wall placard style must be a string")
+  assert(is_list(settings[iwallplacardconfig_walls]), "Wall placard walls must be a list")
+  assert(is_list(settings[iwallplacardconfig_size]), "Wall placard size must be a list")
+  assert(is_list(settings[iwallplacardconfig_offset]), "Wall placard offset must be a list")
+  assert(is_list(settings[iwallplacardconfig_slot_frame]), "Wall placard slot frame must be a list")
+  assert(is_num(settings[iwallplacardconfig_corner_radius]), "Wall placard corner radius must be a number")
+  [
+    settings[iwallplacardconfig_walls],
+    settings[iwallplacardconfig_style],
+    settings[iwallplacardconfig_size],
+    settings[iwallplacardconfig_offset],
+    settings[iwallplacardconfig_slot_frame],
+    settings[iwallplacardconfig_corner_radius]
+  ];
+
+function calculateWallplacards(
+  wall_width_fb,
+  wall_width_lr,
+  wall_height,
+  wall_thickness,
+  wallplacard_settings) =
+    let(wallplacard_walls = wallplacard_settings[iwallplacardconfig_walls],
+        wallplacard_style = wallplacard_settings[iwallplacardconfig_style])
+    [for (i = [0:len(wallplacard_walls)-1])
+      calculateWallplacard(
+        wall_width = (i==0 || i==1) ? wall_width_fb : wall_width_lr,
+        wall_height = wall_height,
+        wall_thickness = wall_thickness,
+        wall_wall = wallplacard_walls[i],
+        wallplacard_settings = wallplacard_settings)];
+
+function calculateWallplacard(
+  wall_width,
+  wall_height,
+  wall_thickness,
+  wall_wall,
+  wallplacard_settings) =
+     let(
+        wp_style = wallplacard_settings[iwallplacardconfig_style],
+
+        wp_width  = wallplacard_settings[iwallplacardconfig_size][iwallplacardconfig_size_width],
+        wp_height = wallplacard_settings[iwallplacardconfig_size][iwallplacardconfig_size_height],
+        wp_depth  = wallplacard_settings[iwallplacardconfig_size][iwallplacardconfig_size_depth],
+
+        raw_off_horiz = wallplacard_settings[iwallplacardconfig_offset][iwallplacardconfig_offset_horiz],
+        raw_off_vert  = wallplacard_settings[iwallplacardconfig_offset][iwallplacardconfig_offset_vert],
+        raw_off_depth = wallplacard_settings[iwallplacardconfig_offset][iwallplacardconfig_offset_depth],
+
+        off_horiz = raw_off_horiz + (wall_width / 2),
+        off_vert  = raw_off_vert  + (wall_height / 2),
+        off_depth = raw_off_depth +
+            ((wp_style == "slot") ? 0 : -wall_thickness),
+
+        wp_corner_radius = wallplacard_settings[iwallplacardconfig_corner_radius],
+        is_enabled = (wall_wall != 0),
+
+        height = min(wp_height, wall_height),
+        width = min(wp_width, wall_width),
+        depth = wp_depth==0 ? wall_thickness : wp_depth,
+        )
+      [is_enabled, wp_style, width, height, depth, wp_corner_radius, off_horiz, off_vert, off_depth];
+
+module Wallplacard(
+  style,
+  width,
+  height,
+  depth,
+  corner_radius,
+  off_horiz,
+  off_vert,
+  off_depth,
+  slot_frame) {
+ 
+  rotate([90,0,0])
+  translate([off_horiz, off_vert, off_depth])
+    if (style == "rectangle") {
+      roundedCube(centerxy=true, x=width, y=height, z=depth, sideRadius=corner_radius);
+
+    } else if (style == "ellipse") {
+      linear_extrude(height=depth)
+        resize([width, height])
+          circle(r=1);
+
+    } else if (style == "slot") {
+      sf_reveal   = slot_frame[iwallplacardconfig_slot_frame_reveal];
+      sf_coverage = slot_frame[iwallplacardconfig_slot_frame_coverage];
+      sf_width    = slot_frame[iwallplacardconfig_slot_frame_width];
+      sf_depth    = slot_frame[iwallplacardconfig_slot_frame_depth];
+      ls_wider = max(sf_width, corner_radius);
+      ls_taller = max(sf_width, corner_radius);
+      ls_deeper = sf_depth;
+
+      // the backer for the slot (blended into the wall)
+      translate([0,0,-depth])
+          roundedCube(centerxy=true, x=width+ls_wider, y=height+ls_taller, z=depth, sideRadius=corner_radius);
+      difference() {
+        intersection() {  // flatten the top edge
+          // roundedCube is centered on X and Y but not on Z; cube is centered on all 3
+          roundedCube(centerxy=true,
+            x=width+ls_wider, y=height+ls_taller, z=depth+ls_deeper,
+            sideRadius=corner_radius, topRadius=corner_radius);
+          translate([0, -sf_reveal, (depth+ls_deeper)/2])
+            cube(size=[width+ls_wider, height+ls_taller, depth+ls_deeper], true);
+        }
+        translate([0,0,depth/2])
+          cube(size=[width, height, depth], true);  // the slot
+        translate([0,0,(depth+ls_deeper)/2])
+          cube(size=[width-sf_coverage, height-sf_coverage, depth+ls_deeper], true);  // framed slot
+      }
+    }
+}
+//CombinedEnd from path module_wallplacard.scad
 //Combined from path functions_general.scad
 
 
@@ -3099,7 +3256,10 @@ function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
   ) str(current, strNext!=""?str(sep, strNext):"");
 
 module assert_openscad_version(){
-  assert(version()[0]>2022,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
+  assert(
+      version()[0]>2022 //OpenSCAD version 
+      || version()[0]<1000 //For non OpenSCAD like PythonSCAD
+      ,"Gridfinity Extended requires an OpenSCAD version greater than 2022 https://openscad.org/downloads. Use Development Snapshots if the release version is still 2021.01 https://openscad.org/downloads.html#snapshots.");
 }
 
 // Gets one value base on another.
@@ -3437,7 +3597,7 @@ module set_environment(
 function env_numx() = is_undef($num_x) || !is_num($num_x) ? 0 : $num_x;
 function env_numy() = is_undef($num_y) || !is_num($num_y) ? 0 : $num_y;
 function env_numz() = is_undef($num_z) || !is_num($num_z) ? 0 : $num_z;
-function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0,0,0] : $clearance;
+function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0.5, 0.5, 0] : $clearance;
 function env_generate_filter() = (is_undef($generate_filter) || !is_string($generate_filter)) ? "" : $generate_filter;
 
 function env_pitch() =  is_undef($pitch) || !is_list($pitch) ? [gf_pitch, gf_pitch, gf_zpitch] : $pitch; 
@@ -3663,10 +3823,10 @@ Stackable_values = [Stackable_enabled,Stackable_disabled,Stackable_filllip];
 
 
 /* [Base]
-// (Zack's design uses magnet diameter of 6.5) 
+// (Zack's design uses magnet diameter of 6.5)
 magnet_diameter = 0;  // .1
-//create relief for magnet removal 
-magnet_easy_release  = "auto";//["off","auto","inner","outer"] 
+//create relief for magnet removal
+magnet_easy_release  = "auto";//["off","auto","inner","outer"]
 // (Zack's design uses depth of 6)
 screw_depth = 0;
 center_magnet_diameter =0;
@@ -3679,7 +3839,7 @@ box_corner_attachments_only = "enabled"; //["disabled","enabled","aligned"]
 floor_thickness = 0.7;
 cavity_floor_radius = -1;// .1
 // Efficient floor option saves material and time, but the internal floor is not flat
-efficient_floor = "off";//[off,on,rounded,smooth] 
+efficient_floor = "off";//[off,on,rounded,smooth]
 // Enable to subdivide bottom pads to allow half-cell offsets
 sub_pitch = 1;
 // Removes the internal grid from base the shape
@@ -3718,11 +3878,11 @@ CornerAttachments_enabled = "enabled";
 CornerAttachments_aligned = "aligned";
 
 CornerAttachments_values = [CornerAttachments_disabled, CornerAttachments_enabled, CornerAttachments_aligned];
-  function validateCornerAttachments(value) = 
+  function validateCornerAttachments(value) =
     //Convert boolean to list value
     let(value = is_bool(value) ? value ? CornerAttachments_enabled : CornerAttachments_disabled : value)
     assert(list_contains(CornerAttachments_values, value), typeerror("CornerAttachments", value))
-    value;  
+    value;
 
 
 EfficientFloor_off = "off";
@@ -3731,29 +3891,29 @@ EfficientFloor_rounded = "rounded";
 EfficientFloor_smooth = "smooth";
 
 EfficientFloor_values = [EfficientFloor_off, EfficientFloor_on, EfficientFloor_rounded, EfficientFloor_smooth];
-  function validateEfficientFloor(value) = 
+  function validateEfficientFloor(value) =
     //Convert boolean to list value
     let(value = is_bool(value) ? value ? EfficientFloor_on : EfficientFloor_off : value)
     assert(list_contains(EfficientFloor_values, value), typeerror("EfficientFloor", value))
-    value;  
+    value;
 
 FlatBase_off = "off";
 FlatBase_gridfinity = "gridfinity";
 FlatBase_rounded = "rounded";
 
 FlatBase_values = [FlatBase_off, FlatBase_gridfinity, FlatBase_rounded];
-  function validateFlatBase(value) = 
+  function validateFlatBase(value) =
     //Convert boolean to list value
     let(value = is_bool(value) ? value ? FlatBase_gridfinity : FlatBase_off : value)
     assert(list_contains(FlatBase_values, value), typeerror("FlatBase", value))
-    value;  
-    
+    value;
+
 function CupBaseSettings(
-    magnetSize = [0,0], 
-    magnetEasyRelease = MagnetEasyRelease_auto, 
-    centerMagnetSize = [0,0], 
-    screwSize = [0,0], 
-    holeOverhangRemedy = 2, 
+    magnetSize = [0,0],
+    magnetEasyRelease = MagnetEasyRelease_auto,
+    centerMagnetSize = [0,0],
+    screwSize = [0,0],
+    holeOverhangRemedy = 2,
     cornerAttachmentsOnly = true,
     floorThickness = gf_cup_floor_thickness,
     cavityFloorRadius = -1,
@@ -3770,30 +3930,33 @@ function CupBaseSettings(
     magnetChamfer = 0,
     alignGrid = ["near", "near"],
     magnetSideAccess = false
-    ) = 
+    ) =
   let(
-    magnetSize = 
-      is_num(magnetSize) 
+    magnetSize =
+      is_num(magnetSize)
         ? [magnetSize, gf_magnet_thickness]
         : magnetSize,
-    screwSize = 
-      is_num(screwSize) 
+    screwSize =
+      is_num(screwSize)
         ? [gf_cupbase_screw_diameter, screwSize]
         : screwSize,
     cornerAttachmentsOnly = is_bool(cornerAttachmentsOnly)
       ? cornerAttachmentsOnly ? CornerAttachments_enabled : CornerAttachments_disabled
       : cornerAttachmentsOnly,
+    magnetSideAccess  = is_bool(magnetSideAccess)
+      ? magnetSideAccess ? magnetSideAccess_right : magnetSideAccess_disabled
+      : magnetSideAccess,
     efficientFloor = validateEfficientFloor(efficientFloor),
     magnetEasyRelease = validateMagnetEasyRelease(magnetEasyRelease),
     centerMagnetSize = efficientFloor != EfficientFloor_off ? [0, 0] : centerMagnetSize,
     cavityFloorRadius = efficientFloor != EfficientFloor_off ? 0 : cavityFloorRadius,
     result = [
-      magnetSize[0] == 0 || magnetSize[1] == 0 ? [0,0] : magnetSize, 
-      magnetEasyRelease, 
+      magnetSize[0] == 0 || magnetSize[1] == 0 ? [0,0] : magnetSize,
+      magnetEasyRelease,
       NormaliseAutoMagnetEasyRelease(magnetEasyRelease, efficientFloor),
       centerMagnetSize[0] == 0 || centerMagnetSize[1] == 0 ? [0,0] : centerMagnetSize,
-      screwSize[0] == 0 || screwSize[1] == 0 ? [0,0] : screwSize, 
-      holeOverhangRemedy, 
+      screwSize[0] == 0 || screwSize[1] == 0 ? [0,0] : screwSize,
+      holeOverhangRemedy,
       validateCornerAttachments(cornerAttachmentsOnly),
       floorThickness,
       cavityFloorRadius,
@@ -3806,13 +3969,13 @@ function CupBaseSettings(
       flatBaseRoundedEasyPrint,
       magnetCaptiveHeight,
       alignGrid,
-      magnetSideAccess,
+      validateMagnetSideAccess(magnetSideAccess),
       magnetCrushDepth,
       magnetChamfer
       ],
     validatedResult = ValidateCupBaseSettings(result)
   ) validatedResult;
-  
+
 function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_list(settings) && len(settings) == 21, typeerror_list("CupBase Settings", settings, 19))
   assert(is_list(settings[iCupBase_MagnetSize]) && len(settings[iCupBase_MagnetSize])==2, "CupBase Magnet Setting must be a list of length 2")
@@ -3828,7 +3991,7 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
   assert(is_num(settings[iCupBase_MinimumPrintablePadSize]), "CupBase minimumPrintablePadSize Settings must be a number")
   assert(is_num(settings[iCupBase_MagnetCaptiveHeight]), "CupBase Magnet Captive height setting must a number")
   assert(is_list(settings[iCupBase_AlignGrid]) && len(settings[iCupBase_AlignGrid])==2, "CupBase AlignGrid Setting must be a list of length 2")
-  assert(is_bool(settings[iCupBase_MagnetSideAccess]), "CupBase MagnetSideAccess Settings must be a boolean")
+  assert(is_string(settings[iCupBase_MagnetSideAccess]), "CupBase MagnetSideAccess Settings must be a string")
   [
       settings[iCupBase_MagnetSize],
       validateMagnetEasyRelease(settings[iCupBase_MagnetEasyRelease]),
@@ -3859,23 +4022,36 @@ function ValidateCupBaseSettings(settings, num_x, num_y) =
 
 
 
+magnetSideAccess_disabled = "disabled";
+magnetSideAccess_left = "left";
+magnetSideAccess_right = "right";
+
+magnetSideAccess_values = [magnetSideAccess_disabled, magnetSideAccess_left, magnetSideAccess_right];
+  function validateMagnetSideAccess(value) =
+    //Convert boolean to list value
+    let(value = is_bool(value)
+      ? value ? magnetSideAccess_right : magnetSideAccess_disabled
+      : value)
+    assert(list_contains(magnetSideAccess_values, value), typeerror("MagnetSideAccess", value))
+    value;
+
 MagnetEasyRelease_off = "off";
 MagnetEasyRelease_auto = "auto";
-MagnetEasyRelease_inner = "inner"; 
-MagnetEasyRelease_outer = "outer"; 
+MagnetEasyRelease_inner = "inner";
+MagnetEasyRelease_outer = "outer";
 MagnetEasyRelease_values = [MagnetEasyRelease_off, MagnetEasyRelease_auto, MagnetEasyRelease_inner, MagnetEasyRelease_outer];
-function validateMagnetEasyRelease(value) = 
+function validateMagnetEasyRelease(value) =
   //Convert boolean to list value
   let(validatedValue = is_bool(value) ? value ? MagnetEasyRelease_auto : MagnetEasyRelease_off : value)
   assert(list_contains(MagnetEasyRelease_values, validatedValue), typeerror("MagnetEasyRelease", validatedValue))
   validatedValue;
 
 //Convert the Magnet auto to the normalised value
-function NormaliseAutoMagnetEasyRelease(value, efficientFloorValue) = 
+function NormaliseAutoMagnetEasyRelease(value, efficientFloorValue) =
   //Convert boolean to list value
-  let(normalisedValue = value == MagnetEasyRelease_auto 
-        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer 
-        : value) 
+  let(normalisedValue = value == MagnetEasyRelease_auto
+        ? efficientFloorValue == EfficientFloor_off ? MagnetEasyRelease_inner : MagnetEasyRelease_outer
+        : value)
   assert(list_contains(MagnetEasyRelease_values, normalisedValue), typeerror("MagnetEasyRelease", normalisedValue))
   normalisedValue;
 
@@ -3887,7 +4063,7 @@ module MagnetAndScrewRecess(
   overhangFixLayers = 3,
   overhangFixDepth = 0.2,
   easyMagnetRelease = true,
-  enableSideAccess = true,  
+  enableSideAccess = magnetSideAccess_disabled,
   magnetCaptiveHeight = 0,
   easyReleaseRotation = 0,
   magnetRotation = 0,
@@ -3906,25 +4082,28 @@ module MagnetAndScrewRecess(
         magnetCaptiveHeight = magnetCaptiveHeight)
         union(){
           cylinder_wavy(
-            r=magnetDiameter/2, 
+            r=magnetDiameter/2,
             h=$outer_height,
             amplitude=magnetCrushDepth,
             frequency = 8);
           chamferedCylinder(
-            r=magnetDiameter/2-magnetCrushDepth*2, 
+            r=magnetDiameter/2-magnetCrushDepth*2,
             h=$outer_height,
             bottomChamfer = magnetChamfer);
-        }    
-        
+        }
 
 
-      if(enableSideAccess){
+
+      if(enableSideAccess != magnetSideAccess_disabled){
         translate([0,0,magnetCaptiveHeight])
-        rotate([0,0,45])
+        rotate(enableSideAccess == magnetSideAccess_left ? [0,0,45-90] :  [0,0,45])
         translate([0,-magnetDiameter/2,0])
         cube(magnetCaptiveSideAccessSize);
       }
-      rotate(enableSideAccess ? [0,0,45+180] : [0,0,easyReleaseRotation])
+      rotate(
+          enableSideAccess == magnetSideAccess_right ? [0,0,45+180]
+          : enableSideAccess == magnetSideAccess_left ? [0,0,45+90]
+          : [0,0,easyReleaseRotation])
       magnet_release(
         magnetDiameter = magnetDiameter,
         magnetThickness = magnetThickness+magnetCaptiveHeight,
@@ -3940,7 +4119,7 @@ module magnet_release(
   center = false
 ){
   fudgeFactor = 0.01;
-  
+
   releaseWidth = 2;
   releaseLength = 1.5;
   outerPlusBridgeHeight = magnetThickness;
@@ -3950,20 +4129,20 @@ module magnet_release(
     difference(){
       hull(){
         blockSize = magnetDiameter*2/3;
-        translate([magnetDiameter/2-blockSize,-releaseWidth/2,0])  
+        translate([magnetDiameter/2-blockSize,-releaseWidth/2,0])
           cube([blockSize+releaseLength,releaseWidth,magnetThickness]);
-        translate([magnetDiameter/2+releaseLength,0,0])  
+        translate([magnetDiameter/2+releaseLength,0,0])
           cylinder(d=releaseWidth, h=magnetThickness);
       }
       chamferRadius = min(magnetThickness, releaseLength+releaseWidth/2);
-      
+
       totalReleaseLength = magnetDiameter/2+releaseLength+releaseWidth/2;
-      
+
       translate([totalReleaseLength,-releaseWidth/2-fudgeFactor,magnetThickness])
       rotate([270,0,90])
       roundedCorner(
         radius = chamferRadius,
-        length = releaseWidth+2*fudgeFactor, 
+        length = releaseWidth+2*fudgeFactor,
         height = totalReleaseLength);
     }
   }
@@ -3976,6 +4155,25 @@ module magnet_release(
 
 
 
+
+
+cupLip_debug = false;
+
+if(cupLip_debug){
+  $fn = 64;
+  cupLip(  num_x = 2, 
+  num_y = 3, 
+  lipStyle = LipStyle_normal, 
+  wall_thickness = 1.2,
+  lip_notches = true,
+  lip_top_relief_height = -1,
+  lip_top_relief_width = -1,
+  lip_clip_position = LipClipPosition_disabled,
+  lip_non_blocking = true,
+  lip_remove_inner_grid = false,
+  raise_lip = 0,
+  align_grid = [ "near", "near"]);
+}
 
 
 //Lip object configuration
@@ -4043,12 +4241,15 @@ module cupLip(
   num_x = 2, 
   num_y = 3, 
   lipStyle = LipStyle_normal, 
+  lipHeight = 3.75,
   wall_thickness = 1.2,
   lip_notches = true,
   lip_top_relief_height = -1,
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
-  lip_non_blocking = false,
+  lip_non_blocking = false, //prevents the walls for blocking bins on a partial cell.
+  lip_remove_inner_grid = true,
+  raise_lip = 0,
   align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
@@ -4060,6 +4261,7 @@ module cupLip(
   assert(is_bool(lip_notches));
   assert(is_string(lip_clip_position));
   assert(is_bool(lip_non_blocking));
+  assert(is_bool(lip_remove_inner_grid));
 
   connectorsEnabled = lip_clip_position != LipClipPosition_disabled;
   $allowConnectors = connectorsEnabled ? [1,1,1,1] : [0,0,0,0];
@@ -4080,17 +4282,18 @@ module cupLip(
 
   innerLipRadius = env_corner_radius()-gf_lip_lower_taper_height-gf_lip_upper_taper_height; //1.15
   innerWallRadius = env_corner_radius()-wall_thickness;
+  echo("cupLip",  innerLipRadius=innerLipRadius, env_corner_radius=env_corner_radius(), env_clearance=env_clearance() );
   
   // I couldn't think of a good name for this ('q') but effectively it's the
   // size of the overhang that produces a wall thickness that's less than the lip
   // around the top inside edge.
   q = 1.65-wall_thickness+0.95;  // default 1.65 corresponds to wall thickness of 0.95
-  lipHeight = 3.75;
+
   
   outer_size = [env_pitch().x - env_clearance().x, env_pitch().y - env_clearance().y];  // typically 41.5
   block_corner_position = [outer_size.x/2 - env_corner_radius(), outer_size.y/2 - env_corner_radius()];  // need not match center of pad corners
  
-  coloredLipHeight=min(2,lipHeight);
+  coloredLipHeight=3.75;
   
   if(lipStyle != "none")
     color(env_colour(color_topcavity, isLip = true))
@@ -4101,8 +4304,9 @@ module cupLip(
       tz(fudgeFactor*2)
       hull() 
         cornercopy(block_corner_position, num_x, num_y) 
-        cylinder(r=env_corner_radius(), h=lipHeight+fudgeFactor);
+        cylinder(r=env_corner_radius(), h=raise_lip + lipHeight + fudgeFactor);
     
+      tz(raise_lip)
       cupLip_cavity(
         num_x = num_x, 
         num_y = num_y, 
@@ -4113,6 +4317,8 @@ module cupLip(
         lip_top_relief_width = lip_top_relief_width,
         lip_clip_position = lip_clip_position,
         lip_non_blocking = lip_non_blocking,
+        lip_remove_inner_grid = lip_remove_inner_grid,
+        raise_lip= raise_lip,
         align_grid = align_grid);
     }
 }
@@ -4127,6 +4333,8 @@ module cupLip_cavity(
   lip_top_relief_width = -1,
   lip_clip_position = LipClipPosition_disabled,
   lip_non_blocking = false,
+  lip_remove_inner_grid = true,
+  raise_lip = 0,
   align_grid = [ "near", "near"]){
   
   assert(is_num(num_x) && num_x > 0, "num_x must be a number greater than 0");
@@ -4138,7 +4346,8 @@ module cupLip_cavity(
   assert(is_bool(lip_notches));
   assert(is_string(lip_clip_position));
   assert(is_bool(lip_non_blocking));
-
+  assert(is_num(raise_lip));
+  
   connectorsEnabled = lip_clip_position != LipClipPosition_disabled;
   $allowConnectors = connectorsEnabled ? [1,1,1,1] : [0,0,0,0];
   $frameBaseHeight = 0; //$num_z * env_pitch().z;
@@ -4172,7 +4381,6 @@ module cupLip_cavity(
       
   pitch=env_pitch();
   // remove top so XxY can fit on top
-  //pad_oversize(num_x, num_y, 1);
   union(){
     //Top cavity, with lip relief
     frame_cavity(
@@ -4181,11 +4389,12 @@ module cupLip_cavity(
       position_fill_grid_x = align_grid.x,
       position_fill_grid_y = align_grid.y,
       render_top = lip_notches,
-      render_bottom = false,
+      render_bottom = !lip_remove_inner_grid,
       frameLipHeight = 4,
       cornerRadius = env_corner_radius(),
       reducedWallHeight = lip_top_relief_height,
       reducedWallWidth = lip_top_relief_width,
+      extra_down = raise_lip,
       reducedWallOuterEdgesOnly=true){
         echo("donothign");
         frame_connector_cavities(
@@ -4196,22 +4405,24 @@ module cupLip_cavity(
             connectorClipEnabled = connectorsEnabled));
       }
 
-    //lower cavity
-    frame_cavity(
-      num_x = 1, 
-      num_y = 1, 
-      position_fill_grid_x = "far",
-      position_fill_grid_y = "far",
-      render_top = !lip_notches,
-      render_bottom = true,
-      frameLipHeight = 4,
-      cornerRadius = env_corner_radius(),
-      reducedWallHeight = -1, 
-      reducedWallWidth = -1,
-      $pitch=[
-        pitch.x*(lip_non_blocking ? ceil(num_x) : num_x),
-        pitch.y*(lip_non_blocking ? ceil(num_y) : num_y),
-        pitch.z]);
+    if(lip_remove_inner_grid){
+      //lower cavity
+      frame_cavity(
+        num_x = 1, 
+        num_y = 1, 
+        position_fill_grid_x = "far",
+        position_fill_grid_y = "far",
+        render_top = !lip_notches,
+        render_bottom = true,
+        frameLipHeight = 4,
+        cornerRadius = env_corner_radius(),
+        reducedWallHeight = -1, 
+        reducedWallWidth = -1,
+        $pitch=[
+          pitch.x*(lip_non_blocking ? ceil(num_x) : num_x),
+          pitch.y*(lip_non_blocking ? ceil(num_y) : num_y),
+          pitch.z]);
+      }
   }
  
   if (lipStyle == "minimum" || lipStyle == "none") {
@@ -5904,11 +6115,11 @@ module cnclaser_baseplate_internal(
 //CombinedEnd from path module_gridfinity_baseplate_cnclaser.scad
 
 //Some online generators do not like direct setting of fa,fs,fn
-$fa = fa; 
-$fs = fs; 
-$fn = fn;   
+$fa = fa;
+$fs = fs;
+$fn = fn;
 
-function round_half_down(number, max_allowed) = 
+function round_half_down(number, max_allowed) =
 let (up = ceil(number), down = floor(number),
     result = (number - down <= 0.5 || up > max_allowed) ? down : up)
   echo("round_half_down", number=number, up=up, down=down, max_allowed=max_allowed, result=result, lessthan=number - down <= 0.5, upgreater=up > max_allowed)
@@ -5932,13 +6143,13 @@ function split_dimension(
     totalOuterSize = gf_outer_size > gf_size ? gf_outer_size : gf_size,
     outerPadding = max(0, totalOuterSize - gf_size),
 
-    // Calculate offsets based on position, 
+    // Calculate offsets based on position,
     //only used on first plate
     outerPrefix =
-      position_grid_in_outer == "far" ? outerPadding : 
+      position_grid_in_outer == "far" ? outerPadding :
       position_grid_in_outer == "center" ? outerPadding/2 : 0,
     gridPrefix=
-      position_fill_grid == "near" ? gf_size - floor(gf_size) : 
+      position_fill_grid == "near" ? gf_size - floor(gf_size) :
       position_fill_grid == "center" ? (gf_size - floor(gf_size))/2 : 0,
 
     // Calculate the number of plates and average sizes
@@ -5949,11 +6160,11 @@ function split_dimension(
 
     // Calculate the size and outer size for the this plate
     current_grid_size = totalOuterSize <= plate_size
-      ? gf_size 
+      ? gf_size
       : gridPrefix + max(0, round_half_down(min(gf_size, avgOuter-outerPrefix-gridPrefix), max_allowed =plate_size-outerPrefix-gridPrefix)),
     current_outer_size = totalOuterSize <= plate_size
-      ? totalOuterSize 
-      : current_grid_size + outerPrefix, 
+      ? totalOuterSize
+      : current_grid_size + outerPrefix,
 
     // Calculate the remaining size and outer size
     remSize = max(0, gf_size - current_grid_size),
@@ -5988,32 +6199,32 @@ function split_plate(num_x, num_y,
     [for(iy=[0:len(list)-1]) [for(ix=[0:len(list[iy])-1]) let(plate = list[iy][ix]) [plate[0], plate[1], check_plate_duplicate_y(plate, list)]]];
 
 
-function check_plate_duplicate_y(plate, plate_list, y = 0, end) = 
+function check_plate_duplicate_y(plate, plate_list, y = 0, end) =
   assert(is_list(plate), "plate must be a list")
   assert(is_list(plate_list), "plate_list must be a list")
   assert(is_num(y), "y must be a number")
   let(end = is_undef(end) ? len(plate_list) : end)
-    y > len(plate_list) - 1 || y > end ? false 
-    : check_plate_duplicate_x(plate, plate_list[y]) 
+    y > len(plate_list) - 1 || y > end ? false
+    : check_plate_duplicate_x(plate, plate_list[y])
     || check_plate_duplicate_y(plate, plate_list, y = y+1);
-    
-function check_plate_duplicate_x(plate, plate_list_y, x = 0, end) = 
+
+function check_plate_duplicate_x(plate, plate_list_y, x = 0, end) =
   assert(is_list(plate), "plate must be a list")
   assert(is_list(plate_list_y), "plate_list_y must be a list")
   assert(is_num(x), "x must be a number")
   //echo("check_plate_duplicate_x", plate=plate)
   let(end = is_undef(end) ? len(plate_list_y) : end)
-  x > len(plate_list_y) - 1 || x > end ? false 
+  x > len(plate_list_y) - 1 || x > end ? false
   : let(comparePlate = plate_list_y[x],
-    isDupe = (comparePlate[0][0] < plate[0][0] || 
-      (comparePlate[0][0] == plate[0][0] && comparePlate[0][1] < plate[0][1])) && 
-      plate[1][0][iPlate_size] == comparePlate[1][0][iPlate_size] && 
-      (plate[1][0][iPlate_size] == floor(plate[1][0][iPlate_size]) || plate[1][0][iPlate_posGrid] == comparePlate[1][0][iPlate_posGrid]) && 
-      plate[1][0][iPlate_outerSize] == comparePlate[1][0][iPlate_outerSize] && 
+    isDupe = (comparePlate[0][0] < plate[0][0] ||
+      (comparePlate[0][0] == plate[0][0] && comparePlate[0][1] < plate[0][1])) &&
+      plate[1][0][iPlate_size] == comparePlate[1][0][iPlate_size] &&
+      (plate[1][0][iPlate_size] == floor(plate[1][0][iPlate_size]) || plate[1][0][iPlate_posGrid] == comparePlate[1][0][iPlate_posGrid]) &&
+      plate[1][0][iPlate_outerSize] == comparePlate[1][0][iPlate_outerSize] &&
       (plate[1][0][iPlate_outerSize] == 0 || plate[1][0][iPlate_posOuter] == comparePlate[1][0][iPlate_posOuter]) &&
-      plate[1][1][iPlate_size] == comparePlate[1][1][iPlate_size] && 
-      (plate[1][1][iPlate_size] == floor(plate[1][1][iPlate_size]) || plate[1][1][iPlate_posGrid] == comparePlate[1][1][iPlate_posGrid]) && 
-      plate[1][1][iPlate_outerSize] == comparePlate[1][1][iPlate_outerSize] && 
+      plate[1][1][iPlate_size] == comparePlate[1][1][iPlate_size] &&
+      (plate[1][1][iPlate_size] == floor(plate[1][1][iPlate_size]) || plate[1][1][iPlate_posGrid] == comparePlate[1][1][iPlate_posGrid]) &&
+      plate[1][1][iPlate_outerSize] == comparePlate[1][1][iPlate_outerSize] &&
       (plate[1][1][iPlate_outerSize] == 0 || plate[1][1][iPlate_posOuter] == comparePlate[1][1][iPlate_posOuter]))
     isDupe || check_plate_duplicate_x(plate, plate_list_y, x = x+1, end);
 
@@ -6021,28 +6232,28 @@ iPlate_size = 0;
 iPlate_posGrid = 1;
 iPlate_outerSize = 2;
 iPlate_posOuter = 3;
-    
+
 if(Connector_Only)
 {
   if(Connector_Clip_Enabled) {
     ClipConnector(
-      size=Connector_Clip_Size, 
+      size=Connector_Clip_Size,
       clearance = Connector_Clip_Tolerance,
       fullIntersection = true);
 
     translate([0,15,0])
     ClipConnector(
-      size=Connector_Clip_Size, 
+      size=Connector_Clip_Size,
       straightIntersection = true,
       clearance = Connector_Clip_Tolerance);
-    
+
     translate([0,30,0])
     ClipConnector(
-      size=Connector_Clip_Size, 
+      size=Connector_Clip_Size,
       straightWall = true,
       clearance = Connector_Clip_Tolerance);
   }
-  
+
   if(Connector_Butterfly_Enabled)
   translate([20,0,0])
   ButterFlyConnector(
@@ -6052,18 +6263,18 @@ if(Connector_Only)
       Connector_Butterfly_Size.z-Connector_Butterfly_Tolerance],
     r=Connector_Butterfly_Radius);
 }
-else 
+else
 {
   plate_list = let(
-      num_x=calcDimensionWidth(Width), 
+      num_x=calcDimensionWidth(Width),
       num_y=calcDimensionDepth(Depth),
       outer_num_x = calcDimensionWidth(outer_Width),
       outer_num_y = calcDimensionWidth(outer_Depth))
-    (build_plate_enabled == "disabled" || build_plate_size.x <= 0 || build_plate_size.y <= 0) 
-    ? [[[[0,0], [[num_x, position_fill_grid_x, outer_num_x, position_grid_in_outer_x], 
+    (build_plate_enabled == "disabled" || build_plate_size.x <= 0 || build_plate_size.y <= 0)
+    ? [[[[0,0], [[num_x, position_fill_grid_x, outer_num_x, position_grid_in_outer_x],
        [num_y, position_fill_grid_y, outer_num_y, position_grid_in_outer_y]], false]]]
     :split_plate(
-      num_x=num_x, 
+      num_x=num_x,
       num_y=num_y,
       outer_num_x = outer_num_x,
       outer_num_y = outer_num_y,
@@ -6073,7 +6284,7 @@ else
       position_grid_in_outer_y = position_grid_in_outer_y,
       build_plate_size= build_plate_size,
       average_plate_sizes=average_plate_sizes);
-    
+
   for(iy=[0:len(plate_list)-1])
   let(listy = plate_list[iy])
   for(ix=[0:len(listy)-1]) {
@@ -6106,7 +6317,7 @@ else
       plate_corner_radius = plate_corner_radius,
       secondary_corner_radius = secondary_corner_radius,
       corner_roles = let(
-          nx=len(listy), 
+          nx=len(listy),
           ny=len(plate_list)
         ) [
           (ix==0 && iy==0) ? 1 : 0,       // BL (0,0) -> 0
@@ -6118,8 +6329,8 @@ else
       magnetZOffset = Magnet_Z_Offset,
       magnetTopCover=Magnet_Top_Cover,
       magnetReleaseMethod = Magnet_Release_Method,
-      reducedWallHeight = Reduced_Wall_Height, 
-      reduceWallTaper = Reduced_Wall_Taper, 
+      reducedWallHeight = Reduced_Wall_Height,
+      reduceWallTaper = Reduced_Wall_Taper,
       cornerScrewEnabled  = Corner_Screw_Enabled,
       centerScrewEnabled = Center_Screw_Enabled,
       weightedEnable = Enable_Weight,
@@ -6129,11 +6340,11 @@ else
       gridPositions=[xpos1,xpos2,xpos3,xpos4,xpos5,xpos6,xpos7],
       remove_bottom_taper=Remove_Bottom_Taper,
       frameConnectorSettings = FrameConnectorSettings(
-        connectorOnly = Connector_Only, 
-        connectorPosition = Connector_Position, 
+        connectorOnly = Connector_Only,
+        connectorPosition = Connector_Position,
         connectorClipEnabled = Connector_Clip_Enabled,
         connectorClipSize = Connector_Clip_Size,
-        connectorClipTolerance = Connector_Clip_Tolerance, 
+        connectorClipTolerance = Connector_Clip_Tolerance,
         connectorButterflyEnabled = Connector_Butterfly_Enabled,
         connectorButterflySize = Connector_Butterfly_Size,
         connectorButterflyRadius = Connector_Butterfly_Radius,
