@@ -3,9 +3,9 @@ include <wallcutout.scad>
 include <../module_wallplacard.scad>
 include <../functions_general.scad>
 
-utility_demo = false;
+utility_demo = false && $preview;
 
-if(utility_demo && $preview){
+if(utility_demo){
   $fn = 64;
   
   translate([400,0,0])
@@ -57,7 +57,7 @@ module bentWall(
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");
   fudgeFactor = 0.01;
   
-  label_enabled = label_size > 0 && label_size*4 < length;
+  label_enabled = label_size > 0 && label_size*3 < length;
   thickness = is_num(thickness) ? [thickness,thickness] : thickness;
   thickness_bottom  = thickness.x;
   thickness_top = thickness.y;
@@ -72,13 +72,12 @@ module bentWall(
 
   bendPosition = get_related_value(bendPosition, length, length/2);
   
-  
   label_z_height = label_enabled ? cos(label_angle)* label_size + thickness_bottom/2 : 0;
   
   cutoutHeight = max(get_related_value(wall_cutout_depth, height, 0), label_z_height);
   cutoutRadius = label_enabled ? label_size/4 : get_related_value(wall_cutout_radius, cutoutHeight, cutoutHeight);
 
-  label_length = length-cutoutRadius*6;
+  label_length = length-cutoutRadius*4;
   cutoutLength = wall_cutout_width == 0 && label_enabled ? label_length : get_related_value(wall_cutout_width, length, length/2); 
 
   //Thickness should match the wall thickness, for tapered walls find the right position
@@ -449,11 +448,24 @@ module rotate_around_point(point=[], rotation=[]){
 }
 
 
+
+
+if(utility_demo){
+  
+translate([-100,0,0])
+CubeWithRoundedCorner(
+  $fn=128);
+translate([-100,20,0])
+CubeWithRoundedCorner(
+  edgeRadius = 2,
+  $fn=128);
+}
+
 //Creates a cube with a single rounded corner.
 //Centered around the rounded corner
 module CubeWithRoundedCorner(
   size=[10,10,10], 
-  cornerRadius = 2, 
+  cornerRadius = 5, 
   edgeRadius = 0,
   center=false){
   assert(is_list(size) && len(size)==3, "size should be a list of size 3");

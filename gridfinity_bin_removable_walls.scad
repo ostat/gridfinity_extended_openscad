@@ -43,35 +43,8 @@ lip_clip_position = "disabled"; //[disabled, intersection, center_wall, both]
 lip_non_blocking = false;
 height_includes_lip = false;
 
-/* [Subdivisions] */
-// Wall thickness [bottom, top]
-chamber_wall_thickness = [1.2, 1.2]; //0.1
-//Reduce the wall height by this amount
-chamber_wall_headroom = 0;//0.1
-// Radius of the top of the chamber wall, -ve is ratio of top wall thickenss. (disabled for bent walls)
-chamber_wall_top_radius = 0; //0.1
-//Reduce the wall height by this amount
-vertical_chambers = 1;
-vertical_separator_bend_separation = 0;
-vertical_separator_bend_angle = 45;
-vertical_separator_bend_position = 0;
-vertical_separator_cut_depth=0;
-horizontal_chambers = 1;
-horizontal_separator_bend_separation = 0;
-horizontal_separator_bend_angle = 45;
-horizontal_separator_bend_position = 0;
-horizontal_separator_cut_depth=0;
-// Enable irregular subdivisions
-vertical_irregular_subdivisions = false;
-// Separator positions are defined in terms of grid units from the left end
-vertical_separator_config = "10.5|21|42|50|60";
-// Enable irregular subdivisions
-horizontal_irregular_subdivisions = false;
-// Separator positions are defined in terms of grid units from the left end
-horizontal_separator_config = "10.5|21|42|50|60";
-
 /* [Removable Divider Walls] */
-divider_walls_enabled = false;
+divider_walls_enabled = true;
 // Wall to enable on, x direction, y direction
 divider_walls = [1,1]; //[0:1:1]
 // Thickness of the divider walls.
@@ -87,7 +60,7 @@ divider_headroom = 0.1;
 // Clearance subtracted from the removable divider wall. Width, Length
 divider_clearance = [0.3, 0.2];
 // Number of slot spanning divider to generate.
-divider_slot_spanning = 2;
+divider_slot_spanning = 2; //1
 // depth of wall cut, -ve relative to height
 divider_wall_cutout_depth = 0; //0.1
 // width of wall cut, -ve relative to length
@@ -151,17 +124,13 @@ align_grid_y = "near";//[near, far]
 label_style = "disabled"; //[disabled: no label, normal:normal, gflabel:gflabel basic label, pred:pred - labels by pred, cullenect:Cullenect click labels V2,  cullenect_legacy:Cullenect click labels v1]
 // Include overhang for labeling (and specify left/right/center justification)
 label_position = "left"; // [left, right, center, leftchamber, rightchamber, centerchamber]
-// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4.
-// Enable labels on internal divider walls
-label_dividers = "disabled"; //[disabled, horizontal, vertical, both]
-
+// Width, Depth, Height, Radius. Width in Gridfinity units of 42mm, Depth and Height in mm, radius in mm. Width of 0 uses full width. Height of 0 uses Depth, height of -1 uses depth*3/4. 
 label_size = [0,14,0,0.6]; // 0.01
 // Size in mm of relief where appropriate. Width, depth, height, radius
 label_relief = [0,0,0,0.6]; // 0.1
 // wall to enable on, front, back, left, right. 0: disabled; 1: enabled;
 label_walls=[0,1,0,0];  //[0:1:1]
-
-
+    
 /* [Sliding Lid] */
 sliding_lid_enabled = false;
 // 0 = wall thickness *2
@@ -327,6 +296,7 @@ fn = 0;
 random_seed = 0; //0.0001
 // force render on costly components
 force_render = true;
+generate_filter = "everything"; // [everything, cup, divider_walls_double_sided, divider_walls_single_sided, divider_walls_straight_sided, divider_walls_bent_x, divider_walls_bent_y]
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
@@ -337,6 +307,37 @@ $fa = fa;
 $fs = fs;
 $fn = fn;
 
+generate(generate_filter);
+
+module mw_plate_1() {
+  !generate("cup");
+}
+
+module mw_plate_2() {
+ !generate("divider_walls_double_sided");
+}
+
+module mw_plate_3() {
+ !generate("divider_walls_single_sided");
+}
+
+module mw_plate_4() {
+ !generate("divider_walls_straight_sided");
+}
+
+module mw_plate_5() {
+ !generate("divider_walls_bent_x");
+}
+
+module mw_plate_6() {
+ !generate("divider_walls_bent_y");
+}
+
+module mw_assembly_view() {
+  !generate("");
+}
+
+module generate(filter = generate_filter) {
 set_environment(
   width = width,
   depth = depth,
@@ -350,7 +351,8 @@ set_environment(
   cut = cut,
   setColour = set_colour,
   randomSeed = random_seed,
-  force_render = force_render)
+  force_render = force_render,
+  generate_filter = filter)
 gridfinity_cup(
   filled_in=filled_in,
   label_settings=LabelSettings(
@@ -358,8 +360,7 @@ gridfinity_cup(
     labelPosition=label_position,
     labelSize=label_size,
     labelRelief=label_relief,
-    labelWalls=label_walls,
-    labelDividers=label_dividers),
+    labelWalls=label_walls),
   finger_slide_settings = FingerSlideSettings(
     type = fingerslide,
     radius = fingerslide_radius,
@@ -403,33 +404,13 @@ gridfinity_cup(
     divider_wall_cutout_radius = divider_wall_cutout_radius,
     divider_top_radius = divider_top_radius,
     divider_label_size = divider_label_size),
-  vertical_chambers = ChamberSettings(
-    chambers_count = vertical_chambers,
-    chamber_wall_thickness = chamber_wall_thickness,
-    chamber_wall_headroom = chamber_wall_headroom,
-    chamber_wall_top_radius = chamber_wall_top_radius,
-    separator_bend_position = vertical_separator_bend_position,
-    separator_bend_angle = vertical_separator_bend_angle,
-    separator_bend_separation = vertical_separator_bend_separation,
-    separator_cut_depth = vertical_separator_cut_depth,
-    irregular_subdivisions = vertical_irregular_subdivisions,
-    separator_config = vertical_separator_config),
-  horizontal_chambers = ChamberSettings(
-    chambers_count = horizontal_chambers,
-    chamber_wall_thickness = chamber_wall_thickness,
-    chamber_wall_headroom = chamber_wall_headroom,
-    chamber_wall_top_radius = chamber_wall_top_radius,
-    separator_bend_position = horizontal_separator_bend_position,
-    separator_bend_angle = horizontal_separator_bend_angle,
-    separator_bend_separation = horizontal_separator_bend_separation,
-    separator_cut_depth = horizontal_separator_cut_depth,
-    irregular_subdivisions = horizontal_irregular_subdivisions,
-    separator_config = horizontal_separator_config),
+  vertical_chambers = ChamberSettings(),
+  horizontal_chambers = ChamberSettings(),
   lip_settings = LipSettings(
-    lipStyle=lip_style,
-    lipSideReliefTrigger=lip_side_relief_trigger,
-    lipTopReliefHeight=lip_top_relief_height,
-    lipTopReliefWidth=lip_top_relief_width,
+    lipStyle=lip_style, 
+    lipSideReliefTrigger=lip_side_relief_trigger, 
+    lipTopReliefHeight=lip_top_relief_height, 
+    lipTopReliefWidth=lip_top_relief_width, 
     lipNotch=lip_top_notches,
     lipClipPosition=lip_clip_position,
     lipNonBlocking=lip_non_blocking),
@@ -437,59 +418,59 @@ gridfinity_cup(
   tapered_corner=tapered_corner,
   tapered_corner_size = tapered_corner_size,
   tapered_setback = tapered_setback,
-  wallpattern_walls=wallpattern_walls,
+  wallpattern_walls=wallpattern_walls, 
   wallpattern_dividers_enabled=wallpattern_dividers_enabled,
   wall_pattern_settings = PatternSettings(
-    patternEnabled = wallpattern_enabled,
-    patternStyle = wallpattern_style,
+    patternEnabled = wallpattern_enabled, 
+    patternStyle = wallpattern_style, 
     patternRotate = wallpattern_rotate_grid,
     patternFill = wallpattern_fill,
-    patternBorder = wallpattern_border,
+    patternBorder = wallpattern_border, 
     patternDepth = wallpattern_depth,
-    patternCellSize = wallpattern_cell_size,
+    patternCellSize = wallpattern_cell_size, 
     patternHoleSides = wallpattern_hole_sides,
-    patternStrength = wallpattern_strength,
+    patternStrength = wallpattern_strength, 
     patternHoleRadius = wallpattern_hole_radius,
     patternGridChamfer = wallpattern_pattern_grid_chamfer,
     patternVoronoiNoise = wallpattern_pattern_voronoi_noise,
     patternBrickWeight = wallpattern_pattern_brick_weight,
     patternFs = wallpattern_pattern_quality,
-    patternColored = wallpattern_colored),
+    patternColored = wallpattern_colored), 
   floor_pattern_settings = PatternSettings(
-    patternEnabled = floorpattern_enabled,
-    patternStyle = floorpattern_style,
+    patternEnabled = floorpattern_enabled, 
+    patternStyle = floorpattern_style, 
     patternRotate = floorpattern_rotate_grid,
     patternFill = floorpattern_fill,
-    patternBorder = floorpattern_border,
+    patternBorder = floorpattern_border, 
     patternDepth = floorpattern_depth,
-    patternCellSize = floorpattern_cell_size,
+    patternCellSize = floorpattern_cell_size, 
     patternHoleSides = floorpattern_hole_sides,
-    patternStrength = floorpattern_strength,
+    patternStrength = floorpattern_strength, 
     patternHoleRadius = floorpattern_hole_radius,
     patternGridChamfer = floorpattern_pattern_grid_chamfer,
     patternVoronoiNoise = floorpattern_pattern_voronoi_noise,
     patternBrickWeight = floorpattern_pattern_brick_weight,
-    patternFs = floorpattern_pattern_quality),
+    patternFs = floorpattern_pattern_quality), 
   wallcutout_vertical_settings = WallCutoutSettings(
-    type = wallcutout_vertical,
-    position = wallcutout_vertical_position,
+    type = wallcutout_vertical, 
+    position = wallcutout_vertical_position, 
     width = wallcutout_vertical_width,
     angle = wallcutout_vertical_angle,
-    height = wallcutout_vertical_height,
+    height = wallcutout_vertical_height, 
     corner_radius = wallcutout_vertical_corner_radius),
   wallcutout_horizontal_settings = WallCutoutSettings(
-    type = wallcutout_horizontal,
-    position = wallcutout_horizontal_position,
+    type = wallcutout_horizontal, 
+    position = wallcutout_horizontal_position, 
     width = wallcutout_horizontal_width,
     angle = wallcutout_horizontal_angle,
-    height = wallcutout_horizontal_height,
+    height = wallcutout_horizontal_height, 
     corner_radius = wallcutout_horizontal_corner_radius),
   extendable_Settings = ExtendableSettings(
-    extendablexEnabled = extension_x_enabled,
-    extendablexPosition = extension_x_position,
-    extendableyEnabled = extension_y_enabled,
-    extendableyPosition = extension_y_position,
-    extendableTabsEnabled = extension_tabs_enabled,
+    extendablexEnabled = extension_x_enabled, 
+    extendablexPosition = extension_x_position, 
+    extendableyEnabled = extension_y_enabled, 
+    extendableyPosition = extension_y_position, 
+    extendableTabsEnabled = extension_tabs_enabled, 
     extendableTabSize = extension_tab_size),
   sliding_lid_settings = SlidingLidSettings(
     enabled = sliding_lid_enabled,
@@ -507,3 +488,4 @@ gridfinity_cup(
     baseTextFont = text_font,
     baseTextDepth = text_depth,
     baseTextOffset = text_offset));
+}
