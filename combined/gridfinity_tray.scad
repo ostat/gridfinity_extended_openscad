@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'gridfinity_tray.scad'. Generated 2026-09-22 22:52
-//Content hash 4A07F89533B962D36060FE880953C06FD8AC0B8E1BDE77B3A81E7750031592B7
+//Combined version of 'gridfinity_tray.scad'. Generated 2026-09-23 11:25
+//Content hash CD5AC305424B78631151100C7F0B4C6252389949897C2B1B7AE6F1F8C314CF76
 ///////////////////////////////////////
 
 /*<!!start gridfinity_tray!!>*/
@@ -866,6 +866,7 @@ module gridfinity_cup(
             wallcutout_vertical_settings = wallcutout_vertical_settings,
             wallcutout_horizontal_settings = wallcutout_horizontal_settings,
             enable_outer_walls = true,
+
             enable_inner_walls = false);
       } //coloured_wall_pattern
 
@@ -1069,6 +1070,7 @@ module bin_wall_pattern(
                       patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                       patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                       patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+        	      patternKumikoFillRatio = wall_pattern_settings[iPatternKumikoFillRatio],
                       partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                       holeRadius = wall_pattern_settings[iPatternHoleRadius],
                       source = "wall_pattern",
@@ -1102,6 +1104,7 @@ module bin_wall_pattern(
                           patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                           patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                           patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+			  patternKumikoFillRatio = wall_pattern_settings[iPatternKumikoFillRatio],
                           partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                           holeRadius = wall_pattern_settings[iPatternHoleRadius],
                           source="vertical separator wall pattern",
@@ -1143,6 +1146,7 @@ module bin_wall_pattern(
                       patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                       patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                       patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+		      patternKumikoFillRatio = wall_pattern_settings[iPatternKumikoFillRatio],
                       partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                       holeRadius = wall_pattern_settings[iPatternHoleRadius],
                       source = "wall_pattern",
@@ -1177,6 +1181,7 @@ module bin_wall_pattern(
                             patternGridChamfer = wall_pattern_settings[iPatternGridChamfer],
                             patternVoronoiNoise = wall_pattern_settings[iPatternVoronoiNoise],
                             patternBrickWeight = wall_pattern_settings[iPatternBrickWeight],
+			    patternKumikoFillRatio = wall_pattern_settings[iPatternKumikoFillRatio],
                             partialDepth = wall_pattern_settings[iPatternDepth] != 0,
                             holeRadius = wall_pattern_settings[iPatternHoleRadius],
                             source = "horizontal separator wall pattern",
@@ -2138,6 +2143,8 @@ csv_parse = function(s) [for (e=split(s, ",")) float(e)];
 
 
 
+
+
 iPatternEnabled=0;
 iPatternStyle=1;
 iPatternRotate=2;
@@ -2153,6 +2160,7 @@ iPatternGridChamfer=11;
 iPatternVoronoiNoise=12;
 iPatternBrickWeight=13;
 iPatternColored=14;
+iPatternKumikoFillRatio=15;
 
 PatternStyle_grid = "grid";
 PatternStyle_hexgrid = "hexgrid";
@@ -2162,11 +2170,18 @@ PatternStyle_voronoihexgrid = "voronoihexgrid";
 PatternStyle_brick = "brick";
 PatternStyle_brickoffset = "brickoffset";
 PatternStyle_slat = "slats";
+PatternStyle_tobiAsanoha = "kumiko_tobi_asanoha";
+PatternStyle_asanoha = "kumiko_asanoha";
+PatternStyle_goma = "kumiko_goma";
+PatternStyle_tsumiishiKikko = "kumiko_tsumiishi_kikko";
+PatternStyle_bishamonKikkou = "kumiko_bishamon_kikkou";
+PatternStyle_mikado = "kumiko_mikado";
 
 PatternStyle_values = [
     PatternStyle_grid, PatternStyle_hexgrid,
     PatternStyle_voronoi, PatternStyle_voronoigrid, PatternStyle_voronoihexgrid, 
     PatternStyle_slat,
+    PatternStyle_tobiAsanoha, PatternStyle_asanoha, PatternStyle_goma, PatternStyle_tsumiishiKikko, PatternStyle_bishamonKikkou, PatternStyle_mikado,
     PatternStyle_brick, PatternStyle_brickoffset
     ];
 function validatePatternStyle(value, name = "PatternStyle") = 
@@ -2205,6 +2220,7 @@ function PatternSettings(
     patternVoronoiNoise=0,
     patternBrickWeight=0,
     patternColored="disabled"
+    ,patternKumikoFillRatio=[0,0]
     ) = 
   let(
     result = [
@@ -2223,13 +2239,14 @@ function PatternSettings(
       patternVoronoiNoise,
       patternBrickWeight,
       patternColored
+      , is_num(patternKumikoFillRatio) ? [patternKumikoFillRatio, patternKumikoFillRatio] : patternKumikoFillRatio,
       ],
     validatedResult = ValidatePatternSettings(result)
   ) validatedResult;
 
 function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_list(settings), "Settings must be a list")
-  assert(len(settings)==15, "Settings must length 15")
+  assert(len(settings)==16, "Settings must length 16")
   assert(is_bool(settings[iPatternEnabled]), "settings[iPatternEnabled] must be a boolean")
   assert(is_string(settings[iPatternStyle]), "settings[iPatternStyle] must be a string")
   assert(is_bool(settings[iPatternRotate]), "settings[iPatternRotate] must be a boolean")
@@ -2245,6 +2262,8 @@ function ValidatePatternSettings(settings, num_x, num_y) =
   assert(is_num(settings[iPatternFs]) && settings[iPatternFs] >= 0, "settings[iPatternFs] must be a non-negative number")
   assert(is_num(settings[iPatternGridChamfer]), "settings[iPatternGridChamfer] must be a number")
   assert(is_num(settings[iPatternVoronoiNoise]) && settings[iPatternVoronoiNoise] >= 0 && settings[iPatternVoronoiNoise] <= 1, "settings[iPatternVoronoiNoise] must be between 0 and 1")
+  assert(is_list(settings[iPatternKumikoFillRatio]), "settings[iPatternKumikoFillRatio] must be a list")
+  assert(is_list(settings[iPatternKumikoFillRatio]), "settings[iPatternKumikoFillRatio] must be a list")
   assert(is_num(settings[iPatternBrickWeight]) && settings[iPatternBrickWeight] >= 0, "settings[iPatternBrickWeight] must be a non-negative number")
     [settings[iPatternEnabled],
       validatePatternStyle(settings[iPatternStyle]),
@@ -2261,6 +2280,7 @@ function ValidatePatternSettings(settings, num_x, num_y) =
       settings[iPatternVoronoiNoise],
       settings[iPatternBrickWeight],
       settings[iPatternColored]
+      ,settings[iPatternKumikoFillRatio]
       ];
 
 function get_wallpattern_positions(
@@ -2358,11 +2378,24 @@ module coloured_wall_pattern(
     colored_block(colored_pattern){
       children(0);
 
+      split_clearance = 0.25;
+      split_lip = 2;
+      back_lip = 1;
       //subtracted block
-      wall_pattern_canvas_negative(locations, colored_pattern);
+      wall_pattern_canvas_negative(
+        locations, 
+        colored_pattern, 
+        clearance = 0, 
+        back_lip = back_lip,
+        lip_size = split_lip);
 
       //added blockblock
-      wall_pattern_canvas_positive(locations, colored_pattern);
+      wall_pattern_canvas_positive(
+        locations, 
+        colored_pattern, 
+        clearance = split_clearance, 
+        back_lip = back_lip,
+        lip_size = split_lip/2);
 
       if($children >=3) children(2);
     }
@@ -2372,27 +2405,119 @@ module coloured_wall_pattern(
   }
 }
 
-module wall_pattern_canvas_negative(locations, colored_pattern){
-  for(i = [0:1:len(locations)-1])
-    if(locations[i][4] > 0)
-      translate(locations[i][1])
-      rotate(locations[i][2])
-      cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
+module wall_pattern_canvas_negative(locations, colored_pattern, clearance = 0, back_lip, lip_size = 1){
+    //subtracted block
+    for(i = [0:1:len(locations)-1])
+      if(locations[i][4] > 0)
+        translate(locations[i][1])
+        mirror(locations[i][3])
+        rotate(locations[i][2])
+          if(colored_pattern == "split") {
+            thickness = locations[i][0].z+fudgeFactor;
+            difference(){
+              //block cavity, with side clips and clearance added
+              translate([0,thickness/2,0])
+              split_block(
+                  [locations[i][0].x,locations[i][0].y+thickness],
+                  thickness, 
+                  clearance = clearance, 
+                  back_lip = back_lip,
+                  lip_size = lip_size, 
+                  hook_thickness_ratio=0.2);
+
+              //Top taper, for easy printability
+              translate([-locations[i][0].x/2-thickness*2,locations[i][0].y/2+thickness,thickness/2])
+              rotate([180+45,0,0])
+              cube([locations[i][0].x+thickness*4,thickness*2,thickness*2], center=false);
+            }
+          } else {
+            cube([locations[i][0].x,locations[i][0].y,locations[i][0].z+fudgeFactor], center=true);
+          }
 }
 
-module wall_pattern_canvas_positive(locations, colored_pattern){
+module wall_pattern_canvas_positive(locations, colored_pattern, clearance = 0, back_lip, lip_size = 1){
+  //add block
   for(i = [0:1:len(locations)-1])
     if(locations[i][4] > 0)
       translate(locations[i][1])
+      mirror(locations[i][3])
       rotate(locations[i][2]) {
         thickness = locations[i][0].z;
-        cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
+        if(colored_pattern == "split"){
+          //block cavity, with side clips and clearance subtracted
+          split_block(
+            locations[i][0],
+            thickness, 
+            clearance = clearance*-1, 
+            back_lip = back_lip,
+            lip_size = lip_size);
+        } else {
+          cube([locations[i][0].x,locations[i][0].y,thickness], center=true);
+        }
+  }
+}
+
+module split_block(
+    size, 
+    thickness, 
+    clearance,
+    back_lip,
+    lip_size,
+    bottom_thickness_ratio = 0.25,
+    top_thickness_ratio = 0.5,
+    hook_thickness_ratio = 0){
+  bottom_thickness = thickness*bottom_thickness_ratio;
+  top_thickness = thickness*top_thickness_ratio; 
+  middle_thickness = thickness-top_thickness;
+  hook_thickness = thickness*hook_thickness_ratio;
+  
+  fudge_factor = 0.01;
+
+  block_clearance = clearance;
+  lip_clearance = 0;
+  lip_ramp_clearance = 0;//clearance/5;
+  
+  echo("split_block: ", thickness=thickness, lip_size=lip_size, back_lip=back_lip, bottom_thickness=bottom_thickness, top_thickness=top_thickness, middle_thickness=middle_thickness, hook_thickness=hook_thickness);
+
+  inner_block = [size.x-back_lip+block_clearance, size.y, thickness];
+  middle_block = [inner_block.x, inner_block.y, middle_thickness+lip_ramp_clearance];
+  outer_block = [size.x+lip_size+lip_clearance, size.y, bottom_thickness+hook_thickness];
+
+  echo("split_block: ", inner_block=inner_block, middle_block=middle_block, outer_block=outer_block);
+
+  difference(){
+    union(){
+      cube(inner_block, center=true);
+
+      hull(){
+        translate(-[middle_block.x, middle_block.y, thickness]/2)
+        cube(middle_block);
+
+        translate(-[outer_block.x, outer_block.y, thickness+hook_thickness*2]/2)
+        cube(outer_block);
       }
+    }
+
+    if(hook_thickness_ratio > 0 && hook_thickness > 0){
+      hook_width = lip_size;
+      hook_middle_block = [middle_block.x+fudge_factor*2-hook_width*2, middle_block.y+fudge_factor*2, outer_block.z];
+      hook_outer_block = [outer_block.x+fudge_factor*2-hook_width*2, outer_block.y+fudge_factor*2, bottom_thickness];
+
+      translate([0, -fudge_factor, -hook_outer_block.z-hook_thickness])
+      hull(){
+        translate(-[hook_middle_block.x, hook_middle_block.y, thickness]/2)
+        cube(hook_middle_block);
+
+        translate(-[hook_outer_block.x, hook_outer_block.y, thickness]/2)
+        cube(hook_outer_block);
+      }
+    }
+  }
 }
 
 module colored_block(coloured_pattern = "enabled"){
   union(){
-    if(coloured_pattern == "enabled"){
+    if(coloured_pattern == "enabled" || coloured_pattern == "split"){
       difference(){
         // Child 0 is bin block
         children(0);
@@ -2402,6 +2527,7 @@ module colored_block(coloured_pattern = "enabled"){
         children(1);
       }
 
+      translate(coloured_pattern == "split" ? [env_numx()*env_pitch().x+10, 0, 0] : [0,0,0])
       color(env_colour(color_wallcutout, isLip=true))
       //render_conditional(true)
       difference(){
@@ -2438,6 +2564,7 @@ module cutout_pattern(
   fill,
   patternGridChamfer=0,
   patternVoronoiNoise=0,
+  patternKumikoFillRatio=[0,0],
   patternBrickWeight=0,
   partialDepth = false,
   border = 0,
@@ -2456,6 +2583,7 @@ module cutout_pattern(
   assert(is_num(patternGridChamfer), "patternGridChamfer must be a number");
   assert(is_num(patternVoronoiNoise) && patternVoronoiNoise >= 0  && patternVoronoiNoise <= 1, "patternVoronoiNoise must be between 0 and 1");
   assert(is_num(patternBrickWeight) && patternBrickWeight >= 0, "patternBrick Weight must be a non-negative number");
+  assert(is_list(patternKumikoFillRatio), "patternKumikoFillRatio must be a list");
   assert(is_list(strength) && len(strength) == 2 && is_num(strength.x) && strength.x > 0 && is_num(strength.y) && strength.y > 0, "strength must be a list of two positive numbers");
 
   canvasSize = 
@@ -2463,6 +2591,8 @@ module cutout_pattern(
     border > 0
     ? [cs.x-border*2, cs.y-border*2]
     : cs;
+
+  if(env_help_enabled("trace")) echo("cutout_pattern", patternStyle=patternStyle, source=source, canvasSize=canvasSize, patternFs=patternFs, border=border);
 
   function calculate_chamfer(chamfer, thickness, partialDepth) = 
     let(
@@ -2529,7 +2659,63 @@ module cutout_pattern(
         slat_chamfer = chamfer,
         center = center,
         rotateGrid = false);
-    } else {
+    }
+    else if(patternStyle == PatternStyle_tobiAsanoha){
+      rectangle_tobiAsanoha(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_asanoha){
+      rectangle_asanoha(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_goma){
+      rectangle_goma(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_tsumiishiKikko){
+      rectangle_tsumiishiKikko(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_bishamonKikkou){
+      rectangle_bishamonKikkou(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    } else if(patternStyle == PatternStyle_mikado){
+      rectangle_mikado(
+        canvasSize = [canvasSize.x,canvasSize.y,holeHeight],
+        height = holeHeight,
+        cell_size = cellSize.x,
+        strength = strength.x,
+        fillRatio = patternKumikoFillRatio[0],
+        fillHeight = patternKumikoFillRatio[1],
+        center=center);
+    }
+    else {
       echo("cutout_pattern: Unknown patternStyle", patternStyle=patternStyle);
     }
   }
@@ -6046,6 +6232,516 @@ module brick_pattern(
   }
 }
 //CombinedEnd from path module_pattern_brick.scad
+//Combined from path kumiko.scad
+
+
+/*
+Kumiko Patterns
+This is an OpenSCAD implementation of various traditional japanese Kumiko patterns. They are all based on the triangle shape and add various infills. Implemented right now are the following patterns:
+
+by froqstar
+https://github.com/froqstar/kumikoPatterns
+
+*/
+module triangleGrid(cellSize, cellHeight, width, height, strength, extrusionHeight) {
+	// vertical
+	for (i = [0 : cellHeight : width]) {
+		translate([i,0])
+			hull() {
+				cylinder(d=strength, h=extrusionHeight);
+				translate([0,height])
+					cylinder(d=strength, h=extrusionHeight);
+			}
+	}
+	// rising
+	for (i = [-ceil(width*tan(30)/cellSize)*cellSize : cellSize : height]) {
+		translate([0,i])
+			hull() {
+				cylinder(d=strength, h=extrusionHeight);
+				translate([width,width*tan(30)])
+					cylinder(d=strength, h=extrusionHeight);
+			}
+	}
+	// falling
+	for (i = [0 : cellSize : height+width*tan(30)]) {
+		translate([0,i])
+			hull() {
+				cylinder(d=strength, h=extrusionHeight);
+				translate([width,-width*tan(30)])
+					cylinder(d=strength, h=extrusionHeight);
+			}
+	}
+}
+
+module asanohaFilling(cellHeight, fillingStrength, extrusionHeight) {
+	hull() {
+		cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([cellHeight*2/3,0])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+}
+
+module asanohaPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	triangleGrid(cellSize, cellHeight, width, height, strength, extrusionHeight);
+
+	// fillings
+	for (i = [-ceil(width*tan(30)/cellSize)*cellSize : cellSize : height]) {
+		for (x = [0 : cellHeight : width+cellHeight]) {
+			y = i + x*tan(30);
+			translate([x,y]) {
+				rotate([0,0,0]) asanohaFilling(cellHeight, fillingStrength);
+				rotate([0,0,60]) asanohaFilling(cellHeight, fillingStrength);
+				rotate([0,0,120]) asanohaFilling(cellHeight, fillingStrength);
+				rotate([0,0,180]) asanohaFilling(cellHeight, fillingStrength);
+				rotate([0,0,240]) asanohaFilling(cellHeight, fillingStrength);
+				rotate([0,0,300]) asanohaFilling(cellHeight, fillingStrength);
+			}
+		}
+	}
+}
+
+module gomaFilling(cellSize, gap, fillingStrength, extrusionHeight) {
+	// left
+	hull() {
+		translate([-gap, gap*tan(30)])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([-gap,cellSize-gap*tan(30)])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+	// right
+	hull() {
+		translate([gap, gap*tan(30)])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([gap,cellSize-gap*tan(30)])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+}
+
+module gomaPattern(cellSize, cellHeight, width, height, gap, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	triangleGrid(cellSize, cellHeight, width, height, strength, extrusionHeight);
+
+	// fillings
+	for (i = [-ceil(width*tan(30)/cellSize)*cellSize : cellSize : height]) {
+		for (x = [0 : cellHeight : width+cellHeight]) {
+			y = i + x*tan(30);
+			translate([x,y]) {
+				rotate([0,0,0]) gomaFilling(cellSize, gap, fillingStrength, fillextrusionHeight);
+				rotate([0,0,60]) gomaFilling(cellSize, gap, fillingStrength, fillextrusionHeight);
+				rotate([0,0,120]) gomaFilling(cellSize, gap, fillingStrength, fillextrusionHeight);
+				rotate([0,0,180]) gomaFilling(cellSize, gap, fillingStrength, fillextrusionHeight);
+				rotate([0,0,240]) gomaFilling(cellSize, gap, fillingStrength, fillextrusionHeight);
+				rotate([0,0,300]) gomaFilling(cellSize, gap, fillingStrength, fillextrusionHeight);
+			}
+		}
+	}	
+}
+
+module tobiAsanohaFilling(cellSize, cellHeight, fillingStrength, extrusionHeight) {
+	// right 
+	hull() {
+		cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([cellSize/4/cos(30),0])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+	// right down
+	hull() {
+		translate([cellSize/4/cos(30),0])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([cellHeight/2,-cellSize/4])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+	// right up
+	hull() {
+		translate([cellSize/4/cos(30),0])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([cellHeight/2,cellSize/4])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+}
+
+module tobiAsanohaPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	triangleGrid(cellSize, cellHeight, width, height, strength, extrusionHeight);
+
+	// fillings
+	for (i = [-ceil(width*tan(30)/cellSize)*cellSize : cellSize : height]) {
+		for (x = [0 : cellHeight : width+cellHeight]) {
+			y = i + x*tan(30);
+			translate([x,y]) {
+				rotate([0,0,0]) tobiAsanohaFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight); 
+				rotate([0,0,180]) tobiAsanohaFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,60]) tobiAsanohaFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,120]) tobiAsanohaFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,-60]) tobiAsanohaFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,-120]) tobiAsanohaFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+			}
+		}
+	}
+}
+
+module mikadoFilling(cellSize, cellHeight, fillingStrength, extrusionHeight) {
+	hull() {
+		translate([0,cellSize/3])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([cellHeight/3,cellSize/2])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+	hull() {
+		rotate([0,0,-60])
+			translate([0,cellSize/3])
+				cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([cellHeight/3,cellSize/2])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+}
+
+module mikadoPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	triangleGrid(cellSize, cellHeight, width, height, strength, extrusionHeight);
+
+	// fillings
+	for (i = [-ceil(width*tan(30)/cellSize)*cellSize : cellSize : height]) {
+		for (x = [0 : cellHeight : width+cellHeight]) {
+			y = i + x*tan(30);
+			translate([x,y]) {
+				rotate([0,0,0]) mikadoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,60]) mikadoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,120]) mikadoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,180]) mikadoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,240]) mikadoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,300]) mikadoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+			}
+		}
+	}
+}
+
+module tsumiishiKikkoFilling(cellSize, cellHeight, fillingStrength, extrusionHeight) {
+	hull() {
+		translate([0,cellSize/2])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([cellHeight/3,cellSize/2])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+	hull() {
+		rotate([0,0,-60])
+			translate([0,cellSize/2])
+				cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([cellHeight/3,cellSize/2])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+}
+
+module tsumiishiKikkoPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	triangleGrid(cellSize, cellHeight, width, height, strength, extrusionHeight);
+
+	// fillings
+	for (i = [-ceil(width*tan(30)/cellSize)*cellSize : cellSize : height]) {
+		for (x = [0 : cellHeight : width+cellHeight]) {
+			y = i + x*tan(30);
+			translate([x,y]) {
+				rotate([0,0,0]) tsumiishiKikkoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,60]) tsumiishiKikkoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,120]) tsumiishiKikkoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,180]) tsumiishiKikkoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,240]) tsumiishiKikkoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,300]) tsumiishiKikkoFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+			}
+		}
+	}
+}
+
+module bishamonKikkouFilling(cellSize, cellHeight, fillingStrength, extrusionHeight) {
+	hull() {
+		translate([0,cellSize*2/3])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([cellHeight/3,cellSize/2])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+	hull() {
+		translate([0,cellSize*2/3])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+		translate([-cellHeight/3,cellSize/2])
+			cylinder(d=fillingStrength, h=extrusionHeight);
+	}
+}
+
+module bishamonKikkouPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	triangleGrid(cellSize, cellHeight, width, height, strength, extrusionHeight);
+
+	// fillings
+	for (i = [-ceil(width*tan(30)/cellSize)*cellSize : cellSize : height]) {
+		for (x = [0 : cellHeight : width+cellHeight]) {
+			y = i + x*tan(30);
+			translate([x,y]) {
+				rotate([0,0,0]) bishamonKikkouFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,120]) bishamonKikkouFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+				rotate([0,0,240]) bishamonKikkouFilling(cellSize, cellHeight, fillingStrength, fillextrusionHeight);
+			}
+		}
+	}
+}
+
+module asanoha(cellSize, widthInCells, heightInCells, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	cellHeight = cellSize/2*sqrt(3);
+	height = heightInCells*cellSize;
+	width = widthInCells*cellHeight;
+
+	difference() {
+		translate([0,0,-0.01])
+      cube([width, height, max(extrusionHeight, fillextrusionHeight)+0.02]);
+		asanohaPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight);
+	}
+}
+
+module goma(cellSize, widthInCells, heightInCells, gap, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	cellHeight = cellSize/2*sqrt(3);
+	height = heightInCells*cellSize;
+	width = widthInCells*cellHeight;
+
+	difference() {
+		translate([0,0,-0.01])
+		cube([width, height, max(extrusionHeight, fillextrusionHeight)+0.02]);
+		gomaPattern(cellSize, cellHeight, width, height, gap, strength, fillingStrength, extrusionHeight, fillextrusionHeight);
+	}
+}
+
+module tobiAsanoha(cellSize, widthInCells, heightInCells, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	cellHeight = cellSize/2*sqrt(3);
+	height = heightInCells*cellSize;
+	width = widthInCells*cellHeight;
+
+	difference() {
+		translate([0,0,-0.01])
+		cube([width, height, max(extrusionHeight, fillextrusionHeight)+0.02]);
+		tobiAsanohaPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight);
+	}
+}
+
+module mikado(cellSize, widthInCells, heightInCells, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	cellHeight = cellSize/2*sqrt(3);
+	height = heightInCells*cellSize;
+	width = widthInCells*cellHeight;
+
+	difference() {
+		translate([0,0,-0.01])
+		cube([width, height, max(extrusionHeight, fillextrusionHeight)+0.02]);
+		mikadoPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight);
+	}
+}
+
+module tsumiishiKikko(cellSize, widthInCells, heightInCells, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	cellHeight = cellSize/2*sqrt(3);
+	height = heightInCells*cellSize;
+	width = widthInCells*cellHeight;
+
+	difference() {
+		translate([0,0,-0.01])
+		cube([width, height, max(extrusionHeight, fillextrusionHeight)+0.02]);
+		tsumiishiKikkoPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight);
+	}
+}
+
+
+module bishamonKikkou(cellSize, widthInCells, heightInCells, strength, fillingStrength, extrusionHeight, fillextrusionHeight) {
+	cellHeight = cellSize/2*sqrt(3);
+	height = heightInCells*cellSize;
+	width = widthInCells*cellHeight;
+
+	difference() {
+		translate([0,0,-0.01])
+		cube([width, height, max(extrusionHeight, fillextrusionHeight)+0.02]);
+		bishamonKikkouPattern(cellSize, cellHeight, width, height, strength, fillingStrength, extrusionHeight, fillextrusionHeight);
+	}
+}
+//CombinedEnd from path kumiko.scad
+//Combined from path module_pattern_kumiko.scad
+
+
+
+
+
+function get_kumiko_strength(cell_size, strength) = strength;
+function get_kumiko_fillingStrength(cell_size, strength, fill_ratio) = strength*fill_ratio;
+function get_kumiko_goma_gap(cell_size, strength, gap_ratio) = strength*gap_ratio;
+function get_kumiko_height(fill_height, height) = fill_height <= 0 ? height : min(height, height/fill_height);
+function get_kumiko_fill_height(fill_height, height) = min(height, height*fill_height);
+
+function make_even(value) = ceil(value/2)*2;
+
+debug_kumiko = false;
+
+if(debug_kumiko)
+{
+  rectangle_asanoha();
+}
+
+module crop_kumiko(
+   canvasSize = [200,200,10],
+   cell_size=10,
+   center=true
+){
+  // ratio of cell height to width
+  cell_dimentions=[cell_size/2*sqrt(3), cell_size];
+  
+  // force an even number of cells to make symeterical. 
+  $widthInCells = make_even(ceil(canvasSize.x/cell_dimentions.x));
+  $heightInCells = make_even(ceil(canvasSize.y/cell_dimentions.y));
+  
+  // size of resulting pattern
+  pattern_size = [$widthInCells*cell_dimentions.x, $heightInCells*cell_dimentions.y];
+  
+  intersection() {
+    translate([0,0,canvasSize.z/2])
+      cube(size = [canvasSize.x,canvasSize.y,canvasSize.z*2], center=true);
+
+    translate(center ? [-pattern_size.x/2, -pattern_size.y/2, 0] : [0, 0, 0])
+      children();
+  }
+}
+
+module rectangle_asanoha(
+  canvasSize = [200,200,10],
+  cell_size=10,
+  height = 5,
+  strength = 2,
+  fillRatio = 0.5,
+  fillHeight = 1,
+  center=true
+){
+  crop_kumiko(
+   canvasSize = canvasSize,
+   cell_size = cell_size,
+   center = center)
+  asanoha(
+    cellSize=cell_size,
+    widthInCells=$widthInCells,
+    heightInCells=$heightInCells,
+    strength=get_kumiko_strength(cell_size, strength)*0.75,
+    fillingStrength=get_kumiko_fillingStrength(cell_size, strength, fillRatio)*0.75,
+    extrusionHeight=get_kumiko_height(fillHeight, height),
+    fillextrusionHeight=get_kumiko_fill_height(fillHeight, height)
+  );
+}
+
+module rectangle_tobiAsanoha(
+  canvasSize = [200,200,10],
+  cell_size=10,
+  height = 5,
+  strength = 2,
+  fillRatio = 0.5,
+  fillHeight = 1,
+  center=true
+){
+  crop_kumiko(
+    canvasSize = canvasSize,
+    cell_size = cell_size,
+    center = center)
+  tobiAsanoha(
+    cellSize=cell_size, 
+    widthInCells=$widthInCells,
+    heightInCells=$heightInCells,
+    strength = get_kumiko_strength(cell_size, strength)/3,
+    fillingStrength = get_kumiko_fillingStrength(cell_size, strength, fillRatio),
+    extrusionHeight=get_kumiko_height(fillHeight, height),
+    fillextrusionHeight=get_kumiko_fill_height(fillHeight, height)
+    );
+}
+
+module rectangle_goma(
+  canvasSize = [200,200,10],
+  cell_size=10,
+  height = 5,
+  strength = 2,
+  fillRatio = 0.5,
+  fillHeight = 1,
+  center=true
+){
+  crop_kumiko(
+    canvasSize = canvasSize,
+    cell_size = cell_size,
+    center = center)
+  goma(
+    cellSize=cell_size, 
+    widthInCells=$widthInCells,
+    heightInCells=$heightInCells,
+    gap=get_kumiko_goma_gap(cell_size, strength, fillRatio*2)/1.7,
+    strength=get_kumiko_strength(cell_size, strength)/2,
+    fillingStrength=get_kumiko_fillingStrength(cell_size, strength, fillRatio)/1.6,
+    extrusionHeight=get_kumiko_height(fillHeight, height),
+    fillextrusionHeight=get_kumiko_fill_height(fillHeight, height)
+  );
+}
+
+module rectangle_mikado(
+  canvasSize = [200,200,10],
+  cell_size=10,
+  height = 5,
+  strength = 2,
+  fillRatio = 0.5,
+  fillHeight = 1,
+  center=true
+){
+  crop_kumiko(
+    canvasSize = canvasSize,
+    cell_size = cell_size,
+    center = center)
+  mikado(
+    cellSize=cell_size, 
+    widthInCells=$widthInCells,
+    heightInCells=$heightInCells,
+    strength=get_kumiko_strength(cell_size, strength),
+    fillingStrength=get_kumiko_fillingStrength(cell_size, strength, fillRatio),
+    extrusionHeight=get_kumiko_height(fillHeight, height),
+    fillextrusionHeight=get_kumiko_fill_height(fillHeight, height)
+  );
+}
+
+module rectangle_tsumiishiKikko(
+  canvasSize = [200,200,10],
+  cell_size=10,
+  height = 5,
+  strength = 2,
+  fillRatio = 0.5,
+  fillHeight = 1,
+  center=true
+){
+  crop_kumiko(
+    canvasSize = canvasSize,
+    cell_size = cell_size,
+    center = center)
+  tsumiishiKikko(
+    cellSize=cell_size, 
+    widthInCells=$widthInCells,
+    heightInCells=$heightInCells,
+    strength=get_kumiko_strength(cell_size, strength),
+    fillingStrength=get_kumiko_fillingStrength(cell_size, strength, fillRatio),
+    extrusionHeight=get_kumiko_height(fillHeight, height),
+    fillextrusionHeight=get_kumiko_fill_height(fillHeight, height)
+  );
+}
+
+module rectangle_bishamonKikkou(
+  canvasSize = [200,200,10],
+  cell_size=10,
+  height = 5,
+  strength = 2,
+  fillRatio = 0.5,
+  fillHeight = 1,
+  center=true
+){
+  crop_kumiko(
+    canvasSize = canvasSize,
+    cell_size = cell_size,
+    center = center)
+  bishamonKikkou(
+    cellSize=cell_size, 
+    widthInCells=$widthInCells,
+    heightInCells=$heightInCells,
+    strength=get_kumiko_strength(cell_size, strength),
+    fillingStrength=get_kumiko_fillingStrength(cell_size, strength, fillRatio),
+    extrusionHeight=get_kumiko_height(fillHeight, height),
+    fillextrusionHeight=get_kumiko_fill_height(fillHeight, height)
+  );
+}
+//CombinedEnd from path module_pattern_kumiko.scad
 //Combined from path module_pattern_slat.scad
 
 
