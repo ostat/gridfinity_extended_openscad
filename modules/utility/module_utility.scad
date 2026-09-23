@@ -1,29 +1,39 @@
-include <thirdparty/ub_sbogen.scad>
-include <module_utility_wallcutout.scad>
-include <functions_general.scad>
+include <../thirdparty/ub_sbogen.scad>
+include <wallcutout.scad>
+include <../module_wallplacard.scad>
+include <../functions_general.scad>
 
-utility_demo = false;
+utility_demo = false && $preview;
 
-if(utility_demo && $preview){
+if(utility_demo){
+  $fn = 64;
+  
   translate([400,0,0])
   union(){
-    bentWall(separation=0);
-    
-    translate([0,100,0])
-    bentWall(separation=0, thickness = [10,5]);
+    for(i = [0,1,2]){
+      translate([20*i,0,0])
+      bentWall(
+        separation=i==1? 10 : 0,
+        label_size = i==2?10:0);
 
-    translate([0,200,0])
-    bentWall(separation=0, thickness = [10,5], top_radius = -2);
+      translate([20*i,100,0])
+      bentWall(
+        separation=i==1? 10 : 0,
+        label_size = i==2?10:0, top_radius = -2);
 
-    
-    translate([20,0,0])
-    bentWall(separation=10);
-    
-    translate([20,100,0])
-    bentWall(separation=10, thickness = [10,5]);
+        
+      translate([20*i,200,0])
+      bentWall(
+        separation=i==1? 10 : 0, 
+        label_size = i==2?10:0,
+        thickness = [10,5]);
 
-    translate([20,200,0])
-    bentWall(separation=10, thickness = [10,5], top_radius = -2);
+      translate([20*i,300,0])
+      bentWall(
+        separation=i==1? 10 : 0, 
+        label_size = i==2?10:0,
+        thickness = [10,5], top_radius = -2);
+    }
   }
 }
 
@@ -36,14 +46,18 @@ module bentWall(
   lowerBendRadius=0,
   upperBendRadius=0,
   height=30,
-  thickness=[10,10],
+  thickness=[10,10], //top thickness, bottom thickness
   wall_cutout_depth = 0,
   wall_cutout_width = 0,
   wall_cutout_radius = 0,
   top_radius = 0,
+  label_size = 0,
+  label_angle = 45,
   centred_x=true) {
   assert(is_num(thickness) || (is_list(thickness) && len(thickness) ==2), "thickness should be a list of len 2");
+  fudgeFactor = 0.01;
   
+  label_enabled = label_size > 0 && label_size*3 < length;
   thickness = is_num(thickness) ? [thickness,thickness] : thickness;
   thickness_bottom  = thickness.x;
   thickness_top = thickness.y;
@@ -58,7 +72,17 @@ module bentWall(
 
   bendPosition = get_related_value(bendPosition, length, length/2);
   
-  fudgeFactor = 0.01;
+  label_z_height = label_enabled ? cos(label_angle)* label_size + thickness_bottom/2 : 0;
+  
+  cutoutHeight = max(get_related_value(wall_cutout_depth, height, 0), label_z_height);
+  cutoutRadius = label_enabled ? label_size/4 : get_related_value(wall_cutout_radius, cutoutHeight, cutoutHeight);
+
+  label_length = length-cutoutRadius*4;
+  cutoutLength = wall_cutout_width == 0 && label_enabled ? label_length : get_related_value(wall_cutout_width, length, length/2); 
+
+  //Thickness should match the wall thickness, for tapered walls find the right position
+  label_thickness = thickness_bottom-(thickness_bottom-thickness_top)*((cutoutHeight-thickness_bottom/2)/(height-thickness_bottom/2))/2;
+
   
   //#render()
   difference()
@@ -87,12 +111,9 @@ module bentWall(
         cube([thickness_bottom, length, thickness_bottom/2]);
       }
     }
-   
-    cutoutHeight = get_related_value(wall_cutout_depth, height, 0);
-    cutoutRadius = get_related_value(wall_cutout_radius, cutoutHeight, cutoutHeight);
-    cutoutLength = get_related_value(wall_cutout_width, length, length/2); 
 
-    if(wall_cutout_depth != 0){
+    //wall cutout section
+    if(cutoutHeight != 0){
       translate(centred_x ? [0,0,0] : [(separation+thickness)/2+fudgeFactor,0,0])
       translate([0,length/2,height])
       rotate([0,0,90])
@@ -103,8 +124,36 @@ module bentWall(
         thickness = (separation+thickness[0]+fudgeFactor*2),
         topHeight = 1);
     }
-   }
- }
+  }    
+  
+  //wall label section
+  if(label_enabled){
+    label_z = height-cutoutHeight;
+    label_length = cutoutLength-cutoutRadius;
+
+    
+    translate([label_thickness/2,length/2-label_length/2,0])
+    hull()
+    {
+      translate([0,0,label_z])
+      rotate([0,0,180])
+      rotate([90,0,0])
+      rotate_extrude(angle = 45)
+      square([label_thickness,label_length]);
+      //translate([0,0,label_z])
+      //rotate([45,0,90])
+      //cube([label_length,label_thickness,10]);
+      translate([0,0,label_z])
+      rotate([0,45,0])
+      translate([-label_thickness,label_length,0])
+      rotate([90,0,0])
+      roundedCube(
+          size =[label_thickness,label_size,label_length],
+          sideRadius = top_radius);
+    }
+        
+  }
+}
 
  if(utility_demo){
  
@@ -398,65 +447,25 @@ module rotate_around_point(point=[], rotation=[]){
   children();
 }
 
-//sequential bridging for hanging hole. 
-//ref: https://hydraraptor.blogspot.com/2014/03/buried-nuts-and-hanging-holes.html
-//ref: https://www.youtube.com/watch?v=KBuWcT8XkhA
-module SequentialBridgingDoubleHole(
-  outerHoleRadius = 0,
-  outerHoleDepth = 0,
-  innerHoleRadius = 0,
-  innerHoleDepth = 0,
-  overhangBridgeCount = 2,
-  overhangBridgeThickness = 0.3,
-  overhangBridgeCutin = 0.05, //How far should the bridge cut in to the second smaller hole. This helps support the
-  magnetCaptiveHeight = 0,
-  ) 
-{
-  fudgeFactor = 0.01;
+
+
+
+if(utility_demo){
   
-  hasOuter = outerHoleRadius > 0 && outerHoleDepth >0;
-  hasInner = innerHoleRadius > 0 && innerHoleDepth > 0;
-  bridgeRequired = hasOuter && hasInner && outerHoleRadius > innerHoleRadius && innerHoleDepth > outerHoleDepth;
-  overhangBridgeCount = bridgeRequired ? overhangBridgeCount : 0;
-  overhangBridgeHeight = overhangBridgeCount*overhangBridgeThickness;
-  outerPlusBridgeHeight = hasOuter ? outerHoleDepth + overhangBridgeHeight : 0;
-  if(hasOuter || hasInner)
-  union(){
-    difference(){
-      if (hasOuter) {
-        // move the cylinder up into the body to create internal void
-        translate([0,0,magnetCaptiveHeight])
-        if($children >=1){
-          translate([0,0,outerHoleDepth]);
-          cylinder(r=outerHoleRadius, h=overhangBridgeHeight+fudgeFactor);
-          children(0); 
-        } else { 
-          cylinder(r=outerHoleRadius, h=outerPlusBridgeHeight+fudgeFactor);
-        }
-      }
-      
-      if (overhangBridgeCount > 0) {
-        for(i = [0:overhangBridgeCount-1]) 
-          rotate([0,0,180/overhangBridgeCount*i])
-          for(x = [0:1]) 
-          rotate([0,0,180]*x)
-            translate([-outerHoleRadius,innerHoleRadius-overhangBridgeCutin,outerHoleDepth+overhangBridgeThickness*i])
-            cube([outerHoleRadius*2, outerHoleRadius, overhangBridgeThickness*overhangBridgeCount+fudgeFactor*2]);
-              }
-      }
-      
-      if (hasInner) {
-        translate([0,0,outerPlusBridgeHeight])
-        cylinder(r=innerHoleRadius, h=innerHoleDepth-outerPlusBridgeHeight);
-    }
-  }
+translate([-100,0,0])
+CubeWithRoundedCorner(
+  $fn=128);
+translate([-100,20,0])
+CubeWithRoundedCorner(
+  edgeRadius = 2,
+  $fn=128);
 }
 
 //Creates a cube with a single rounded corner.
 //Centered around the rounded corner
 module CubeWithRoundedCorner(
   size=[10,10,10], 
-  cornerRadius = 2, 
+  cornerRadius = 5, 
   edgeRadius = 0,
   center=false){
   assert(is_list(size) && len(size)==3, "size should be a list of size 3");

@@ -1,4 +1,5 @@
 include <module_utility.scad>
+
 // Creates a slot with a small chamfer for easy insertertion
 //#slotCutout(100,20,40);
 //width = width of slot
@@ -8,7 +9,8 @@ include <module_utility.scad>
 module chamfered_cube(
   size = [10,10,10], 
   chamfer=0, topChamfer = 0, bottomChamfer = 0, 
-  cornerRadius = 0, topRadius=0, bottomRadius=0)
+  cornerRadius = 0, topRadius=0, bottomRadius=0,
+  centerxy = false)
 {
   assert(is_list(size) && len(size) == 3, "size should be a list of length 3");
   assert(is_num(chamfer), "chamfer should be a number");
@@ -24,6 +26,7 @@ module chamfered_cube(
 
   fudgeFactor = 0.01;
   chamfer = min(size.z, chamfer);
+  translate(centerxy ? [-size.x/2, -size.y/2, 0] : [0,0,0])
   union(){
     roundedCube(
       size=size,
@@ -92,7 +95,13 @@ module chamferedHalfCylinder(h, r, circleFn, chamfer=0.5) {
   }
 }
 
-module chamferedCylinder(h, r, circleFn, chamfer=0, topChamfer = 0.5, bottomChamfer = 0) {
+module chamferedCylinder(
+    h, 
+    r, 
+    circleFn, 
+    chamfer=0, 
+    topChamfer = 0, 
+    bottomChamfer = 0) {
   topChamfer = min(h, chamfer > 0 ? chamfer : topChamfer);
   bottomChamfer = min(h, chamfer > 0 ? chamfer : bottomChamfer);
   

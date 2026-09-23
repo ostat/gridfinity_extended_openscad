@@ -1,0 +1,99 @@
+[project]
+name = "Gridfinity Extended"
+uri = "https://github.com/ostat/gridfinity_extended_openscad"
+export-filename-prefix = "Gridfinity Extended"
+mode = "multi"
+head-extra = '<script defer src="https://um.ostat.com/script.js" data-website-id="69159224-8fa8-4f25-98b3-0589ce5a5909"></script>'
+
+[[model]]
+file = "gridfinity_basic_cup.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[model-template.section-connector-1---model-detail]
+[model-template.section-connector-1---model-detail.tab-metadata."Model detail"]
+collapsed = true
+
+[model-template.section-connector-1---debug]
+[model-template.section-connector-1---debug.tab-metadata."Debug"]
+collapsed = true
+
+[[model]]
+file = "gridfinity_baseplate.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_item_holder.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_drawers.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_lid.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_marble.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_tray.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_vertical_divider.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "stanley_basic_cup.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_baseplate_flsun_q5.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_chess.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_glue_stick.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_sieve.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_silverware_legacy.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_silverware.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_sliding_lid.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."
+
+[[model]]
+file = "gridfinity_socket_holder.scad"
+preview-style = "colors"
+description-extra-html = "<br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>."

@@ -2,6 +2,10 @@ include <modules/module_gridfinity_block.scad>
 
 part = 5; //[1: "METRIC", 2: "IMPERIAL", 3: "Imperial < 1/2\"", 4: "Imperial >= 1/2\"", 5: "Metric >=7mm", 6: "Metric <7mm"]
 
+/* [Hidden] */
+$fn = 64;
+module end_of_customizer_opts() {}
+
 if (part == 1) {
   socket_holder(4, [12,12,12,13,14,16,16,17,21,22], "METRIC");
 }

@@ -1,5 +1,5 @@
 include <functions_general.scad>
-include <module_utility.scad>
+include <utility/utilities.scad>
 
 module brick_pattern(
   canvis_size=[31,31],

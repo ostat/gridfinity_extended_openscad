@@ -48,10 +48,11 @@ module set_environment(
   $cuty = calcDimensionWidth(cut.y);
   $cutz = calcDimensionWidth(cut.z);
 
-  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn,  clearance=clearance, corner_radius=corner_radius, height_includes_lip=height_includes_lip, lip_enabled=lip_enabled);
+  echo("🟩set_environment", fs=$fs, fa=$fa, fn=$fn);
   echo("🟩set_environment", width=width, depth=depth, height=height, pitch=pitch);
   echo("🟩set_environment", num_x=num_x, num_y=num_y, num_z=num_z);
-  
+  echo("🟩set_environment", clearance=clearance, corner_radius=corner_radius, height_includes_lip=height_includes_lip, lip_enabled=lip_enabled);
+  echo("🟩set_environment", render_position=render_position, cut=cut, help=help, setColour=setColour, randomSeed=randomSeed, force_render=force_render, generate_filter=generate_filter);
   
   //Position the object
   translate(gridfinityRenderPosition(render_position,num_x,num_y))
@@ -81,7 +82,7 @@ module set_environment(
 function env_numx() = is_undef($num_x) || !is_num($num_x) ? 0 : $num_x;
 function env_numy() = is_undef($num_y) || !is_num($num_y) ? 0 : $num_y;
 function env_numz() = is_undef($num_z) || !is_num($num_z) ? 0 : $num_z;
-function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0,0,0] : $clearance;
+function env_clearance() = is_undef($clearance) || !is_list($clearance) ? [0.5, 0.5, 0] : $clearance;
 function env_generate_filter() = (is_undef($generate_filter) || !is_string($generate_filter)) ? "" : $generate_filter;
 
 function env_pitch() =  is_undef($pitch) || !is_list($pitch) ? [gf_pitch, gf_pitch, gf_zpitch] : $pitch; 
