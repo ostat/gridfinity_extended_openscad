@@ -27,15 +27,16 @@ iitemholder_hole_sides = iitemholder_grid_style+1;
 iitemholder_hole_size = iitemholder_hole_sides+1;
 iitemholder_hole_spacing = iitemholder_hole_size+1;
 iitemholder_hole_grid = iitemholder_hole_spacing+1;
-iitemholder_hole_clearance = iitemholder_hole_grid+1;
+iitemholder_hole_offset = iitemholder_hole_grid+1;
+iitemholder_hole_clearance = iitemholder_hole_offset+1;
 iitemholder_hole_depth = iitemholder_hole_clearance+1;
 iitemholder_hole_chamfer =iitemholder_hole_depth+1;
 iitemholder_compartments = iitemholder_hole_chamfer+1;
 iitemholder_compartment_spacing = iitemholder_compartments+1;
 iitemholder_compartment_centered = iitemholder_compartment_spacing+1;
 iitemholder_compartment_fill  = iitemholder_compartment_centered+1;
-iitemholder_customcompartments = iitemholder_compartment_fill+1;
-iitemholder_auto_bin_height = iitemholder_customcompartments+1;
+iitemholder_custom_compartments = iitemholder_compartment_fill+1;
+iitemholder_auto_bin_height = iitemholder_custom_compartments+1;
 iitemholder_multi_card_compact = iitemholder_auto_bin_height+1;
 extendedsettingscount=iitemholder_multi_card_compact+1;
 
@@ -131,11 +132,11 @@ echo("start",vp=vp, vpr = getcustomVpr(vp), vpt = getcustomVpt(vp), vpd = getcus
 defaultDemoSetting = 
     //itemholder_known_item, itemholder_grid_style, itemholder_hole_sides, itemholder_hole_size, itemholder_hole_spacing, 
     ["1/4hexshank", "square", 6, 5, 2,
-    //itemholder_hole_grid, itemholder_hole_clearance, itemholder_hole_depth, itemholder_hole_chamfer
-    [0, 0], 0.65, 0, 1,
+    //itemholder_hole_grid, itemholder_hole_offset, itemholder_hole_clearance, itemholder_hole_depth, itemholder_hole_chamfer
+    [0, 0], [0, 0], 0.65, 0, 1,
     //itemholder_compartments, itemholder_compartment_spacing, itemholder_compartment_centered, itemholder_compartment_fill
     [1,1], 5, true, "none",
-    //itemholder_customcompartments, itemholder_auto_bin_height, itemholder_multi_card_compact
+    //itemholder_custom_compartments, itemholder_auto_bin_height, itemholder_multi_card_compact
     "", true, 0,
   
     //Gridfinity settins
@@ -330,6 +331,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1, mult
       itemholder_hole_size = currentStepSettings[iitemholder_hole_size],
       itemholder_hole_spacing = currentStepSettings[iitemholder_hole_spacing],
       itemholder_hole_grid = currentStepSettings[iitemholder_hole_grid],
+      itemholder_hole_offset = currentStepSettings[iitemholder_hole_offset],
       itemholder_hole_clearance = currentStepSettings[iitemholder_hole_clearance],
       itemholder_hole_depth = currentStepSettings[iitemholder_hole_depth],
       itemholder_hole_chamfer = currentStepSettings[iitemholder_hole_chamfer],
@@ -337,7 +339,7 @@ module RenderScenario(scenario, showtext=true, height=height, stepIndex=-1, mult
       itemholder_compartment_spacing = currentStepSettings[iitemholder_compartment_spacing],
       itemholder_compartment_centered = currentStepSettings[iitemholder_compartment_centered],
       itemholder_compartment_fill  = currentStepSettings[iitemholder_compartment_fill],
-      itemholder_customcompartments = currentStepSettings[iitemholder_customcompartments],
+      itemholder_custom_compartments = currentStepSettings[iitemholder_custom_compartments],
       itemholder_auto_bin_height = currentStepSettings[iitemholder_auto_bin_height],
       itemholder_multi_card_compact = currentStepSettings[iitemholder_multi_card_compact],
       itemholder_known_item = currentStepSettings[iitemholder_known_item],

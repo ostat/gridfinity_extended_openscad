@@ -33,15 +33,16 @@ itemholder_multi_card_compact = 0.7; // [0:0.1:1]
 
 /* [Item Holder - Custom Item] */
 // Should the grid be square or hex
-itemholder_hole_base_shape = "round"; //["round","square","halfround","multicard","custom":custom shape - beta feature]
-// The number of sides for a round hole
-itemholder_hole_sides = 4;
-// Diameter of, round hole, or corners for square hole
+itemholder_hole_base_shape = "round"; //["round","ngon","square","halfround","multicard","custom":custom shape - beta feature]
+// Number of sides for an n-gon hole
+itemholder_hole_sides = 4; //[3:1:64]
+// Diameter of round or n-gon hole, or corner radius for square hole
 itemholder_hole_diameter = 5; //0.1
 // Radius of the bottom of the custom shape
 itemholder_hole_bottom_radius = 0;
 // The size the hole
 itemholder_hole_size = [20, 25]; //0.1
+// Rotation in degrees for square and n-gon holes
 itemholder_hole_rotation = 0;
 
 /* [Item Holder - Item Layout] */
@@ -53,6 +54,8 @@ itemholder_hole_spacing = 2; //0.1
 itemholder_hole_gridx = 0; //1
 // Number of holes in the y dimension, 0 is dynamic, y.5, is only valid for hex.
 itemholder_hole_gridy = 0; //0.5
+// Move the complete hole layout by [x, y] in mm.
+itemholder_hole_offset = [0, 0]; //0.1
 //Auto set the bin height based on the hole size.
 itemholder_auto_bin_height = "enabled"; //["enabled","enabled_full","disabled"]
 // The number of sides for a round hole
@@ -63,7 +66,10 @@ itemholder_compartment_spacing = 3; //0.1
 itemholder_compartment_centered = true;
 itemholder_compartment_fill = "none"; //["none", "space", "crop"]
 
+/* [Item Holder - Custom Compartments (Not Implemented)] */
 /*
+WARNING: This setting is reserved for future use and currently has no effect.
+
 xpos,ypos,xsize,ysize,radius,depth.
 dimensions of the tray cutout, a string with comma separated values, and pipe (|) separated trays.
  - xpos, ypos, the x/y position in gridfinity units.
@@ -72,8 +78,9 @@ dimensions of the tray cutout, a string with comma separated values, and pipe (|
  - depth, [optional] depth in mm
  - example "0,0,2,1|2,0,2,1,2,5"
 */
+// NOT IMPLEMENTED: Custom compartment layouts currently have no effect.
 //[[xpos, ypos, xsize, ysize, radius, depth]].  xpos, ypos: the x/y position in gridfinity units.  xsize, ysize: the x/y size in gridfinity units.  radius [optional]: corner radius in mm.  depth [optional]: depth in mm.  Example "0,0,2,1|2,0,2,1,2,5"
-itemholder_customcompartments = "";
+itemholder_custom_compartments = "";
 /*<!!end gridfinity_itemholder!!>*/
 
 
@@ -382,11 +389,11 @@ function itemCalculations(
   holeDepth,
   holeClearance
   ) = let(
-    _sides = LookupKnownShapes(name=item[ishape], default_sides=sides),
+    _sides = item[ishape] == "ngon" ? sides : LookupKnownShapes(name=item[ishape], default_sides=sides),
     _depthTemp = holeDepth > 0 ? holeDepth : item[idepthneeded],
     _depth = _depthTemp <= 0 ? 5 : _depthTemp,
     _holeSize =
-      item[ishape] == "round" || item[ishape] == "hex"
+      item[ishape] == "round" || item[ishape] == "hex" || item[ishape] == "ngon"
         ? [item[iitemDiameter] + holeClearance, 0, _depth]
       : item[ishape] == "halfround"
         ? [item[iitemx]+holeClearance, item[iitemy]+holeClearance, item[iitemx]/2]
@@ -415,6 +422,7 @@ module itemholder(
   holeClearance = 0.2,
   holeSpacing = 0,
   holeGrid  = [0,0],
+  holeOffset = [0,0],
   holeRotation = [0,0,0],
   holeBottomRadius = 0,
   floorThickness,
@@ -423,7 +431,7 @@ module itemholder(
   compartment_spacing,
   compartment_centered = true,
   compartment_fill = "none",
-  customcompartments = "",
+  custom_compartments = "",
   help = false)
 {
   //Non custom components
@@ -453,6 +461,9 @@ module itemholder(
   _multiCardCompact = itemCalc[icMcCompact];
   _depth = min(itemCalc[icHoleSize].z, floorThickness);
 
+  assert(is_list(holeOffset) && len(holeOffset) == 2,
+    "holeOffset must be an [x, y] vector in mm");
+
   xSize = (num_x*env_pitch().x-(compartments.x+1)*compartment_spacing)/compartments.x;
   xStep = xSize + compartment_spacing;
   ySize = (num_y*env_pitch().y-(compartments.y+1)*compartment_spacing)/compartments.y - _multiCardCompact;
@@ -466,18 +477,19 @@ module itemholder(
     for(y =[0:1:compartments.y-1])
     {
       translate(compartment_centered
-        ? [compartment_spacing+x*xStep+xSize/2, compartment_spacing+y*yStep+ySize/2, floorThickness-_depth]
-        : [compartment_spacing+x*xStep, compartment_spacing+y*yStep, floorThickness-_depth])
+        ? [compartment_spacing+x*xStep+xSize/2+holeOffset.x, compartment_spacing+y*yStep+ySize/2+holeOffset.y, floorThickness-_depth]
+        : [compartment_spacing+x*xStep+holeOffset.x, compartment_spacing+y*yStep+holeOffset.y, floorThickness-_depth])
         GridItemHolder(
           canvasSize = [xSize,ySize],
           hexGrid= gridStyle == "square" ? false : gridStyle == "hex" ? true : gridStyle,
-          customShape = item[ishape] != "round" && item[ishape] != "hex",
+          customShape = item[ishape] != "round" && item[ishape] != "hex" && item[ishape] != "ngon",
           circleFn = _sides,
           holeSize = _holeSize,
           holeSpacing = [holeSpacing,holeSpacing],
           holeGrid = holeGrid,
           holeHeight = _depth+fudgeFactor,
           holeChamfer = holeChamfer,
+          holeRotation = item[ishape] == "ngon" ? holeRotation : 0,
           center=compartment_centered,
           fill=compartment_fill)
             if(item[ishape]=="multicard")
@@ -515,13 +527,14 @@ module itemholder(
     ,"holeClearance",holeClearance
     ,"holeSpacing",holeSpacing
     ,"holeGrid",holeGrid
+    ,"holeOffset",holeOffset
     ,"holeChamfer",holeChamfer
     ,"floorThickness",floorThickness
     ,"wallThickness",wallThickness
     ,"compartments",compartments
     ,"compartment_spacing",compartment_spacing
     ,"compartment_fill",compartment_fill
-    ,"customcompartments",customcompartments
+    ,"custom_compartments",custom_compartments
     ,"floorThickness",floorThickness
 
     ,"xSize",xSize
@@ -648,6 +661,7 @@ module gridfinity_itemholder(
   itemholder_hole_size = itemholder_hole_size,
   itemholder_hole_spacing = itemholder_hole_spacing,
   itemholder_hole_grid = [itemholder_hole_gridx, itemholder_hole_gridy],
+  itemholder_hole_offset = itemholder_hole_offset,
   itemholder_hole_clearance = itemholder_hole_clearance,
   itemholder_hole_depth = itemholder_hole_depth,
   itemholder_hole_chamfer = itemholder_hole_chamfer,
@@ -657,7 +671,7 @@ module gridfinity_itemholder(
   itemholder_compartment_spacing = itemholder_compartment_spacing,
   itemholder_compartment_centered = itemholder_compartment_centered,
   itemholder_compartment_fill  = itemholder_compartment_fill,
-  itemholder_customcompartments = itemholder_customcompartments,
+  itemholder_custom_compartments = itemholder_custom_compartments,
   itemholder_auto_bin_height = itemholder_auto_bin_height,
   itemholder_multi_cards = itemholder_multi_cards,
   itemholder_multi_card_compact = itemholder_multi_card_compact,
@@ -893,6 +907,7 @@ module gridfinity_itemholder(
         holeDepth = itemholder_hole_depth,
         holeChamfer = itemholder_hole_chamfer,
         holeGrid  = itemholder_hole_grid,
+        holeOffset = itemholder_hole_offset,
         holeClearance = itemholder_hole_clearance,
         holeRotation = itemholder_hole_rotation,
         holeBottomRadius = itemholder_hole_bottom_radius,
@@ -902,7 +917,7 @@ module gridfinity_itemholder(
         compartment_spacing = itemholder_compartment_spacing,
         compartment_centered = itemholder_compartment_centered,
         compartment_fill = itemholder_compartment_fill,
-        customcompartments = itemholder_customcompartments,
+        custom_compartments = itemholder_custom_compartments,
         help=help);
       }
   } else {
