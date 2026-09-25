@@ -1,8 +1,6 @@
 // include instead of use, so we get the pitch
 include <modules/gridfinity_constants.scad>
 use <modules/module_gridfinity_block.scad>
-use <modules/module_gridfinity_baseplate.scad>
-use <modules/module_gridfinity_frame_connectors.scad>
 
 // Plate Style
 Base_Plate_Options = "default";//[default:Efficient base, cnclaser:CNC or Laser cut]
@@ -116,6 +114,9 @@ enable_help = false;
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
+
+include <modules/module_gridfinity_frame_connectors.scad>
+include <modules/module_gridfinity_baseplate.scad>
 
 //Some online generators do not like direct setting of fa,fs,fn
 $fa = fa;
@@ -235,6 +236,142 @@ iPlate_size = 0;
 iPlate_posGrid = 1;
 iPlate_outerSize = 2;
 iPlate_posOuter = 3;
+
+minimum_center_clip_side_length = 20;
+
+module frame_connector_cavities(
+  width = 1,
+  depth = 1,
+  frameConnectorSettings = []) {
+
+  assert(is_list(frameConnectorSettings), "frameConnectorSettings must be a list");
+
+  connectorPosition = frameConnectorSettings[iFrameConnectors_Position];
+  connectorClipEnabled = frameConnectorSettings[iFrameConnectors_ClipEnabled];
+  connectorClipSize = frameConnectorSettings[iFrameConnectors_ClipSize];
+  connectorClipTolerance = frameConnectorSettings[iFrameConnectors_ClipTolerance];
+  connectorButterflyEnabled = frameConnectorSettings[iFrameConnectors_ButterflyEnabled];
+  connectorButterflySize = frameConnectorSettings[iFrameConnectors_ButterflySize];
+  connectorButterflyRadius = frameConnectorSettings[iFrameConnectors_ButterflyRadius];
+  connectorButterflyTolerance = frameConnectorSettings[iFrameConnectors_ButterflyTolerance];
+  connectorSnapsStyle = frameConnectorSettings[iFrameConnectors_SnapsStyle];
+  connectorSnapsClearance = frameConnectorSettings[iFrameConnectors_SnapsClearance];
+  connectorFilamentEnabled = frameConnectorSettings[iFrameConnectors_FilamentEnabled];
+  connectorFilamentLength = frameConnectorSettings[iFrameConnectors_FilamentLength];
+  connectorFilamentDiameter = frameConnectorSettings[iFrameConnectors_FilamentDiameter];
+
+  if(connectorButterflyEnabled || connectorFilamentEnabled || connectorClipEnabled || connectorSnapsStyle != ConnectorSnapsStyle_disabled){
+    union(){
+      if(env_help_enabled("debug")) echo("frame_connector_cavities", gci=$gci, gc_size=$gc_size, gc_is_corner=$gc_is_corner, gc_position=$gc_position, width=width, depth=depth, connectorButterflyEnabled  = connectorButterflyEnabled, connectorFilamentEnabled = connectorFilamentEnabled, connectorClipEnabled = connectorClipEnabled, connectorSnapsStyle = connectorSnapsStyle);
+
+      if(connectorPosition == "center_wall" || connectorPosition == "both")
+      PositionCellCenterConnector(
+        left=$gci.x==0 && (($gc_size.x==1&&$gc_size.y==1) || (connectorClipEnabled && $gc_size.y*env_pitch().y >= max(connectorClipSize, minimum_center_clip_side_length))) && $allowConnectors[iAllowConnectorsLeft],
+        right=$gci.x>=$gc_count.x-1 && (($gc_size.x==1&&$gc_size.y==1) || (connectorClipEnabled && $gc_size.y*env_pitch().y >= max(connectorClipSize, minimum_center_clip_side_length))) && $allowConnectors[iAllowConnectorsRight],
+        front=$gci.y==0 && (($gc_size.x==1&&$gc_size.y==1) || (connectorClipEnabled && $gc_size.x*env_pitch().x >= max(connectorClipSize, minimum_center_clip_side_length))) && $allowConnectors[iAllowConnectorsFront],
+        back=$gci.y>=$gc_count.y-1 && (($gc_size.x==1&&$gc_size.y==1) || (connectorClipEnabled && $gc_size.x*env_pitch().x >= max(connectorClipSize, minimum_center_clip_side_length))) && $allowConnectors[iAllowConnectorsBack]) {
+          if($preview)
+            *rotate([0,0,90])
+            cylinder_printable(h=10,r=1);
+
+          if(connectorClipEnabled)
+            ClipCutter(size=connectorClipSize,
+              height= 0.8, //height of bevel1_top
+              frameHeight = 4,
+              clearance = connectorClipTolerance,
+              cornerRadius = env_corner_radius(),
+              straightWall=true);
+
+          if(connectorButterflyEnabled)
+            translate([0,0,-$frameBaseHeight])
+            rotate([0,0,90])
+            ButterFlyConnector(
+              size=connectorButterflySize,
+              r=connectorButterflyRadius,
+              clearance = connectorButterflyTolerance,
+              taper=false,half=false);
+
+          if(connectorFilamentEnabled)
+            translate([0,0,-$frameBaseHeight/2])
+            FilamentCutter(
+              l=connectorFilamentLength,
+              d=connectorFilamentDiameter);
+
+          if(connectorSnapsStyle != ConnectorSnapsStyle_disabled)
+            translate([0,0,-$frameBaseHeight])
+            rotate([0,0,270])
+            wall_snaps_cavity(
+              lock_height = 2,
+              clearance = connectorSnapsClearance,
+              style = ConnectorSnapsStyle_wall);
+          }
+
+        if(connectorPosition == "intersection" || connectorPosition == "both")
+        PositionCellCornerConnector(
+        left=$gci.x==0&&$gc_size.x==1&&$gc_size.y==1,
+        right=$gci.x>=$gc_count.x-1 && $gc_size.x==1&&$gc_size.y==1,
+        front=$gci.y==0&&$gc_size.x==1&&$gc_size.y==1,
+        back=$gci.y>=$gc_count.y-1&&$gc_size.x==1&&$gc_size.y==1) {
+
+          if($preview)
+            *rotate([0,0,90])
+            cylinder_printable(h=$corner ? 20 : 15,r=2);
+
+          if(connectorClipEnabled)
+            rotate([0,0,270])
+            ClipCutter(size=connectorClipSize,
+              height= 0.8, //height of bevel1_top
+              frameHeight = 4,
+              clearance = connectorButterflyTolerance,
+              cornerRadius = env_corner_radius(),
+              straightIntersection = !$corner,
+              cornerIntersection = $corner);
+
+          if(connectorButterflyEnabled && !$corner)
+            translate([0,0,-$frameBaseHeight])
+            rotate([0,0,90])
+            ButterFlyConnector(
+              size=connectorButterflySize,
+              r=connectorButterflyRadius,
+              clearance = connectorButterflyTolerance,
+              taper=false,half=false);
+
+         if(connectorSnapsStyle != ConnectorSnapsStyle_disabled && !$corner)
+            translate([0,0,-$frameBaseHeight])
+            rotate([0,0,270])
+            wall_snaps_cavity(
+              lock_height = 2,
+              clearance = connectorSnapsClearance,
+              style = connectorSnapsStyle);
+
+          if(connectorFilamentEnabled && !$corner)
+            translate([0,0,-$frameBaseHeight/2])
+            FilamentCutter(
+              l=connectorFilamentLength,
+              d=connectorFilamentDiameter);
+        }
+    }
+  }
+}
+
+module PositionCellCenterConnector(left, right,front,back){
+    cell_size = [$gc_size.x*env_pitch().x, $gc_size.y*env_pitch().y];
+    if(left)
+      translate([0,cell_size.y/2,0])
+      children();
+    if(right)
+      translate([cell_size.x,cell_size.y/2,0])
+      rotate([0,0,180])
+      children();
+    if(front)
+      translate([cell_size.x/2,0,0])
+      rotate([0,0,90])
+      children();
+    if(back)
+      translate([cell_size.x/2,cell_size.y,0])
+      rotate([0,0,270])
+      children();
+}
 
 if(Connector_Only)
 {
